@@ -1,0 +1,93 @@
+@import 'tailwindcss' source(none);
+@source '../**/*.{js,ts,jsx,tsx}';
+
+@import 'tw-animate-css';
+
+@layer components {
+  .spice-form-grid {
+    display: grid;
+    align-items: start;
+  }
+
+  .spice-form-grid > * {
+    min-width: 0;
+    align-self: start;
+  }
+
+  .spice-field-group {
+    display: flex;
+    min-width: 0;
+    align-self: start;
+    flex-direction: column;
+  }
+
+  .spice-field-group > input,
+  .spice-field-group > select,
+  .spice-field-group > textarea,
+  .spice-field-group > button,
+  .spice-field-group > [data-field-control] {
+    width: 100%;
+    min-width: 0;
+    flex: none;
+  }
+
+  .spice-field-message {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 0.5rem;
+    overflow-wrap: anywhere;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .spice-field-message:empty {
+    display: none;
+  }
+
+  .spice-field-message-reserved {
+    min-height: 1.1rem;
+  }
+
+  .spice-field-message-reserved:empty {
+    display: flex;
+  }
+
+  .spice-interactive-card {
+    cursor: pointer;
+    border: 2px solid #d7d8dc;
+    background-color: #fff;
+    box-shadow: 4px 5px 16px rgba(68, 68, 68, 0.1);
+    transition:
+      border-color 250ms ease,
+      box-shadow 250ms ease,
+      background-color 250ms ease;
+  }
+
+  .spice-interactive-card:hover,
+  .spice-interactive-card:focus-visible,
+  .spice-interactive-card:focus-within {
+    border-color: #f68b2c;
+    box-shadow: 0 10px 26px rgba(246, 139, 44, 0.28);
+    background-color: #fffaf5;
+  }
+
+  .spice-interactive-card:focus-visible {
+    outline: 3px solid #ca7428;
+    outline-offset: 3px;
+  }
+
+  .spice-interactive-card:active {
+    background-color: #fff4e9;
+    box-shadow: 0 5px 14px rgba(246, 139, 44, 0.24);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spice-interactive-card {
+    transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+  }
+
+}

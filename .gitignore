@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Package manager caches
+.npm-cache/
+.pnpm-store/
+.pnpm/
+.npm/
+
+# Generated builds
+dist/
+build/
+coverage/
+
+# Vite and application caches
+.vite/
+.cache/
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.*.local
+
+# Keep the safe environment template
+!.env.example
+
+# Runtime process files
+*.pid
+
+# Logs and errors
+*.log
+*.err
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor settings
+.vscode/
+.idea/
