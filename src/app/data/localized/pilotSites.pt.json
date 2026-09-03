@@ -1,0 +1,349 @@
+{
+  "details": {
+    "thessaloniki": {
+      "slug": "thessaloniki",
+      "demoSite": "Kritis Park, Mina Patrikiou Square",
+      "task": "T5.2",
+      "theme": "Renovação urbana do espaço público",
+      "lead": "KEPA",
+      "participants": [
+        "ESS",
+        "IRID",
+        "CERTH"
+      ],
+      "deliverable": "D5.2, SPICE Masterplan para o Município de Salónica, previsto para M34",
+      "expectedResult": "Um plano diretor detalhado para a requalificação de um espaço público verde, transformando-o num modelo associado a um parque desportivo dedicado.",
+      "sections": [
+        {
+          "title": "Características espaciais",
+          "bullets": [
+            "O parque tem um layout espacial radial.",
+            "Está rodeado de importantes serviços locais.",
+            "Apenas aproximadamente um terço do parque é utilizado de forma intensiva, principalmente o parque infantil, a pérgula e o anfiteatro.",
+            "A sinalização direcional e tátil para pessoas com deficiência é descontínua.",
+            "Inundações localizadas ocorrem em algumas zonas."
+          ]
+        },
+        {
+          "title": "Intervenções sugeridas",
+          "bullets": [
+            "Planeie o parque juntamente com o seu meio envolvente imediato, em vez de o tratar como um local isolado.",
+            "Dar prioridade a intervenções mais pequenas e direcionadas em vez de grandes mudanças radicais.",
+            "Cooperar com o grupo “Amigos do Parque” e empresas locais em projetos de curta duração.",
+            "Ligue o pequeno jardim vizinho ao parque principal.",
+            "Crie ligações com outras cidades SPICE.",
+            "Envolver a população local nas atividades técnicas e de manutenção."
+          ]
+        }
+      ],
+      "participationInsights": [
+        {
+          "title": "Participação credível",
+          "text": "A participação deve ser significativa, com uma influência clara nas decisões e nos resultados visíveis."
+        },
+        {
+          "title": "Administração de longo prazo",
+          "text": "Os cuidados futuros não devem depender exclusivamente da manutenção municipal. A responsabilidade deve ser partilhada com os aliados locais, voluntários e grupos de gestão."
+        },
+        {
+          "title": "Uma definição partilhada de cuidado",
+          "text": "A manutenção inclui tanto a responsabilidade técnica como as práticas diárias, como a limpeza, a jardinagem, a repintura, a reparação e a prevenção da negligência."
+        },
+        {
+          "title": "Perfis de envolvimento específicos",
+          "text": "Os grupos que requerem atenção dedicada incluem idosos, crianças e adolescentes, pessoas com deficiência, donos de cães e donos de lojas."
+        },
+        {
+          "title": "Mediação entre diferentes necessidades",
+          "text": "Grupos diferentes podem ter expectativas conflituantes, pelo que o co-design deve incluir negociação e priorização."
+        },
+        {
+          "title": "A educação como estratégia de ativação",
+          "text": "As escolas e as iniciativas educativas podem ajudar a criar confiança, responsabilidade e envolvimento a longo prazo."
+        }
+      ],
+      "priorityGroups": [
+        "Pessoas mais velhas",
+        "Crianças e adolescentes",
+        "Pessoas com deficiência",
+        "Donos de cães",
+        "Donos de lojas"
+      ],
+      "additionalNotes": {
+        "title": "Ideias adicionais registadas durante o workshop",
+        "bullets": [
+          "Mais espaço para as crianças correrem e jogarem futebol.",
+          "Maior segurança em redor das áreas infantis, incluindo a consideração de vedações.",
+          "Espaços adequados para vários grupos de utilizadores diferentes.",
+          "Áreas verdes e recreativas designadas.",
+          "Espaços de reunião, quiosques e mobiliário urbano.",
+          "Zoneamento mais claro das atividades.",
+          "Fazer do parque um local de encontro, relaxamento, piqueniques e uso social informal."
+        ]
+      }
+    },
+    "bielsko-biala": {
+      "slug": "bielsko-biala",
+      "demoSite": "11 Listopada Street",
+      "task": "T5.3",
+      "theme": "Oportunidades de negócio sustentáveis",
+      "lead": "ARRSA",
+      "participants": [
+        "IRID"
+      ],
+      "deliverable": "D5.3, SPICE Masterplan para ARRSA, previsto para M34",
+      "expectedResult": "Um plano diretor detalhado para a rua e o seu contexto urbano envolvente.",
+      "sections": [
+        {
+          "title": "Características espaciais e históricas",
+          "bullets": [
+            "A rua é o principal eixo pedonal de Bielsko-Biała.",
+            "Atua como uma coluna estrutural ligando áreas que pertenceram às cidades anteriormente separadas de Bielsko e Biała.",
+            "Continua a ser uma parte importante da vida pública do centro da cidade.",
+            "É predominantemente livre de automóveis e funciona como um corredor de mobilidade suave para peões e ciclistas.",
+            "Liga importantes destinos cívicos e culturais."
+          ]
+        },
+        {
+          "title": "Valor patrimonial",
+          "bullets": [
+            "Vários edifícios oficialmente protegidos.",
+            "Pavimentação de paralelepípedos preservada.",
+            "Iluminação pública de época.",
+            "Um forte carácter histórico da paisagem urbana.",
+            "Trilho cultural que liga a Câmara Municipal, praças monumentais e vestígios de fortificações históricas."
+          ]
+        },
+        {
+          "title": "Potencial ambiental e de espaço público",
+          "bullets": [
+            "Vegetação adicional.",
+            "Assentos públicos melhorados.",
+            "Melhorias ecológicas.",
+            "Melhor conforto para os peões.",
+            "Ligações de viagens ativas mais fortes."
+          ]
+        },
+        {
+          "title": "Desafios económicos e urbanísticos",
+          "bullets": [
+            "A rua perdeu parte da sua antiga vitalidade comercial.",
+            "O movimento e a atividade de retalho diminuíram.",
+            "Há um número crescente de instalações comerciais vagas e montras vazias.",
+            "As pequenas empresas independentes estão sob pressão.",
+            "A rua concorre com o vizinho Centro Comercial Sfera e outros empreendimentos de retalho de grande dimensão.",
+            "O contexto mais vasto é o do declínio do comércio de rua, apesar do papel histórico e cultural central da rua."
+          ]
+        }
+      ],
+      "participationInsights": [
+        {
+          "title": "Confiança e comunicação",
+          "text": "Os processos de participação anteriores tiveram uma baixa participação e resultaram numa implementação limitada."
+        },
+        {
+          "title": "Adaptação sensível",
+          "text": "As alterações devem respeitar o carácter histórico, ao mesmo tempo que abordam a acessibilidade, a vegetação, a protecção contra as intempéries e a redução da presença automóvel."
+        },
+        {
+          "title": "Comunicação direcionada",
+          "text": "São necessários contar histórias, redes sociais e envolvimento direto individual, especialmente para chegar a grupos menos ativos."
+        },
+        {
+          "title": "Os empresários como grupo prioritário",
+          "text": "Os antigos, actuais e potenciais empresários são actores centrais e requerem diálogo directo e incentivos específicos."
+        }
+      ],
+      "additionalNotes": {
+        "title": "Direção para a fase seguinte",
+        "bullets": [
+          "Passar do enquadramento do problema para uma nova visão partilhada para a rua."
+        ]
+      }
+    },
+    "cuba": {
+      "slug": "cuba",
+      "demoSite": "Chafariz da Fonte dos Leões",
+      "task": "T5.4",
+      "theme": "Escassez de água e valor cultural",
+      "lead": "miB",
+      "participants": [
+        "CMC",
+        "IRID"
+      ],
+      "deliverable": "D5.4, Plano Diretor SPICE para o Município de Cuba, previsto para M34",
+      "expectedResult": "Um plano diretor detalhado para a requalificação e reativação do local.",
+      "sections": [
+        {
+          "title": "Localização e significado",
+          "bullets": [
+            "A fonte ocupa uma posição chave à entrada da cidade.",
+            "É facilmente acessível e tem boas ligações ao centro da cidade.",
+            "Tem um forte significado emocional e comunitário, especialmente para os residentes mais velhos.",
+            "O seu valor tangível vem da sua arquitetura vernácula.",
+            "O seu valor intangível vem da sua história como um animado local de encontro comunitário."
+          ]
+        },
+        {
+          "title": "Condição atual",
+          "bullets": [
+            "O site está fechado e fora de uso.",
+            "Perdeu a sua antiga função social.",
+            "O desuso contínuo cria um risco de deterioração física.",
+            "A área circundante é ainda utilizada informalmente por estudantes e por comunidades que não vivem nas proximidades.",
+            "É considerado inseguro e mal conservado."
+          ]
+        },
+        {
+          "title": "Questões de água e infraestruturas",
+          "bullets": [
+            "As inundações sazonais ocorrem aproximadamente de outubro a abril.",
+            "O local contém infraestruturas de recolha de água da chuva ou cisterna.",
+            "O transbordo de esgoto e os pontos de esgoto misto são apontados como problemas."
+          ]
+        },
+        {
+          "title": "Prioridades sociais e de design — conforto responsivo ao clima",
+          "paragraphs": [
+            "O local renovado deve ser sustentável, verde, inclusivo, sensível às condições climatéricas e capaz de servir as diferentes necessidades dos utilizadores."
+          ]
+        },
+        {
+          "title": "Resultados visíveis e práticos",
+          "paragraphs": [
+            "O processo deve produzir mudanças concretas, visíveis e implementáveis, em vez de permanecer teórico."
+          ]
+        },
+        {
+          "title": "Apropriação comunitária e uso a longo prazo",
+          "paragraphs": [
+            "O objetivo não é apenas consultar os moradores. A comunidade deve gradualmente apropriar-se do espaço e ajudar a mantê-lo activo e relevante."
+          ]
+        }
+      ],
+      "participationInsights": [
+        {
+          "title": "Jovens",
+          "text": "O envolvimento deve considerar o reconhecimento, a acessibilidade, a língua, a pertença e a identidade cultural."
+        },
+        {
+          "title": "Pessoas mais velhas",
+          "text": "O envolvimento deve considerar o reconhecimento, a acessibilidade, a língua, a pertença e a identidade cultural."
+        },
+        {
+          "title": "Migrantes",
+          "text": "O envolvimento deve considerar o reconhecimento, a acessibilidade, a língua, a pertença e a identidade cultural."
+        }
+      ],
+      "priorityGroups": [
+        "Jovens",
+        "Pessoas mais velhas",
+        "Migrantes"
+      ]
+    },
+    "rovaniemi": {
+      "slug": "rovaniemi",
+      "demoSite": "Rovaniemi Bus Station",
+      "task": "T5.5",
+      "theme": "Turismo verde",
+      "lead": "AF",
+      "participants": [
+        "RoMa",
+        "IRID"
+      ],
+      "deliverable": "D5.5, SPICE Masterplan para RoMa, previsto para M34",
+      "expectedResult": "Um plano diretor detalhado para a reutilização adaptativa e integração mais ampla do local da estação rodoviária.",
+      "sections": [
+        {
+          "title": "Papel estratégico e carácter físico",
+          "bullets": [
+            "A estação é um dos principais pontos de entrada ou “portais” da cidade.",
+            "O seu interior apresenta um carácter arquitetónico modernista distinto.",
+            "Os espaços interiores poderão apoiar novos programas e utilizações, desde que sejam respeitadas as restrições patrimoniais.",
+            "Algumas áreas exteriores são atualmente utilizadas para armazenamento de neve."
+          ]
+        },
+        {
+          "title": "Principais desafios — função futura incerta",
+          "paragraphs": [
+            "Deve ser identificado um novo uso viável que equilibre a protecção do património, as necessidades contemporâneas da comunidade, os requisitos de mobilidade e o potencial do edifício para uso público e social."
+          ]
+        },
+        {
+          "title": "Principais desafios — deterioração física",
+          "bullets": [
+            "Deterioração do telhado.",
+            "Deterioração da fachada de madeira.",
+            "Infiltração de água do solo."
+          ]
+        },
+        {
+          "title": "Intervenções planeadas relacionadas",
+          "bullets": [
+            "A requalificação da rua que liga a estação ao centro da cidade está em curso.",
+            "Uma piscina de tamanho olímpico é proposta a sul do local, mas ainda não foi confirmada.",
+            "Os serviços de autocarros podem ser redistribuídos para a estação ferroviária próxima, também sujeito a confirmação."
+          ]
+        }
+      ],
+      "participationInsights": [
+        {
+          "title": "Ligações locais baseadas em confiança",
+          "text": "O envolvimento deve utilizar as relações de confiança existentes e trabalhar através de parceiros locais estabelecidos."
+        },
+        {
+          "title": "Participação informal e liderada por jovens",
+          "text": "A participação deve ser social, flexível e agradável, devendo ocorrer mais perto dos espaços que os jovens já utilizam."
+        },
+        {
+          "title": "Diferentes perfis de jovens",
+          "text": "Os “jovens em risco” não devem ser tratados como um grupo homogéneo. Os adolescentes, estudantes e jovens fora da escola ou do emprego têm diferentes necessidades e vulnerabilidades."
+        },
+        {
+          "title": "Autonomia e agência",
+          "text": "Os jovens precisam de espaços onde possam ser visíveis, agir de forma independente e expressar identidade, criatividade e propósito."
+        }
+      ],
+      "additionalNotes": {
+        "title": "Contexto que pode mudar o futuro do site",
+        "bullets": [
+          "Estes projectos envolventes (renovação de ruas, piscinas, possível redistribuição de autocarros) poderão alterar significativamente o papel, a acessibilidade e o programa futuro do edifício da estação rodoviária."
+        ]
+      }
+    }
+  },
+  "conclusions": {
+    "timingNote": "Os rótulos dos diapositivos para os sites de demonstração indicam um período de implementação de M18 a M34, enquanto os gráficos incorporados do roteiro de implementação indicam M13 a M34; este momento deve ser esclarecido. Espera-se que cada local produza um plano diretor detalhado do SPICE no M34, apoiado pelo Plano de Ação de Demonstração.",
+    "bullets": [
+      "O planeamento director deve conduzir a uma implementação visível e não apenas a consultas ou propostas teóricas.",
+      "A confiança é uma questão central, especialmente quando a participação anterior produziu resultados limitados.",
+      "O envolvimento deve ser adaptado a grupos específicos, em vez de depender de consultas públicas em geral.",
+      "A manutenção e administração a longo prazo devem envolver as comunidades, as organizações locais e as empresas.",
+      "A acessibilidade e a inclusão são preocupações recorrentes.",
+      "A identidade e o património existentes devem ser mantidos, quer se trate de uma rua histórica, de uma infra-estrutura hídrica vernácula ou de uma arquitectura modernista.",
+      "A resiliência climática e ambiental surge através das inundações, da gestão da água, da vegetação, do conforto e das condições sazonais."
+    ],
+    "perSiteStrategy": [
+      {
+        "slug": "thessaloniki",
+        "city": "Thessaloniki",
+        "strategy": "Melhor distribuição dos usos, acessibilidade e gestão comunitária."
+      },
+      {
+        "slug": "bielsko-biala",
+        "city": "Bielsko-Biała",
+        "strategy": "Revitalização da vida comercial e pública, protegendo ao mesmo tempo o carácter histórico."
+      },
+      {
+        "slug": "cuba",
+        "city": "Cuba",
+        "strategy": "Reativação de um património fechado e resolução de problemas de água, manutenção e inclusão."
+      },
+      {
+        "slug": "rovaniemi",
+        "city": "Rovaniemi",
+        "strategy": "Identificação de uma utilização viável e compatível com o património, com forte ênfase na agência dos jovens e na alteração das condições de mobilidade."
+      }
+    ]
+  }
+}

@@ -5,7 +5,10 @@ export interface AuthUser {
   id: number;
   fullName: string;
   email: string;
-  role: 'Citizen' | 'Facilitator' | 'Municipality Staff' | 'Researcher' | 'Admin';
+  role: 'Citizen' | 'Facilitator' | 'Municipality Staff' | 'Admin';
+  roles: Array<'Citizen' | 'Facilitator' | 'Municipality Staff' | 'Admin'>;
+  organisationId: number | null;
+  accountStatus: 'active' | 'suspended' | 'pending_approval';
   pilotSite: string;
   phone: string;
   locale: 'EN' | 'EL' | 'FI' | 'PL' | 'PT';
@@ -30,7 +33,7 @@ export interface RegisterInput {
   acceptedTerms: boolean;
   returnTo?: string;
 }
-export interface RegistrationResult { message: string; email: string; delivery: 'sent' | 'preview'; verificationPreviewUrl?: string }
+export interface RegistrationResult { message: string; email: string; accountStatus: 'active' | 'pending_approval'; delivery: 'sent' | 'preview'; verificationPreviewUrl?: string }
 
 interface NotificationCounts {
   total: number;
@@ -43,6 +46,7 @@ interface AuthContextValue {
   status: 'loading' | 'authenticated' | 'anonymous';
   notificationCounts: NotificationCounts;
   signIn: (email: string, password: string, rememberMe: boolean) => Promise<AuthUser>;
+  demoSignIn: (role: 'citizen' | 'facilitator' | 'municipality' | 'admin') => Promise<AuthUser>;
   register: (input: RegisterInput) => Promise<RegistrationResult>;
   signOut: () => Promise<void>;
   updateProfile: (patch: Record<string, unknown>) => Promise<AuthUser>;
@@ -97,6 +101,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return result.user;
   }, [refreshNotificationCounts]);
 
+  const demoSignIn = useCallback(async (role: 'citizen' | 'facilitator' | 'municipality' | 'admin') => {
+    const result = await apiRequest<{ user: AuthUser }>('/api/auth/demo-login', {
+      method: 'POST', body: jsonBody({ role }),
+    });
+    setUser(result.user);
+    setStatus('authenticated');
+    await refreshNotificationCounts();
+    return result.user;
+  }, [refreshNotificationCounts]);
+
   const register = useCallback(async (input: RegisterInput) => {
     const result = await apiRequest<RegistrationResult>('/api/auth/register', {
       method: 'POST', body: jsonBody(input),
@@ -123,9 +137,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthContextValue>(() => ({
-    user, status, notificationCounts, signIn, register, signOut, updateProfile,
+    user, status, notificationCounts, signIn, demoSignIn, register, signOut, updateProfile,
     refreshSession, refreshNotificationCounts,
-  }), [notificationCounts, refreshNotificationCounts, refreshSession, register, signIn, signOut, status, updateProfile, user]);
+  }), [demoSignIn, notificationCounts, refreshNotificationCounts, refreshSession, register, signIn, signOut, status, updateProfile, user]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

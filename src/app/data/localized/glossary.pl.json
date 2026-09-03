@@ -1,0 +1,452 @@
+[
+  {
+    "id": "engage",
+    "term": "Zaangażuj",
+    "definition": "Aktywnie angażować ludzi w proces, aby mogli zrozumieć problem, wymienić punkty widzenia i wpłynąć na to, co będzie dalej.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Uczestnictwo",
+    "tags": [
+      "Uczestnictwo",
+      "Zaangażowanie",
+      "Dialog"
+    ],
+    "language": "pl",
+    "relevance": "Podstawowe działanie",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "recruit",
+    "term": "Rekrutuj",
+    "definition": "Identyfikowanie, zapraszanie i wspieranie odpowiednich uczestników, tak aby działanie polegające na współtworzeniu obejmowało potrzebnych ludzi i perspektywy.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Uczestnictwo",
+    "tags": [
+      "Zasięg",
+      "Zainteresowane strony",
+      "Włączenie"
+    ],
+    "language": "pl",
+    "relevance": "Podstawowe działanie",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "tool",
+    "term": "Narzędzie",
+    "definition": "Ustrukturyzowany zasób, szablon lub działanie pomagające uczestnikom w wykonaniu określonego zadania w procesie współtworzenia.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Ćwicz",
+    "tags": [
+      "Zasób",
+      "Aktywność",
+      "Zestaw narzędzi"
+    ],
+    "language": "pl",
+    "relevance": "Podstawowa koncepcja",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "technique",
+    "term": "Technika",
+    "definition": "Określony sposób przeprowadzenia części działania, taki jak grupowanie pomysłów, głosowanie, mapowanie lub zachęcanie do dyskusji.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Ćwicz",
+    "tags": [
+      "Ułatwienia",
+      "Aktywność",
+      "Procedura"
+    ],
+    "language": "pl",
+    "relevance": "Podstawowa koncepcja",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "method",
+    "term": "Metoda",
+    "definition": "Zorganizowane podejście, które łączy zasady, kroki i techniki, aby osiągnąć określony cel uczestnictwa lub współtworzenia.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Ćwicz",
+    "tags": [
+      "Podejście",
+      "Proces",
+      "Ułatwienia"
+    ],
+    "language": "pl",
+    "relevance": "Podstawowa koncepcja",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "capacity-building",
+    "term": "Budowanie potencjału",
+    "definition": "Proces wzmacniania wiedzy, umiejętności, pewności siebie, relacji i zasobów potrzebnych ludziom lub organizacjom do skutecznego uczestnictwa.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Nauka",
+    "tags": [
+      "Umiejętności",
+      "Nauka",
+      "Wzmocnienie"
+    ],
+    "language": "pl",
+    "relevance": "Kluczowa koncepcja",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "civic-agency",
+    "term": "Agencja Obywatelska",
+    "definition": "Zdolność ludzi i społeczności do wspólnego działania, wpływania na sprawy publiczne i pomagania w kształtowaniu decyzji mających wpływ na ich życie.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Uczestnictwo",
+    "tags": [
+      "Obywatelstwo",
+      "Wpływ",
+      "Działanie zbiorowe"
+    ],
+    "language": "pl",
+    "relevance": "Kluczowa koncepcja",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "co-design",
+    "term": "Współprojektowanie",
+    "definition": "Podejście do projektowania oparte na współpracy, w którym użytkownicy, profesjonaliści i inni interesariusze wspólnie opracowują pomysły, usługi, miejsca lub rozwiązania.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Współtworzenie",
+    "tags": [
+      "Projekt",
+      "Współpraca",
+      "Zainteresowane strony"
+    ],
+    "language": "pl",
+    "relevance": "Podstawowa koncepcja",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "co-creation",
+    "term": "Współtworzenie",
+    "definition": "Proces współpracy, w którym osoby o różnej wiedzy i rolach wspólnie formułują wyzwania, opracowują pomysły, testują opcje i kształtują wyniki.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Współtworzenie",
+    "tags": [
+      "Współpraca",
+      "Uczestnictwo",
+      "Wspólne wyniki"
+    ],
+    "language": "pl",
+    "relevance": "Podstawowa koncepcja",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "co-production",
+    "term": "Koprodukcja",
+    "definition": "Porozumienie, w ramach którego władze publiczne, specjaliści, społeczności i użytkownicy usług dzielą się odpowiedzialnością za świadczenie usług lub wyniki.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Zarządzanie",
+    "tags": [
+      "Wspólna dostawa",
+      "Usługi publiczne",
+      "Partnerstwo"
+    ],
+    "language": "pl",
+    "relevance": "Kluczowa koncepcja",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "serious-games",
+    "term": "Poważne gry",
+    "definition": "Gry przeznaczone głównie do nauki, eksploracji, planowania lub wspierania decyzji, a nie samej rozrywki.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Zaangażowanie",
+    "tags": [
+      "Gry",
+      "Nauka",
+      "Symulacja"
+    ],
+    "language": "pl",
+    "relevance": "Rodzina metod",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "gamification",
+    "term": "Grywalizacja",
+    "definition": "Wykorzystanie wybranych elementów gry, takich jak wyzwania, postępy, informacje zwrotne lub nagrody, w aktywności niezwiązanej z grą w celu wspierania motywacji i uczestnictwa.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Zaangażowanie",
+    "tags": [
+      "Motywacja",
+      "Uczestnictwo",
+      "Interakcja"
+    ],
+    "language": "pl",
+    "relevance": "Technika",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "participatory-planning",
+    "term": "Planowanie partycypacyjne",
+    "definition": "Podejście do planowania, które umożliwia społecznościom i zainteresowanym stronom wnoszenie wiedzy, priorytetów i propozycji w całym procesie planowania.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Planowanie",
+    "tags": [
+      "Planowanie",
+      "Społeczność",
+      "Podejmowanie decyzji"
+    ],
+    "language": "pl",
+    "relevance": "Podejście do zarządzania",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "community-empowerment",
+    "term": "Wzmocnienie pozycji społeczności",
+    "definition": "Proces, dzięki któremu społeczności zyskują zaufanie, zasoby, relacje i wpływy, aby móc działać w kwestiach, które uważają za ważne.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Uczestnictwo",
+    "tags": [
+      "Społeczność",
+      "Agencja",
+      "Pojemność"
+    ],
+    "language": "pl",
+    "relevance": "Wynik",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "governance-approach",
+    "term": "Podejście do zarządzania",
+    "definition": "Określony sposób organizacji ról, obowiązków, uczestnictwa, odpowiedzialności i podejmowania decyzji wśród podmiotów publicznych, prywatnych i społecznych.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Zarządzanie",
+    "tags": [
+      "Role",
+      "Odpowiedzialność",
+      "Instytucje"
+    ],
+    "language": "pl",
+    "relevance": "Podstawowa koncepcja",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "human-needs-mapping",
+    "term": "Mapowanie potrzeb ludzkich",
+    "definition": "Ustrukturyzowane działanie mające na celu identyfikację i powiązanie potrzeb praktycznych, społecznych, emocjonalnych i środowiskowych, jakich doświadczają ludzie w danym miejscu lub sytuacji.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Badania",
+    "tags": [
+      "Potrzeby",
+      "Mapowanie",
+      "Skoncentrowany na ludziach"
+    ],
+    "language": "pl",
+    "relevance": "Metoda",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "hybrid-participation",
+    "term": "Udział hybrydowy",
+    "definition": "Uczestnictwo, które celowo łączy kanały osobiste i cyfrowe, aby ludzie mogli wnosić swój wkład w różnych formatach i okolicznościach.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Uczestnictwo",
+    "tags": [
+      "Online",
+      "Offline",
+      "Dostępność"
+    ],
+    "language": "pl",
+    "relevance": "Format uczestnictwa",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "open-strategy",
+    "term": "Strategia otwarta",
+    "definition": "Proces strategiczny, który zaprasza szersze grupy do przekazywania informacji, interpretacji, pomysłów i opinii, zamiast ograniczać strategię do małej grupy przywódców.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Zarządzanie",
+    "tags": [
+      "Strategia",
+      "Otwartość",
+      "Współpraca"
+    ],
+    "language": "pl",
+    "relevance": "Podejście do zarządzania",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "participatory-action-research-par",
+    "term": "Badania w zakresie działań partycypacyjnych (PAR)",
+    "definition": "Podejście badawcze oparte na współpracy, w którym uczestnicy badają problem, zastanawiają się nad dowodami i podejmują działania, jednocześnie dzieląc się współodpowiedzialność za proces uczenia się.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Badania",
+    "tags": [
+      "Badania",
+      "Działanie",
+      "Wspólna nauka"
+    ],
+    "language": "pl",
+    "relevance": "Metodologia",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "participatory-governance",
+    "term": "Zarządzanie partycypacyjne",
+    "definition": "Uzgodnienia dotyczące zarządzania, które dają obywatelom i zainteresowanym stronom znaczące możliwości rozważań, kształtowania priorytetów i wpływania na decyzje publiczne.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Zarządzanie",
+    "tags": [
+      "Uczestnictwo",
+      "Instytucje",
+      "Podejmowanie decyzji"
+    ],
+    "language": "pl",
+    "relevance": "Podejście do zarządzania",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "accountability",
+    "term": "Odpowiedzialność",
+    "definition": "Obowiązek wyjaśniania decyzji i działań, przyjmowania za nie odpowiedzialności oraz zapewnienia osobom, których to dotyczy, możliwości zadawania pytań lub przeglądu ich.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Zarządzanie",
+    "tags": [
+      "Przejrzystość",
+      "Odpowiedzialność",
+      "Recenzja"
+    ],
+    "language": "pl",
+    "relevance": "Zasada zarządzania",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "decision-making",
+    "term": "Podejmowanie decyzji",
+    "definition": "Proces porównywania informacji, wartości, ryzyka i alternatyw w celu wybrania i uzasadnienia sposobu działania.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Zarządzanie",
+    "tags": [
+      "Wybory",
+      "Dowody",
+      "Priorytety"
+    ],
+    "language": "pl",
+    "relevance": "Proces podstawowy",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "institutional-framework",
+    "term": "Ramy instytucjonalne",
+    "definition": "Połączone prawa, zasady, organizacje, role, zasady i procedury, które kształtują sposób podejmowania i wdrażania decyzji.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Zarządzanie",
+    "tags": [
+      "Instytucje",
+      "Zasady",
+      "Zasady"
+    ],
+    "language": "pl",
+    "relevance": "Kontekst",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "policy-making",
+    "term": "Tworzenie polityki",
+    "definition": "Proces definiowania problemów publicznych, opracowywania i oceny opcji, przyjmowania środków, ich wdrażania i przeglądu ich skutków.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Zasady",
+    "tags": [
+      "Polityka publiczna",
+      "Decyzje",
+      "Wdrożenie"
+    ],
+    "language": "pl",
+    "relevance": "Proces podstawowy",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "public-private-partnerships",
+    "term": "Partnerstwa publiczno-prywatne",
+    "definition": "Długoterminowe ustalenia o współpracy, w ramach których organy publiczne i organizacje prywatne dzielą się zasobami, ryzykiem, obowiązkami lub zadaniami związanymi z realizacją celu publicznego.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Zarządzanie",
+    "tags": [
+      "Partnerstwo",
+      "Dostawa",
+      "Wspólne ryzyko"
+    ],
+    "language": "pl",
+    "relevance": "Model instytucjonalny",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "co-evolutionary-transformation",
+    "term": "Transformacja koewolucyjna",
+    "definition": "Długoterminowa zmiana, w ramach której praktyki społeczne, instytucje, technologie i środowiska dostosowują się do siebie i z czasem wpływają na siebie nawzajem.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Transformacja",
+    "tags": [
+      "Zmiana systemów",
+      "Dostosowanie",
+      "Innowacja"
+    ],
+    "language": "pl",
+    "relevance": "Zmień koncepcję",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "socioeconomic-impact",
+    "term": "Wpływ społeczno-ekonomiczny",
+    "definition": "Pozytywny lub negatywny wpływ działania lub decyzji na ludzi, źródła utrzymania, dostęp, dobrostan, lokalną gospodarkę i relacje społeczne.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Wpływ",
+    "tags": [
+      "Społeczeństwo",
+      "Oszczędność",
+      "Ocena"
+    ],
+    "language": "pl",
+    "relevance": "Koncepcja wpływu",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "probing",
+    "term": "Badanie",
+    "definition": "Wykorzystywanie podpowiedzi lub zadań eksploracyjnych w celu ujawnienia głębszych przyczyn, doświadczeń, założeń lub niezaspokojonych potrzeb.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Badania",
+    "tags": [
+      "Zapytanie",
+      "Wywiad",
+      "Odkrycie"
+    ],
+    "language": "pl",
+    "relevance": "Technika",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "prototyping",
+    "term": "Prototypowanie",
+    "definition": "Tworzenie uproszczonej, tymczasowej lub testowalnej wersji pomysłu, aby uczestnicy mogli go doświadczyć, przekazać opinię i ulepszyć go przed wdrożeniem.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Projekt",
+    "tags": [
+      "Testowanie",
+      "Iteracja",
+      "Współprojektowanie"
+    ],
+    "language": "pl",
+    "relevance": "Metoda",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  },
+  {
+    "id": "need",
+    "term": "Potrzeba",
+    "definition": "Stan, zasób, zdolność lub forma wsparcia, których wymaga dana osoba lub społeczność, aby funkcjonować, uczestniczyć lub osiągnąć wartościowy wynik.",
+    "definitionOwner": "Definicja redakcyjna SPICE",
+    "category": "Badania",
+    "tags": [
+      "Ludzie",
+      "Wymagania",
+      "Dobre samopoczucie"
+    ],
+    "language": "pl",
+    "relevance": "Podstawowa koncepcja",
+    "sourceSheet": "Lista zatwierdzonych glosariuszy"
+  }
+]

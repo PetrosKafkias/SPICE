@@ -16,6 +16,8 @@ import {
   Type,
   X,
 } from 'lucide-react';
+import { useI18n } from '../context/I18nContext';
+import type { TranslationKey } from '../i18n/translations';
 
 interface AccessibilityState {
   contrast: boolean;
@@ -63,19 +65,19 @@ const BODY_CLASSES: Partial<Record<keyof AccessibilityState, string>> = {
   saturation: 'spice-a11y-low-saturation',
 };
 
-const ITEMS: { key: keyof AccessibilityState; label: string; icon: ElementType; badge?: string }[] = [
-  { key: 'contrast', label: 'Contrast +', icon: Contrast },
-  { key: 'highlightLinks', label: 'Highlight Links', icon: Link },
-  { key: 'biggerText', label: 'Bigger Text', icon: Type },
-  { key: 'textSpacing', label: 'Text Spacing', icon: ArrowLeftRight },
-  { key: 'pauseAnimations', label: 'Pause Animations', icon: PauseCircle },
-  { key: 'hideImages', label: 'Hide Images', icon: ImageOff },
-  { key: 'dyslexiaFriendly', label: 'Dyslexia Friendly', icon: Type, badge: 'i' },
-  { key: 'cursor', label: 'Cursor', icon: MousePointer2 },
-  { key: 'tooltips', label: 'Tooltips', icon: Info },
-  { key: 'lineHeight', label: 'Line Height', icon: List },
-  { key: 'textAlign', label: 'Text Align', icon: AlignLeft },
-  { key: 'saturation', label: 'Saturation', icon: Droplet },
+const ITEMS: { key: keyof AccessibilityState; labelKey: TranslationKey; icon: ElementType; badge?: string }[] = [
+  { key: 'contrast', labelKey: 'accessibility.contrast', icon: Contrast },
+  { key: 'highlightLinks', labelKey: 'accessibility.highlightLinks', icon: Link },
+  { key: 'biggerText', labelKey: 'accessibility.biggerText', icon: Type },
+  { key: 'textSpacing', labelKey: 'accessibility.textSpacing', icon: ArrowLeftRight },
+  { key: 'pauseAnimations', labelKey: 'accessibility.pauseAnimations', icon: PauseCircle },
+  { key: 'hideImages', labelKey: 'accessibility.hideImages', icon: ImageOff },
+  { key: 'dyslexiaFriendly', labelKey: 'accessibility.dyslexiaFriendly', icon: Type, badge: 'i' },
+  { key: 'cursor', labelKey: 'accessibility.cursor', icon: MousePointer2 },
+  { key: 'tooltips', labelKey: 'accessibility.tooltips', icon: Info },
+  { key: 'lineHeight', labelKey: 'accessibility.lineHeight', icon: List },
+  { key: 'textAlign', labelKey: 'accessibility.textAlign', icon: AlignLeft },
+  { key: 'saturation', labelKey: 'accessibility.saturation', icon: Droplet },
 ];
 
 interface Props {
@@ -85,6 +87,7 @@ interface Props {
 }
 
 export default function AccessibilityWidget({ open: controlledOpen, onOpenChange, docked = false }: Props) {
+  const { t } = useI18n();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = controlledOpen ?? internalOpen;
   const setOpen = useCallback((value: boolean) => {
@@ -130,7 +133,7 @@ export default function AccessibilityWidget({ open: controlledOpen, onOpenChange
       {open && (
         <div
           className={`spice-a11y-widget fixed z-[70] flex flex-col overflow-hidden rounded-lg bg-[#e9edf2] shadow-[0_8px_40px_rgba(0,0,0,0.28)] transition-[opacity,transform] duration-250 motion-reduce:transition-none ${
-            docked ? 'bottom-[104px] left-1/2 -translate-x-1/2 max-sm:bottom-[92px]' : 'bottom-24 left-3 sm:left-6'
+            docked ? 'bottom-[104px] left-3 sm:left-6 max-sm:bottom-[92px]' : 'bottom-24 left-3 sm:left-6'
           }`}
           style={{
             width: state.oversizedWidget ? 'min(340px, calc(100vw - 24px))' : 'min(264px, calc(100vw - 24px))',
@@ -139,10 +142,11 @@ export default function AccessibilityWidget({ open: controlledOpen, onOpenChange
           }}
         >
           <div className="flex items-center justify-between bg-[#ca7428] px-3 py-2 text-white">
-            <p className="text-[12px] font-bold">Accessibility Menu (CTRL+U)</p>
+            <p className="text-[12px] font-bold">{t('accessibility.menu')}</p>
             <button
               onClick={() => setOpen(false)}
-              title="Close"
+              title={t('accessibility.close')}
+              aria-label={t('accessibility.close')}
               className="grid h-7 w-7 place-items-center rounded-full border-2 border-white bg-[#a95f20] text-white"
             >
               <X size={17} />
@@ -154,11 +158,11 @@ export default function AccessibilityWidget({ open: controlledOpen, onOpenChange
               <span className="grid h-5 w-5 place-items-center rounded-full bg-[#a95f20]">
                 <Play size={11} fill="white" />
               </span>
-              How UserWay Works
+              {t('accessibility.howItWorks')}
             </button>
 
             <div className="mb-3 flex items-center justify-between text-[12px] font-medium text-black">
-              <span>Oversized Widget</span>
+              <span>{t('accessibility.oversized')}</span>
               <button
                 onClick={() => toggle('oversizedWidget')}
                 aria-pressed={state.oversizedWidget}
@@ -174,7 +178,7 @@ export default function AccessibilityWidget({ open: controlledOpen, onOpenChange
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              {ITEMS.map(({ key, label, icon: Icon, badge }) => (
+              {ITEMS.map(({ key, labelKey, icon: Icon, badge }) => (
                 <button
                   key={key}
                   onClick={() => toggle(key)}
@@ -188,7 +192,7 @@ export default function AccessibilityWidget({ open: controlledOpen, onOpenChange
                     </span>
                   )}
                   <Icon size={26} strokeWidth={1.9} />
-                  <span className="text-[11px] font-bold leading-tight">{label}</span>
+                  <span className="text-[11px] font-bold leading-tight">{t(labelKey)}</span>
                 </button>
               ))}
             </div>
@@ -197,7 +201,7 @@ export default function AccessibilityWidget({ open: controlledOpen, onOpenChange
               onClick={resetAll}
               className="mt-3 flex w-full items-center justify-center gap-3 rounded-md bg-[#ca7428] px-3 py-2 text-[11px] font-bold text-white"
             >
-              <RotateCcw size={15} /> Reset All Accessibility Settings
+              <RotateCcw size={15} /> {t('accessibility.reset')}
             </button>
 
             <button
@@ -207,18 +211,18 @@ export default function AccessibilityWidget({ open: controlledOpen, onOpenChange
               <span className="grid h-7 w-7 place-items-center rounded-full bg-[#ca7428] text-white">
                 <Settings size={15} />
               </span>
-              Move/Hide Widget
+              {t('accessibility.moveHide')}
               <span className="text-[14px]">›</span>
             </button>
           </div>
 
           <div className="mt-auto flex items-center justify-between bg-white px-3 py-2">
-            <button className="rounded-full bg-[#ca7428] px-2 py-1 text-[10px] font-bold text-white">Manage</button>
+            <button className="rounded-full bg-[#ca7428] px-2 py-1 text-[10px] font-bold text-white">{t('accessibility.manage')}</button>
             <div className="flex items-center gap-2">
               <span className="text-[30px] font-bold leading-none text-[#1f63ff]">U</span>
               <div>
                 <p className="text-[16px] font-black leading-none text-black">USERWAY</p>
-                <p className="text-[7px] font-bold leading-none text-black">a Level Access company</p>
+                <p className="text-[7px] font-bold leading-none text-black">{t('accessibility.company')}</p>
               </div>
             </div>
           </div>

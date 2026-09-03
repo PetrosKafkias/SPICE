@@ -4,9 +4,11 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createApiHandler } from './api.mjs';
 
+process.env.SPICE_DEMO_FIXTURE ||= 'participation';
+
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const host = process.env.SPICE_DEV_HOST || '127.0.0.1';
-const appPort = Number(process.env.SPICE_DEV_PORT || 5173);
+const appPort = Number(process.env.SPICE_DEV_PORT || process.env.PORT || 5173);
 const apiPort = Number(process.env.SPICE_API_PORT || 5174);
 const api = await createApiHandler();
 

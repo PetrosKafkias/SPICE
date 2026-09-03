@@ -1,0 +1,349 @@
+{
+  "details": {
+    "thessaloniki": {
+      "slug": "thessaloniki",
+      "demoSite": "Kritis Park, Mina Patrikiou Square",
+      "task": "T5.2",
+      "theme": "Urban renewal of public space",
+      "lead": "KEPA",
+      "participants": [
+        "ESS",
+        "IRID",
+        "CERTH"
+      ],
+      "deliverable": "D5.2, SPICE Masterplan for the Municipality of Thessaloniki, due at M34",
+      "expectedResult": "A detailed master plan for the requalification of a green public space, transforming it into a model associated with a dedicated sports park.",
+      "sections": [
+        {
+          "title": "Spatial characteristics",
+          "bullets": [
+            "The park has a radial spatial layout.",
+            "It is surrounded by important local services.",
+            "Only approximately one-third of the park is intensively used, mainly the playground, pergola and amphitheatre.",
+            "Directional and tactile signage for people with disabilities is discontinuous.",
+            "Localised flooding occurs in some areas."
+          ]
+        },
+        {
+          "title": "Suggested interventions",
+          "bullets": [
+            "Plan the park together with its immediate surroundings rather than treating it as an isolated site.",
+            "Prioritise smaller, targeted interventions instead of major radical changes.",
+            "Cooperate with the \"Friends of the Park\" group and local businesses on short-term projects.",
+            "Connect the neighbouring pocket garden to the main park.",
+            "Create links with the other SPICE cities.",
+            "Involve local people in technical and maintenance activities."
+          ]
+        }
+      ],
+      "participationInsights": [
+        {
+          "title": "Credible participation",
+          "text": "Participation must feel meaningful, with a clear influence on decisions and visible results."
+        },
+        {
+          "title": "Long-term stewardship",
+          "text": "Future care should not depend exclusively on municipal maintenance. Responsibility should be shared with local allies, volunteers and stewardship groups."
+        },
+        {
+          "title": "A shared definition of care",
+          "text": "Maintenance includes both technical responsibility and everyday practices such as cleaning, gardening, repainting, repairing and preventing neglect."
+        },
+        {
+          "title": "Specific engagement profiles",
+          "text": "Groups requiring dedicated attention include older people, children and adolescents, people with disabilities, dog owners, and shop owners."
+        },
+        {
+          "title": "Mediation between different needs",
+          "text": "Different groups may have conflicting expectations, so co-design must include negotiation and prioritisation."
+        },
+        {
+          "title": "Education as an activation strategy",
+          "text": "Schools and educational initiatives can help build trust, responsibility and long-term engagement."
+        }
+      ],
+      "priorityGroups": [
+        "Older people",
+        "Children and adolescents",
+        "People with disabilities",
+        "Dog owners",
+        "Shop owners"
+      ],
+      "additionalNotes": {
+        "title": "Additional ideas recorded during the workshop",
+        "bullets": [
+          "More space for children to run and play football.",
+          "Improved safety around children’s areas, including consideration of fencing.",
+          "Spaces suitable for several different user groups.",
+          "Designated green and recreational areas.",
+          "Gathering spaces, kiosks and urban furniture.",
+          "Clearer zoning of activities.",
+          "Making the park a place for gathering, relaxing, picnicking and informal social use."
+        ]
+      }
+    },
+    "bielsko-biala": {
+      "slug": "bielsko-biala",
+      "demoSite": "11 Listopada Street",
+      "task": "T5.3",
+      "theme": "Sustainable business opportunities",
+      "lead": "ARRSA",
+      "participants": [
+        "IRID"
+      ],
+      "deliverable": "D5.3, SPICE Masterplan for ARRSA, due at M34",
+      "expectedResult": "A detailed master plan for the street and its surrounding urban context.",
+      "sections": [
+        {
+          "title": "Spatial and historical characteristics",
+          "bullets": [
+            "The street is Bielsko-Biała’s main pedestrian axis.",
+            "It acts as a structural spine connecting areas that once belonged to the formerly separate cities of Bielsko and Biała.",
+            "It remains an important part of the city centre’s public life.",
+            "It is predominantly car-free and functions as a soft-mobility corridor for pedestrians and cyclists.",
+            "It connects important civic and cultural destinations."
+          ]
+        },
+        {
+          "title": "Heritage value",
+          "bullets": [
+            "Several officially protected buildings.",
+            "Preserved cobbled paving.",
+            "Period-style street lighting.",
+            "A strong historic townscape character.",
+            "A cultural trail connecting City Hall, monumental squares and remnants of historic fortifications."
+          ]
+        },
+        {
+          "title": "Environmental and public-space potential",
+          "bullets": [
+            "Additional greenery.",
+            "Improved public seating.",
+            "Ecological improvements.",
+            "Better pedestrian comfort.",
+            "Stronger active-travel connections."
+          ]
+        },
+        {
+          "title": "Economic and urban challenges",
+          "bullets": [
+            "The street has lost some of its former commercial vitality.",
+            "Footfall and retail activity have declined.",
+            "There are increasing numbers of vacant commercial premises and empty shopfronts.",
+            "Small independent businesses are under pressure.",
+            "The street competes with the nearby Sfera Shopping Center and other large-scale retail developments.",
+            "The broader context is one of declining high-street trade, despite the street’s central historical and cultural role."
+          ]
+        }
+      ],
+      "participationInsights": [
+        {
+          "title": "Trust and communication",
+          "text": "Previous participation processes had low turnout and resulted in limited implementation."
+        },
+        {
+          "title": "Sensitive adaptation",
+          "text": "Changes must respect the historic character while addressing accessibility, greenery, weather protection and the reduction of car presence."
+        },
+        {
+          "title": "Targeted communication",
+          "text": "Storytelling, social media and direct one-to-one engagement are needed, particularly to reach less-active groups."
+        },
+        {
+          "title": "Entrepreneurs as a priority group",
+          "text": "Former, current and potential entrepreneurs are central actors and require direct dialogue and specific incentives."
+        }
+      ],
+      "additionalNotes": {
+        "title": "Direction for the next phase",
+        "bullets": [
+          "Move from problem framing towards a new shared vision for the street."
+        ]
+      }
+    },
+    "cuba": {
+      "slug": "cuba",
+      "demoSite": "Chafariz da Fonte dos Leões",
+      "task": "T5.4",
+      "theme": "Water scarcity and cultural value",
+      "lead": "miB",
+      "participants": [
+        "CMC",
+        "IRID"
+      ],
+      "deliverable": "D5.4, SPICE Masterplan for the Municipality of Cuba, due at M34",
+      "expectedResult": "A detailed master plan for the requalification and reactivation of the site.",
+      "sections": [
+        {
+          "title": "Location and significance",
+          "bullets": [
+            "The fountain occupies a key position at the town entrance.",
+            "It is easily accessible and well connected to the town centre.",
+            "It has strong emotional and community significance, especially for older residents.",
+            "Its tangible value comes from its vernacular architecture.",
+            "Its intangible value comes from its history as a lively community gathering place."
+          ]
+        },
+        {
+          "title": "Current condition",
+          "bullets": [
+            "The site is closed and disused.",
+            "It has lost its former social function.",
+            "Continued disuse creates a risk of physical deterioration.",
+            "The surrounding area is still used informally by school students and by communities that do not live immediately nearby.",
+            "It is perceived as unsafe and poorly maintained."
+          ]
+        },
+        {
+          "title": "Water and infrastructure issues",
+          "bullets": [
+            "Seasonal flooding occurs from approximately October to April.",
+            "The site contains rainwater-collection or tank infrastructure.",
+            "Sewage overflow and mixed sewage points are identified as problems."
+          ]
+        },
+        {
+          "title": "Social and design priorities — climate-responsive comfort",
+          "paragraphs": [
+            "The renewed site should be sustainable, green, inclusive, responsive to climatic conditions, and capable of serving different user needs."
+          ]
+        },
+        {
+          "title": "Visible and practical results",
+          "paragraphs": [
+            "The process must deliver concrete, visible and implementable changes rather than remaining theoretical."
+          ]
+        },
+        {
+          "title": "Community appropriation and long-term use",
+          "paragraphs": [
+            "The objective is not only to consult residents. The community should gradually take ownership of the space and help keep it active and relevant."
+          ]
+        }
+      ],
+      "participationInsights": [
+        {
+          "title": "Young people",
+          "text": "Engagement must consider recognition, accessibility, language, belonging and cultural identity."
+        },
+        {
+          "title": "Older people",
+          "text": "Engagement must consider recognition, accessibility, language, belonging and cultural identity."
+        },
+        {
+          "title": "Migrants",
+          "text": "Engagement must consider recognition, accessibility, language, belonging and cultural identity."
+        }
+      ],
+      "priorityGroups": [
+        "Young people",
+        "Older people",
+        "Migrants"
+      ]
+    },
+    "rovaniemi": {
+      "slug": "rovaniemi",
+      "demoSite": "Rovaniemi Bus Station",
+      "task": "T5.5",
+      "theme": "Green tourism",
+      "lead": "AF",
+      "participants": [
+        "RoMa",
+        "IRID"
+      ],
+      "deliverable": "D5.5, SPICE Masterplan for RoMa, due at M34",
+      "expectedResult": "A detailed master plan for the adaptive reuse and wider integration of the bus-station site.",
+      "sections": [
+        {
+          "title": "Strategic role and physical character",
+          "bullets": [
+            "The station is one of the principal entry points or \"portals\" to the city.",
+            "Its interior has a distinctive modernist architectural character.",
+            "The indoor spaces could support new programmes and uses, provided heritage constraints are respected.",
+            "Some outdoor areas are currently used for snow storage."
+          ]
+        },
+        {
+          "title": "Principal challenges — uncertain future function",
+          "paragraphs": [
+            "A viable new use must be identified that balances heritage protection, contemporary community needs, mobility requirements, and the building’s potential for public and social use."
+          ]
+        },
+        {
+          "title": "Principal challenges — physical deterioration",
+          "bullets": [
+            "Roof deterioration.",
+            "Deterioration of the wood façade.",
+            "Water infiltration from the soil."
+          ]
+        },
+        {
+          "title": "Related planned interventions",
+          "bullets": [
+            "Renovation of the street connecting the station to the city centre is in progress.",
+            "An Olympic-size swimming hall is proposed to the south of the site, but remains to be confirmed.",
+            "Bus services may be redistributed to the nearby railway station, also subject to confirmation."
+          ]
+        }
+      ],
+      "participationInsights": [
+        {
+          "title": "Trust-based local connections",
+          "text": "Engagement should use existing trusted relationships and work through established local partners."
+        },
+        {
+          "title": "Youth-led and informal participation",
+          "text": "Participation should be social, flexible and enjoyable, and should take place closer to the spaces young people already use."
+        },
+        {
+          "title": "Different youth profiles",
+          "text": "\"Youth at risk\" should not be treated as one homogeneous group. Teenagers, students and young adults outside education or employment have different needs and vulnerabilities."
+        },
+        {
+          "title": "Autonomy and agency",
+          "text": "Young people need spaces where they can be visible, act independently and express identity, creativity and purpose."
+        }
+      ],
+      "additionalNotes": {
+        "title": "Context that could change the site’s future",
+        "bullets": [
+          "These surrounding projects (street renovation, swimming hall, possible bus redistribution) could significantly change the role, accessibility and future programme of the bus-station building."
+        ]
+      }
+    }
+  },
+  "conclusions": {
+    "timingNote": "Slide labels for the demo sites state an implementation period of M18–M34, while the embedded implementation-roadmap graphics state M13–M34; this timing should be clarified. Each site is expected to produce a detailed SPICE master plan at M34, supported by the Demo Action Plan.",
+    "bullets": [
+      "Master planning must lead to visible implementation, not only consultation or theoretical proposals.",
+      "Trust is a central issue, especially where previous participation produced limited results.",
+      "Engagement must be adapted to specific groups, rather than relying on general public consultations.",
+      "Long-term maintenance and stewardship should involve communities, local organisations and businesses.",
+      "Accessibility and inclusion are recurring concerns.",
+      "Existing identity and heritage must be retained, whether this concerns a historic street, vernacular water infrastructure or modernist architecture.",
+      "Climate and environmental resilience appear through flooding, water management, greenery, comfort and seasonal conditions."
+    ],
+    "perSiteStrategy": [
+      {
+        "slug": "thessaloniki",
+        "city": "Thessaloniki",
+        "strategy": "Better distribution of uses, accessibility and community stewardship."
+      },
+      {
+        "slug": "bielsko-biala",
+        "city": "Bielsko-Biała",
+        "strategy": "Revitalisation of commercial and public life while protecting historic character."
+      },
+      {
+        "slug": "cuba",
+        "city": "Cuba",
+        "strategy": "Reactivation of a closed heritage site while resolving water, maintenance and inclusion issues."
+      },
+      {
+        "slug": "rovaniemi",
+        "city": "Rovaniemi",
+        "strategy": "Identification of a viable heritage-compatible use, with a strong emphasis on youth agency and changing mobility conditions."
+      }
+    ]
+  }
+}

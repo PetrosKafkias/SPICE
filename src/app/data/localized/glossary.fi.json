@@ -1,0 +1,452 @@
+[
+  {
+    "id": "engage",
+    "term": "Sitoudu",
+    "definition": "Ottaa ihmiset aktiivisesti mukaan prosessiin, jotta he voivat ymmärtää ongelman, vaihtaa näkökulmia ja vaikuttaa siihen, mitä seuraavaksi tapahtuu.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Osallistuminen",
+    "tags": [
+      "Osallistuminen",
+      "Osallistuminen",
+      "Vuoropuhelu"
+    ],
+    "language": "fi",
+    "relevance": "Ydintoiminto",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "recruit",
+    "term": "Rekrytoi",
+    "definition": "Tunnistaa, kutsua ja tukea sopivia osallistujia, jotta yhteisluontitoiminta sisältää sen tarvitsemat ihmiset ja näkökulmat.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Osallistuminen",
+    "tags": [
+      "Yhteydenotto",
+      "Sidosryhmät",
+      "Sisältyminen"
+    ],
+    "language": "fi",
+    "relevance": "Ydintoiminto",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "tool",
+    "term": "Työkalu",
+    "definition": "Jäsennelty resurssi, malli tai aktiviteetti, jota käytetään auttamaan osallistujia suorittamaan tietty tehtävä yhteisluontiprosessissa.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Harjoittelu",
+    "tags": [
+      "Resurssi",
+      "Toiminta",
+      "Työkalupakkaus"
+    ],
+    "language": "fi",
+    "relevance": "Ydinkonsepti",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "technique",
+    "term": "Tekniikka",
+    "definition": "Erityinen tapa suorittaa osa toiminnasta, kuten ideoiden ryhmittely, äänestäminen, kartoitus tai keskustelun herättäminen.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Harjoittelu",
+    "tags": [
+      "Helpottaminen",
+      "Toiminta",
+      "Toimenpide"
+    ],
+    "language": "fi",
+    "relevance": "Ydinkonsepti",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "method",
+    "term": "Menetelmä",
+    "definition": "Järjestetty lähestymistapa, jossa yhdistyvät periaatteet, vaiheet ja tekniikat määritellyn osallistumisen tai yhteisluomisen tavoitteen saavuttamiseksi.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Harjoittelu",
+    "tags": [
+      "lähestymistapa",
+      "Käsittely",
+      "Helpottaminen"
+    ],
+    "language": "fi",
+    "relevance": "Ydinkonsepti",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "capacity-building",
+    "term": "kapasiteetin lisääminen",
+    "definition": "Prosessi, jolla vahvistetaan tietoja, taitoja, luottamusta, suhteita ja resursseja, joita ihmiset tai organisaatiot tarvitsevat osallistuakseen tehokkaasti.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Oppiminen",
+    "tags": [
+      "Taidot",
+      "Oppiminen",
+      "Valtuutus"
+    ],
+    "language": "fi",
+    "relevance": "Avainkäsite",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "civic-agency",
+    "term": "Kansalaisvirasto",
+    "definition": "Ihmisten ja yhteisöjen kyky toimia yhdessä, vaikuttaa julkisiin asioihin ja auttaa muokkaamaan elämäänsä vaikuttavia päätöksiä.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Osallistuminen",
+    "tags": [
+      "kansalaisuus",
+      "Vaikuttaminen",
+      "Kohteellinen toiminta"
+    ],
+    "language": "fi",
+    "relevance": "Avainkäsite",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "co-design",
+    "term": "Yhteissuunnittelu",
+    "definition": "Yhteiskäyttöinen suunnittelutapa, jossa käyttäjät, ammattilaiset ja muut sidosryhmät kehittävät yhdessä ideoita, palveluita, paikkoja tai ratkaisuja.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Yhteisluominen",
+    "tags": [
+      "Suunnittelu",
+      "Yhteistyö",
+      "Sidosryhmät"
+    ],
+    "language": "fi",
+    "relevance": "Ydinkonsepti",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "co-creation",
+    "term": "Yhteisluominen",
+    "definition": "Yhteistyöprosessi, jossa ihmiset, joilla on erilaisia ​​tietoja ja rooleja, laativat yhdessä haasteita, kehittävät ideoita, testaavat vaihtoehtoja ja muokkaavat tuloksia.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Yhteisluominen",
+    "tags": [
+      "Yhteistyö",
+      "Osallistuminen",
+      "Jaetut tulokset"
+    ],
+    "language": "fi",
+    "relevance": "Ydinkonsepti",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "co-production",
+    "term": "Yhteistuotanto",
+    "definition": "Järjestely, jossa viranomaiset, ammattilaiset, yhteisöt ja palvelun käyttäjät jakavat vastuun palvelujen tai tulosten toimittamisesta.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Hallinto",
+    "tags": [
+      "Jaettu toimitus",
+      "Julkiset palvelut",
+      "Kumppanuus"
+    ],
+    "language": "fi",
+    "relevance": "Avainkäsite",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "serious-games",
+    "term": "Vakavia pelejä",
+    "definition": "Pelit, jotka on suunniteltu ensisijaisesti oppimiseen, tutkimiseen, suunnitteluun tai päätöksentekoon pelkän viihteen sijaan.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Sitoutuminen",
+    "tags": [
+      "Pelit",
+      "Oppiminen",
+      "Simulaatio"
+    ],
+    "language": "fi",
+    "relevance": "Menetelmäperhe",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "gamification",
+    "term": "Pelillistäminen",
+    "definition": "Valittujen pelielementtien, kuten haasteiden, edistymisen, palautteen tai palkintojen, käyttö muussa kuin pelitoiminnassa motivaation ja osallistumisen tukemiseksi.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Sitoutuminen",
+    "tags": [
+      "Motivaatio",
+      "Osallistuminen",
+      "Vuorovaikutus"
+    ],
+    "language": "fi",
+    "relevance": "Tekniikka",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "participatory-planning",
+    "term": "Osallistuva suunnittelu",
+    "definition": "Suunnittelutapa, jonka avulla yhteisöt ja sidosryhmät voivat antaa tietoa, prioriteetteja ja ehdotuksia koko suunnitteluprosessin ajan.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Suunnittelu",
+    "tags": [
+      "Suunnittelu",
+      "Yhteisö",
+      "Päätöksenteko"
+    ],
+    "language": "fi",
+    "relevance": "Hallintotapa",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "community-empowerment",
+    "term": "Yhteisön voimaannuttaminen",
+    "definition": "Prosessi, jonka kautta yhteisöt saavat luottamusta, resursseja, suhteita ja vaikutusvaltaa toimiakseen tärkeiksi katsomissaan asioissa.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Osallistuminen",
+    "tags": [
+      "Yhteisö",
+      "Toimisto",
+      "Kapasiteetti"
+    ],
+    "language": "fi",
+    "relevance": "Lopputulos",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "governance-approach",
+    "term": "Hallintotapa",
+    "definition": "Määritelty tapa järjestää roolit, vastuut, osallistuminen, vastuuvelvollisuus ja päätöksenteko julkisten, yksityisten ja yhteisön toimijoiden kesken.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Hallinto",
+    "tags": [
+      "Roolit",
+      "Vastuullisuus",
+      "Instituutiot"
+    ],
+    "language": "fi",
+    "relevance": "Ydinkonsepti",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "human-needs-mapping",
+    "term": "Ihmisten tarpeiden kartoitus",
+    "definition": "Järjestetty aktiviteetti ihmisten käytännöllisten, sosiaalisten, tunneperäisten ja ympäristöön liittyvien tarpeiden tunnistamiseksi ja yhdistämiseksi jossain paikassa tai tilanteessa.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Tutkimus",
+    "tags": [
+      "Tarpeet",
+      "Kartoitus",
+      "Ihmiskeskeinen"
+    ],
+    "language": "fi",
+    "relevance": "Menetelmä",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "hybrid-participation",
+    "term": "Hybridiosallistuminen",
+    "definition": "Osallistuminen, joka yhdistää tietoisesti henkilökohtaiset ja digitaaliset kanavat, jotta ihmiset voivat osallistua eri muodoissa ja olosuhteissa.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Osallistuminen",
+    "tags": [
+      "Verkossa",
+      "Offline",
+      "Esteettömyys"
+    ],
+    "language": "fi",
+    "relevance": "Osallistuminen muoto",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "open-strategy",
+    "term": "Avoin strategia",
+    "definition": "Strategiaprosessi, joka kutsuu laajempia ryhmiä antamaan tietoa, tulkintoja, ideoita ja palautetta sen sijaan, että strategia rajoitetaan pieneen johtajistoon.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Hallinto",
+    "tags": [
+      "Strategia",
+      "Avoimuus",
+      "Yhteistyö"
+    ],
+    "language": "fi",
+    "relevance": "Hallintotapa",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "participatory-action-research-par",
+    "term": "Osallistuva toimintatutkimus (PAR)",
+    "definition": "Yhteistyöllinen tutkimuslähestymistapa, jossa osallistujat tutkivat asiaa, pohtivat todisteita ja ryhtyvät toimiin samalla, kun he jakavat omistajuuden oppimisprosessista.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Tutkimus",
+    "tags": [
+      "Tutkimus",
+      "Toiminto",
+      "Yhteisoppiminen"
+    ],
+    "language": "fi",
+    "relevance": "Menetelmät",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "participatory-governance",
+    "term": "Osallistuva hallinto",
+    "definition": "Hallintojärjestelyt, jotka antavat kansalaisille ja sidosryhmille mielekkäitä mahdollisuuksia pohtia, muotoilla prioriteetteja ja vaikuttaa julkisiin päätöksiin.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Hallinto",
+    "tags": [
+      "Osallistuminen",
+      "Instituutiot",
+      "Päätöksenteko"
+    ],
+    "language": "fi",
+    "relevance": "Hallintotapa",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "accountability",
+    "term": "Vastuullisuus",
+    "definition": "Velvollisuus selittää päätökset ja toimet, ottaa niistä vastuu ja tarjota tapoja, joilla asianosaiset voivat kyseenalaistaa tai tarkistaa ne.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Hallinto",
+    "tags": [
+      "Läpinäkyvyys",
+      "Vastuu",
+      "Arvostelu"
+    ],
+    "language": "fi",
+    "relevance": "Hallintoperiaate",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "decision-making",
+    "term": "Päätöksenteko",
+    "definition": "Prosessi, jossa verrataan tietoja, arvoja, riskejä ja vaihtoehtoja toimintatavan valitsemiseksi ja perustelemiseksi.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Hallinto",
+    "tags": [
+      "Vaihtoehdot",
+      "Todisteet",
+      "Prioriteetit"
+    ],
+    "language": "fi",
+    "relevance": "Ydinprosessi",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "institutional-framework",
+    "term": "Institutionaaliset puitteet",
+    "definition": "Yhdistetyt lait, käytännöt, organisaatiot, roolit, säännöt ja menettelyt, jotka vaikuttavat siihen, miten päätökset tehdään ja pannaan täytäntöön.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Hallinto",
+    "tags": [
+      "Instituutiot",
+      "Säännöt",
+      "Käytäntö"
+    ],
+    "language": "fi",
+    "relevance": "Konteksti",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "policy-making",
+    "term": "Käytännön laatiminen",
+    "definition": "Prosessi, jossa määritellään julkisia ongelmia, kehitetään ja arvioidaan vaihtoehtoja, hyväksytään toimenpiteitä, toteutetaan niitä ja tarkastellaan niiden vaikutuksia.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Käytäntö",
+    "tags": [
+      "Julkinen käytäntö",
+      "Päätökset",
+      "Toteutus"
+    ],
+    "language": "fi",
+    "relevance": "Ydinprosessi",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "public-private-partnerships",
+    "term": "Julkisen ja yksityisen sektorin kumppanuudet",
+    "definition": "Pitkäaikaiset yhteistyöjärjestelyt, joissa julkiset elimet ja yksityiset organisaatiot jakavat resursseja, riskejä, vastuita tai toimitustehtäviä julkisen tavoitteen saavuttamiseksi.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Hallinto",
+    "tags": [
+      "Kumppanuus",
+      "Toimitus",
+      "Jaettu riski"
+    ],
+    "language": "fi",
+    "relevance": "Institutionaalinen malli",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "co-evolutionary-transformation",
+    "term": "Yhteisevoluutionaalinen muutos",
+    "definition": "Pitkäaikainen muutos, jossa sosiaaliset käytännöt, instituutiot, teknologiat ja ympäristöt mukautuvat yhteen ja vaikuttavat toisiinsa ajan myötä.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Muutos",
+    "tags": [
+      "Järjestelmämuutos",
+      "Sopeutuminen",
+      "Innovaatiot"
+    ],
+    "language": "fi",
+    "relevance": "Muuta konseptia",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "socioeconomic-impact",
+    "term": "Sosioekonomiset vaikutukset",
+    "definition": "Toiminnon tai päätöksen positiiviset tai negatiiviset vaikutukset ihmisiin, toimeentuloon, pääsyyn, hyvinvointiin, paikalliseen talouteen ja sosiaalisiin suhteisiin.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Vaikutus",
+    "tags": [
+      "Yhteiskunta",
+      "talous",
+      "Arviointi"
+    ],
+    "language": "fi",
+    "relevance": "Vaikutuskonsepti",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "probing",
+    "term": "Luotaus",
+    "definition": "Jatkokehotteiden tai tutkivien tehtävien käyttö syvempien syiden, kokemusten, oletusten tai tyydyttämättömien tarpeiden paljastamiseen.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Tutkimus",
+    "tags": [
+      "Tiedustelu",
+      "Haastattelu",
+      "Löytö"
+    ],
+    "language": "fi",
+    "relevance": "Tekniikka",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "prototyping",
+    "term": "Prototyyppien tekeminen",
+    "definition": "Luo ideasta yksinkertaistettu, väliaikainen tai testattava versio, jotta osallistujat voivat kokea sen, antaa palautetta ja parantaa sitä ennen toteutusta.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Suunnittelu",
+    "tags": [
+      "Testaus",
+      "Iterointi",
+      "Yhteissuunnittelu"
+    ],
+    "language": "fi",
+    "relevance": "Menetelmä",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  },
+  {
+    "id": "need",
+    "term": "Tarvitsee",
+    "definition": "Ehto, resurssi, kyky tai tukimuoto, jota henkilö tai yhteisö tarvitsee toimiakseen, osallistuakseen tai saavuttaakseen arvostetun tuloksen.",
+    "definitionOwner": "SPICE-toimituksellinen määritelmä",
+    "category": "Tutkimus",
+    "tags": [
+      "Ihmiset",
+      "Vaatimukset",
+      "Hyvinvointi"
+    ],
+    "language": "fi",
+    "relevance": "Ydinkonsepti",
+    "sourceSheet": "Hyväksytty sanastoluettelo"
+  }
+]

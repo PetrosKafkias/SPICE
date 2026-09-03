@@ -57,7 +57,7 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
   await t.test('public and protected endpoints enforce the expected boundary', async () => {
     const publicForum = await request(baseUrl, '/api/forum/proposals');
     assert.equal(publicForum.status, 200);
-    assert.ok(publicForum.payload.proposals.length >= 3);
+    assert.ok(publicForum.payload.proposals.length >= 2);
 
     const protectedInsights = await request(baseUrl, '/api/insights');
     assert.equal(protectedInsights.status, 401);
@@ -130,7 +130,7 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
       method: 'POST',
       body: {
         fullName: 'Test Citizen', email: 'citizen@example.test', password: 'StrongPass123', confirmPassword: 'StrongPass123',
-        pilotSite: 'Rovaniemi', role: 'Citizen', locale: 'FI', acceptedTerms: true, returnTo: '/glossary?letter=C',
+        pilotSite: 'Thessaloniki', role: 'Citizen', locale: 'FI', acceptedTerms: true, returnTo: '/glossary?letter=C',
       },
     });
     assert.equal(registration.status, 201);
@@ -183,7 +183,8 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
   });
 
   await t.test('authenticated forum actions update durable proposal data', async () => {
-    const existing = await request(baseUrl, '/api/forum/proposals');
+    const existing = await request(baseUrl, '/api/forum/proposals?phaseScope=all', { cookie: citizenCookie });
+    assert.ok(existing.payload.proposals.length > 0);
     const existingProposalId = existing.payload.proposals[0].id;
     const participantComment = await request(baseUrl, `/api/forum/proposals/${existingProposalId}/comments`, {
       method: 'POST', cookie: citizenCookie, body: { body: 'Could the proposal also include accessible seating?' },
@@ -211,6 +212,7 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
         title: 'Create more shaded seating',
         description: 'Add accessible shaded seating beside the main pedestrian paths and gathering areas.',
         tags: ['Seating & Rest'],
+        votingMode: 'binary',
       },
     });
     assert.equal(created.status, 201);
@@ -221,18 +223,33 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     });
     assert.equal(comment.status, 201);
 
-    const vote = await request(baseUrl, `/api/forum/proposals/${proposalId}/vote`, {
+    const prematureVote = await request(baseUrl, `/api/forum/proposals/${proposalId}/vote`, {
+      method: 'POST', cookie: demoCookie, body: { direction: 'up' },
+    });
+    assert.equal(prematureVote.status, 409);
+
+    const votingProposal = existing.payload.proposals.find((proposal) => proposal.workflowStatus === 'voting_open');
+    assert.ok(votingProposal);
+    const vote = await request(baseUrl, `/api/forum/proposals/${votingProposal.id}/vote`, {
       method: 'POST', cookie: demoCookie, body: { direction: 'up' },
     });
     assert.equal(vote.status, 200);
     assert.equal(vote.payload.userVote, 'up');
-    assert.equal(vote.payload.upvotes, 1);
+    assert.ok(vote.payload.upvotes > votingProposal.upvotes);
   });
 
   await t.test('scenario votes, roadmap adoption, scene state, and process drafts persist', async () => {
+    const now = new Date().toISOString();
+    api.db.prepare(`
+      INSERT INTO scenarios (
+        slug, title, summary, tags_json, strengths_json, concerns_json,
+        phase, status, guidance, publication_status, created_at, updated_at
+      ) VALUES (?, ?, ?, '[]', '[]', '[]', 3, 'Published', '', 'published', ?, ?)
+    `).run('test-scenario', 'Test Scenario', 'A documented scenario used for API test coverage.', now, now);
+
     const scenarios = await request(baseUrl, '/api/scenarios', { cookie: demoCookie });
     assert.equal(scenarios.status, 200);
-    assert.ok(scenarios.payload.scenarios.length >= 3);
+    assert.ok(scenarios.payload.scenarios.length >= 1);
     const scenarioId = scenarios.payload.scenarios[0].id;
 
     const vote = await request(baseUrl, `/api/scenarios/${scenarioId}/vote`, {
@@ -254,15 +271,398 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     assert.equal(sceneSave.status, 200);
     const sceneRead = await request(baseUrl, '/api/scene-state', { cookie: demoCookie });
     assert.equal(sceneRead.payload.state.zoom, 120);
+  });
 
-    const draftSave = await request(baseUrl, '/api/process-draft', {
-      method: 'PUT', cookie: demoCookie,
-      body: { setup: { stage: 'underway', objectives: ['codesign'] }, tools: ['future-scenarios'] },
+  await t.test('role-based hub and administration APIs enforce scope on the server', async () => {
+    const citizenLogin = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'citizen' } });
+    const facilitatorLogin = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'facilitator' } });
+    const municipalityLogin = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'municipality' } });
+    const adminLogin = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'admin' } });
+    assert.equal(citizenLogin.status, 200);
+    assert.equal(facilitatorLogin.status, 200);
+    assert.equal(municipalityLogin.status, 200);
+    assert.equal(adminLogin.status, 200);
+    assert.equal(citizenLogin.payload.user.role, 'Citizen');
+    assert.equal(facilitatorLogin.payload.user.role, 'Facilitator');
+    assert.equal(municipalityLogin.payload.user.role, 'Municipality Staff');
+    assert.equal(adminLogin.payload.user.role, 'Admin');
+
+    const citizenCreate = await request(baseUrl, '/api/hub/initiatives', {
+      method: 'POST', cookie: citizenLogin.cookie,
+      body: { title: 'Citizen draft', description: 'Citizens must not be able to create municipality initiatives.' },
     });
-    assert.equal(draftSave.status, 200);
-    const draftRead = await request(baseUrl, '/api/process-draft', { cookie: demoCookie });
-    assert.deepEqual(draftRead.payload.tools, ['future-scenarios']);
-    assert.equal(draftRead.payload.setup.stage, 'underway');
+    assert.equal(citizenCreate.status, 403);
+
+    // Each municipality is seeded with exactly one pilot-site initiative already —
+    // a second creation attempt for the same organisation must be rejected.
+    const duplicateCreate = await request(baseUrl, '/api/hub/initiatives', {
+      method: 'POST', cookie: municipalityLogin.cookie,
+      body: { title: 'A second pilot site', description: 'Municipalities may not create more than one pilot-site initiative.' },
+    });
+    assert.equal(duplicateCreate.status, 409);
+
+    const municipalityInitiatives = await request(baseUrl, '/api/hub/initiatives', { cookie: municipalityLogin.cookie });
+    assert.equal(municipalityInitiatives.status, 200);
+    assert.equal(municipalityInitiatives.payload.initiatives.length, 1);
+    const initiative = municipalityInitiatives.payload.initiatives[0];
+
+    const toDraft = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: { status: 'draft', version: initiative.version, reason: 'Temporarily draft for a permission test.' },
+    });
+    assert.equal(toDraft.status, 200);
+
+    const citizenDraftView = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: citizenLogin.cookie });
+    assert.equal(citizenDraftView.status, 403);
+    const facilitatorDraftView = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: facilitatorLogin.cookie });
+    assert.equal(facilitatorDraftView.status, 200);
+    assert.equal(facilitatorDraftView.payload.access.canManage, false);
+    assert.equal(facilitatorDraftView.payload.access.canFacilitate, true);
+    assert.deepEqual(
+      facilitatorDraftView.payload.initiative.phases.map((phase) => phase.title),
+      ['Frame and assess readiness', 'Understand with the community', 'Imagine scenarios and solutions', 'Test using prototypes', 'Consolidate and learn'],
+    );
+    assert.ok(facilitatorDraftView.payload.initiative.phases.every((phase) => phase.eventTypes.length > 0 && phase.expectedOutputs.length > 0));
+
+    const facilitatorPublish = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, {
+      method: 'PATCH', cookie: facilitatorLogin.cookie,
+      body: { status: 'published', version: toDraft.payload.initiative.version, reason: 'Facilitators must not publish initiatives.' },
+    });
+    assert.equal(facilitatorPublish.status, 403);
+
+    const setupBeforeActivation = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: {
+        version: toDraft.payload.initiative.version,
+        stage: 'framing-readiness',
+        setupObjectives: ['understand-needs'],
+        participationLevel: 'co-design',
+        goal: 'Build a shared and accessible pilot brief.',
+        groupSize: '10-25',
+        duration: 'half-day',
+        facilitator: '2-3',
+        mode: 'Hybrid',
+        setupSelectedTools: ['hopes-and-fears'],
+      },
+    });
+    assert.equal(setupBeforeActivation.status, 200);
+    assert.equal(setupBeforeActivation.payload.initiative.lifecycleStatus, 'ready_to_activate');
+
+    const citizenBeforeActivation = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: citizenLogin.cookie });
+    assert.equal(citizenBeforeActivation.status, 403);
+
+    const adminActivation = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/activate`, {
+      method: 'POST', cookie: adminLogin.cookie,
+      body: { version: setupBeforeActivation.payload.initiative.version, confirmed: true },
+    });
+    assert.equal(adminActivation.status, 403);
+    assert.equal(adminActivation.payload.code, 'MUNICIPALITY_REQUIRED');
+
+    const publish = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/activate`, {
+      method: 'POST', cookie: municipalityLogin.cookie,
+      body: { version: setupBeforeActivation.payload.initiative.version, confirmed: true, reason: 'Municipality reviewed the setup and activated the pilot.' },
+    });
+    assert.equal(publish.status, 200);
+    assert.equal(publish.payload.initiative.lifecycleStatus, 'active');
+    const citizenPublishedView = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: citizenLogin.cookie });
+    assert.equal(citizenPublishedView.status, 200);
+    assert.equal(citizenPublishedView.payload.access.canManage, false);
+
+    const citizenActivityCreate = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/activities`, {
+      method: 'POST', cookie: citizenLogin.cookie,
+      body: { phaseNumber: 1, title: 'Unauthorised activity', status: 'open' },
+    });
+    assert.equal(citizenActivityCreate.status, 403);
+
+    const activityCreate = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/activities`, {
+      method: 'POST', cookie: municipalityLogin.cookie,
+      body: {
+        phaseNumber: 1,
+        title: 'Neighbourhood priorities',
+        description: 'Share the public-space priority that matters most to your neighbourhood.',
+        workflowStatus: 'draft',
+        contributionTypes: ['text'],
+      },
+    });
+    assert.equal(activityCreate.status, 201);
+    const activityId = activityCreate.payload.activity.id;
+
+    const facilitatorActivity = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/activities`, {
+      method: 'POST', cookie: facilitatorLogin.cookie,
+      body: {
+        phaseNumber: 1,
+        title: 'Facilitated hopes and fears session',
+        description: 'Assigned facilitators can prepare and run participation activities.',
+        workflowStatus: 'draft',
+        contributionTypes: ['text'],
+      },
+    });
+    assert.equal(facilitatorActivity.status, 201);
+    const citizenBeforeInstructionPublication = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: citizenLogin.cookie });
+    assert.equal(citizenBeforeInstructionPublication.status, 200);
+    assert.ok(citizenBeforeInstructionPublication.payload.initiative.phases.every((phase) => (
+      phase.activities.every((activity) => activity.id !== activityId && activity.id !== facilitatorActivity.payload.activity.id)
+    )));
+    const municipalityCitizenPreview = await request(baseUrl, `/api/hub/initiatives/${initiative.id}?view=citizen`, { cookie: municipalityLogin.cookie });
+    assert.equal(municipalityCitizenPreview.status, 200);
+    assert.equal(municipalityCitizenPreview.payload.access.canManage, false);
+    assert.equal(municipalityCitizenPreview.payload.access.canManageLifecycle, false);
+    assert.equal(municipalityCitizenPreview.payload.access.canFacilitate, false);
+    assert.equal(municipalityCitizenPreview.payload.access.canParticipate, false);
+    assert.ok(municipalityCitizenPreview.payload.initiative.phases.every((phase) => (
+      phase.activities.every((activity) => activity.id !== activityId && activity.id !== facilitatorActivity.payload.activity.id)
+    )));
+
+    const submitActivity = await request(baseUrl, `/api/hub/activities/${activityId}`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: { workflowStatus: 'ready_for_review', reason: 'Activity configuration is ready for review.' },
+    });
+    assert.equal(submitActivity.status, 200);
+    const openActivity = await request(baseUrl, `/api/hub/activities/${activityId}`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: {
+        workflowStatus: 'open',
+        instructions: 'Share one clear neighbourhood priority and explain why it matters before the participation deadline.',
+        reason: 'Municipality approved this activity and its citizen instructions for publication.',
+      },
+    });
+    assert.equal(openActivity.status, 200);
+    const citizenAfterInstructionPublication = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: citizenLogin.cookie });
+    const publishedCitizenActivity = citizenAfterInstructionPublication.payload.initiative.phases[0].activities.find((activity) => activity.id === activityId);
+    assert.equal(publishedCitizenActivity.workflowStatus, 'open');
+    assert.match(publishedCitizenActivity.instructions, /neighbourhood priority/i);
+    assert.equal(citizenAfterInstructionPublication.payload.initiative.phases[1].activities.length, 0);
+
+    const contribution = await request(baseUrl, `/api/hub/activities/${activityId}/contributions`, {
+      method: 'POST', cookie: citizenLogin.cookie,
+      body: { contributionType: 'text', content: 'Accessible shaded seating beside the play area.' },
+    });
+    assert.equal(contribution.status, 201);
+
+    const citizenContributions = await request(baseUrl, `/api/hub/activities/${activityId}/contributions`, { cookie: citizenLogin.cookie });
+    assert.equal(citizenContributions.status, 200);
+    assert.equal(citizenContributions.payload.contributions.length, 1);
+    const municipalityContributions = await request(baseUrl, `/api/hub/activities/${activityId}/contributions`, { cookie: municipalityLogin.cookie });
+    assert.equal(municipalityContributions.status, 200);
+    assert.equal(municipalityContributions.payload.contributions.length, 1);
+    const facilitatorContributions = await request(baseUrl, `/api/hub/activities/${activityId}/contributions`, { cookie: facilitatorLogin.cookie });
+    assert.equal(facilitatorContributions.status, 200);
+    assert.equal(facilitatorContributions.payload.contributions.length, 1);
+
+    const citizenRepositoryUpload = await request(baseUrl, '/api/repository', {
+      method: 'POST', cookie: citizenLogin.cookie,
+      body: {
+        title: 'Citizen-only upload attempt',
+        description: 'Citizens must not upload official workshop outputs directly.',
+        phase: 1,
+        documentType: 'Workshop output',
+        fileFormat: 'PDF',
+      },
+    });
+    assert.equal(citizenRepositoryUpload.status, 403);
+
+    const workshopOutput = await request(baseUrl, '/api/repository', {
+      method: 'POST', cookie: facilitatorLogin.cookie,
+      body: {
+        title: 'Phase 1 workshop output',
+        description: 'Documented hopes, concerns, accessibility needs, and agreed readiness actions.',
+        phase: 1,
+        documentType: 'Workshop output',
+        fileFormat: 'PDF',
+        resultType: 'workshop_summary',
+        activityId,
+        tags: ['Workshop', 'Readiness'],
+      },
+    });
+    assert.equal(workshopOutput.status, 201);
+    assert.equal(workshopOutput.payload.document.publicationStatus, 'draft');
+
+    const submitWorkshopOutput = await request(baseUrl, `/api/repository/${workshopOutput.payload.document.id}/status`, {
+      method: 'PATCH', cookie: facilitatorLogin.cookie,
+      body: { publicationStatus: 'ready_for_review' },
+    });
+    assert.equal(submitWorkshopOutput.status, 200);
+    assert.equal(submitWorkshopOutput.payload.document.publicationStatus, 'ready_for_review');
+
+    const facilitatorPublishOutput = await request(baseUrl, `/api/repository/${workshopOutput.payload.document.id}/status`, {
+      method: 'PATCH', cookie: facilitatorLogin.cookie,
+      body: { publicationStatus: 'published' },
+    });
+    assert.equal(facilitatorPublishOutput.status, 403);
+
+    const publishWorkshopOutput = await request(baseUrl, `/api/repository/${workshopOutput.payload.document.id}/status`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: { publicationStatus: 'published' },
+    });
+    assert.equal(publishWorkshopOutput.status, 200);
+    assert.equal(publishWorkshopOutput.payload.document.publicationStatus, 'published');
+
+    const publicRepository = await request(baseUrl, '/api/repository?phase=1');
+    assert.equal(publicRepository.status, 200);
+    assert.ok(publicRepository.payload.documents.some((document) => document.id === workshopOutput.payload.document.id));
+    const filteredPhaseResults = await request(baseUrl, `/api/repository?pilotId=${initiative.id}&phaseId=${publishedCitizenActivity.phaseId}&phase=1&contentType=result`);
+    assert.equal(filteredPhaseResults.status, 200);
+    assert.deepEqual(filteredPhaseResults.payload.documents.map((document) => document.id), [workshopOutput.payload.document.id]);
+
+    const facilitatorPhaseAdvance = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/current-phase`, {
+      method: 'PATCH', cookie: facilitatorLogin.cookie,
+      body: { currentPhaseNumber: 2, version: publish.payload.initiative.version, reason: 'Only municipality staff may advance the formal process.' },
+    });
+    assert.equal(facilitatorPhaseAdvance.status, 403);
+
+    const closeActivity = await request(baseUrl, `/api/hub/activities/${activityId}`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: { workflowStatus: 'closed', reason: 'Participation period completed.' },
+    });
+    assert.equal(closeActivity.status, 200);
+    const closedContribution = await request(baseUrl, `/api/hub/activities/${activityId}/contributions`, {
+      method: 'POST', cookie: citizenLogin.cookie,
+      body: { contributionType: 'text', content: 'This should be rejected because the activity is closed.' },
+    });
+    assert.equal(closedContribution.status, 409);
+
+    const municipalityAdmin = await request(baseUrl, '/api/admin/overview', { cookie: municipalityLogin.cookie });
+    assert.equal(municipalityAdmin.status, 403);
+    const adminOverview = await request(baseUrl, '/api/admin/overview', { cookie: adminLogin.cookie });
+    assert.equal(adminOverview.status, 200);
+    assert.ok(adminOverview.payload.summary.totalUsers >= 3);
+    const municipalityWorkspace = await request(baseUrl, '/api/admin/workspace', { cookie: municipalityLogin.cookie });
+    assert.equal(municipalityWorkspace.status, 403);
+    const adminWorkspace = await request(baseUrl, '/api/admin/workspace', { cookie: adminLogin.cookie });
+    assert.equal(adminWorkspace.status, 200);
+    assert.ok(Array.isArray(adminWorkspace.payload.integrations));
+    const adminSettings = await request(baseUrl, '/api/admin/settings', {
+      method: 'PATCH', cookie: adminLogin.cookie,
+      body: { settings: { maintenanceBanner: 'Scheduled platform maintenance.' }, reason: 'Automated permission test' },
+    });
+    assert.equal(adminSettings.status, 200);
+    assert.equal(adminSettings.payload.settings.maintenanceBanner, 'Scheduled platform maintenance.');
+
+    const proposal = await request(baseUrl, '/api/forum/proposals', {
+      method: 'POST', cookie: citizenLogin.cookie,
+      body: {
+        initiativeId: initiative.id,
+        title: 'Add shade beside the play area',
+        description: 'Plant mature trees and add accessible shaded seating beside the public play area.',
+        tags: ['Greenery & Nature'],
+      },
+    });
+    assert.equal(proposal.status, 201);
+    const openVoting = await request(baseUrl, `/api/forum/proposals/${proposal.payload.proposal.id}/workflow`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: { workflowStatus: 'voting_open', version: proposal.payload.proposal.version },
+    });
+    assert.equal(openVoting.status, 200);
+    const closeParticipation = await request(baseUrl, `/api/forum/proposals/${proposal.payload.proposal.id}/workflow`, {
+      method: 'PATCH', cookie: facilitatorLogin.cookie,
+      body: { workflowStatus: 'participation_closed', version: openVoting.payload.proposal.version },
+    });
+    assert.equal(closeParticipation.status, 200);
+    const requestDecision = await request(baseUrl, `/api/forum/proposals/${proposal.payload.proposal.id}/workflow`, {
+      method: 'PATCH', cookie: facilitatorLogin.cookie,
+      body: {
+        workflowStatus: 'decision_pending',
+        participationSummary: 'Citizens supported accessible shade and highlighted long-term maintenance needs.',
+        version: closeParticipation.payload.proposal.version,
+      },
+    });
+    assert.equal(requestDecision.status, 200);
+    const officialDecision = await request(baseUrl, `/api/forum/proposals/${proposal.payload.proposal.id}/status`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: { status: 'Implemented', rationale: 'The parks department approved the proposal and will publish the delivery schedule.', version: requestDecision.payload.proposal.version },
+    });
+    assert.equal(officialDecision.status, 200);
+    assert.equal(officialDecision.payload.proposal.workflowStatus, 'approved');
+    assert.match(officialDecision.payload.proposal.officialResponse, /approved/i);
+
+    const completeActivity = await request(baseUrl, `/api/hub/activities/${activityId}`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: { workflowStatus: 'completed', reason: 'Workshop evidence and participation outputs were documented.' },
+    });
+    assert.equal(completeActivity.status, 200);
+
+    const completeSetup = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: {
+        version: publish.payload.initiative.version,
+        stage: 'framing-readiness',
+        setupObjectives: ['understand-needs'],
+        participationLevel: 'co-design',
+        goal: 'Build a shared and accessible pilot brief.',
+        setupSelectedTools: ['hopes-and-fears'],
+        reason: 'Complete the Phase 1 setup and preserve its selected tools.',
+      },
+    });
+    assert.equal(completeSetup.status, 200);
+
+    const unconfirmedAdvance = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/current-phase`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: { currentPhaseNumber: 2, version: completeSetup.payload.initiative.version },
+    });
+    assert.equal(unconfirmedAdvance.status, 400);
+    assert.equal(unconfirmedAdvance.payload.code, 'PHASE_CONFIRMATION_REQUIRED');
+
+    const advancePhase = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/current-phase`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: {
+        currentPhaseNumber: 2,
+        version: completeSetup.payload.initiative.version,
+        confirmed: true,
+        reason: 'Phase 1 requirements are complete and the Municipality is opening Phase 2.',
+      },
+    });
+    assert.equal(advancePhase.status, 200);
+    assert.equal(advancePhase.payload.initiative.currentPhaseNumber, 2);
+    assert.equal(advancePhase.payload.initiative.phases[0].status, 'completed');
+    assert.equal(advancePhase.payload.initiative.phases[1].status, 'open');
+    const completedPhaseCitizenView = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: citizenLogin.cookie });
+    assert.ok(completedPhaseCitizenView.payload.initiative.phases[0].results.some((result) => result.id === workshopOutput.payload.document.id));
+    assert.ok(completedPhaseCitizenView.payload.initiative.phases[0].myContributions.some((item) => item.id === contribution.payload.contribution.id));
+
+    const adminBackwardWithoutReason = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/current-phase`, {
+      method: 'PATCH', cookie: adminLogin.cookie,
+      body: { currentPhaseNumber: 1, version: advancePhase.payload.initiative.version, confirmed: true },
+    });
+    assert.equal(adminBackwardWithoutReason.status, 400);
+    assert.equal(adminBackwardWithoutReason.payload.code, 'PHASE_REASON_REQUIRED');
+
+    const adminBackward = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/current-phase`, {
+      method: 'PATCH', cookie: adminLogin.cookie,
+      body: {
+        currentPhaseNumber: 1,
+        version: advancePhase.payload.initiative.version,
+        confirmed: true,
+        reason: 'Reopen Phase 1 to correct the published readiness record.',
+      },
+    });
+    assert.equal(adminBackward.status, 200);
+    assert.equal(adminBackward.payload.initiative.currentPhaseNumber, 1);
+
+    const report = await request(baseUrl, `/api/forum/proposals/${proposal.payload.proposal.id}/report`, {
+      method: 'POST', cookie: citizenLogin.cookie,
+      body: { reason: 'other', details: 'Please review whether this proposal is still current.' },
+    });
+    assert.equal(report.status, 201);
+    const citizenModeration = await request(baseUrl, `/api/forum/proposals/${proposal.payload.proposal.id}/moderation`, {
+      method: 'PATCH', cookie: citizenLogin.cookie,
+      body: { moderationStatus: 'locked', reason: 'Citizens cannot moderate discussions.' },
+    });
+    assert.equal(citizenModeration.status, 403);
+    const lockProposal = await request(baseUrl, `/api/forum/proposals/${proposal.payload.proposal.id}/moderation`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: { moderationStatus: 'locked', reason: 'Discussion closed while the official review is in progress.' },
+    });
+    assert.equal(lockProposal.status, 200);
+    const lockedComment = await request(baseUrl, `/api/forum/proposals/${proposal.payload.proposal.id}/comments`, {
+      method: 'POST', cookie: citizenLogin.cookie,
+      body: { body: 'This comment should be rejected while the proposal is locked.' },
+    });
+    assert.equal(lockedComment.status, 409);
+    const restoreProposal = await request(baseUrl, `/api/forum/proposals/${proposal.payload.proposal.id}/moderation`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: { moderationStatus: 'visible', reason: 'Review completed and public discussion restored.' },
+    });
+    assert.equal(restoreProposal.status, 200);
   });
 
   await t.test('sign-out invalidates the server session', async () => {

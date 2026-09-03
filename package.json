@@ -10,9 +10,10 @@
     "db:migrate": "node server/migrate.mjs",
     "db:seed": "node server/migrate.mjs",
     "lint": "eslint .",
+    "lint:i18n": "node scripts/i18n-audit.mjs",
     "typecheck": "tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+    "check": "pnpm lint:i18n && pnpm lint && pnpm typecheck && pnpm test && pnpm build"
   },
   "engines": { "node": ">=24" },
   "dependencies": {

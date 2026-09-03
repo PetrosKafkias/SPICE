@@ -25,11 +25,15 @@ import FeedbackForm from './FeedbackForm';
 import ModalPortal from './ModalPortal';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
-import { languageOptions, type TranslationKey } from '../i18n/translations';
+import type { TranslationKey } from '../i18n/translations';
+import { LOCALES } from '../i18n/config';
 import spiceLogo from '../../imports/UserDetails/c6afc9a985ecd519e1c55936ffc0b9788fea1d45.png';
 import euFunded from '../../imports/UserDetails/b83ce62c3e31fcf6ab360841dec7ca0c45572f62.png';
 import { hasCookieConsent, saveCookieConsent, type CookieConsentChoice, type CookiePreferences } from '../lib/cookieConsent';
 import { authRoute, safeReturnTo } from '../lib/authRedirect';
+import { usePermissions } from '../auth/usePermissions';
+import { normalizeRole, roleKey } from '../auth/permissions';
+import type { Permission } from '../auth/permissions';
 
 type HeaderVariant = 'public' | 'auth-user';
 
@@ -41,8 +45,9 @@ interface Props {
 }
 
 interface NavItem {
-  labelKey: TranslationKey;
-  links: { labelKey: TranslationKey; to: string }[];
+  labelKey?: TranslationKey;
+  label?: string;
+  links: { labelKey?: TranslationKey; label?: string; to: string; permission?: Permission }[];
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -60,7 +65,7 @@ const NAV_ITEMS: NavItem[] = [
       { labelKey: 'nav.analogueTools', to: '/analogue-tools' },
       { labelKey: 'nav.citivoice', to: '/citivoice-app' },
       { labelKey: 'nav.sceneEditor', to: '/3d-scene-editor' },
-      { labelKey: 'nav.aiChatbot', to: '/co-creation-guide' },
+      { labelKey: 'nav.coCreationGuide', to: '/co-creation-guide' },
     ],
   },
   {
@@ -72,6 +77,12 @@ const NAV_ITEMS: NavItem[] = [
       { labelKey: 'nav.pilotSites', to: '/pilot-sites' },
     ],
   },
+  {
+    labelKey: 'nav.administration',
+    links: [
+      { labelKey: 'nav.adminDashboard', to: '/admin', permission: 'admin:access' },
+    ],
+  },
 ];
 
 function routeIsActive(pathname: string, target: string) {
@@ -79,8 +90,9 @@ function routeIsActive(pathname: string, target: string) {
 }
 
 function Logo() {
+  const { t } = useI18n();
   return (
-    <Link to="/" className="flex shrink-0 items-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ca7428]" aria-label="SPICE homepage">
+    <Link to="/" className="flex shrink-0 items-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ca7428]" aria-label={t('navigation.homeAria')}>
       <span className="spice-logo-window">
         <img src={spiceLogo} alt="SPICE" />
       </span>
@@ -111,18 +123,18 @@ function NavDropdown({ item }: { item: NavItem }) {
   }, []);
 
   return (
-    <div ref={ref} className="relative h-full">
+    <div ref={ref} className="relative h-full flex-shrink-0">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className={`flex h-full cursor-pointer items-center gap-3 border-b-[3px] px-3 py-1.5 text-[16px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#ca7428] ${
+        className={`flex h-full cursor-pointer items-center gap-2 whitespace-nowrap border-b-[3px] px-2.5 py-1.5 text-[15px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#ca7428] xl:gap-3 xl:px-3 xl:text-[16px] ${
           isActive || open ? 'border-[#f68b2c] text-[#ca7428]' : 'border-transparent text-[#444] hover:text-[#ca7428]'
         }`}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-current={isActive ? 'page' : undefined}
       >
-        {t(item.labelKey)}
+        {item.labelKey ? t(item.labelKey) : item.label}
         <ChevronDown size={20} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
@@ -138,7 +150,7 @@ function NavDropdown({ item }: { item: NavItem }) {
                 aria-current={active ? 'page' : undefined}
                 role="menuitem"
               >
-                {t(link.labelKey)}
+                {link.labelKey ? t(link.labelKey) : link.label}
               </Link>
             );
           })}
@@ -152,7 +164,7 @@ export function LanguageDropdown({ compact = false }: { compact?: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { language, setLanguage, t } = useI18n();
-  const selected = languageOptions.find((item) => item.code === language)!;
+  const selected = LOCALES.find((item) => item.code === language)!;
 
   useEffect(() => {
     const onPointerDown = (event: MouseEvent) => {
@@ -170,24 +182,24 @@ export function LanguageDropdown({ compact = false }: { compact?: boolean }) {
   }, []);
 
   return (
-    <div ref={ref} className={`relative ${compact ? '' : 'h-full'}`}>
+    <div ref={ref} className={`relative flex-shrink-0 ${compact ? '' : 'h-full'}`}>
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className={`flex cursor-pointer items-center gap-3 border-b-[3px] px-3 py-2 text-[16px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#ca7428] ${compact ? 'min-h-12 border border-[#bfc0c5] bg-white' : 'h-full'} ${
+        className={`flex cursor-pointer items-center gap-2 whitespace-nowrap border-b-[3px] px-2.5 py-2 text-[15px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#ca7428] xl:gap-3 xl:px-3 xl:text-[16px] ${compact ? 'min-h-12 border border-[#bfc0c5] bg-white' : 'h-full'} ${
           open ? 'border-[#f68b2c] text-[#ca7428]' : 'border-transparent text-[#444] hover:text-[#ca7428]'
         }`}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={t('language.label')}
       >
-        <Languages size={22} />
-        {selected.nativeLabel} ({selected.code})
-        <ChevronDown size={20} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+        <Languages size={22} className="flex-shrink-0" />
+        {selected.nativeName} ({selected.shortLabel})
+        <ChevronDown size={20} className={`flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
         <div className="spice-nav-dropdown spice-nav-dropdown-right" role="menu">
-          {languageOptions.map((item) => {
+          {LOCALES.map((item) => {
             const current = item.code === language;
             return (
               <button
@@ -199,7 +211,7 @@ export function LanguageDropdown({ compact = false }: { compact?: boolean }) {
                 aria-current={current ? 'true' : undefined}
                 role="menuitem"
               >
-                {item.nativeLabel} ({item.code})
+                {item.nativeName} ({item.shortLabel})
               </button>
             );
           })}
@@ -218,8 +230,12 @@ function SpiceNav() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, notificationCounts, signOut } = useAuth();
+  const { can } = usePermissions();
   const { language, setLanguage, t } = useI18n();
   const returnTo = safeReturnTo(`${location.pathname}${location.search}${location.hash}`);
+  const visibleNavItems = NAV_ITEMS
+    .map((item) => ({ ...item, links: item.links.filter((link) => !link.permission || can(link.permission)) }))
+    .filter((item) => item.links.length > 0);
 
   useEffect(() => {
     if (!signOutOpen) return;
@@ -259,26 +275,26 @@ function SpiceNav() {
 
   return (
     <header className="spice-public-header">
-      <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between gap-4 px-5 md:px-8 xl:px-12">
-        <div className="flex h-full min-w-0 items-center gap-8 xl:gap-10">
+      <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between gap-2 px-6 md:px-12 xl:gap-4">
+        <div className="flex h-full min-w-0 flex-shrink-0 items-center gap-4 xl:gap-6">
           <Logo />
-          <nav className="spice-desktop-nav hidden h-full items-center gap-3 xl:flex" aria-label={t('nav.main')}>
-            {NAV_ITEMS.map((item) => <NavDropdown key={item.labelKey} item={item} />)}
+          <nav className="spice-desktop-nav hidden h-full items-center gap-1 xl:flex xl:gap-2" aria-label={t('nav.main')}>
+            {visibleNavItems.map((item) => <NavDropdown key={item.labelKey || item.label} item={item} />)}
           </nav>
         </div>
 
-        <div className="spice-desktop-actions hidden h-full items-center gap-3 md:flex">
+        <div className="spice-desktop-actions hidden h-full flex-shrink-0 items-center gap-2 md:flex xl:gap-3">
           <LanguageDropdown />
-          <div className="h-[30px] w-px bg-[#bbb]" />
+          <div className="h-[30px] w-px flex-shrink-0 bg-[#bbb]" />
 
           {user ? (
             <>
               <Link
                 to="/account/notifications"
-                className={`relative flex cursor-pointer items-center gap-2 px-2 py-1.5 text-[15px] font-medium transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428] ${routeIsActive(location.pathname, '/account/notifications') ? 'text-[#ca7428]' : 'text-[#444]'}`}
+                className={`relative flex flex-shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap px-1.5 py-1.5 text-[15px] font-medium transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428] xl:px-2 ${routeIsActive(location.pathname, '/account/notifications') ? 'text-[#ca7428]' : 'text-[#444]'}`}
                 aria-current={routeIsActive(location.pathname, '/account/notifications') ? 'page' : undefined}
               >
-                <Bell size={21} />
+                <Bell size={21} className="flex-shrink-0" />
                 <span className="hidden xl:inline">{t('nav.notifications')}</span>
                 {notificationCounts.unread > 0 && (
                   <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#f68b2c] px-1 text-[10px] font-bold text-white" aria-label={`${notificationCounts.unread} unread notifications`}>
@@ -286,24 +302,24 @@ function SpiceNav() {
                   </span>
                 )}
               </Link>
-              <div className="h-[30px] w-px bg-[#bbb]" />
+              <div className="h-[30px] w-px flex-shrink-0 bg-[#bbb]" />
               <Link
                 to="/account"
-                className={`flex cursor-pointer items-center gap-3 px-2 py-1.5 transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428] ${routeIsActive(location.pathname, '/account') ? 'text-[#ca7428]' : 'text-[#444]'}`}
+                className={`flex flex-shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap px-1.5 py-1.5 transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428] xl:gap-3 xl:px-2 ${routeIsActive(location.pathname, '/account') ? 'text-[#ca7428]' : 'text-[#444]'}`}
                 aria-current={routeIsActive(location.pathname, '/account') ? 'page' : undefined}
               >
-                <span className="hidden text-right lg:block">
+                <span className="hidden text-right 2xl:block">
                   <span className="block max-w-[150px] truncate text-[15px] font-semibold leading-tight">{user.fullName}</span>
-                  <span className="block text-[13px] leading-tight text-[#777]">{user.role}</span>
+                  <span className="block text-[13px] leading-tight text-[#777]">{t(roleKey(normalizeRole(user.role)))}</span>
                 </span>
-                <span className="grid h-[42px] w-[42px] place-items-center overflow-hidden rounded-full border border-[#444] bg-[#e6e6e6]/50">
+                <span className="grid h-[42px] w-[42px] flex-shrink-0 place-items-center overflow-hidden rounded-full border border-[#444] bg-[#e6e6e6]/50">
                   {user.avatarData ? <img src={user.avatarData} alt="" className="h-full w-full object-cover" /> : <UserCircle size={27} />}
                 </span>
               </Link>
               <button
                 type="button"
                 onClick={requestSignOut}
-                className="grid h-10 w-10 cursor-pointer place-items-center text-[#444] transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]"
+                className="grid h-10 w-10 flex-shrink-0 cursor-pointer place-items-center text-[#444] transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]"
                 title={t('nav.signOut')}
                 aria-label={t('nav.signOut')}
               >
@@ -312,10 +328,10 @@ function SpiceNav() {
             </>
           ) : (
             <>
-              <Link to={authRoute('signin', returnTo)} className="cursor-pointer px-3 py-1.5 text-[16px] font-medium text-[#444] transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]">
+              <Link to={authRoute('signin', returnTo)} className="flex-shrink-0 cursor-pointer whitespace-nowrap px-3 py-1.5 text-[16px] font-medium text-[#444] transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]">
                 {t('nav.signIn')}
               </Link>
-              <Link to={authRoute('register', returnTo)} className="cursor-pointer border-2 border-[#444] px-5 py-2.5 text-[16px] font-medium text-[#444] transition-colors hover:border-[#ca7428] hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]">
+              <Link to={authRoute('register', returnTo)} className="flex-shrink-0 cursor-pointer whitespace-nowrap border-2 border-[#444] px-5 py-2.5 text-[16px] font-medium text-[#444] transition-colors hover:border-[#ca7428] hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]">
                 {t('nav.signUp')}
               </Link>
             </>
@@ -334,9 +350,10 @@ function SpiceNav() {
       </div>
 
       {mobileOpen && (
-        <nav className="spice-mobile-menu max-h-[calc(100vh-76px)] overflow-y-auto border-t border-[#ddd] bg-white px-5 py-4 xl:hidden" aria-label={t('nav.mobile')}>
+        <ModalPortal>
+        <nav className="spice-mobile-menu overflow-y-auto border-t border-[#ddd] bg-white px-5 py-4 xl:hidden" aria-label={t('nav.mobile')}>
           <div className="grid gap-2">
-            {NAV_ITEMS.flatMap((item) => item.links).map((link) => {
+            {visibleNavItems.flatMap((item) => item.links).map((link) => {
               const active = routeIsActive(location.pathname, link.to);
               return (
                 <Link
@@ -346,14 +363,14 @@ function SpiceNav() {
                   className={`cursor-pointer px-4 py-3 text-[14px] font-semibold ${active ? 'bg-[#fff4e9] text-[#ca7428]' : 'bg-[#f6f6f6] text-[#444]'}`}
                   aria-current={active ? 'page' : undefined}
                 >
-                  {t(link.labelKey)}
+                  {link.labelKey ? t(link.labelKey) : link.label}
                 </Link>
               );
             })}
             <div className="mt-2 border-t border-[#ddd] pt-3">
               <p className="mb-2 px-1 text-[12px] font-bold uppercase text-[#777]">{t('language.label')}</p>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-                {languageOptions.map((item) => {
+                {LOCALES.map((item) => {
                   const current = item.code === language;
                   return (
                     <button
@@ -363,7 +380,7 @@ function SpiceNav() {
                       onClick={() => setLanguage(item.code)}
                       className={`px-3 py-2 text-[13px] font-semibold ${current ? 'cursor-default bg-[#fff4e9] text-[#ca7428]' : 'cursor-pointer bg-[#f6f6f6] text-[#444]'}`}
                     >
-                      {item.code}
+                      {item.nativeName} ({item.shortLabel})
                     </button>
                   );
                 })}
@@ -383,6 +400,7 @@ function SpiceNav() {
             )}
           </div>
         </nav>
+        </ModalPortal>
       )}
       {signOutOpen && (
         <ModalPortal>
@@ -433,7 +451,7 @@ export function SpiceFooter() {
             <Link to="/analogue-tools" className="cursor-pointer transition-colors hover:text-[#ca7428]">{t('nav.analogueTools')}</Link>
             <Link to="/citivoice-app" className="cursor-pointer transition-colors hover:text-[#ca7428]">{t('nav.citivoice')}</Link>
             <Link to="/3d-scene-editor" className="cursor-pointer transition-colors hover:text-[#ca7428]">{t('nav.sceneEditor')}</Link>
-            <Link to="/co-creation-guide" className="cursor-pointer transition-colors hover:text-[#ca7428]">{t('nav.aiChatbot')}</Link>
+            <Link to="/co-creation-guide" className="cursor-pointer transition-colors hover:text-[#ca7428]">{t('nav.coCreationGuide')}</Link>
           </div>
         </div>
 
@@ -454,14 +472,14 @@ export function SpiceFooter() {
           <button type="button" onClick={() => setFeedbackOpen(true)} className="flex w-fit cursor-pointer items-center gap-2 border-2 border-[#777] bg-white px-4 py-2 text-[13px] font-semibold text-[#444] transition-colors hover:border-[#444] hover:bg-[#f2f2f2] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]"><MessageSquare size={17} aria-hidden="true" />{t('feedback.open')}</button>
           <p className="mt-3 text-[15px] font-bold text-black">{t('footer.follow')}</p>
           <div className="flex items-center gap-6">
-            <a href="https://www.youtube.com/results?search_query=SPICE+Sustainable+Public+Spaces+Inclusive+Community+Engagement" target="_blank" rel="noreferrer" className="grid h-8 w-8 cursor-pointer place-items-center text-black transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]" aria-label="SPICE on YouTube"><Youtube size={24} strokeWidth={1.8} /></a>
-            <a href="https://www.instagram.com/explore/tags/spiceprojecteu/" target="_blank" rel="noreferrer" className="grid h-8 w-8 cursor-pointer place-items-center text-black transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]" aria-label="SPICE on Instagram"><Instagram size={24} strokeWidth={1.8} /></a>
-            <a href="https://www.facebook.com/search/top?q=SPICE%20EU%20Project" target="_blank" rel="noreferrer" className="grid h-8 w-8 cursor-pointer place-items-center text-black transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]" aria-label="SPICE on Facebook"><Facebook size={24} strokeWidth={1.8} /></a>
+            <a href="https://www.youtube.com/results?search_query=SPICE+Sustainable+Public+Spaces+Inclusive+Community+Engagement" target="_blank" rel="noreferrer" className="grid h-8 w-8 cursor-pointer place-items-center text-black transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]" aria-label={t('social.youtube')}><Youtube size={24} strokeWidth={1.8} /></a>
+            <a href="https://www.instagram.com/explore/tags/spiceprojecteu/" target="_blank" rel="noreferrer" className="grid h-8 w-8 cursor-pointer place-items-center text-black transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]" aria-label={t('social.instagram')}><Instagram size={24} strokeWidth={1.8} /></a>
+            <a href="https://www.facebook.com/search/top?q=SPICE%20EU%20Project" target="_blank" rel="noreferrer" className="grid h-8 w-8 cursor-pointer place-items-center text-black transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]" aria-label={t('social.facebook')}><Facebook size={24} strokeWidth={1.8} /></a>
           </div>
         </div>
       </div>
       {feedbackOpen && <ModalPortal><div className="fixed inset-0 z-[200] grid overflow-y-auto overscroll-contain bg-black/55 p-4 sm:place-items-center" onMouseDown={(event) => { if (event.target === event.currentTarget) setFeedbackOpen(false); }}>
-        <section role="dialog" aria-modal="true" aria-labelledby="footer-feedback-title" className="relative z-10 my-auto w-full max-w-[620px] bg-white p-6 shadow-2xl md:p-8">
+        <section role="dialog" aria-modal="true" aria-labelledby="footer-feedback-title" className="relative z-10 my-auto w-full max-w-[620px] border-2 border-[#bfc0c5] bg-white p-6 shadow-2xl md:p-8">
           <button ref={closeRef} type="button" onClick={() => setFeedbackOpen(false)} className="absolute right-4 top-4 grid h-10 w-10 cursor-pointer place-items-center text-[#444] hover:bg-[#eee] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ca7428]" aria-label={t('common.close')}><X size={22}/></button>
           <h2 id="footer-feedback-title" className="pr-12 text-[28px] font-bold text-[#444]">{t('feedback.footerTitle')}</h2><p className="mb-6 mt-2 text-[15px] text-[#555]">{t('feedback.footerText')}</p>
           <FeedbackForm source="footer" />
@@ -515,7 +533,7 @@ export default function SpicePublicShell({ children }: Props) {
             <Icon size={25} />
           </button>
         ))}
-        <span className={`overflow-hidden transition-[width,opacity] duration-250 motion-reduce:transition-none ${scrolled ? 'w-12 opacity-100' : 'w-0 opacity-0'}`} aria-hidden={!scrolled}>
+        <span className={`-my-1 overflow-hidden py-1 transition-[width,opacity] duration-250 motion-reduce:transition-none ${scrolled ? 'w-12 opacity-100' : 'w-0 opacity-0'}`} aria-hidden={!scrolled}>
           <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} title={t('controls.scrollTop')} aria-label={t('controls.scrollTop')} tabIndex={scrolled ? 0 : -1} className={`grid h-12 w-12 cursor-pointer place-items-center rounded-full border-[3px] border-white bg-[#ca7428] text-white transition-[transform,background-color] duration-250 hover:-translate-y-0.5 hover:bg-[#a95f20] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#444] motion-reduce:transform-none ${scrolled ? 'scale-100' : 'scale-75'}`}>
             <ArrowUp size={25} />
           </button>

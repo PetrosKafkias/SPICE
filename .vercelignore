@@ -1,0 +1,14 @@
+/.claude/
+/.npm-cache/
+/.pnpm-store/
+/data/
+/dist/
+/docs/
+/guidelines/
+/node_modules/
+/scripts/
+/tests/
+*.log
+*.err.log
+*.pid
+.tmp-*

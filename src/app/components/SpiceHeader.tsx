@@ -27,7 +27,7 @@ const NAV: NavItem[] = [
       { label: 'CitiVoice App', to: '/citivoice-app' },
       { label: '3D Scene Editor', to: '/3d-scene-editor' },
       { label: 'AI Chatbot', to: '/co-creation-guide' },
-      { label: 'Forum & Voting', to: '/forum-voting' },
+      { label: 'Discuss and Decide', to: '/forum-voting' },
     ],
   },
   {

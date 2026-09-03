@@ -1,9 +1,10 @@
-import { useMemo, useState, type ElementType } from 'react';
+import { useEffect, useMemo, useState, type ElementType } from 'react';
 import { useNavigate } from 'react-router';
 import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  CircleAlert,
   Clock,
   ListChecks,
   Search,
@@ -14,8 +15,27 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import SpicePublicShell from '../components/SpicePublicShell';
-import { PHASES, TOOLS, type Mode, type Tool } from '../data/tools';
-import { useApp } from '../context/AppContext';
+import LoadingState from '../components/LoadingState';
+import { getTools, PHASES, type Mode, type Tool } from '../data/tools';
+import { useI18n } from '../context/I18nContext';
+import { apiRequest, jsonBody } from '../lib/api';
+import { DEFAULT_PROCESS_SETUP, processSetupFromInitiative, type ProcessSetupState } from '../lib/processSetup';
+import type { TranslationKey } from '../i18n/translations';
+import { localizedApiError } from '../lib/localizedApiError';
+
+interface Initiative {
+  id: number;
+  version: number;
+  setupStage: string | null;
+  setupObjectives: string[];
+  setupParticipationLevel: string | null;
+  setupGoal: string | null;
+  setupGroupSize: string | null;
+  setupDuration: string | null;
+  setupFacilitator: string | null;
+  setupMode: string | null;
+  setupSelectedTools: string[];
+}
 
 const OBJECTIVE_PHASES: Record<string, number[]> = {
   framing: [1],
@@ -25,15 +45,15 @@ const OBJECTIVE_PHASES: Record<string, number[]> = {
   consolidation: [5],
 };
 
-const OBJECTIVE_LABELS: Record<string, string> = {
-  framing: 'Framing and readiness',
-  collective: 'Collective understanding',
-  codesign: 'Co-design and scenario building',
-  prototype: 'Prototype and test ideas',
-  consolidation: 'Consolidation, learning and governance',
+const OBJECTIVE_LABELS: Record<string, TranslationKey> = {
+  framing: 'setup.objective.framing',
+  collective: 'setup.objective.collective',
+  codesign: 'setup.objective.codesign',
+  prototype: 'setup.objective.prototype',
+  consolidation: 'setup.objective.consolidation',
 };
 
-const MODE_OPTIONS: Array<'All modes' | Mode> = ['All modes', 'Online', 'Offline', 'Hybrid'];
+const MODE_OPTIONS: Array<'all' | Mode> = ['all', 'Online', 'Offline', 'Hybrid'];
 
 const PHASE_ICONS: Record<number, ElementType> = {
   1: Wrench,
@@ -59,18 +79,18 @@ function parseDurationBucket(value: string) {
   return 1;
 }
 
-function scoreTool(tool: Tool, selectedPhases: number[], setup: ReturnType<typeof useApp>['processSetup']) {
+function scoreTool(tool: Tool, selectedPhases: number[], setup: ProcessSetupState, t: (key: TranslationKey, values?: Record<string, string | number>) => string) {
   let score = 0;
   const reasons: string[] = [];
 
   if (selectedPhases.includes(tool.phase)) {
     score += 4;
-    reasons.push(`matches ${tool.phaseName}`);
+    reasons.push(t('setup.reasonPhase', { phase: tool.phaseName }));
   }
 
   if (setup.mode && (tool.mode === setup.mode || tool.mode === 'Hybrid' || setup.mode === 'Hybrid')) {
     score += 2;
-    reasons.push(`${tool.mode} delivery`);
+    reasons.push(t('setup.reasonMode', { mode: t(`analogue.${tool.mode.toLowerCase()}` as TranslationKey) }));
   }
 
   if (setup.groupSize) {
@@ -78,7 +98,7 @@ function scoreTool(tool: Tool, selectedPhases: number[], setup: ReturnType<typeo
     const toolSize = parseSize(tool.groupSize);
     if (requested && toolSize && toolSize >= Math.min(requested, 30)) {
       score += 1;
-      reasons.push('fits the group size');
+      reasons.push(t('setup.reasonGroup'));
     }
   }
 
@@ -87,13 +107,13 @@ function scoreTool(tool: Tool, selectedPhases: number[], setup: ReturnType<typeo
     const toolDuration = parseDurationBucket(tool.duration);
     if (!requestedDuration || toolDuration <= requestedDuration + 1) {
       score += 1;
-      reasons.push('fits the activity duration');
+      reasons.push(t('setup.reasonDuration'));
     }
   }
 
   if (setup.facilitator && tool.facilitatorRatio.includes('1:')) {
     score += 1;
-    reasons.push('works with the facilitation capacity');
+    reasons.push(t('setup.reasonFacilitation'));
   }
 
   return { score, reasons: reasons.slice(0, 3) };
@@ -102,7 +122,7 @@ function scoreTool(tool: Tool, selectedPhases: number[], setup: ReturnType<typeo
 function SelectFilter({ label, value, options, onChange }: {
   label: string;
   value: string;
-  options: string[];
+  options: Array<{ value: string; label: string }>;
   onChange: (value: string) => void;
 }) {
   return (
@@ -113,18 +133,19 @@ function SelectFilter({ label, value, options, onChange }: {
         onChange={(event) => onChange(event.target.value)}
         className="border border-[#bfc0c5] bg-white px-3 py-2.5 text-[13px] font-medium text-[#444] outline-none transition-colors hover:border-[#f68b2c]"
       >
-        {options.map((option) => <option key={option}>{option}</option>)}
+        {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
       </select>
     </label>
   );
 }
 
-function ToolCard({ tool, reasons, inProcess, onToggle, onMore }: {
+function ToolCard({ tool, reasons, inProcess, onToggle, onMore, t }: {
   tool: Tool;
   reasons: string[];
   inProcess: boolean;
   onToggle: () => void;
   onMore: () => void;
+  t: (key: TranslationKey, values?: Record<string, string | number>) => string;
 }) {
   const Icon = PHASE_ICONS[tool.phase] || Wrench;
 
@@ -132,9 +153,9 @@ function ToolCard({ tool, reasons, inProcess, onToggle, onMore }: {
     <article
       className="flex min-h-[286px] flex-col gap-4 border bg-white p-5 shadow-[0_10px_22px_rgba(0,0,0,0.08)] transition-colors"
       style={{
-        borderColor: inProcess ? '#f68b2c' : '#d7d8dc',
+        borderColor: inProcess ? 'var(--border-active)' : 'var(--border-default)',
         borderWidth: inProcess ? 3 : 2,
-        backgroundColor: inProcess ? '#fff8f2' : 'white',
+        backgroundColor: inProcess ? 'var(--surface-active)' : 'white',
       }}
     >
       <div className="flex items-start justify-between gap-4">
@@ -143,7 +164,7 @@ function ToolCard({ tool, reasons, inProcess, onToggle, onMore }: {
         </div>
         {inProcess && (
           <span className="inline-flex items-center gap-1.5 bg-[#f68b2c] px-2.5 py-1 text-[11px] font-bold text-white">
-            <CheckCircle2 size={13} /> In My Process
+            <CheckCircle2 size={13} /> {t('setup.enabled')}
           </span>
         )}
       </div>
@@ -168,7 +189,7 @@ function ToolCard({ tool, reasons, inProcess, onToggle, onMore }: {
       <div className="grid grid-cols-3 gap-2 text-[11px] font-semibold text-[#555]">
         <span className="flex items-center gap-1.5 bg-[#f5f5f5] px-2.5 py-2"><Clock size={12} /> {tool.duration}</span>
         <span className="flex items-center gap-1.5 bg-[#f5f5f5] px-2.5 py-2"><Users size={12} /> {tool.groupSize}</span>
-        <span className="bg-[#f5f5f5] px-2.5 py-2">{tool.mode}</span>
+        <span className="bg-[#f5f5f5] px-2.5 py-2">{t(`analogue.${tool.mode.toLowerCase()}` as TranslationKey)}</span>
       </div>
 
       <div className="mt-auto flex flex-col gap-2 sm:flex-row">
@@ -176,14 +197,14 @@ function ToolCard({ tool, reasons, inProcess, onToggle, onMore }: {
           onClick={onMore}
           className="flex-1 border border-[#bfc0c5] px-4 py-2.5 text-[13px] font-semibold text-[#444] transition-colors hover:bg-[#f7f7f7]"
         >
-          More information
+          {t('setup.moreInformation')}
         </button>
         <button
           onClick={onToggle}
           className="flex-1 px-4 py-2.5 text-[13px] font-bold text-white transition-colors"
           style={{ backgroundColor: inProcess ? '#a86622' : '#f68b2c' }}
         >
-          {inProcess ? 'Remove from Process' : 'Add to Process'}
+          {inProcess ? t('setup.disableTool') : t('setup.enableTool')}
         </button>
       </div>
     </article>
@@ -192,11 +213,47 @@ function ToolCard({ tool, reasons, inProcess, onToggle, onMore }: {
 
 export default function SetUpProcessToolsPage() {
   const navigate = useNavigate();
-  const { processSetup, myProcessTools, addToolToProcess, removeToolFromProcess, saveProcessDraft } = useApp();
+  const { language, t, tp } = useI18n();
+  const tools = useMemo(() => getTools(language), [language]);
+  const [initiativeId, setInitiativeId] = useState<number | null>(null);
+  const [version, setVersion] = useState(0);
+  const [processSetup, setProcessSetup] = useState<ProcessSetupState>(DEFAULT_PROCESS_SETUP);
+  const [myProcessTools, setMyProcessTools] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [query, setQuery] = useState('');
-  const [modeFilter, setModeFilter] = useState<string>('All modes');
-  const [phaseFilter, setPhaseFilter] = useState<string>('Recommended phases');
+  const [modeFilter, setModeFilter] = useState<string>('all');
+  const [phaseFilter, setPhaseFilter] = useState<string>('recommended');
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setLoadError('');
+      try {
+        const result = await apiRequest<{ initiatives: Initiative[] }>('/api/hub/initiatives');
+        const initiative = result.initiatives[0];
+        if (cancelled) return;
+        if (!initiative) {
+          setLoadError(t('setup.noPilot'));
+          return;
+        }
+        setInitiativeId(initiative.id);
+        setVersion(initiative.version);
+        setProcessSetup(processSetupFromInitiative(initiative));
+        setMyProcessTools(initiative.setupSelectedTools || []);
+      } catch (caught) {
+        if (!cancelled) setLoadError(localizedApiError(t, caught, 'setup.loadFailed'));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [t]);
+
+  const addToolToProcess = (toolId: string) => setMyProcessTools((prev) => (prev.includes(toolId) ? prev : [...prev, toolId]));
+  const removeToolFromProcess = (toolId: string) => setMyProcessTools((prev) => prev.filter((id) => id !== toolId));
 
   const selectedPhases = useMemo(() => {
     const phases = processSetup.objectives.flatMap((objective) => OBJECTIVE_PHASES[objective] || []);
@@ -204,57 +261,84 @@ export default function SetUpProcessToolsPage() {
   }, [processSetup.objectives]);
 
   const scoredTools = useMemo(() => {
-    return TOOLS.map((tool) => {
-      const result = scoreTool(tool, selectedPhases, processSetup);
+    return tools.map((tool) => {
+      const result = scoreTool(tool, selectedPhases, processSetup, t);
       return { tool, ...result };
     }).sort((a, b) => b.score - a.score || a.tool.phase - b.tool.phase || a.tool.name.localeCompare(b.tool.name));
-  }, [processSetup, selectedPhases]);
+  }, [processSetup, selectedPhases, t, tools]);
 
   const filteredTools = scoredTools.filter(({ tool, score }) => {
     const matchSearch = `${tool.name} ${tool.shortDesc} ${tool.phaseName} ${tool.objectiveTags.join(' ')}`.toLowerCase().includes(query.toLowerCase());
-    const matchMode = modeFilter === 'All modes' || tool.mode === modeFilter || tool.mode === 'Hybrid';
-    const matchPhase = phaseFilter === 'Recommended phases' ? selectedPhases.includes(tool.phase) : tool.phaseName === phaseFilter;
+    const matchMode = modeFilter === 'all' || tool.mode === modeFilter || tool.mode === 'Hybrid';
+    const matchPhase = phaseFilter === 'recommended' ? selectedPhases.includes(tool.phase) : tool.phase === Number(phaseFilter);
     return matchSearch && matchMode && matchPhase && score > 0;
   });
 
-  const activeObjectiveLabels = processSetup.objectives.map((id) => OBJECTIVE_LABELS[id]).filter(Boolean);
+  const activeObjectiveLabels = processSetup.objectives.map((id) => OBJECTIVE_LABELS[id]).filter(Boolean).map((key) => t(key));
   const selectedCount = filteredTools.filter(({ tool }) => myProcessTools.includes(tool.id)).length;
+
+  const toolsByPhase = PHASES.map((phase) => ({
+    phase,
+    tools: filteredTools.filter(({ tool }) => tool.phase === phase.id),
+  })).filter((group) => group.tools.length > 0);
 
   const toggleTool = (tool: Tool) => {
     if (myProcessTools.includes(tool.id)) {
       removeToolFromProcess(tool.id);
-      toast.success(`${tool.name} removed from your process.`);
+      toast.success(t('setup.toolDisabled', { tool: tool.name }));
       return;
     }
     addToolToProcess(tool.id);
-    toast.success(`${tool.name} added to your process.`);
+    toast.success(t('setup.toolEnabled', { tool: tool.name }));
   };
 
   const continueWithTools = async () => {
     if (myProcessTools.length === 0) {
-      toast.error('Add at least one tool before continuing.');
+      toast.error(t('setup.enableOne'));
       return;
     }
+    if (!initiativeId) return;
     setSaving(true);
     try {
-      await saveProcessDraft();
+      const result = await apiRequest<{ initiative: Initiative }>(`/api/hub/initiatives/${initiativeId}`, {
+        method: 'PATCH', body: jsonBody({ setupSelectedTools: myProcessTools, version }),
+      });
+      setVersion(result.initiative.version);
       navigate('/co-creation-hub');
     } catch {
-      toast.error('Your selected tools could not be saved. Please try again.');
+      toast.error(t('setup.selectedSaveFailed'));
     } finally {
       setSaving(false);
     }
   };
+
+  if (loading) {
+    return (
+      <SpicePublicShell variant="public">
+        <div className="spice-page spice-wide-page"><LoadingState message={t('setup.loading')} minHeight="256px" size="lg" /></div>
+      </SpicePublicShell>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <SpicePublicShell variant="public">
+        <div className="spice-page spice-wide-page">
+          <div className="flex items-start gap-3 border-l-4 border-red-600 bg-red-50 p-4 font-semibold text-red-800" role="alert"><CircleAlert size={20} />{loadError}</div>
+        </div>
+      </SpicePublicShell>
+    );
+  }
 
   return (
     <SpicePublicShell variant="public">
       <div className="spice-page spice-wide-page flex flex-col gap-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
         <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="text-[13px] font-bold uppercase tracking-wide text-[#ca7428]">Step 2 of 2</p>
-            <h1 className="mt-2 text-[32px] font-bold text-[#444]">Recommended tools for your process</h1>
+            <p className="text-[13px] font-bold uppercase tracking-wide text-[#ca7428]">{t('setup.toolsStep')}</p>
+            <h1 className="mt-2 text-[32px] font-bold text-[#444]">{t('setup.toolsTitle')}</h1>
             <p className="mt-2 max-w-[760px] text-[15px] font-medium leading-relaxed text-[#666]">
-              These recommendations respond to your selected objectives, phase focus, activity mode, group size, duration, and facilitation capacity.
+              {t('setup.toolsIntro')}
             </p>
           </div>
           <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:flex-nowrap">
@@ -262,85 +346,97 @@ export default function SetUpProcessToolsPage() {
               onClick={() => navigate('/setup-questionnaire')}
               className="flex items-center gap-2 whitespace-nowrap border border-[#444] bg-white px-5 py-3 text-[14px] font-semibold text-[#444] transition-colors hover:bg-[#f7f7f7]"
             >
-              <ArrowLeft size={15} /> Previous Step
+              <ArrowLeft size={15} /> {t('setup.previousStep')}
             </button>
             <button
               onClick={() => void continueWithTools()}
               disabled={saving}
               className="flex items-center gap-2 whitespace-nowrap bg-[#f68b2c] px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#e07a20]"
             >
-              {saving ? 'Saving...' : 'Continue with Selected Tools'} <ArrowRight size={15} />
+              {saving ? t('common.saving') : t('setup.continueSelected')} <ArrowRight size={15} />
             </button>
           </div>
         </div>
 
-        <section className="grid gap-4 border-2 border-[#bfc0c5] bg-white p-5 lg:grid-cols-[1fr_260px]">
+        <section className="grid gap-4 spice-card p-5 lg:grid-cols-[1fr_260px]">
           <div>
             <div className="mb-3 flex items-center gap-2 text-[14px] font-bold text-[#444]">
-              <Sparkles size={18} className="text-[#ca7428]" /> Recommendation basis
+              <Sparkles size={18} className="text-[#ca7428]" /> {t('setup.recommendationBasis')}
             </div>
             <div className="flex flex-wrap gap-2">
-              {(activeObjectiveLabels.length ? activeObjectiveLabels : ['All co-creation objectives']).map((label) => (
+              {(activeObjectiveLabels.length ? activeObjectiveLabels : [t('setup.allObjectives')]).map((label) => (
                 <span key={label} className="bg-[#fef3e8] px-3 py-1.5 text-[12px] font-semibold text-[#ca7428]">{label}</span>
               ))}
-              <span className="bg-[#f2f2f2] px-3 py-1.5 text-[12px] font-semibold text-[#555]">{processSetup.mode || 'Any mode'}</span>
+              <span className="bg-[#f2f2f2] px-3 py-1.5 text-[12px] font-semibold text-[#555]">{processSetup.mode ? t(`analogue.${processSetup.mode.toLowerCase()}` as TranslationKey) : t('setup.anyMode')}</span>
               {processSetup.groupSize && <span className="bg-[#f2f2f2] px-3 py-1.5 text-[12px] font-semibold text-[#555]">{processSetup.groupSize}</span>}
               {processSetup.duration && <span className="bg-[#f2f2f2] px-3 py-1.5 text-[12px] font-semibold text-[#555]">{processSetup.duration}</span>}
             </div>
           </div>
           <div className="border-t border-[#eee] pt-4 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
             <p className="text-[28px] font-bold text-[#444]">{myProcessTools.length}</p>
-            <p className="text-[13px] font-semibold text-[#666]">tools in your process</p>
-            <p className="mt-2 text-[12px] text-[#888]">{selectedCount} selected from the current results.</p>
+            <p className="text-[13px] font-semibold text-[#666]">{tp(myProcessTools.length, { one: 'setup.enabledCount.one', other: 'setup.enabledCount.other' })}</p>
+            <p className="mt-2 text-[12px] text-[#888]">{tp(selectedCount, { one: 'setup.currentEnabled.one', other: 'setup.currentEnabled.other' })}</p>
           </div>
         </section>
 
-        <section className="border-2 border-[#bfc0c5] bg-white p-5">
+        <section className="spice-card p-5">
           <div className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#444]">
-            <SlidersHorizontal size={17} className="text-[#ca7428]" /> Filter recommendations
+            <SlidersHorizontal size={17} className="text-[#ca7428]" /> {t('setup.filterRecommendations')}
           </div>
           <div className="flex flex-col items-start gap-3 lg:flex-row">
             <label className="spice-field-group w-full min-w-[260px] flex-[2] gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wide text-[#888]">Search</span>
+              <span className="text-[11px] font-bold uppercase tracking-wide text-[#888]">{t('common.search')}</span>
               <span className="flex items-center gap-2 border border-[#bfc0c5] bg-white px-3 py-2.5">
                 <Search size={15} className="text-[#888]" />
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Search by tool, phase, or objective"
+                  placeholder={t('setup.searchPlaceholder')}
                   className="min-w-0 flex-1 bg-transparent text-[13px] text-[#444] outline-none placeholder:text-[#999]"
                 />
               </span>
             </label>
-            <SelectFilter label="Phase" value={phaseFilter} options={['Recommended phases', ...PHASES.map((phase) => phase.name)]} onChange={setPhaseFilter} />
-            <SelectFilter label="Mode" value={modeFilter} options={MODE_OPTIONS} onChange={setModeFilter} />
+            <SelectFilter label={t('setup.phase')} value={phaseFilter} options={[{ value: 'recommended', label: t('setup.recommendedPhases') }, ...PHASES.map((phase) => ({ value: String(phase.id), label: t(phase.nameKey) }))]} onChange={setPhaseFilter} />
+            <SelectFilter label={t('setup.mode')} value={modeFilter} options={MODE_OPTIONS.map((mode) => ({ value: mode, label: mode === 'all' ? t('setup.allModes') : t(`analogue.${mode.toLowerCase()}` as TranslationKey) }))} onChange={setModeFilter} />
           </div>
         </section>
 
         <div className="flex items-center justify-between">
-          <h2 className="text-[20px] font-bold text-[#444]">{filteredTools.length} matching tools</h2>
+          <h2 className="text-[20px] font-bold text-[#444]">{tp(filteredTools.length, { one: 'setup.recommendations.one', other: 'setup.recommendations.other' })}</h2>
           <button onClick={() => navigate('/setup-questionnaire')} className="text-[13px] font-semibold text-[#ca7428] underline">
-            Edit setup choices
+            {t('setup.editChoices')}
           </button>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {filteredTools.map(({ tool, reasons }) => (
-            <ToolCard
-              key={tool.id}
-              tool={tool}
-              reasons={reasons}
-              inProcess={myProcessTools.includes(tool.id)}
-              onToggle={() => toggleTool(tool)}
-              onMore={() => navigate(`/tool-detail/${tool.id}`)}
-            />
+        <div className="flex flex-col gap-8">
+          {toolsByPhase.map(({ phase, tools }) => (
+            <div key={phase.id} className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <span className={`grid h-8 w-8 flex-shrink-0 place-items-center rounded-full text-[13px] font-bold text-white ${phase.bg}`}>{phase.id}</span>
+                <h3 className="text-[17px] font-bold text-[#444]">{t(phase.nameKey)}</h3>
+                <span className="ml-auto text-[13px] font-medium text-[#888]">{tp(tools.length, { one: 'setup.toolsInPhase.one', other: 'setup.toolsInPhase.other' })}</span>
+              </div>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {tools.map(({ tool, reasons }) => (
+                  <ToolCard
+                    key={tool.id}
+                    tool={tool}
+                    reasons={reasons}
+                    inProcess={myProcessTools.includes(tool.id)}
+                    onToggle={() => toggleTool(tool)}
+                    onMore={() => navigate(`/tool-detail/${tool.id}`)}
+                    t={t}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
         </div>
 
         {filteredTools.length === 0 && (
-          <div className="border-2 border-dashed border-[#d7d8dc] bg-white py-16 text-center">
-            <p className="text-[16px] font-bold text-[#444]">No tools match these filters.</p>
-            <p className="mt-2 text-[13px] text-[#777]">Try a broader phase or mode filter.</p>
+          <div className="spice-card-dashed py-16 text-center">
+            <p className="text-[16px] font-bold text-[#444]">{t('setup.noTools')}</p>
+            <p className="mt-2 text-[13px] text-[#777]">{t('setup.noToolsHint')}</p>
           </div>
         )}
       </div>

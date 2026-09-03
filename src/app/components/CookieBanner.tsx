@@ -79,7 +79,7 @@ export default function CookieBanner({ onAccept, onReject, onPreferences, onRead
           </div>
         </div>
 
-        <button type="button" onClick={onClose} className="absolute right-4 top-4 grid h-10 w-10 cursor-pointer place-items-center bg-white text-[#444] transition-colors hover:bg-[#eee] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]" aria-label="Close privacy preferences">
+        <button type="button" onClick={onClose} className="absolute right-4 top-4 grid h-10 w-10 cursor-pointer place-items-center bg-white text-[#444] transition-colors hover:bg-[#eee] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]" aria-label={t('cookie.closePreferences')}>
           <X size={28} />
         </button>
       </div>

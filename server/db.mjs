@@ -8,6 +8,7 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const migrationsDirectory = resolve(dirname(fileURLToPath(import.meta.url)), 'migrations');
 
 export function defaultDatabasePath() {
+  if (process.env.VERCEL) return resolve('/tmp', process.env.SPICE_DB_PATH || 'spice.db');
   return resolve(projectRoot, process.env.SPICE_DB_PATH || 'data/spice.db');
 }
 

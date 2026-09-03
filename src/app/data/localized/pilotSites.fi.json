@@ -1,0 +1,349 @@
+{
+  "details": {
+    "thessaloniki": {
+      "slug": "thessaloniki",
+      "demoSite": "Kritis Park, Mina Patrikiou Square",
+      "task": "T5.2",
+      "theme": "Julkisen tilan kaupunkiuudistus",
+      "lead": "KEPA",
+      "participants": [
+        "ESS",
+        "IRID",
+        "CERTH"
+      ],
+      "deliverable": "D5.2, Thessalonikin kunnan SPICE-yleissuunnitelma, määräaika M34",
+      "expectedResult": "Yksityiskohtainen yleissuunnitelma vihreän julkisen tilan uudelleenkelpoistamiseksi, muuttaen siitä malliksi, joka liittyy omaan urheilupuistoon.",
+      "sections": [
+        {
+          "title": "Tilalliset ominaisuudet",
+          "bullets": [
+            "Puistossa on säteittäinen tilaratkaisu.",
+            "Sitä ympäröivät tärkeät paikalliset palvelut.",
+            "Vain noin kolmasosa puistosta on intensiivisessä käytössä, pääasiassa leikkipaikka, pergola ja amfiteatteri.",
+            "Vammaisille suunnatut ja koskettavat opasteet ovat epäjatkuvat.",
+            "Paikallisia tulvia esiintyy joillakin alueilla."
+          ]
+        },
+        {
+          "title": "Ehdotetut interventiot",
+          "bullets": [
+            "Suunnittele puisto yhdessä sen välittömän ympäristön kanssa sen sijaan, että käsittelet sitä erillisenä kohteena.",
+            "Priorisoi pienempiä, kohdennettuja toimia suurten radikaalien muutosten sijaan.",
+            "Tee yhteistyötä \"Friends of the Park\" -ryhmän ja paikallisten yritysten kanssa lyhytaikaisissa projekteissa.",
+            "Yhdistä viereinen taskupuutarha pääpuistoon.",
+            "Luo linkkejä muihin SPICE-kaupunkeihin.",
+            "Ota paikalliset ihmiset mukaan tekniseen ja kunnossapitoon."
+          ]
+        }
+      ],
+      "participationInsights": [
+        {
+          "title": "Uskottava osallistuminen",
+          "text": "Osallistumisen tulee tuntua merkitykselliseltä, ja sillä on oltava selkeä vaikutus päätöksiin ja näkyviin tuloksiin."
+        },
+        {
+          "title": "Pitkäaikainen huoltotyö",
+          "text": "Tulevaisuuden hoito ei saisi riippua yksinomaan kunnallisesta ylläpidosta. Vastuu tulee jakaa paikallisten liittolaisten, vapaaehtoisten ja taloudenhoitoryhmien kanssa."
+        },
+        {
+          "title": "Yhteinen määritelmä hoidosta",
+          "text": "Kunnossapito sisältää sekä teknisen vastuun että päivittäiset käytännöt, kuten siivouksen, puutarhanhoidon, maalauksen, korjauksen ja laiminlyönnin ehkäisyn."
+        },
+        {
+          "title": "Erityiset sitoutumisprofiilit",
+          "text": "Erityistä huomiota vaativia ryhmiä ovat vanhukset, lapset ja nuoret, vammaiset, koiranomistajat ja kauppojen omistajat."
+        },
+        {
+          "title": "Välitys erilaisten tarpeiden välillä",
+          "text": "Eri ryhmillä voi olla ristiriitaisia ​​odotuksia, joten yhteissuunnitteluun tulee sisältyä neuvottelu ja priorisointi."
+        },
+        {
+          "title": "Koulutus aktivointistrategiana",
+          "text": "Koulut ja koulutusaloitteet voivat auttaa rakentamaan luottamusta, vastuullisuutta ja pitkäaikaista sitoutumista."
+        }
+      ],
+      "priorityGroups": [
+        "Vanhemmat ihmiset",
+        "Lapset ja nuoret",
+        "Vammaiset ihmiset",
+        "Koiran omistajat",
+        "Kauppojen omistajat"
+      ],
+      "additionalNotes": {
+        "title": "Lisäideoita tallennettu työpajan aikana",
+        "bullets": [
+          "Enemmän tilaa lapsille juosta ja pelata jalkapalloa.",
+          "Parempi turvallisuus lasten alueiden ympärillä, mukaan lukien aidan huomioiminen.",
+          "Tilat sopivat useille eri käyttäjäryhmille.",
+          "Nimetyt viheralueet ja virkistysalueet.",
+          "Kokoontumistiloja, kioskeja ja kaupunkikalusteita.",
+          "Selkeämpi toimintojen kaavoitus.",
+          "Puistosta tehdään kokoontumis-, rentoutumis-, piknik- ja vapaamuotoisen sosiaalisen käytön paikka."
+        ]
+      }
+    },
+    "bielsko-biala": {
+      "slug": "bielsko-biala",
+      "demoSite": "11 Listopada Street",
+      "task": "T5.3",
+      "theme": "Kestäviä liiketoimintamahdollisuuksia",
+      "lead": "ARRSA",
+      "participants": [
+        "IRID"
+      ],
+      "deliverable": "D5.3, SPICE-yleissuunnitelma ARRSA:lle, eräpäivä M34",
+      "expectedResult": "Yksityiskohtainen yleissuunnitelma kadulle ja sitä ympäröivälle kaupunkiympäristölle.",
+      "sections": [
+        {
+          "title": "Paikalliset ja historialliset ominaisuudet",
+          "bullets": [
+            "Katu on Bielsko-Białan pääkävelyakseli.",
+            "Se toimii rakenteellisena selkärangana, joka yhdistää alueita, jotka aikoinaan kuuluivat aiemmin erillisiin Bielskon ja Białan kaupunkeihin.",
+            "Se on edelleen tärkeä osa kaupungin keskustan julkista elämää.",
+            "Se on pääosin autoton ja toimii pehmeän liikkuvuuden käytävänä jalankulkijoille ja pyöräilijöille.",
+            "Se yhdistää tärkeitä kansalais- ja kulttuurikohteita."
+          ]
+        },
+        {
+          "title": "Perinnön arvo",
+          "bullets": [
+            "Useita virallisesti suojeltuja rakennuksia.",
+            "Säilötty mukulakivipäällyste.",
+            "Aikakauden tyylinen katuvalaistus.",
+            "Vahva historiallinen kaupunkikuvahahmo.",
+            "Kulttuuripolku, joka yhdistää kaupungintalon, monumentaaliset aukiot ja historiallisten linnoitusten jäänteet."
+          ]
+        },
+        {
+          "title": "Ympäristö- ja julkisen tilan potentiaali",
+          "bullets": [
+            "Lisää viherkasveja.",
+            "Parannetut julkiset istuimet.",
+            "Ekologisia parannuksia.",
+            "Parempi jalankulkijan mukavuus.",
+            "Vahvemmat aktiivimatkayhteydet."
+          ]
+        },
+        {
+          "title": "Talous- ja kaupunkihaasteet",
+          "bullets": [
+            "Katu on menettänyt osan entisestä kaupallisesta elinvoimaisuudestaan.",
+            "Kävijämäärä ja vähittäiskauppa ovat vähentyneet.",
+            "Tyhjiä liiketiloja ja tyhjiä liiketiloja on yhä enemmän.",
+            "Pienet itsenäiset yritykset ovat paineen alla.",
+            "Katu kilpailee läheisen Sferan kauppakeskuksen ja muiden suurten vähittäiskaupan kehityskohteiden kanssa.",
+            "Laajempi konteksti on katukaupan väheneminen huolimatta kadun keskeisestä historiallisesta ja kulttuurisesta roolista."
+          ]
+        }
+      ],
+      "participationInsights": [
+        {
+          "title": "Luottamus ja viestintä",
+          "text": "Aiemmissa osallistumisprosesseissa äänestysprosentti oli alhainen, ja ne johtivat rajalliseen toteutukseen."
+        },
+        {
+          "title": "Herkkä sopeutuminen",
+          "text": "Muutoksissa on kunnioitettava historiallista luonnetta ja huomioitava saavutettavuus, vehreys, sääsuoja ja autojen läsnäolon vähentäminen."
+        },
+        {
+          "title": "Kohdennettu viestintä",
+          "text": "Tarinoiden kertomista, sosiaalista mediaa ja suoraa henkilökohtaista sitoutumista tarvitaan erityisesti vähemmän aktiivisten ryhmien tavoittamiseksi."
+        },
+        {
+          "title": "Yrittäjät etusijalla",
+          "text": "Entiset, nykyiset ja potentiaaliset yrittäjät ovat keskeisiä toimijoita ja vaativat suoraa vuoropuhelua ja erityisiä kannustimia."
+        }
+      ],
+      "additionalNotes": {
+        "title": "Suunta seuraavaan vaiheeseen",
+        "bullets": [
+          "Siirry ongelman muotoilusta kohti uutta yhteistä näkemystä kadulle."
+        ]
+      }
+    },
+    "cuba": {
+      "slug": "cuba",
+      "demoSite": "Chafariz da Fonte dos Leões",
+      "task": "T5.4",
+      "theme": "Veden niukkuus ja kulttuuriarvo",
+      "lead": "miB",
+      "participants": [
+        "CMC",
+        "IRID"
+      ],
+      "deliverable": "D5.4, SPICE-yleissuunnitelma Kuuban kunnalle, eräpäivä M34",
+      "expectedResult": "Yksityiskohtainen yleissuunnitelma kohteen uudelleenkelpoistamiseksi ja uudelleenaktivoimiseksi.",
+      "sections": [
+        {
+          "title": "Sijainti ja merkitys",
+          "bullets": [
+            "Suihkulähde sijaitsee keskeisellä paikalla kaupungin sisäänkäynnillä.",
+            "Se on helposti saavutettavissa ja hyvät yhteydet kaupungin keskustaan.",
+            "Sillä on vahva tunne- ja yhteisöllinen merkitys erityisesti vanhemmille asukkaille.",
+            "Sen konkreettinen arvo tulee sen kansankielisestä arkkitehtuurista.",
+            "Sen aineeton arvo tulee sen historiasta vilkkaana yhteisön kokoontumispaikkana."
+          ]
+        },
+        {
+          "title": "Nykyinen kunto",
+          "bullets": [
+            "Sivusto on suljettu ja pois käytöstä.",
+            "Se on menettänyt entisen yhteiskunnallisen tehtävänsä.",
+            "Jatkuva käyttämättä jättäminen aiheuttaa fyysisen heikkenemisen riskin.",
+            "Ympäröivää aluetta käyttävät edelleen koululaiset ja yhteisöt, jotka eivät asu välittömästi lähistöllä.",
+            "Sitä pidetään vaarallisena ja huonosti huolletuksi."
+          ]
+        },
+        {
+          "title": "Vesi- ja infrastruktuurikysymykset",
+          "bullets": [
+            "Kausiluonteisia tulvia esiintyy noin lokakuusta huhtikuuhun.",
+            "Alueella on sadeveden keräys- tai säiliöinfrastruktuuri.",
+            "Ongelmiksi tunnistetaan jäteveden ylivuoto ja sekajätevesipisteet."
+          ]
+        },
+        {
+          "title": "Yhteiskunnalliset ja suunnittelun prioriteetit – ilmastoon reagoiva mukavuus",
+          "paragraphs": [
+            "Uudistetun sivuston tulee olla kestävä, vihreä, osallistava, ilmasto-olosuhteisiin reagoiva ja palvelemaan erilaisia ​​käyttäjien tarpeita."
+          ]
+        },
+        {
+          "title": "Näkyviä ja käytännöllisiä tuloksia",
+          "paragraphs": [
+            "Prosessin tulee tuottaa konkreettisia, näkyviä ja toteutettavissa olevia muutoksia sen sijaan, että se jää teoreettiseksi."
+          ]
+        },
+        {
+          "title": "yhteisön määrärahoja ja pitkäaikaista käyttöä",
+          "paragraphs": [
+            "Tavoitteena ei ole vain asukkaiden kuuleminen. Yhteisön tulisi vähitellen ottaa tila omistukseensa ja auttaa pitämään se aktiivisena ja merkityksellisenä."
+          ]
+        }
+      ],
+      "participationInsights": [
+        {
+          "title": "Nuoret ihmiset",
+          "text": "Sitouttamisessa on otettava huomioon tunnustus, saavutettavuus, kieli, kuuluminen ja kulttuurinen identiteetti."
+        },
+        {
+          "title": "Vanhemmat ihmiset",
+          "text": "Sitouttamisessa on otettava huomioon tunnustus, saavutettavuus, kieli, kuuluminen ja kulttuurinen identiteetti."
+        },
+        {
+          "title": "Maahanmuuttajat",
+          "text": "Sitouttamisessa on otettava huomioon tunnustus, saavutettavuus, kieli, kuuluminen ja kulttuurinen identiteetti."
+        }
+      ],
+      "priorityGroups": [
+        "Nuoret ihmiset",
+        "Vanhemmat ihmiset",
+        "Maahanmuuttajat"
+      ]
+    },
+    "rovaniemi": {
+      "slug": "rovaniemi",
+      "demoSite": "Rovaniemi Bus Station",
+      "task": "T5.5",
+      "theme": "Vihreä matkailu",
+      "lead": "AF",
+      "participants": [
+        "RoMa",
+        "IRID"
+      ],
+      "deliverable": "D5.5, SPICE-yleissuunnitelma RoMalle, eräpäivä M34",
+      "expectedResult": "Yksityiskohtainen yleissuunnitelma linja-autoaseman mukautuvaa uudelleenkäyttöä ja laajempaa integrointia varten.",
+      "sections": [
+        {
+          "title": "Strateginen rooli ja fyysinen luonne",
+          "bullets": [
+            "Asema on yksi tärkeimmistä sisäänkäyntipisteistä tai \"portaaleista\" kaupunkiin.",
+            "Sen sisätiloissa on erottuva modernistinen arkkitehtoninen luonne.",
+            "Sisätilat voisivat tukea uusia ohjelmia ja käyttötapoja edellyttäen, että kulttuuriperinnön rajoituksia kunnioitetaan.",
+            "Joitakin ulkoalueita käytetään tällä hetkellä lumen varastointiin."
+          ]
+        },
+        {
+          "title": "Päähaasteet — epävarma tulevaisuuden toiminta",
+          "paragraphs": [
+            "On löydettävä elinkelpoinen uusi käyttötapa, joka tasapainottaa kulttuuriperinnönsuojelua, nykyaikaisia ​​yhteisön tarpeita, liikkumisvaatimuksia sekä rakennuksen mahdollisuuksia julkiseen ja sosiaaliseen käyttöön."
+          ]
+        },
+        {
+          "title": "Päähaasteet — fyysinen rappeutuminen",
+          "bullets": [
+            "Katon huononeminen.",
+            "Puisen julkisivun vaurioituminen.",
+            "Veden tunkeutuminen maaperästä."
+          ]
+        },
+        {
+          "title": "Aiheeseen liittyvät suunnitellut interventiot",
+          "bullets": [
+            "Aseman keskustaan ​​yhdistävän kadun kunnostus on käynnissä.",
+            "Alueen eteläpuolelle suunnitellaan olympiakokoista uimahallia, mutta se on vielä vahvistamatta.",
+            "Linja-autoliikenne voidaan jakaa uudelleen läheiselle rautatieasemalle, myös vahvistuksen mukaan."
+          ]
+        }
+      ],
+      "participationInsights": [
+        {
+          "title": "Luottamukseen perustuvat paikalliset yhteydet",
+          "text": "Sitouttamisessa tulee käyttää olemassa olevia luotettuja suhteita ja työskennellä vakiintuneiden paikallisten kumppanien kautta."
+        },
+        {
+          "title": "Nuorten johtama ja epävirallinen osallistuminen",
+          "text": "Osallistumisen tulee olla sosiaalista, joustavaa ja nautinnollista, ja sen tulisi tapahtua lähempänä nuorten jo käyttämiä tiloja."
+        },
+        {
+          "title": "Erilaisia ​​nuorisoprofiileja",
+          "text": "\"Riskinuorisoa\" ei pidä käsitellä yhtenä homogeenisena ryhmänä. Teinillä, opiskelijoilla ja nuorilla aikuisilla koulutuksen tai työn ulkopuolella on erilaisia ​​tarpeita ja haavoittuvuuksia."
+        },
+        {
+          "title": "Autonomia ja agentuuri",
+          "text": "Nuoret tarvitsevat tiloja, joissa he voivat olla näkyvissä, toimia itsenäisesti ja ilmaista identiteettiä, luovuutta ja tarkoitusperiä."
+        }
+      ],
+      "additionalNotes": {
+        "title": "Konteksti, joka voi muuttaa sivuston tulevaisuutta",
+        "bullets": [
+          "Nämä ympäröivät hankkeet (katujen kunnostus, uimahalli, mahdollinen linja-auton uudelleenjako) voivat muuttaa merkittävästi linja-autoasemarakennuksen roolia, saavutettavuutta ja tulevaa ohjelmaa."
+        ]
+      }
+    }
+  },
+  "conclusions": {
+    "timingNote": "Esittelysivustojen diatunnisteet ilmoittavat toteutusjakson M18–M34, kun taas upotettu toteutus-roadmap-grafiikka tilaa M13–M34; tätä ajankohtaa pitäisi selventää. Jokaisen sivuston odotetaan tuottavan yksityiskohtainen SPICE-yleissuunnitelma osoitteessa M34, jota tukee Demo-toimintasuunnitelma.",
+    "bullets": [
+      "Yleissuunnittelun tulee johtaa näkyvään toteutukseen, ei vain kuulemiseen tai teoreettisiin ehdotuksiin.",
+      "Luottamus on keskeinen asia, varsinkin kun aikaisempi osallistuminen tuotti vain vähän tuloksia.",
+      "Sitoutuminen on mukautettava tiettyihin ryhmiin sen sijaan, että luottaisi yleisiin julkisiin kuulemismenettelyihin.",
+      "Pitkäaikaiseen ylläpitoon ja hoitoon tulee osallistua yhteisöt, paikalliset organisaatiot ja yritykset.",
+      "Saavutettavuus ja osallisuus ovat toistuvia huolenaiheita.",
+      "Nykyinen identiteetti ja perintö on säilytettävä, olipa kyseessä historiallinen katu, kansanmusiikki vesiinfrastruktuuri tai modernistinen arkkitehtuuri.",
+      "Ilmaston ja ympäristön sietokyky ilmenevät tulvien, vesihuollon, vehreyden, mukavuuden ja vuodenaikojen olosuhteiden kautta."
+    ],
+    "perSiteStrategy": [
+      {
+        "slug": "thessaloniki",
+        "city": "Thessaloniki",
+        "strategy": "Parempi käyttötapojen jakautuminen, saavutettavuus ja yhteisön hallinto."
+      },
+      {
+        "slug": "bielsko-biala",
+        "city": "Bielsko-Biała",
+        "strategy": "Kaupallisen ja julkisen elämän elvyttäminen samalla kun suojellaan historiallista luonnetta."
+      },
+      {
+        "slug": "cuba",
+        "city": "Cuba",
+        "strategy": "Suljetun kulttuuriperintökohteen uudelleenaktivointi, kun ratkaistaan ​​vesi-, kunnossapito- ja sisällyttäminen."
+      },
+      {
+        "slug": "rovaniemi",
+        "city": "Rovaniemi",
+        "strategy": "Elinkelpoisen kulttuuriperinnön kanssa yhteensopivan käytön tunnistaminen painottaen voimakkaasti nuorisotoimintaa ja muuttuvia liikkumisolosuhteita."
+      }
+    ]
+  }
+}

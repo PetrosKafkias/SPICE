@@ -46,7 +46,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </div>
           </aside>
 
-          <div className="w-full border-[3px] border-[#f68b2c] bg-white p-6 sm:p-8 md:p-10 lg:w-[620px] lg:flex-shrink-0">
+          <div className="w-full border-2 border-[#bfc0c5] bg-white p-6 sm:p-8 md:p-10 lg:w-[620px] lg:flex-shrink-0">
             {children}
           </div>
         </div>

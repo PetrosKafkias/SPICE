@@ -91,7 +91,7 @@ export default function ForumPage() {
 
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h1 className="text-[24px] font-bold text-[#1b3a5c] mb-1">Forum & Voting</h1>
+          <h1 className="text-[24px] font-bold text-[#1b3a5c] mb-1">Discuss and Decide</h1>
           <p className="text-gray-500 text-[13px]">Discuss and prioritise proposals for the Thessaloniki waterfront redesign.</p>
         </div>
         <button onClick={() => toast.success('Proposal submission form opened')}

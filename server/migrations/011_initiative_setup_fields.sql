@@ -1,0 +1,10 @@
+ALTER TABLE hub_initiatives ADD COLUMN setup_stage TEXT;
+ALTER TABLE hub_initiatives ADD COLUMN setup_objectives_json TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE hub_initiatives ADD COLUMN setup_participation_level TEXT;
+ALTER TABLE hub_initiatives ADD COLUMN setup_goal TEXT;
+ALTER TABLE hub_initiatives ADD COLUMN setup_completed_at TEXT;
+ALTER TABLE hub_initiatives ADD COLUMN setup_selected_tools_json TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE hub_initiatives ADD COLUMN setup_group_size TEXT;
+ALTER TABLE hub_initiatives ADD COLUMN setup_duration TEXT;
+ALTER TABLE hub_initiatives ADD COLUMN setup_facilitator TEXT;
+ALTER TABLE hub_initiatives ADD COLUMN setup_mode TEXT;

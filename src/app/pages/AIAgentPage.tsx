@@ -34,7 +34,7 @@ const MOCK_RESPONSES: Record<string, { content: string; sources: { title: string
 
 **2. Participatory Design Sprint** — If you have 2–3 days available, this intensive session can produce concrete design proposals for community validation.
 
-**3. Digital Forum & Voting** — For asynchronous participation between sessions, this allows broader community input on proposals.
+**3. Discuss and Decide** — For asynchronous participation between sessions, this allows broader community input on proposals.
 
 *Process note:* Based on your questionnaire, you selected "Collaboration" as the participation level. This aligns best with tools that keep decision-making transparent and co-produced, rather than merely consultative.
 

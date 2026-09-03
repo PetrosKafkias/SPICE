@@ -1,4 +1,3 @@
-/* global console */
 import { pathToFileURL } from "node:url";
 
 const artifactModule = await import(

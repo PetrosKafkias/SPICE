@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import {
   Accessibility,
@@ -37,13 +38,29 @@ import ctaLandscape from '../../imports/Homepage/06fb18451018d0df34b31fdeacb7bf2
 import chatbotImage from '../../assets/tool-ai-chatbot.png';
 import forumImage from '../../assets/tool-forum-voting.png';
 import methodologyImage from '../../assets/methodology-card.png';
-import analogueToolsSource from '../data/analogueToolsSource.json';
+import coCreationProcessImage from '../../imports/Homepage/bf12a0be312c383c6259b344bc7d9c1812490034.png';
+import itiLogo from '../../assets/partners/iti.png';
+import kepaLogo from '../../assets/partners/kepa.png';
+import drevenLogo from '../../assets/partners/dreven.png';
+import codesignLogo from '../../assets/partners/codesign.png';
+import iridraLogo from '../../assets/partners/iridra.png';
+import uabLogo from '../../assets/partners/uab.png';
+import ensaLogo from '../../assets/partners/ensa.png';
+import impactHubLogo from '../../assets/partners/impact-hub.png';
+import euradaLogo from '../../assets/partners/eurada.png';
+import arrLogo from '../../assets/partners/arr.png';
+import makeItBetterLogo from '../../assets/partners/make-it-better.png';
+import arcticFactoryLogo from '../../assets/partners/arctic-factory.png';
+import thessalonikiLogo from '../../assets/partners/city-thessaloniki.png';
+import rovaseudunLogo from '../../assets/partners/rovaseudun.png';
+import cubaLogo from '../../assets/partners/municipio-cuba.png';
+import { getTools } from '../data/tools';
 
 const PILOTS = [
-  { code: 'GR', cityKey: 'home.pilot.thessaloniki', countryKey: 'home.country.greece' },
-  { code: 'FI', cityKey: 'home.pilot.rovaniemi', countryKey: 'home.country.finland' },
-  { code: 'PL', cityKey: 'home.pilot.bielsko', countryKey: 'home.country.poland' },
-  { code: 'PT', cityKey: 'home.pilot.cuba', countryKey: 'home.country.portugal' },
+  { code: 'GR', slug: 'thessaloniki', cityKey: 'home.pilot.thessaloniki', countryKey: 'home.country.greece', titleKey: 'pilots.site.thessaloniki.title', focusKey: 'pilots.site.thessaloniki.focus' },
+  { code: 'FI', slug: 'rovaniemi', cityKey: 'home.pilot.rovaniemi', countryKey: 'home.country.finland', titleKey: 'pilots.site.rovaniemi.title', focusKey: 'pilots.site.rovaniemi.focus' },
+  { code: 'PL', slug: 'bielsko-biala', cityKey: 'home.pilot.bielsko', countryKey: 'home.country.poland', titleKey: 'pilots.site.bielsko-biala.title', focusKey: 'pilots.site.bielsko-biala.focus' },
+  { code: 'PT', slug: 'cuba', cityKey: 'home.pilot.cuba', countryKey: 'home.country.portugal', titleKey: 'pilots.site.cuba.title', focusKey: 'pilots.site.cuba.focus' },
 ];
 
 const PILLARS = [
@@ -54,6 +71,13 @@ const PILLARS = [
 ];
 
 const DIGITAL_TOOLS = [
+  {
+    icon: Workflow,
+    titleKey: 'nav.coCreationHub',
+    textKey: 'home.tool.processText',
+    image: coCreationProcessImage,
+    path: '/co-creation-hub',
+  },
   {
     icon: Map,
     titleKey: 'home.tool.citivoiceTitle',
@@ -84,7 +108,7 @@ const PLATFORM_LINKS = [
     textKey: 'home.tool.repositoryText',
     image: repositoryImage,
     path: '/repository',
-    category: 'Knowledge and Results',
+    categoryKey: 'home.categoryKnowledge',
   },
   {
     icon: Vote,
@@ -92,7 +116,7 @@ const PLATFORM_LINKS = [
     textKey: 'home.tool.forumText',
     image: forumImage,
     path: '/forum-voting',
-    category: 'Participation and Deliberation',
+    categoryKey: 'home.categoryParticipation',
   },
   {
     icon: BookOpenCheck,
@@ -100,14 +124,9 @@ const PLATFORM_LINKS = [
     textKey: 'home.tool.methodologyText',
     image: methodologyImage,
     path: '/methodology',
-    category: 'Guidance and Process',
+    categoryKey: 'home.categoryGuidance',
   },
 ];
-
-const SOURCE_TOOLS = analogueToolsSource as Array<{ id: string; name: string; shortDesc: string; phase: number }>;
-const ANALOGUE_PREVIEW = [1, 2, 3, 4, 5]
-  .map((phase) => SOURCE_TOOLS.find((tool) => tool.phase === phase))
-  .filter((tool): tool is (typeof SOURCE_TOOLS)[number] => Boolean(tool));
 
 const LANGUAGE_FEATURES = [
   { n: 1, titleKey: 'home.feature.localized', textKey: 'home.feature.localizedText' },
@@ -124,9 +143,31 @@ const LANGUAGE_LABELS = [
   'PT: Co-Criação',
 ];
 
+const PARTNERS = [
+  { name: 'Information Technologies Institute', image: itiLogo },
+  { name: 'KEPA Business and Cultural Development Centre', image: kepaLogo },
+  { name: 'DREVEN', image: drevenLogo },
+  { name: 'CODESIGN Toscana', image: codesignLogo },
+  { name: 'IRIDRA', image: iridraLogo },
+  { name: 'Universitat Autònoma de Barcelona', image: uabLogo },
+  { name: 'ENSA Nantes', image: ensaLogo },
+  { name: 'Impact Hub', image: impactHubLogo },
+  { name: 'EURADA', image: euradaLogo },
+  { name: 'ARR', image: arrLogo },
+  { name: 'Make It Better', image: makeItBetterLogo },
+  { name: 'Arctic Factory', image: arcticFactoryLogo },
+  { name: 'City of Thessaloniki', image: thessalonikiLogo },
+  { name: 'Rovaseudun Markkinakiinteistöt', image: rovaseudunLogo },
+  { name: 'Município de Cuba', image: cubaLogo },
+];
+
 export default function HomePage() {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { language, t, formatNumber } = useI18n();
+  const sourceTools = useMemo(() => getTools(language), [language]);
+  const analoguePreview = useMemo(() => [1, 2, 3, 4, 5]
+    .map((phase) => sourceTools.find((tool) => tool.phase === phase))
+    .filter((tool): tool is (typeof sourceTools)[number] => Boolean(tool)), [sourceTools]);
 
   return (
     <SpicePublicShell variant="public">
@@ -134,17 +175,17 @@ export default function HomePage() {
         <section className="relative overflow-hidden border-b border-[#edd9c6] bg-[linear-gradient(112deg,#fff_0%,#fffaf5_58%,#fde5ce_100%)]">
           <div className="relative mx-auto grid max-w-[1440px] items-center gap-14 px-6 py-14 lg:grid-cols-[0.9fr_1.1fr] lg:px-12 lg:py-20">
             <div className="max-w-[590px]">
-              <p className="mb-4 text-[13px] font-bold uppercase text-[#ca7428]">New European Bauhaus guided co-creation</p>
-              <h1 className="max-w-[540px] text-[38px] font-bold leading-tight text-[#383838] md:text-[48px]">Shape Better Public Spaces Together</h1>
+              <p className="mb-4 text-[13px] font-bold uppercase text-[#ca7428]">{t('home.nebEyebrow')}</p>
+              <h1 className="max-w-[540px] text-[38px] font-bold leading-tight text-[#383838] md:text-[48px]">{t('home.nebTitle')}</h1>
               <div className="mt-5 h-1 w-[150px] bg-[#f68b2c]" />
               <p className="mt-6 max-w-[560px] text-[17px] font-medium leading-relaxed text-[#4c4c4c] md:text-[19px]">
-                SPICE brings communities, municipalities, participatory methods, and technology together to reshape public spaces around real local needs.
+                {t('home.nebText')}
               </p>
-              <div className="mt-7 flex flex-wrap gap-2" aria-label="New European Bauhaus values">
+              <div className="mt-7 flex flex-wrap gap-2" aria-label={t('home.nebValues')}>
                 {[
-                  ['Sustainable', Leaf],
-                  ['Together', HeartHandshake],
-                  ['Beautiful', Palette],
+                  [t('home.sustainable'), Leaf],
+                  [t('home.together'), HeartHandshake],
+                  [t('home.beautiful'), Palette],
                 ].map(([label, Icon]) => {
                   const ValueIcon = Icon as typeof Leaf;
                   return <span key={label as string} className="inline-flex items-center gap-2 border border-[#d9b08b] bg-white px-3 py-2 text-[13px] font-bold text-[#555]"><ValueIcon size={17} className="text-[#ca7428]" />{label as string}</span>;
@@ -155,50 +196,46 @@ export default function HomePage() {
                   onClick={() => navigate('/register')}
                   className="cursor-pointer bg-[#f68b2c] px-6 py-4 text-[16px] font-semibold text-white transition-colors hover:bg-[#e07a20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#444] active:bg-[#ca7428]"
                 >
-                  Sign Up
+                  {t('nav.signUp')}
                 </button>
                 <button
                   onClick={() => navigate('/explore-toolkit')}
                   className="cursor-pointer border-2 border-[#444] bg-white px-6 py-4 text-[16px] font-semibold text-[#444] transition-colors hover:border-[#ca7428] hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428] active:bg-[#f4f4f4]"
                 >
-                  Explore the Toolkit
+                  {t('home.exploreToolkit')}
                 </button>
               </div>
               <button type="button" onClick={() => navigate('/methodology')} className="mt-5 inline-flex cursor-pointer items-center gap-2 font-bold text-[#a95f20] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]">
-                View the Methodology <ArrowRight size={17} />
+                {t('home.viewMethodology')} <ArrowRight size={17} />
               </button>
             </div>
 
-            <div className="relative border-2 border-[#d9b08b] bg-white p-5 shadow-[10px_12px_32px_rgba(125,78,36,0.16)] md:p-7" aria-label="SPICE participatory co-creation ecosystem">
+            <div className="relative spice-card p-5 md:p-7" aria-label={t('home.ecosystemAria')}>
               <div className="mb-6 text-center">
-                <h2 className="text-[24px] font-bold text-[#383838] md:text-[28px]">People, place, and purpose in one process</h2>
+                <h2 className="text-[24px] font-bold text-[#383838] md:text-[28px]">{t('home.ecosystemTitle')}</h2>
               </div>
               <div className="relative grid gap-3 sm:grid-cols-2">
                 {[
                   {
-                    title: 'Nature-Based Solutions',
-                    text: 'Regenerative responses grounded in local ecology.',
+                    title: t('home.nbsTitle'), text: t('home.nbsText'),
                     icon: Leaf,
                     tone: 'border-[#a8bd65] bg-[#f3f7e8]',
                     iconTone: 'bg-[#dfe9bc] text-[#637948]',
                   },
                   {
-                    title: 'New European Bauhaus',
-                    text: 'Sustainable, together, and beautiful by design.',
+                    title: t('home.nebCardTitle'), text: t('home.nebCardText'),
                     icon: Palette,
                     tone: 'border-[#d78770] bg-[#fff2ed]',
                     iconTone: 'bg-[#f3d1c6] text-[#a85743]',
                   },
                   {
-                    title: 'Participatory Co-Design',
-                    text: 'Citizens and institutions shape priorities together.',
+                    title: t('home.codesignTitle'), text: t('home.codesignText'),
                     icon: HeartHandshake,
                     tone: 'border-[#e3a55e] bg-[#fff7ed]',
                     iconTone: 'bg-[#f9dfbd] text-[#b86620]',
                   },
                   {
-                    title: 'Digital Enablement',
-                    text: 'Technology supports engagement, evidence, and access.',
+                    title: t('home.digitalEnablementTitle'), text: t('home.digitalEnablementText'),
                     icon: MonitorSmartphone,
                     tone: 'border-[#a9a8ad] bg-[#f5f5f6]',
                     iconTone: 'bg-[#e3e3e6] text-[#555]',
@@ -215,44 +252,38 @@ export default function HomePage() {
                 </div>
               </div>
               <p className="mt-5 text-center text-[13px] font-semibold leading-relaxed text-[#66513e]">
-                Analogue and digital tools support inclusive participation from local challenge to shared decision.
+                {t('home.ecosystemCaption')}
               </p>
             </div>
           </div>
         </section>
 
         <section className="border-b border-[#e4e4e4] bg-[#f8f8f8] px-6 py-14 md:px-12">
-          <div className="mx-auto max-w-[1360px]">
+          <div className="mx-auto max-w-[1440px]">
             <div className="mb-9 text-center">
-              <p className="text-[12px] font-bold uppercase text-[#ca7428]">A clear path through SPICE</p>
-              <h2 className="mt-2 text-[28px] font-bold text-[#383838] md:text-[34px]">From a local aim to shared outcomes</h2>
-              <p className="mx-auto mt-3 max-w-[720px] text-[15px] font-medium leading-relaxed text-[#555]">Frame what matters, bring the right people and tools together, then turn participation into useful evidence and action.</p>
+              <p className="text-[12px] font-bold uppercase text-[#ca7428]">{t('home.pathEyebrow')}</p>
+              <h2 className="mt-2 text-[28px] font-bold text-[#383838] md:text-[34px]">{t('home.pathTitle')}</h2>
+              <p className="mx-auto mt-3 max-w-[720px] text-[15px] font-medium leading-relaxed text-[#555]">{t('home.pathText')}</p>
             </div>
             <div className="grid gap-5 lg:grid-cols-3">
               {[
                 {
-                  step: 'Step 1',
-                  title: 'Define the Aim',
+                  step: t('home.step1'), title: t('home.step1Title'),
                   icon: Target,
-                  text: 'Understand the challenge, frame the pilot, identify stakeholders, and set participation objectives.',
-                  items: ['Local challenge', 'Pilot context', 'Participation goals'],
+                  text: t('home.step1Text'), items: [t('home.step1Item1'), t('home.step1Item2'), t('home.step1Item3')],
                 },
                 {
-                  step: 'Step 2',
-                  title: 'Co-Create with SPICE',
+                  step: t('home.step2'), title: t('home.step2Title'),
                   icon: Workflow,
-                  text: 'Follow the methodology and combine analogue methods, digital services, deliberation, and knowledge.',
-                  items: ['Methods and tools', 'Discussion and voting', 'Shared resources'],
+                  text: t('home.step2Text'), items: [t('home.step2Item1'), t('home.step2Item2'), t('home.step2Item3')],
                 },
                 {
-                  step: 'Step 3',
-                  title: 'Create Outcomes',
+                  step: t('home.step3'), title: t('home.step3Title'),
                   icon: Lightbulb,
-                  text: 'Turn community input into ideas, priorities, documented outputs, reports, and better-informed decisions.',
-                  items: ['Shared understanding', 'Evidence and reports', 'Actionable priorities'],
+                  text: t('home.step3Text'), items: [t('home.step3Item1'), t('home.step3Item2'), t('home.step3Item3')],
                 },
               ].map(({ step, title, icon: Icon, text, items }, index) => (
-                <article key={step} className="relative flex min-h-[285px] flex-col border-2 border-[#d7d8dc] bg-white p-6 shadow-[5px_6px_18px_rgba(68,68,68,0.09)]">
+                <article key={step} className="relative flex min-h-[285px] flex-col spice-card p-6">
                   <div className="flex items-center justify-between gap-4">
                     <span className="text-[12px] font-bold uppercase text-[#ca7428]">{step}</span>
                     <span className="grid h-11 w-11 place-items-center rounded-full bg-[#fff0e1] text-[#ca7428]"><Icon size={22} /></span>
@@ -264,8 +295,8 @@ export default function HomePage() {
                   </ul>
                   {index < 2 ? (
                     <>
-                      <ArrowDown className="absolute -bottom-4 right-5 z-10 rounded-full bg-[#f8f8f8] p-1 text-[#ca7428] lg:hidden" size={32} aria-hidden="true" />
-                      <ArrowRight className="absolute -right-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full bg-[#f8f8f8] p-1 text-[#ca7428] lg:block" size={32} aria-hidden="true" />
+                      <ArrowDown className="absolute -bottom-4 right-5 z-10 rounded-full border-2 border-[#bfc0c5] bg-white p-1 text-[#ca7428] lg:hidden" size={32} aria-hidden="true" />
+                      <ArrowRight className="absolute -right-7 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border-2 border-[#bfc0c5] bg-white p-1 text-[#ca7428] lg:block" size={32} aria-hidden="true" />
                     </>
                   ) : null}
                 </article>
@@ -275,34 +306,55 @@ export default function HomePage() {
         </section>
 
         <section className="bg-white px-6 py-12 md:px-12">
-          <div className="mx-auto max-w-[1360px]">
+          <div className="mx-auto max-w-[1440px]">
             <div className="mb-12 flex flex-col items-center gap-4 text-center">
               <Building2 size={34} className="text-black" />
               <h2 className="text-[24px] font-bold text-black">{t('home.pilotSites')}</h2>
-              <p className="max-w-[720px] text-[15px] font-medium leading-relaxed text-[#555]">Discover the four European pilot contexts where communities are testing inclusive approaches to reshaping public space.</p>
+              <p className="max-w-[720px] text-[15px] font-medium leading-relaxed text-[#555]">{t('home.pilotSitesText')}</p>
             </div>
             <div className="grid gap-8 text-center sm:grid-cols-2 lg:grid-cols-4">
               {PILOTS.map((pilot) => (
-                <div key={pilot.code} className="flex flex-col items-center gap-2">
-                  <PilotFlag code={pilot.code} />
-                  <p className="text-[18px] font-medium text-black md:text-[20px]">{t(pilot.cityKey as TranslationKey)}</p>
-                  <p className="text-[16px] font-medium text-black">{t(pilot.countryKey as TranslationKey)}</p>
-                </div>
+                <button
+                  key={pilot.code}
+                  type="button"
+                  onClick={() => navigate(`/pilot-sites/${pilot.slug}`)}
+                  className="spice-interactive-card group flex min-h-[270px] flex-col overflow-hidden text-left"
+                  aria-label={`${t(pilot.cityKey as TranslationKey)}, ${t(pilot.countryKey as TranslationKey)}`}
+                >
+                  <span className="flex items-center justify-between gap-4 border-b border-[#e4e4e4] bg-[#fafafa] px-5 py-4 transition-colors duration-300 group-hover:bg-[#fff4e9]">
+                    <span className="grid h-12 w-16 place-items-center rounded-full bg-white shadow-sm">
+                      <PilotFlag code={pilot.code} label={t(pilot.countryKey as TranslationKey)} />
+                    </span>
+                    <span className="spice-interactive-icon grid h-10 w-10 place-items-center rounded-full">
+                      <ArrowRight size={19} aria-hidden="true" />
+                    </span>
+                  </span>
+                  <span className="flex flex-1 flex-col px-5 py-5">
+                    <span className="text-[11px] font-bold uppercase tracking-wide text-[#a85f20]">{t(pilot.countryKey as TranslationKey)}</span>
+                    <span className="mt-2 text-[21px] font-bold leading-tight text-[#333]">{t(pilot.cityKey as TranslationKey)}</span>
+                    <span className="mt-2 text-[14px] font-semibold leading-snug text-[#555]">{t(pilot.titleKey as TranslationKey)}</span>
+                    <span className="mt-3 line-clamp-2 text-[13px] font-medium leading-relaxed text-[#666]">{t(pilot.focusKey as TranslationKey)}</span>
+                    <span className="mt-auto inline-flex items-center gap-2 pt-5 text-[13px] font-bold text-[#ca7428]">
+                      {t('account.viewPilot')}
+                      <ArrowRight size={16} className="transition-transform duration-300 ease-out group-hover:translate-x-1 motion-reduce:transform-none" aria-hidden="true" />
+                    </span>
+                  </span>
+                </button>
               ))}
             </div>
           </div>
         </section>
 
         <section className="bg-[#f7f7f7] px-6 py-12 md:px-12">
-          <div className="mx-auto max-w-[1360px]">
+          <div className="mx-auto max-w-[1440px]">
             <div className="mb-10 flex flex-col items-center gap-4 text-center">
               <Landmark size={34} className="text-black" />
               <h2 className="text-[24px] font-bold text-black">{t('home.pillars')}</h2>
-              <p className="max-w-[720px] text-[15px] font-medium leading-relaxed text-[#555]">The shared principles that keep every SPICE activity accessible, responsible, participatory, and connected to real decisions.</p>
+              <p className="max-w-[720px] text-[15px] font-medium leading-relaxed text-[#555]">{t('home.pillarsText')}</p>
             </div>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {PILLARS.map(({ icon: Icon, titleKey, textKey }) => (
-                <div key={titleKey} className="bg-white p-6 shadow-[8px_8px_28px_rgba(0,0,0,0.16)]">
+                <div key={titleKey} className="spice-card p-6">
                   <div className="mb-4 flex items-center gap-3">
                     <span className="grid h-10 w-10 place-items-center rounded-full bg-[rgba(246,139,44,0.16)] text-[#ca7428]">
                       <Icon size={23} />
@@ -317,16 +369,19 @@ export default function HomePage() {
         </section>
 
         <section className="bg-white px-6 py-14 md:px-12">
-          <div className="mx-auto max-w-[1360px]">
+          <div className="mx-auto max-w-[1440px]">
             <div className="mb-10 flex flex-col items-center gap-4 text-center">
               <ClipboardList size={34} className="text-black" />
               <h2 className="text-[24px] font-bold text-black">{t('home.analogueTools')}</h2>
               <p className="max-w-[760px] text-[15px] font-medium leading-relaxed text-[#555]">{t('home.analogueToolsText')}</p>
             </div>
+            <p className="mb-4 text-center text-[13px] font-bold uppercase tracking-wide text-[#ca7428]">
+              {t('home.analoguePreviewCount', { visible: formatNumber(analoguePreview.length), total: formatNumber(sourceTools.length) })}
+            </p>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-              {ANALOGUE_PREVIEW.map((tool) => (
-                <button key={tool.id} type="button" onClick={() => navigate(`/analogue-tools?tool=${tool.id}`)} className="spice-interactive-card group flex min-h-[220px] flex-col p-5 text-left">
-                  <span className="inline-flex min-h-9 w-fit items-center bg-[#fff0e1] px-3 text-[12px] font-bold uppercase text-[#ca7428]">Phase {tool.phase}</span>
+              {analoguePreview.map((tool) => (
+                <button key={tool.id} type="button" onClick={() => navigate(`/tool-detail/${tool.id}`)} className="spice-interactive-card group flex min-h-[220px] flex-col p-5 text-left">
+                  <span className="inline-flex min-h-9 w-fit items-center bg-[#fff0e1] px-3 text-[12px] font-bold uppercase text-[#ca7428]">{t('hub.phaseNumber', { phase: tool.phase })}</span>
                   <h3 className="mt-5 text-[17px] font-bold leading-tight text-[#333]">{tool.name}</h3>
                   <p className="mt-3 line-clamp-4 text-[13px] font-medium leading-relaxed text-[#666]">{tool.shortDesc || t('home.sourceDescriptionUnavailable')}</p>
                 </button>
@@ -339,11 +394,11 @@ export default function HomePage() {
         </section>
 
         <section id="digital-tools" className="scroll-mt-24 bg-white px-6 py-14 md:px-12">
-          <div className="mx-auto max-w-[1360px]">
+          <div className="mx-auto max-w-[1440px]">
             <div className="mb-12 flex flex-col items-center gap-4 text-center">
               <MonitorSmartphone size={34} className="text-black" />
               <h2 className="text-[24px] font-bold text-black">{t('home.digitalTools')}</h2>
-              <p className="max-w-[760px] text-[15px] font-medium leading-relaxed text-[#555]">Use SPICE digital services to guide a process, collect local input, explore spatial ideas, and receive contextual support.</p>
+              <p className="max-w-[760px] text-[15px] font-medium leading-relaxed text-[#555]">{t('home.digitalToolsText')}</p>
             </div>
             <div className="grid gap-7 sm:grid-cols-2 xl:grid-cols-4 md:gap-8">
               {DIGITAL_TOOLS.map(({ icon: Icon, titleKey, textKey, image, path }) => (
@@ -352,7 +407,7 @@ export default function HomePage() {
                   onClick={() => navigate(path)}
                   className="spice-interactive-card group flex min-h-[390px] flex-col p-5 text-left md:min-h-[410px]"
                 >
-                  <span className="mb-4 grid h-11 w-11 place-items-center rounded-full bg-[rgba(246,139,44,0.16)] text-[#ca7428] transition-[background-color,transform] duration-300 ease-out group-hover:scale-105 group-hover:bg-[#f68b2c] group-hover:text-white motion-reduce:transform-none">
+                  <span className="spice-interactive-icon mb-4 grid h-11 w-11 place-items-center rounded-full">
                     <Icon size={23} />
                   </span>
                   <h3 className="text-[18px] font-bold leading-tight text-black">{t(titleKey as TranslationKey)}</h3>
@@ -365,17 +420,17 @@ export default function HomePage() {
         </section>
 
         <section className="bg-[#f7f7f7] px-6 py-14 md:px-12">
-          <div className="mx-auto max-w-[1360px]">
+          <div className="mx-auto max-w-[1440px]">
             <div className="mb-10 flex flex-col items-center gap-4 text-center">
               <ListChecks size={34} className="text-black" />
               <h2 className="text-[24px] font-bold text-black">{t('home.explorePlatform')}</h2>
-              <p className="max-w-[760px] text-[15px] font-medium leading-relaxed text-[#555]">Move from participation to reusable knowledge through deliberation, documented outputs, and a consistent co-creation methodology.</p>
+              <p className="max-w-[760px] text-[15px] font-medium leading-relaxed text-[#555]">{t('home.platformText')}</p>
             </div>
             <div className="grid gap-7 md:grid-cols-3">
-              {PLATFORM_LINKS.map(({ icon: Icon, titleKey, textKey, image, path, category }) => (
+              {PLATFORM_LINKS.map(({ icon: Icon, titleKey, textKey, image, path, categoryKey }) => (
                 <button key={titleKey} type="button" onClick={() => navigate(path)} className="spice-interactive-card group flex min-h-[390px] flex-col p-5 text-left">
-                  <span className="mb-4 grid h-11 w-11 place-items-center rounded-full bg-[#fff0e1] text-[#ca7428]"><Icon size={23} /></span>
-                  <span className="mb-2 text-[11px] font-bold uppercase text-[#a85f20]">{category}</span>
+                  <span className="spice-interactive-icon mb-4 grid h-11 w-11 place-items-center rounded-full"><Icon size={23} /></span>
+                  <span className="mb-2 text-[11px] font-bold uppercase text-[#a85f20]">{t(categoryKey as TranslationKey)}</span>
                   <h3 className="text-[18px] font-bold text-black">{t(titleKey as TranslationKey)}</h3>
                   <p className="mt-3 min-h-[58px] text-[14px] font-medium leading-snug text-black">{t(textKey as TranslationKey)}</p>
                   <img src={image} alt="" className="mt-auto aspect-[1.52] w-full object-cover" />
@@ -424,6 +479,22 @@ export default function HomePage() {
                   <h3 className="mt-4 text-[20px] font-bold">{t(feature.titleKey as TranslationKey)}</h3>
                   <p className="mt-3 text-[16px] font-medium leading-snug">{t(feature.textKey as TranslationKey)}</p>
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-[#e6e6e6] bg-[#fafafa] px-6 py-12 md:px-12" aria-labelledby="partners-title">
+          <div className="mx-auto max-w-[1280px]">
+            <div className="text-center">
+              <h2 id="partners-title" className="text-[28px] font-bold text-[#444] md:text-[34px]">{t('home.partners')}</h2>
+              <span className="mx-auto mt-4 block h-1 w-28 bg-[#ca7428]" aria-hidden="true" />
+            </div>
+            <div className="mt-9 grid grid-cols-2 items-center gap-x-7 gap-y-6 sm:grid-cols-3 lg:grid-cols-5" role="list" aria-label={t('home.partnersAria')}>
+              {PARTNERS.map((partner) => (
+                <figure key={partner.name} role="listitem" className="flex min-h-24 items-center justify-center px-2 py-2">
+                  <img src={partner.image} alt={partner.name} className="h-20 w-full object-contain mix-blend-multiply sm:h-24" loading="lazy" />
+                </figure>
               ))}
             </div>
           </div>

@@ -57,21 +57,41 @@
 
   .spice-interactive-card {
     cursor: pointer;
-    border: 2px solid #d7d8dc;
-    background-color: #fff;
+    border: 2px solid var(--border-default, #d7d8dc);
+    background-color: var(--surface-card, #fff);
+    border-radius: var(--radius-card, 4px);
     box-shadow: 4px 5px 16px rgba(68, 68, 68, 0.1);
     transition:
-      border-color 250ms ease,
-      box-shadow 250ms ease,
-      background-color 250ms ease;
+      border-color 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .spice-interactive-icon {
+    background-color: rgba(246, 139, 44, 0.16);
+    color: #ca7428;
+    transition:
+      color 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .spice-interactive-card:hover,
   .spice-interactive-card:focus-visible,
   .spice-interactive-card:focus-within {
-    border-color: #f68b2c;
+    border-color: var(--border-active, #f68b2c);
     box-shadow: 0 10px 26px rgba(246, 139, 44, 0.28);
-    background-color: #fffaf5;
+    background-color: var(--surface-active, #fffaf5);
+  }
+
+  .spice-interactive-card:hover .spice-interactive-icon,
+  .spice-interactive-card:focus-visible .spice-interactive-icon,
+  .spice-interactive-card:focus-within .spice-interactive-icon {
+    background-color: #f68b2c;
+    color: #fff;
+    box-shadow: 0 5px 14px rgba(246, 139, 44, 0.24);
+    transform: scale(1.05);
   }
 
   .spice-interactive-card:focus-visible {
@@ -83,11 +103,65 @@
     background-color: #fff4e9;
     box-shadow: 0 5px 14px rgba(246, 139, 44, 0.24);
   }
+
+  .spice-card {
+    border: 2px solid var(--border-default, #bfc0c5);
+    background-color: var(--surface-card, #fff);
+    border-radius: var(--radius-card, 4px);
+  }
+
+  .spice-card-dashed {
+    border: 2px dashed var(--border-default, #bfc0c5);
+    background-color: var(--surface-card, #fff);
+    border-radius: var(--radius-card, 4px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .spice-interactive-card {
+  .spice-interactive-card,
+  .spice-interactive-icon {
     transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
   }
 
+  .spice-interactive-card:hover .spice-interactive-icon,
+  .spice-interactive-card:focus-visible .spice-interactive-icon,
+  .spice-interactive-card:focus-within .spice-interactive-icon {
+    transform: none;
+  }
+
+}
+
+@keyframes spice-tutorial-reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spice-tutorial-target {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(246, 139, 44, 0); }
+  50% { box-shadow: 0 0 0 9px rgba(246, 139, 44, 0.16); }
+}
+
+@keyframes spice-tutorial-pointer {
+  0%, 100% { transform: translate(8px, 8px); opacity: 0.35; }
+  45%, 70% { transform: translate(0, 0); opacity: 1; }
+}
+
+.spice-tutorial-preview {
+  animation: spice-tutorial-reveal 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.spice-tutorial-target {
+  animation: spice-tutorial-target 2200ms ease-in-out infinite;
+}
+
+.spice-tutorial-pointer {
+  animation: spice-tutorial-pointer 2400ms cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spice-tutorial-preview,
+  .spice-tutorial-target,
+  .spice-tutorial-pointer {
+    animation: none;
+  }
 }

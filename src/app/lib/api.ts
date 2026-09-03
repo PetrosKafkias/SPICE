@@ -1,11 +1,13 @@
 export class ApiError extends Error {
   status: number;
+  code: string;
   fieldErrors?: Record<string, string>;
 
-  constructor(message: string, status: number, fieldErrors?: Record<string, string>) {
+  constructor(message: string, status: number, code = 'SERVER_ERROR', fieldErrors?: Record<string, string>) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
+    this.code = code;
     this.fieldErrors = fieldErrors;
   }
 }
@@ -29,6 +31,7 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}): Pr
     throw new ApiError(
       payload?.error || `Request failed with status ${response.status}.`,
       response.status,
+      payload?.code || 'SERVER_ERROR',
       payload?.fieldErrors,
     );
   }

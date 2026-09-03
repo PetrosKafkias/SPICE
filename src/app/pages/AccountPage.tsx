@@ -31,6 +31,11 @@ import { useAuth, type AuthUser } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
 import type { TranslationKey } from '../i18n/translations';
 import { apiRequest, ApiError, jsonBody } from '../lib/api';
+import { pilotSlug } from '../lib/pilot';
+import { statusKey } from '../lib/statusLabel';
+import { normalizeRole, roleKey } from '../auth/permissions';
+import { localizedApiError, localizedFieldErrors } from '../lib/localizedApiError';
+import LoadingState from '../components/LoadingState';
 import cityImage from '../../imports/UserDetails/be2976c93a8eb6ace1815c8325f750a633bc4ba8.png';
 
 type AccountTab = 'details' | 'notifications' | 'privacy' | 'rate';
@@ -46,6 +51,7 @@ interface NotificationItem {
   archived: boolean;
   createdAt: string;
   eventType: string;
+  payload: Record<string, unknown>;
   actionUrl: string | null;
 }
 
@@ -56,10 +62,6 @@ interface NotificationCounts {
 }
 
 const PILOT_SITES = ['Thessaloniki', 'Rovaniemi', 'Bielsko-Biala', 'Cuba'];
-
-function pilotSlug(pilotSite: string) {
-  return pilotSite.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-}
 
 function useAccountTab(): AccountTab {
   const { pathname } = useLocation();
@@ -80,7 +82,7 @@ function Sidebar({ tab }: { tab: AccountTab }) {
   ];
 
   return (
-    <aside className="w-full border-2 border-[#b2b2b8] bg-white p-5 md:w-[236px] md:flex-shrink-0 md:p-6 lg:w-[300px]">
+    <aside className="w-full spice-card p-5 md:w-[236px] md:flex-shrink-0 md:p-6 lg:w-[300px]">
       <h2 className="mb-5 text-[20px] font-semibold text-[#444] md:mb-7 md:text-[22px]">{t('account.navigation')}</h2>
       <nav className="grid gap-2 sm:grid-cols-2 md:grid-cols-1" aria-label={t('account.navigation')}>
         {items.map(({ id, labelKey, path, icon: Icon }) => (
@@ -147,9 +149,8 @@ function ProfileForm({ user, onClose }: { user: AuthUser; onClose: () => void })
       toast.success(t('account.saved'));
       onClose();
     } catch (caught) {
-      const apiError = caught as ApiError;
-      setError(apiError.message || t('common.error'));
-      setFieldErrors(apiError.fieldErrors || {});
+      setError(localizedApiError(t, caught));
+      setFieldErrors(localizedFieldErrors(t, (caught as ApiError).fieldErrors));
     } finally {
       setSaving(false);
     }
@@ -199,7 +200,7 @@ function ProfilePicture({ user, initials, children }: { user: AuthUser; initials
   const saveImage = async (avatarData: string | null) => {
     setSaving(true); setError('');
     try { await updateProfile({ avatarData }); toast.success(avatarData ? t('account.photoSaved') : t('account.photoRemoved')); }
-    catch (caught) { const apiError = caught as ApiError; setError(apiError.fieldErrors?.avatarData || apiError.message || t('common.error')); }
+    catch (caught) { const fields = localizedFieldErrors(t, (caught as ApiError).fieldErrors); setError(fields.avatarData || localizedApiError(t, caught)); }
     finally { setSaving(false); }
   };
 
@@ -226,11 +227,11 @@ function DetailsTab({ user }: { user: AuthUser }) {
   const { t } = useI18n();
   const [editing, setEditing] = useState(false);
   const initials = user.fullName.split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase();
-  const roleKey = `role.${user.role.replaceAll(' ', '')}` as TranslationKey;
+  const localizedRoleKey = roleKey(normalizeRole(user.role));
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="border-2 border-[#b2b2b8] bg-white p-5 md:p-6">
+      <section className="spice-card p-5 md:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h1 className="text-[31px] font-semibold text-[#444] md:text-[34px]">{t('account.manageTitle')}</h1>
@@ -240,7 +241,7 @@ function DetailsTab({ user }: { user: AuthUser }) {
         </div>
 
         <div className="mt-5 border-t border-[#e5e5e5] pt-5">
-          <ProfilePicture user={user} initials={initials}><div className="min-w-[180px] flex-1"><p className="break-words text-[22px] font-bold text-[#444]">{user.fullName}</p><p className="mt-2 flex items-center gap-2 text-[14px] font-medium text-[#666]"><User size={16} />{t(roleKey)}</p></div></ProfilePicture>
+          <ProfilePicture user={user} initials={initials}><div className="min-w-[180px] flex-1"><p className="break-words text-[22px] font-bold text-[#444]">{user.fullName}</p><p className="mt-2 flex items-center gap-2 text-[14px] font-medium text-[#666]"><User size={16} />{t(localizedRoleKey)}</p></div></ProfilePicture>
         </div>
 
         <div className="mt-5 grid gap-x-8 gap-y-5 border-t border-[#ededed] pt-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -252,9 +253,9 @@ function DetailsTab({ user }: { user: AuthUser }) {
         {editing && <ProfileForm user={user} onClose={() => setEditing(false)} />}
       </section>
 
-      <section className="border-2 border-[#b2b2b8] bg-white p-6 md:p-8">
+      <section className="spice-card p-6 md:p-8">
         <div className="mb-6 flex items-start justify-between gap-6"><div><h2 className="text-[30px] font-semibold text-[#444] md:text-[34px]">{t('account.context')}</h2><p className="mt-2 text-[18px] font-medium text-[#555]">{t('account.activeLocation', { pilot: user.pilotSite })}</p></div><Map size={38} className="mt-1 flex-shrink-0 text-[#ca7428]" /></div>
-        <div className="relative h-[300px] overflow-hidden md:h-[440px]"><img src={cityImage} alt={`${user.pilotSite} pilot site`} className="absolute inset-0 h-full w-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-[#713300]/95 via-[#9d4d05]/15 to-transparent" /><div className="absolute inset-x-7 bottom-7 flex flex-col items-start gap-5 text-white sm:flex-row sm:items-end sm:justify-between md:inset-x-10 md:bottom-10"><div><p className="text-[18px] font-bold">{t('account.pilot')}</p><p className="mt-1 text-[27px] font-bold md:text-[34px]">{user.pilotSite}</p></div><Link to={`/pilot-sites/${pilotSlug(user.pilotSite)}`} className="flex min-h-11 cursor-pointer items-center gap-2 border-2 border-white bg-white px-5 py-3 text-[14px] font-bold text-[#9b4e13] transition-colors hover:bg-[#f68b2c] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-white">{t('account.viewPilot')}<ArrowRight size={18} aria-hidden="true" /></Link></div></div>
+        <div className="relative h-[300px] overflow-hidden md:h-[440px]"><img src={cityImage} alt={t('account.pilotImageAlt', { pilot: user.pilotSite })} className="absolute inset-0 h-full w-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-[#713300]/95 via-[#9d4d05]/15 to-transparent" /><div className="absolute inset-x-7 bottom-7 flex flex-col items-start gap-5 text-white sm:flex-row sm:items-end sm:justify-between md:inset-x-10 md:bottom-10"><div><p className="text-[18px] font-bold">{t('account.pilot')}</p><p className="mt-1 text-[27px] font-bold md:text-[34px]">{user.pilotSite}</p></div><Link to={`/pilot-sites/${pilotSlug(user.pilotSite)}`} className="flex min-h-11 cursor-pointer items-center gap-2 border-2 border-white bg-white px-5 py-3 text-[14px] font-bold text-[#9b4e13] transition-colors hover:bg-[#f68b2c] hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-white">{t('account.viewPilot')}<ArrowRight size={18} aria-hidden="true" /></Link></div></div>
       </section>
     </div>
   );
@@ -311,8 +312,43 @@ function NotificationsTab() {
     { value: 'archived', key: 'notifications.archived', count: counts.archived },
   ];
 
+  const notificationText = (notification: NotificationItem) => {
+    const actorName = String(notification.payload?.actorName || '');
+    const proposalTitle = String(notification.payload?.proposalTitle || '');
+    const activityTitle = String(notification.payload?.activityTitle || '');
+    const workflowStatus = t(statusKey(String(notification.payload?.workflowStatus || notification.tag)));
+    switch (notification.eventType) {
+      case 'notification_onboarding':
+        return { title: t('notifications.event.onboardingTitle'), body: t('notifications.event.onboardingBody'), tag: t('notifications.tag.gettingStarted') };
+      case 'proposal_comment':
+        return { title: t('notifications.event.proposalCommentTitle'), body: t('notifications.event.proposalCommentBody', { actor: actorName, proposal: proposalTitle }), tag: t('notifications.tag.comment') };
+      case 'comment_reply':
+        return { title: t('notifications.event.commentReplyTitle'), body: t('notifications.event.commentReplyBody', { actor: actorName, proposal: proposalTitle }), tag: t('notifications.tag.reply') };
+      case 'proposal_status': {
+        const status = t(statusKey(String(notification.payload?.status || notification.tag)));
+        return { title: t('notifications.event.proposalStatusTitle'), body: t('notifications.event.proposalStatusBody', { proposal: proposalTitle, status }), tag: status };
+      }
+      case 'proposal_workflow':
+        return { title: t('notifications.event.proposalWorkflowTitle'), body: t('notifications.event.proposalWorkflowBody', { proposal: proposalTitle, status: workflowStatus }), tag: workflowStatus };
+      case 'activity_workflow':
+        return { title: t('notifications.event.activityWorkflowTitle'), body: t('notifications.event.activityWorkflowBody', { activity: activityTitle, status: workflowStatus }), tag: workflowStatus };
+      case 'scenario_proposed':
+        return { title: t('notifications.event.scenarioTitle'), body: t('notifications.event.scenarioBody'), tag: t('notifications.tag.proposal') };
+      case 'map_reply':
+        return { title: t('notifications.event.mapReplyTitle'), body: t('notifications.event.mapReplyBody'), tag: t('notifications.tag.comment') };
+      case 'repository_summary':
+        return { title: t('notifications.event.repositoryTitle'), body: t('notifications.event.repositoryBody'), tag: t('notifications.tag.repository') };
+      case 'proposal_technical_review':
+        return { title: t('notifications.event.technicalReviewTitle'), body: t('notifications.event.technicalReviewBody'), tag: t('notifications.tag.forum') };
+      case 'profile_preferences_saved':
+        return { title: t('notifications.event.preferencesTitle'), body: t('notifications.event.preferencesBody'), tag: t('notifications.tag.account') };
+      default:
+        return { title: notification.title, body: notification.body, tag: notification.tag };
+    }
+  };
+
   return (
-    <section className="border-2 border-[#b2b2b8] bg-white p-6 md:p-8">
+    <section className="spice-card p-6 md:p-8">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div><h1 className="text-[31px] font-semibold text-[#444] md:text-[34px]">{t('notifications.title')}</h1><p className="mt-2 max-w-[720px] text-[15px] leading-relaxed text-[#555]">{t('notifications.subtitle')}</p></div>
         <button type="button" onClick={markAll} disabled={counts.unread === 0} className="flex w-fit cursor-pointer items-center justify-center gap-2 border-2 border-[#ca7428] px-5 py-3 text-[14px] font-semibold text-[#ca7428] hover:bg-[#fff4e9] disabled:cursor-default disabled:opacity-45"><CheckCheck size={19} />{t('notifications.markAll')}</button>
@@ -325,21 +361,22 @@ function NotificationsTab() {
         </div>
       </div>
 
-      {status === 'loading' && <div className="grid min-h-[220px] place-items-center font-semibold text-[#555]" role="status">{t('common.loading')}</div>}
+      {status === 'loading' && <LoadingState message={t('common.loading')} minHeight="220px" />}
       {status === 'error' && <div className="mt-7 border-l-4 border-red-600 bg-red-50 p-5" role="alert"><p className="font-semibold text-red-800">{t('common.error')}</p><button type="button" onClick={load} className="mt-3 cursor-pointer text-[#ca7428] underline">{t('common.retry')}</button></div>}
-      {status === 'ready' && notifications.length === 0 && <div className="mt-8 border-2 border-dashed border-[#b2b2b8] p-10 text-center text-[15px] font-semibold text-[#666]">{t('notifications.empty')}</div>}
+      {status === 'ready' && notifications.length === 0 && <div className="mt-8 spice-card-dashed p-10 text-center text-[15px] font-semibold text-[#666]">{t('notifications.empty')}</div>}
 
       {status === 'ready' && notifications.length > 0 && (
         <div className="mt-8 divide-y-2 divide-[#e4e4e4]">
           {notifications.map((notification) => {
             const Icon = notification.type === 'comment' ? MessageSquare : notification.type === 'proposal' ? MapPin : Bell;
+            const content = notificationText(notification);
             return (
               <article key={notification.id} className={`flex flex-col gap-5 py-7 sm:flex-row ${notification.isRead ? 'opacity-70' : ''}`}>
                 <div className="grid h-[54px] w-[54px] flex-shrink-0 place-items-center rounded-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.16)]"><Icon size={28} className="text-[#637948]" /></div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between"><h2 className="text-[19px] font-bold text-[#222] md:text-[21px]">{notification.title}{!notification.isRead && <span className="ml-2 inline-block h-2 w-2 rounded-full bg-[#f68b2c] align-middle" aria-label={t('notifications.unread')} />}</h2><p className="flex items-center gap-2 whitespace-nowrap text-[12px] font-medium text-[#555]"><Clock size={14} />{formatDate(notification.createdAt)}</p></div>
-                  <p className="mt-3 text-[15px] leading-relaxed text-[#444]">{notification.body}</p>
-                  <div className="mt-4 flex flex-wrap items-center gap-3"><span className="bg-[#e9e9e9] px-3 py-1.5 text-[13px] font-medium text-black">{notification.tag}</span><span className="text-[13px] font-medium text-[#637948]">{notification.pilot}</span></div>
+                  <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between"><h2 className="text-[19px] font-bold text-[#222] md:text-[21px]">{content.title}{!notification.isRead && <span className="ml-2 inline-block h-2 w-2 rounded-full bg-[#f68b2c] align-middle" aria-label={t('notifications.unread')} />}</h2><p className="flex items-center gap-2 whitespace-nowrap text-[12px] font-medium text-[#555]"><Clock size={14} />{formatDate(notification.createdAt)}</p></div>
+                  <p className="mt-3 text-[15px] leading-relaxed text-[#444]">{content.body}</p>
+                  <div className="mt-4 flex flex-wrap items-center gap-3"><span className="bg-[#e9e9e9] px-3 py-1.5 text-[13px] font-medium text-black">{content.tag}</span><span className="text-[13px] font-medium text-[#637948]">{notification.pilot}</span></div>
                   <div className="mt-5 flex flex-wrap gap-3">
                     {notification.actionUrl && <button type="button" onClick={() => void openNotification(notification)} className="flex cursor-pointer items-center gap-2 bg-[#f68b2c] px-3 py-2 text-[12px] font-semibold text-white hover:bg-[#d8731d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#444]">{t('notifications.viewDiscussion')}<ArrowRight size={14} aria-hidden="true" /></button>}
                     <button type="button" onClick={() => updateNotification(notification, { isRead: !notification.isRead })} className="cursor-pointer border border-[#637948] px-3 py-2 text-[12px] font-semibold text-[#637948] hover:bg-[#edf4e8]">{notification.isRead ? t('notifications.markUnread') : t('notifications.markRead')}</button>
@@ -387,7 +424,7 @@ function PrivacyTab({ user }: { user: AuthUser }) {
 
   return (
     <div className="flex flex-col gap-7">
-      <section className="border-2 border-[#b2b2b8] bg-white p-6 md:p-8" aria-busy={saving}>
+      <section className="spice-card p-6 md:p-8" aria-busy={saving}>
         <h1 className="text-[31px] font-semibold text-[#444] md:text-[34px]">{t('account.privacy')}</h1>
         <p className="mt-2 max-w-[780px] text-[15px] leading-relaxed text-[#555]">{t('account.visibilityText')}</p>
 
@@ -408,7 +445,7 @@ function PrivacyTab({ user }: { user: AuthUser }) {
 
 function RateUsTab() {
   const { t } = useI18n();
-  return <section className="border-2 border-[#b2b2b8] bg-white p-6 md:p-8" aria-labelledby="account-feedback-title"><div className="mb-7 flex items-start gap-4"><span className="grid h-12 w-12 flex-none place-items-center rounded-full bg-[#fff0e2] text-[#ca7428]"><Star size={24} aria-hidden="true" /></span><div><h1 id="account-feedback-title" className="text-[30px] font-semibold text-[#444] md:text-[34px]">{t('feedback.accountTitle')}</h1><p className="mt-2 max-w-[760px] text-[15px] leading-relaxed text-[#555]">{t('feedback.accountText')}</p></div></div><FeedbackForm source="account" includeSus /></section>;
+  return <section className="spice-card p-6 md:p-8" aria-labelledby="account-feedback-title"><div className="mb-7 flex items-start gap-4"><span className="grid h-12 w-12 flex-none place-items-center rounded-full bg-[#fff0e2] text-[#ca7428]"><Star size={24} aria-hidden="true" /></span><div><h1 id="account-feedback-title" className="text-[30px] font-semibold text-[#444] md:text-[34px]">{t('feedback.accountTitle')}</h1><p className="mt-2 max-w-[760px] text-[15px] leading-relaxed text-[#555]">{t('feedback.accountText')}</p></div></div><FeedbackForm source="account" includeSus /></section>;
 }
 
 export default function AccountPage() {
@@ -416,11 +453,11 @@ export default function AccountPage() {
   const { user } = useAuth();
   const { t } = useI18n();
 
-  if (!user) return <div className="grid min-h-screen place-items-center">{t('common.loading')}</div>;
+  if (!user) return <LoadingState message={t('common.loading')} minHeight="100vh" size="lg" />;
 
   return (
     <SpicePublicShell>
-      <div className="mx-auto flex max-w-[1360px] flex-col gap-7 px-5 py-10 md:flex-row md:px-8 md:py-14 xl:px-12">
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-7 px-5 py-10 md:flex-row md:px-8 md:py-14 xl:px-12">
         <Sidebar tab={tab} />
         <main className="min-w-0 flex-1">
           {tab === 'details' && <DetailsTab user={user} />}

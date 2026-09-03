@@ -5,13 +5,14 @@ import AuthLayout from '../components/AuthLayout';
 import { FieldMessage, FormField } from '../components/FormLayout';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
-import { ApiError } from '../lib/api';
+import { localizedApiError, localizedFieldErrors } from '../lib/localizedApiError';
 import { authRoute, safeReturnTo } from '../lib/authRedirect';
+import { roleKey, type Role } from '../auth/permissions';
 
 export default function SignInPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, signIn } = useAuth();
+  const { user, signIn, demoSignIn } = useAuth();
   const { t } = useI18n();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -62,9 +63,21 @@ export default function SignInPage() {
       await signIn(email, password, rememberMe);
       navigate(returnTo, { replace: true });
     } catch (caught) {
-      const apiError = caught as ApiError;
-      setError(apiError.message || t('common.error'));
-      setFieldErrors(apiError.fieldErrors || {});
+      setError(localizedApiError(t, caught));
+      setFieldErrors(localizedFieldErrors(t, (caught as { fieldErrors?: Record<string, string> }).fieldErrors));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDemoSignIn = async (role: 'citizen' | 'facilitator' | 'municipality' | 'admin') => {
+    setSubmitting(true);
+    setError('');
+    try {
+      await demoSignIn(role);
+      navigate(returnTo, { replace: true });
+    } catch {
+      setError(t('auth.demoUnavailable'));
     } finally {
       setSubmitting(false);
     }
@@ -93,17 +106,17 @@ export default function SignInPage() {
         </div>
       )}
 
-      <div className={`${requiresAuthentication ? 'mt-5' : 'mt-7'} grid grid-cols-2 gap-2 rounded-lg bg-[#e9e9e9] p-2`}>
-        <span className="rounded-md bg-white py-2.5 text-center text-[17px] font-semibold text-black" aria-current="page">{t('auth.signIn')}</span>
-        <Link to={authRoute('register', returnTo)} className="cursor-pointer rounded-md py-2.5 text-center text-[17px] font-semibold text-black transition-colors hover:bg-white/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ca7428]">{t('auth.register')}</Link>
+      <div className={`${requiresAuthentication ? 'mt-5' : 'mt-7'} grid grid-cols-2 gap-2 rounded bg-[#e9e9e9] p-2`}>
+        <span className="rounded bg-white py-2.5 text-center text-[17px] font-semibold text-black" aria-current="page">{t('auth.signIn')}</span>
+        <Link to={authRoute('register', returnTo)} className="cursor-pointer rounded py-2.5 text-center text-[17px] font-semibold text-black transition-colors hover:bg-white/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ca7428]">{t('auth.register')}</Link>
       </div>
 
       {error && <div id="signin-form-error" className="mt-5 flex items-start gap-2 border-l-4 border-red-600 bg-red-50 px-4 py-3 text-[14px] font-semibold text-red-800" role="alert" aria-live="assertive"><CircleAlert size={18} className="mt-px flex-none" aria-hidden="true" />{error}</div>}
 
       <form ref={formRef} onSubmit={handleSubmit} className="mt-7 flex flex-col gap-5" noValidate aria-describedby={validationAttempted ? 'signin-form-error' : undefined}>
-        <FormField className="gap-2 text-[17px] font-semibold text-black">
+        <FormField className="w-full gap-2 text-[17px] font-semibold text-black">
           {requiredLabel(t('auth.email'))}
-          <span data-field-control className={`flex items-center gap-3 border-2 px-4 py-3 ${fieldErrors.email ? 'border-red-600 bg-red-50/40' : 'border-[#444] focus-within:border-[#ca7428]'}`}>
+          <span data-field-control className={`flex items-center gap-3 border-2 px-4 py-3 ${fieldErrors.email ? 'border-red-600 bg-red-50/40' : 'border-[#bfc0c5] focus-within:border-[#ca7428]'}`}>
             <Mail size={20} className="flex-shrink-0 text-[#444]" />
             <input
               type="email"
@@ -120,9 +133,9 @@ export default function SignInPage() {
           {fieldError('email', 'signin-email-error')}
         </FormField>
 
-        <FormField className="gap-2 text-[17px] font-semibold text-black">
+        <FormField className="w-full gap-2 text-[17px] font-semibold text-black">
           {requiredLabel(t('auth.password'))}
-          <span data-field-control className={`flex items-center gap-3 border-2 px-4 py-3 ${fieldErrors.password ? 'border-red-600 bg-red-50/40' : 'border-[#444] focus-within:border-[#ca7428]'}`}>
+          <span data-field-control className={`flex items-center gap-3 border-2 px-4 py-3 ${fieldErrors.password ? 'border-red-600 bg-red-50/40' : 'border-[#bfc0c5] focus-within:border-[#ca7428]'}`}>
             <Lock size={20} className="flex-shrink-0 text-[#444]" />
             <input
               type="password"
@@ -153,6 +166,21 @@ export default function SignInPage() {
           {!submitting && <ArrowRight size={22} />}
         </button>
       </form>
+
+      {import.meta.env.DEV && import.meta.env.VITE_ENABLE_DEMO_LOGIN !== 'false' && (
+        <section className="mt-7 border-t-2 border-[#e4e4e4] pt-6" aria-labelledby="demo-access-title">
+          <h2 id="demo-access-title" className="text-[16px] font-bold text-[#444]">{t('auth.devAccess')}</h2>
+          <p className="mt-1 text-[13px] font-semibold text-[#555]">{t('auth.devControls')}</p>
+          <p className="mt-1 text-[13px] leading-relaxed text-[#666]">{t('auth.devControlsText')}</p>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            {(['citizen', 'facilitator', 'municipality', 'admin'] as const).map((role) => (
+              <button key={role} type="button" disabled={submitting} onClick={() => void handleDemoSignIn(role)} className="min-h-11 cursor-pointer border-2 border-[#bfc0c5] bg-white px-3 text-sm font-bold capitalize text-[#444] transition-colors hover:border-[#f68b2c] hover:bg-[#fff4e9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428] disabled:cursor-wait disabled:opacity-60">
+                {t('auth.continueAsRole', { role: t(roleKey(role as Role)) })}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
     </AuthLayout>
   );
 }

@@ -6,6 +6,20 @@
   --spice-orange: #f68b2c;
   --spice-orange-dark: #ca7428;
   --spice-footer: #e2f6cf;
+  --border-subtle: #e5e5e5;
+  --border-default: #bfc0c5;
+  --border-active: #f68b2c;
+  --border-error: #dc2626;
+  --border-success: #2e6e45;
+  --radius-control: 4px;
+  --radius-card: 4px;
+  --radius-modal: 4px;
+  --radius-pill: 9999px;
+  --surface-card: #ffffff;
+  --surface-muted: #f5f5f5;
+  --surface-active: #fff8f2;
+  --spacing-card: 1.5rem;
+  --spacing-group: 1.25rem;
   background: var(--spice-page);
   color: var(--spice-text);
   font-family: 'Montserrat', Inter, system-ui, -apple-system, sans-serif;
@@ -26,7 +40,9 @@
 }
 
 .spice-public .spice-wide-page {
-  max-width: 1320px;
+  /* Match SpicePublicShell's header/footer inner max-width (1440px) so page
+     content lines up with the chrome above and below it instead of drifting narrower. */
+  max-width: 1440px;
 }
 
 .spice-public h1,
@@ -319,7 +335,12 @@ body.spice-a11y-low-saturation .spice-public {
   .spice-public .spice-page {
     padding: 32px 20px 52px;
   }
+}
 
+/* Keep this in lockstep with the nav's own xl:flex / xl:hidden breakpoint (1280px) —
+   a mismatched cutoff here previously left a dead zone (~1024-1279px) where neither
+   the desktop nav nor the mobile menu button was visible. */
+@media (max-width: 1279px) {
   .spice-desktop-nav,
   .spice-desktop-actions {
     display: none;
@@ -327,6 +348,9 @@ body.spice-a11y-low-saturation .spice-public {
 
   .spice-mobile-menu {
     display: block;
+    position: fixed;
+    inset: 76px 0 0 0;
+    z-index: 39;
   }
 
   .spice-mobile-menu-button {

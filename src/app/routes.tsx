@@ -1,9 +1,10 @@
 import { lazy } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router';
 import ProtectedRoute from './components/ProtectedRoute';
+import RequirePermission from './components/RequirePermission';
 import RouteExperience from './components/RouteExperience';
 import PublicFeatureGate from './components/PublicFeatureGate';
-import { Box, DraftingCompass, MapPinned } from 'lucide-react';
+import { Bot, Box, MapPinned } from 'lucide-react';
 
 const PossibleScenariosPage = lazy(() => import('./pages/PossibleScenariosPage'));
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -27,6 +28,10 @@ const SetUpProcessQuestionnairePage = lazy(() => import('./pages/SetUpProcessQue
 const ExploreToolkitPage = lazy(() => import('./pages/ExploreToolkitPage'));
 const ToolDetailPublicPage = lazy(() => import('./pages/ToolDetailPublicPage'));
 const SetUpProcessToolsPage = lazy(() => import('./pages/SetUpProcessToolsPage'));
+const HubInitiativePage = lazy(() => import('./pages/HubInitiativePage'));
+const HubPhaseDetailPage = lazy(() => import('./pages/HubPhaseDetailPage'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +44,15 @@ export const router = createBrowserRouter([
   { path: '/co-creation-process', element: <Navigate to="/co-creation-hub" replace /> },
   { path: '/get-started', element: <Navigate to="/co-creation-hub" replace /> },
   { path: '/co-creation-hub', Component: OverviewPage },
+  { path: '/hub', element: <Navigate to="/co-creation-hub" replace /> },
+  { path: '/hub/:initiativeId', Component: HubInitiativePage },
+  { path: '/hub/:initiativeId/overview', Component: HubInitiativePage },
+  { path: '/hub/:initiativeId/phases', Component: HubInitiativePage },
+  { path: '/hub/:initiativeId/activities', Component: HubInitiativePage },
+  { path: '/hub/:initiativeId/participate', Component: HubInitiativePage },
+  { path: '/hub/:initiativeId/results', Component: HubInitiativePage },
+  { path: '/hub/:initiativeId/resources', Component: HubInitiativePage },
+  { path: '/hub/:initiativeId/phase/:phaseNumber', Component: HubPhaseDetailPage },
   { path: '/overview', element: <Navigate to="/co-creation-hub" replace /> },
   { path: '/repository', Component: RepositoryPublicPage },
   { path: '/repository-public', element: <Navigate to="/repository" replace /> },
@@ -54,9 +68,10 @@ export const router = createBrowserRouter([
   { path: '/tool-detail/:id', Component: ToolDetailPublicPage },
   { path: '/tool/:id', Component: ToolDetailPublicPage },
   { path: '/chatbot', element: <Navigate to="/co-creation-guide" replace /> },
-  { path: '/citivoice-app', element: <PublicFeatureGate icon={MapPinned} eyebrow="Digital tool" title="CitiVoice" description="Collect and review place-based community feedback." capabilities={['Explore how map-based feedback supports participation.', 'Understand how contributions, photos, and priorities are organised.', 'Sign in to submit or manage project feedback.']}><CitiVoiceAppPage /></PublicFeatureGate> },
-  { path: '/3d-scene-editor', element: <PublicFeatureGate icon={Box} eyebrow="Digital tool" title="3D Scene Editor" description="Review and compare public-space design alternatives." capabilities={['Inspect how 3D scenarios support co-design.', 'Compare spatial alternatives before a decision.', 'Sign in to edit, save, or submit a scenario.']}><SceneEditorPublicPage /></PublicFeatureGate> },
-  { path: '/possible-scenarios', element: <PublicFeatureGate icon={DraftingCompass} eyebrow="Digital tool" title="Scenario Comparison" description="Compare community design options and their trade-offs." capabilities={['Browse the purpose and structure of scenario comparison.', 'Understand voting and evidence-based comparison.', 'Sign in to vote, submit, or save scenarios.']}><PossibleScenariosPage /></PublicFeatureGate> },
+  { path: '/co-creation-guide', element: <PublicFeatureGate icon={Bot} eyebrowKey="gate.guide.eyebrow" titleKey="nav.coCreationGuide" descriptionKey="gate.guide.description" capabilityKeys={['gate.guide.capability1', 'gate.guide.capability2', 'gate.guide.capability3']}><CoCreationGuidePage /></PublicFeatureGate> },
+  { path: '/citivoice-app', element: <PublicFeatureGate icon={MapPinned} eyebrowKey="gate.digitalTool" titleKey="nav.citivoice" descriptionKey="gate.citivoice.description" capabilityKeys={['gate.citivoice.capability1', 'gate.citivoice.capability2', 'gate.citivoice.capability3']}><CitiVoiceAppPage /></PublicFeatureGate> },
+  { path: '/3d-scene-editor', element: <PublicFeatureGate icon={Box} eyebrowKey="gate.digitalTool" titleKey="nav.sceneEditor" descriptionKey="gate.scene.description" capabilityKeys={['gate.scene.capability1', 'gate.scene.capability2', 'gate.scene.capability3']}><SceneEditorPublicPage /></PublicFeatureGate> },
+  { path: '/possible-scenarios', Component: PossibleScenariosPage },
   { path: '/scenarios', element: <Navigate to="/possible-scenarios" replace /> },
 
   { path: '/forum-voting', Component: ForumVotingPage },
@@ -72,12 +87,18 @@ export const router = createBrowserRouter([
       { path: '/account/privacy', Component: AccountPage },
       { path: '/account/rate-us', Component: AccountPage },
       { path: '/user-details', element: <Navigate to="/account" replace /> },
-      { path: '/insights', Component: InsightsPage },
+      { path: '/insights', element: <RequirePermission permission="hub:view-analytics"><InsightsPage /></RequirePermission> },
       { path: '/results', element: <Navigate to="/insights" replace /> },
-      { path: '/co-creation-guide', Component: CoCreationGuidePage },
-      { path: '/setup-questionnaire', Component: SetUpProcessQuestionnairePage },
+      { path: '/setup-questionnaire', element: <RequirePermission permission="hub:create"><SetUpProcessQuestionnairePage /></RequirePermission> },
       { path: '/explore', element: <Navigate to="/explore-toolkit" replace /> },
-      { path: '/setup-tools', Component: SetUpProcessToolsPage },
+      { path: '/setup-tools', element: <RequirePermission permission="hub:configure-tools"><SetUpProcessToolsPage /></RequirePermission> },
+      { path: '/hub/:initiativeId/manage', element: <RequirePermission permission="hub:edit"><HubInitiativePage /></RequirePermission> },
+      { path: '/hub/:initiativeId/manage/phases', element: <RequirePermission permission="hub:manage-phases"><HubInitiativePage /></RequirePermission> },
+      { path: '/hub/:initiativeId/manage/tools', element: <RequirePermission permission="hub:configure-tools"><HubInitiativePage /></RequirePermission> },
+      { path: '/hub/:initiativeId/manage/participants', element: <RequirePermission permission="hub:view-participant-input"><HubInitiativePage /></RequirePermission> },
+      { path: '/hub/:initiativeId/manage/results', element: <RequirePermission permission="hub:view-analytics"><HubInitiativePage /></RequirePermission> },
+      { path: '/hub/:initiativeId/manage/settings', element: <RequirePermission permission="hub:edit"><HubInitiativePage /></RequirePermission> },
+      { path: '/admin', element: <RequirePermission permission="admin:access"><AdminPage /></RequirePermission> },
       { path: '/app', element: <Navigate to="/co-creation-hub" replace /> },
       { path: '/app/setup', element: <Navigate to="/setup-questionnaire" replace /> },
       { path: '/app/filtered-tools', element: <Navigate to="/setup-tools" replace /> },
@@ -92,9 +113,10 @@ export const router = createBrowserRouter([
       { path: '/app/repository', element: <Navigate to="/repository" replace /> },
       { path: '/app/reports', element: <Navigate to="/insights" replace /> },
       { path: '/app/forum', element: <Navigate to="/forum-voting" replace /> },
-      { path: '/app/admin', element: <Navigate to="/account" replace /> },
+      { path: '/app/admin', element: <Navigate to="/admin" replace /> },
     ],
   },
+  { path: '*', Component: NotFoundPage },
     ],
   },
 ]);

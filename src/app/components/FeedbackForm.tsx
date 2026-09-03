@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { CheckCircle2, Send } from 'lucide-react';
 import { useI18n } from '../context/I18nContext';
-import { apiRequest, ApiError, jsonBody } from '../lib/api';
+import { apiRequest, jsonBody } from '../lib/api';
+import { localizedApiError, localizedFieldErrors } from '../lib/localizedApiError';
 import { FieldGroup, FieldMessage, FormField } from './FormLayout';
 
 const SUS_KEYS = ['sus1','sus2','sus3','sus4','sus5','sus6','sus7','sus8','sus9','sus10'] as const;
@@ -25,8 +26,8 @@ export default function FeedbackForm({ source, includeSus = false }: { source: '
       await apiRequest('/api/feedback', { method: 'POST', body: jsonBody({ category, rating, message, source, ...(includeSus ? { sus } : {}) }) });
       setSubmitted(true); setCategory(''); setRating(0); setMessage(''); setSus(Array(10).fill(0));
     } catch (caught) {
-      const apiError = caught as ApiError;
-      setErrors(apiError.fieldErrors || { form: apiError.message || t('common.error') });
+      const translatedFields = localizedFieldErrors(t, (caught as { fieldErrors?: Record<string, string> }).fieldErrors);
+      setErrors(Object.keys(translatedFields).length ? translatedFields : { form: localizedApiError(t, caught) });
     } finally { setSubmitting(false); }
   };
 

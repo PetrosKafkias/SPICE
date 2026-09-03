@@ -37,4 +37,16 @@ export default tseslint.config(
       globals: globals.node,
     },
   },
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        URL: 'readonly',
+        fetch: 'readonly',
+        setTimeout: 'readonly',
+        structuredClone: 'readonly',
+      },
+    },
+  },
 );
