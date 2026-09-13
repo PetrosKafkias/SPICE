@@ -201,7 +201,7 @@ function ToolTile({ tool, enabled, canManage, canParticipate, onAdd, onRemove }:
       <p className="text-[14px] font-bold text-[#444]">{tool.name}</p>
       <p className="flex-1 text-[12px] leading-relaxed text-[#666]">{tool.shortDesc}</p>
       <div className="flex flex-wrap gap-1.5">
-        <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ backgroundColor: mc.bg, color: mc.text }}>{t(`analogue.${tool.mode.toLowerCase()}` as TranslationKey)}</span>
+        <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ backgroundColor: mc.bg, color: mc.text }}>{t(`resources.${tool.mode.toLowerCase()}` as TranslationKey)}</span>
         <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-[#444]"><Clock size={10} />{tool.duration}</span>
         <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-[#444]"><Users size={10} />{tool.groupSize}</span>
       </div>
@@ -862,7 +862,7 @@ export default function RoleHubDashboard() {
                           {activity.startDate && <div className="flex gap-2"><CalendarDays size={15} className="flex-none text-[#ca7428]" /><span><strong>{t('hub.citizen.starts')}:</strong> <time dateTime={activity.startDate}>{formatDate(activity.startDate, { dateStyle: 'medium', timeStyle: 'short' })}</time></span></div>}
                           {activity.submissionDeadline && <div className="flex gap-2"><Clock size={15} className="flex-none text-[#ca7428]" /><span><strong>{t('hub.citizen.deadline')}:</strong> <time dateTime={activity.submissionDeadline}>{formatDate(activity.submissionDeadline, { dateStyle: 'medium', timeStyle: 'short' })}</time></span></div>}
                           {activity.location && <div className="flex gap-2"><MapPin size={15} className="flex-none text-[#ca7428]" /><span>{activity.location}</span></div>}
-                          <div className="flex gap-2"><Activity size={15} className="flex-none text-[#ca7428]" /><span>{t(`analogue.${activity.participationMode === 'offline' ? 'offline' : activity.participationMode}` as TranslationKey)}{activity.estimatedDuration ? ` · ${activity.estimatedDuration}` : ''}</span></div>
+                          <div className="flex gap-2"><Activity size={15} className="flex-none text-[#ca7428]" /><span>{t(`resources.${activity.participationMode === 'offline' ? 'offline' : activity.participationMode}` as TranslationKey)}{activity.estimatedDuration ? ` · ${activity.estimatedDuration}` : ''}</span></div>
                         </dl>
                         <div className="mt-5 border-l-4 border-[#f68b2c] bg-[#fff8f2] p-4">
                           <h5 className="flex items-center gap-2 text-[13px] font-bold text-[#444]"><BookOpenText size={16} aria-hidden="true" />{t('hub.citizen.participationInstructions')}</h5>
@@ -1088,9 +1088,12 @@ export default function RoleHubDashboard() {
                 <h3 className="text-[14px] font-bold text-[#444]">{t('hub.relatedWorkspaceLinks')}</h3>
                 <div className="mt-3 flex flex-wrap gap-3">
                 {initiative.currentPhaseNumber && (
-                  <Link to={`/hub/${initiative.id}/phase/${initiative.currentPhaseNumber}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><ListChecks size={16} /> {t('hub.preparePhaseActivities')}</Link>
+                  <>
+                    <Link to={`/hub/${initiative.id}/phase/${initiative.currentPhaseNumber}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><ListChecks size={16} /> {t('hub.preparePhaseActivities')}</Link>
+                    <Link to={`/hub/${initiative.id}/phase/${initiative.currentPhaseNumber}#phase-report-title`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><Wrench size={16} /> {t('hub.uploadWorkshopOutput')}</Link>
+                  </>
                 )}
-                <Link to="/repository" className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><Wrench size={16} /> {t('hub.uploadWorkshopOutput')}</Link>
+                <Link to="/repository" className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><BookOpenText size={16} /> {t('phaseDetail.uploadMaterials')}</Link>
                 <Link to={`/forum-voting?initiative=${initiative.id}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]"><MessageSquareText size={16} /> {t('hub.prepareDraftProposal')}</Link>
                 </div>
               </div>

@@ -90,7 +90,7 @@ function scoreTool(tool: Tool, selectedPhases: number[], setup: ProcessSetupStat
 
   if (setup.mode && (tool.mode === setup.mode || tool.mode === 'Hybrid' || setup.mode === 'Hybrid')) {
     score += 2;
-    reasons.push(t('setup.reasonMode', { mode: t(`analogue.${tool.mode.toLowerCase()}` as TranslationKey) }));
+    reasons.push(t('setup.reasonMode', { mode: t(`resources.${tool.mode.toLowerCase()}` as TranslationKey) }));
   }
 
   if (setup.groupSize) {
@@ -189,7 +189,7 @@ function ToolCard({ tool, reasons, inProcess, onToggle, onMore, t }: {
       <div className="grid grid-cols-3 gap-2 text-[11px] font-semibold text-[#555]">
         <span className="flex items-center gap-1.5 bg-[#f5f5f5] px-2.5 py-2"><Clock size={12} /> {tool.duration}</span>
         <span className="flex items-center gap-1.5 bg-[#f5f5f5] px-2.5 py-2"><Users size={12} /> {tool.groupSize}</span>
-        <span className="bg-[#f5f5f5] px-2.5 py-2">{t(`analogue.${tool.mode.toLowerCase()}` as TranslationKey)}</span>
+        <span className="bg-[#f5f5f5] px-2.5 py-2">{t(`resources.${tool.mode.toLowerCase()}` as TranslationKey)}</span>
       </div>
 
       <div className="mt-auto flex flex-col gap-2 sm:flex-row">
@@ -367,7 +367,7 @@ export default function SetUpProcessToolsPage() {
               {(activeObjectiveLabels.length ? activeObjectiveLabels : [t('setup.allObjectives')]).map((label) => (
                 <span key={label} className="bg-[#fef3e8] px-3 py-1.5 text-[12px] font-semibold text-[#ca7428]">{label}</span>
               ))}
-              <span className="bg-[#f2f2f2] px-3 py-1.5 text-[12px] font-semibold text-[#555]">{processSetup.mode ? t(`analogue.${processSetup.mode.toLowerCase()}` as TranslationKey) : t('setup.anyMode')}</span>
+              <span className="bg-[#f2f2f2] px-3 py-1.5 text-[12px] font-semibold text-[#555]">{processSetup.mode ? t(`resources.${processSetup.mode.toLowerCase()}` as TranslationKey) : t('setup.anyMode')}</span>
               {processSetup.groupSize && <span className="bg-[#f2f2f2] px-3 py-1.5 text-[12px] font-semibold text-[#555]">{processSetup.groupSize}</span>}
               {processSetup.duration && <span className="bg-[#f2f2f2] px-3 py-1.5 text-[12px] font-semibold text-[#555]">{processSetup.duration}</span>}
             </div>
@@ -397,7 +397,7 @@ export default function SetUpProcessToolsPage() {
               </span>
             </label>
             <SelectFilter label={t('setup.phase')} value={phaseFilter} options={[{ value: 'recommended', label: t('setup.recommendedPhases') }, ...PHASES.map((phase) => ({ value: String(phase.id), label: t(phase.nameKey) }))]} onChange={setPhaseFilter} />
-            <SelectFilter label={t('setup.mode')} value={modeFilter} options={MODE_OPTIONS.map((mode) => ({ value: mode, label: mode === 'all' ? t('setup.allModes') : t(`analogue.${mode.toLowerCase()}` as TranslationKey) }))} onChange={setModeFilter} />
+            <SelectFilter label={t('setup.mode')} value={modeFilter} options={MODE_OPTIONS.map((mode) => ({ value: mode, label: mode === 'all' ? t('setup.allModes') : t(`resources.${mode.toLowerCase()}` as TranslationKey) }))} onChange={setModeFilter} />
           </div>
         </section>
 

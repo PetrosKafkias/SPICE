@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { ArrowRight, CircleAlert, Lock, Mail, MailCheck, MapPin, UserCircle2, Users2 } from 'lucide-react';
+import { ArrowRight, CircleAlert, Lock, Mail, MailCheck, MapPin, UserCircle2 } from 'lucide-react';
 import AuthLayout from '../components/AuthLayout';
 import FormDropdown from '../components/FormDropdown';
 import { FieldGroup, FieldMessage, FormField, FormGrid } from '../components/FormLayout';
@@ -10,12 +10,11 @@ import { localizedApiError, localizedFieldErrors } from '../lib/localizedApiErro
 import { authRoute, safeReturnTo } from '../lib/authRedirect';
 
 const PILOT_SITES = ['Thessaloniki', 'Rovaniemi', 'Bielsko-Biala', 'Cuba'];
-const ROLES = ['Citizen', 'Municipality Staff', 'Facilitator'];
 
 export default function RegisterPage() {
   const navigate = useNavigate(); const [searchParams] = useSearchParams();
   const { user, register } = useAuth(); const { language, t } = useI18n();
-  const [form, setForm] = useState({ fullName: '', email: '', password: '', confirmPassword: '', pilotSite: '', role: '' });
+  const [form, setForm] = useState({ fullName: '', email: '', password: '', confirmPassword: '', pilotSite: '' });
   const [agreed, setAgreed] = useState(false); const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(''); const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [validationAttempted, setValidationAttempted] = useState(false); const [shake, setShake] = useState(false);
@@ -28,7 +27,7 @@ export default function RegisterPage() {
   const fieldClass = (field: string) => `flex min-h-[52px] items-center gap-3 border-2 px-4 ${fieldErrors[field] ? 'border-red-600 bg-red-50/40' : 'border-[#bfc0c5] focus-within:border-[#ca7428]'}`;
   const errorText = (field: string) => fieldErrors[field] && <FieldMessage id={`${field}-error`} tone="error">{fieldErrors[field]}</FieldMessage>;
   const requiredLabel = (label: string) => <span>{label} <span className="text-[#b42318]" aria-hidden="true">*</span><span className="sr-only"> ({t('common.required')})</span></span>;
-  const formComplete = Boolean(form.fullName.trim() && form.email.trim() && form.password && form.confirmPassword && form.password === form.confirmPassword && form.pilotSite && form.role && agreed);
+  const formComplete = Boolean(form.fullName.trim() && form.email.trim() && form.password && form.confirmPassword && form.password === form.confirmPassword && form.pilotSite && agreed);
   const requiredError = (label: string) => `${label}: ${t('common.required')}.`;
 
   const showValidationFailure = (errors: Record<string, string>) => {
@@ -49,7 +48,6 @@ export default function RegisterPage() {
     if (form.password !== form.confirmPassword) errors.confirmPassword = t('auth.passwordMismatch');
     if (!form.confirmPassword) errors.confirmPassword = t('auth.confirmPasswordRequired');
     if (!form.pilotSite) errors.pilotSite = t('auth.pilotRequired');
-    if (!form.role) errors.role = t('auth.roleRequired');
     if (!agreed) errors.acceptedTerms = requiredError(t('auth.privacy'));
     if (Object.keys(errors).length) { showValidationFailure(errors); return; }
     setValidationAttempted(false);
@@ -64,7 +62,6 @@ export default function RegisterPage() {
     <h1 className="mt-5 text-[32px] font-bold text-black">{t('auth.accountCreatedTitle')}</h1>
     <p className="mx-auto mt-3 max-w-lg text-[17px] leading-relaxed text-[#444]">{t('auth.accountCreated')}</p>
     <p className="mt-2 font-semibold text-black">{result.email}</p>
-    {result.accountStatus === 'pending_approval' && <p className="mx-auto mt-3 max-w-lg text-[15px] leading-relaxed text-[#8a5b12]">{t('auth.accountPendingApproval')}</p>}
     {result.verificationPreviewUrl && <a href={result.verificationPreviewUrl} className="mt-5 inline-flex cursor-pointer border-2 border-[#ca7428] px-5 py-3 font-semibold text-[#ca7428] hover:bg-[#fff4e9]">{t('auth.previewVerification')}</a>}
     <Link to={authRoute('signin', returnTo)} className="mt-5 flex w-full cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] py-4 text-[18px] font-semibold text-white hover:bg-[#e07a20]">{t('auth.goToSignIn')}<ArrowRight size={20} /></Link>
   </div></AuthLayout>;
@@ -80,10 +77,7 @@ export default function RegisterPage() {
         <FormField className="gap-2 text-[16px] font-semibold">{requiredLabel(t('auth.password'))}<span data-field-control className={fieldClass('password')}><Lock size={20}/><input required className="min-w-0 flex-1 bg-transparent text-[15px] font-medium outline-none" type="password" autoComplete="new-password" placeholder={t('auth.passwordPlaceholder')} value={form.password} onChange={update('password')} aria-invalid={!!fieldErrors.password} aria-describedby={fieldErrors.password ? 'password-error' : undefined}/></span>{errorText('password')}</FormField>
         <FormField className="gap-2 text-[16px] font-semibold">{requiredLabel(t('auth.confirmPassword'))}<span data-field-control className={fieldClass('confirmPassword')}><Lock size={20}/><input required className="min-w-0 flex-1 bg-transparent text-[15px] font-medium outline-none" type="password" autoComplete="new-password" placeholder={t('auth.confirmPasswordPlaceholder')} value={form.confirmPassword} onChange={update('confirmPassword')} aria-invalid={!!fieldErrors.confirmPassword} aria-describedby={fieldErrors.confirmPassword ? 'confirmPassword-error' : undefined}/></span>{errorText('confirmPassword')}</FormField>
       </FormGrid>
-      <FormGrid className="gap-4 sm:grid-cols-2">
-        <FormField className="gap-2 text-[16px] font-semibold">{requiredLabel(t('auth.pilotSite'))}<FormDropdown required id="pilot-site" value={form.pilotSite} placeholder={t('auth.pilotPlaceholder')} options={PILOT_SITES.map((value) => ({value,label:value}))} icon={<MapPin size={20}/>} invalid={!!fieldErrors.pilotSite} onChange={(value) => setValue('pilotSite', value)}/>{errorText('pilotSite')}</FormField>
-        <FormField className="gap-2 text-[16px] font-semibold">{requiredLabel(t('auth.role'))}<FormDropdown required id="role" value={form.role} placeholder={t('auth.rolePlaceholder')} options={ROLES.map((value) => ({value,label:t(`role.${value.replace(' ','')}` as Parameters<typeof t>[0])}))} icon={<Users2 size={20}/>} invalid={!!fieldErrors.role} onChange={(value) => setValue('role', value)}/>{(form.role === 'Municipality Staff' || form.role === 'Facilitator') && <p className="text-[13px] font-medium text-[#8a5b12]">{t('auth.roleRequiresApproval')}</p>}{errorText('role')}</FormField>
-      </FormGrid>
+      <FormField className="gap-2 text-[16px] font-semibold">{requiredLabel(t('auth.pilotSite'))}<FormDropdown required id="pilot-site" value={form.pilotSite} placeholder={t('auth.pilotPlaceholder')} options={PILOT_SITES.map((value) => ({value,label:value}))} icon={<MapPin size={20}/>} invalid={!!fieldErrors.pilotSite} onChange={(value) => setValue('pilotSite', value)}/>{errorText('pilotSite')}</FormField>
       <FieldGroup className="mt-1 gap-2"><label className="flex cursor-pointer items-start gap-3 text-[14px] font-semibold"><input required type="checkbox" checked={agreed} onChange={(event) => { setAgreed(event.target.checked); setFieldErrors((current) => ({ ...current, acceptedTerms: '' })); }} className="mt-0.5 h-5 w-5 flex-none cursor-pointer accent-[#ca7428]" aria-invalid={!!fieldErrors.acceptedTerms} aria-describedby={fieldErrors.acceptedTerms ? 'acceptedTerms-error' : undefined}/><span>{t('auth.termsPrefix')} <Link to="/privacy-policy" className="text-[#ca7428] underline">{t('auth.privacy')}</Link> <span className="text-[#b42318]" aria-hidden="true">*</span><span className="sr-only"> ({t('common.required')})</span></span></label>{errorText('acceptedTerms')}</FieldGroup>
       <button type="submit" disabled={submitting} className={`mt-1 flex w-full cursor-pointer items-center justify-center gap-3 py-4 text-[19px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#444] ${formComplete ? 'bg-[#f68b2c] text-white hover:bg-[#e07a20]' : 'bg-[#d5d5d5] text-[#737373] hover:bg-[#c9c9c9]'} ${shake ? 'spice-form-shake' : ''} disabled:cursor-wait disabled:opacity-70`}>{submitting ? t('auth.creating') : t('auth.createAccount')}{!submitting && <ArrowRight size={22}/>}</button>
     </form>

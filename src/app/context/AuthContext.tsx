@@ -28,7 +28,6 @@ export interface RegisterInput {
   password: string;
   confirmPassword: string;
   pilotSite: string;
-  role: string;
   locale: string;
   acceptedTerms: boolean;
   returnTo?: string;

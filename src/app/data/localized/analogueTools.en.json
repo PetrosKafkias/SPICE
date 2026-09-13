@@ -15,7 +15,7 @@
     "duration": "20-45 m",
     "groupSize": "Not specified",
     "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
+    "facilitatorRatio": "1/10",
     "suppliesRequired": "Markers or pens, \nsticky notes",
     "expectedOutputs": [
       "A clustered set of themes describing the group's shared hopes for the project",
@@ -32,14 +32,16 @@
     "examples": "",
     "requirements": "03_Institutional readiness, including willingness to share control and planners’ trust in citizens should be assessed before launching participation",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1xyo4RH8WQLzcjU0ZWholNJJYjw0lxh4q/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Internal team",
+    "prerequisites": ""
   },
   {
     "id": "people-competence-readiness-canvas",
     "name": "People & Competence Readiness Canvas",
     "status": "Formatted for printing",
-    "typology": "Tool 02 + online excel",
+    "typology": "Tool 02 + online resources",
     "shortDesc": "Municipalities go row by row to mark whether each competence needed for the pilot is available internally or externally, fill in who is responsible and how to reach them, spot missing competences as empty rows, and keep the canvas as a living document updated at key project phases.",
     "purpose": "We want to identify which of the necessary competencies we have internally and acknowledge which ones we should look for externally.",
     "phase": 1,
@@ -70,14 +72,16 @@
     "examples": "",
     "requirements": "03_Institutional readiness, including willingness to share control and planners’ trust in citizens should be assessed before launching participation",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1ZVTjS4ZvdoN5ZDtpbOtolstE0yAciNBy/view?usp=drive_link",
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1OSW2DXx3l8hK2wnRq-wTnjrAiH93HHMqUNTSlAryRuA/edit?usp=sharing",
+    "targetUsers": "Internal team",
+    "prerequisites": ""
   },
   {
     "id": "stakeholder-mapping",
     "name": "Stakeholder mapping",
     "status": "Formatted for printing",
-    "typology": "01 Technique + Tool 03 + Excel Stakeholders's ID Repository",
+    "typology": "01 Technique + Tool 03 + online resources",
     "shortDesc": "We want to map actors according to their influence, power, and relevance in relation to NEB values and local challenges",
     "purpose": "We want to map actors according to their influence, power, and relevance in relation to NEB values and local challenges",
     "phase": 1,
@@ -107,47 +111,16 @@
     "examples": "",
     "requirements": "",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": "Excel Stakeholders's ID Repository (link)"
-  },
-  {
-    "id": "allegato-single-stakeholder-s-id",
-    "name": "Single Stakeholder's ID",
-    "status": "Formatted for printing",
-    "typology": "Tool 03 B/N no istruzioni (2 ID in ogni A4)",
-    "shortDesc": "NO",
-    "purpose": "NO",
-    "phase": 1,
-    "phaseName": "Framing & Readiness",
-    "objectiveTags": [],
-    "mode": "Offline",
-    "duration": "Not specified",
-    "groupSize": "Not specified",
-    "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
-    "suppliesRequired": "",
-    "expectedOutputs": [
-      "One completed stakeholder card capturing role, relevance and contact details",
-      "A card ready to be filed into the shared Stakeholder Repository"
-    ],
-    "accessibilityNotes": "Print in a large, high-contrast layout with generous writing space; make a digital fillable version available for anyone who cannot write by hand.",
-    "usageTip": "Fill in one card per stakeholder as they are identified, then transfer the key fields into the shared Stakeholder Repository so the project keeps a single, consistent reference document.",
-    "proTip": "Keep the card short and factual — its value is as a quick, consistent record, not a full profile; save deeper analysis for tools like Personas or the Empathy Map.",
-    "implementationTime": "Not specified",
-    "developmentTime": "Not specified",
-    "howTo": "NO",
-    "budgetAdaptation": "",
-    "examples": "",
-    "requirements": "",
-    "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1UoqsiVV0osHwemoWWD9bgBaxzqur2zbY/view?usp=drive_link",
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1E_QXeg18hwTN7RilK-veVPRCtjsPBSEUBPKbmNzFcEY/edit?gid=0#gid=0",
+    "targetUsers": "Internal team",
+    "prerequisites": ""
   },
   {
     "id": "stakeholders-engagement-planning",
     "name": "Stakeholders' engagement planning",
     "status": "Formatted for printing",
-    "typology": "Tool 04",
+    "typology": "Tool 04 + online resources",
     "shortDesc": "For a specific event, participants list the groups they want to engage and the allies useful for reaching each one, then sort those allies across the before, during and after phases to plan how and when to build the relationships they need.",
     "purpose": "We want to identify key allies for people's engagement and plan the interaction with them in the different events.",
     "phase": 1,
@@ -178,8 +151,10 @@
     "examples": "",
     "requirements": "",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": "Excel (link)"
+    "printableUrl": "https://drive.google.com/file/d/1ahW50iRft4kMmbOiNKuVer1kPS2tJXFa/view?usp=drive_link",
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1SjHp00Nm6OieedH_WJTIPiHzrTc1kp8I4ifmGnfcHpo/edit?gid=662745604#gid=662745604",
+    "targetUsers": "Internal team",
+    "prerequisites": "- Stakeholder Map\n- List of possible allies for hard to reach target groups"
   },
   {
     "id": "levels-of-participation-map",
@@ -197,7 +172,7 @@
     "duration": "45-90 m",
     "groupSize": "Not specified",
     "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
+    "facilitatorRatio": "1/5",
     "suppliesRequired": "Markers or pens, sticky notes",
     "expectedOutputs": [
       "A map of stakeholders assigned to self-govern, co-develop, or consult levels",
@@ -214,8 +189,10 @@
     "examples": "",
     "requirements": "03_Institutional readiness, including willingness to share control and planners’ trust in citizens should be assessed before launching participation",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1ugNA26oTxMcyD0hk3j4Oq2MUQrdxIFMx/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Internal team",
+    "prerequisites": "- Stakeholder Map"
   },
   {
     "id": "participation-enablers-map",
@@ -233,7 +210,7 @@
     "duration": "45-90 m",
     "groupSize": "Not specified",
     "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
+    "facilitatorRatio": "1/5",
     "suppliesRequired": "Markers or pens, \nsticky notes",
     "expectedOutputs": [
       "A documented set of barriers to participation for the target profile",
@@ -250,8 +227,10 @@
     "examples": "",
     "requirements": "03_Institutional readiness, including willingness to share control and planners’ trust in citizens should be assessed before launching participation",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1FrOxrpXKQXva6TWiRUwtzazz0tY8ZPnh/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Internal team",
+    "prerequisites": "- List of target groups to engage in the activities"
   },
   {
     "id": "neb-adapted-swot-analysis",
@@ -259,7 +238,7 @@
     "status": "Formatted for printing",
     "typology": "Tool 07",
     "shortDesc": "Working individually or in small groups, participants read a place through the three NEB dimensions (Together, Beautiful, Sustainable), noting for each what might help or harm the transformation, then compare the rows to surface recurring themes, tensions and priorities that guide design.",
-    "purpose": "We want to collect and comapre environmental, social, and aesthetic dimensions with traditional strategic analysis.",
+    "purpose": "We want to collect and compare environmental, social, and aesthetic dimensions with traditional strategic analysis.",
     "phase": 1,
     "phaseName": "Framing & Readiness",
     "objectiveTags": [
@@ -286,8 +265,10 @@
     "examples": "",
     "requirements": "06_Contextual adaptation should be a core principle of the toolkit, aknowledging expectations and participation limits",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1qXm7UUxVs9neYH47PrSvgqqaQDfTe_X6/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Internal team",
+    "prerequisites": "- List of evidence-based observations from previous activities or research"
   },
   {
     "id": "challenge-reframing",
@@ -322,8 +303,10 @@
     "examples": "We want to build a participatory process to renovate st Paul’s Park, making participation meaningful for young generations so that they can gain new knowledge on green technologies for their future. \nWe want to build a participatory process to animate the area around the square, making participation meaningful for resident families with young children, so that they make their chores done while participating in events.\nWe want to build a participatory process to co-design climate-adaptive solutions for the neighborhood, making participation meaningful for local small business owners, so that they can improve the attractiveness and resilience of their businesses while contributing to the public space.\nWe want to build a participatory process to rethink pathways in the park, making participation meaningful for women and girls, so that they can feel safer and more comfortable in the future design of the space.",
     "requirements": "01_The scope of influence, decision rules, and use of inputs should be explicitly defined and transparently communicated",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1jFR3MhvYrXUOwTwyFg6s3L0VnhNa94Nr/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Internal team",
+    "prerequisites": ""
   },
   {
     "id": "key-informant-interviews",
@@ -355,8 +338,10 @@
     "examples": "",
     "requirements": "05_Local needs, everyday spatial knowledge, and community assets should be identified from the beginning",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1EaFXZnn7bS2ZIH7Rc3qrVw14MrqirLhv/view?usp=drive_link",
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1oICdZJA9wOkgDUb7mU309bEl5xXPFYLnDNiSozty2ug/edit?gid=366573815#gid=366573815",
+    "targetUsers": "Internal team",
+    "prerequisites": ""
   },
   {
     "id": "opportunity-map",
@@ -374,7 +359,7 @@
     "duration": "20-45 m",
     "groupSize": "Not specified",
     "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
+    "facilitatorRatio": "1/10",
     "suppliesRequired": "Can be printed in different formats of as a big poster to allow many people to fill it",
     "expectedOutputs": [
       "A visual map connecting needs, assets, barriers, ideas and resources around the central challenge",
@@ -391,8 +376,10 @@
     "examples": "",
     "requirements": "08_Participation should start before key decisions are made and allow citizens to influence direction rather than react to predefined solutions.",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1W2eoLvuiNOabahGuacNUoliYtzu7blkh/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Challenge statement from Challenge reframing\n- An initial set of people's needs, existing assets, barriers, tensions, ideas, potential allies, resources, risks and open questions that people can use for mapping"
   },
   {
     "id": "world-cafe",
@@ -410,7 +397,7 @@
     "duration": "1h30 - 2h30",
     "groupSize": "Not specified",
     "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
+    "facilitatorRatio": "1/10",
     "suppliesRequired": "Tables, chairs, printed questions, paper tablecloths or templates, markers, post-its, name tags.",
     "expectedOutputs": [
       "Table-level notes from each discussion round",
@@ -427,8 +414,10 @@
     "examples": "In line with New Europea Bauhaus values, the tables clould cover the tree values of NEB compass. \nBeauty\nWhat makes this place meaningful, welcoming or pleasant today?\nWhat should be protected because it is part of the identity, memory or atmosphere of the place?\nWhat would make people feel proud, curious or emotionally connected to this space?\n\nSustainability\nWhat environmental challenges are most visible or urgent here?\nHow could this place better support climate resilience, biodiversity, shade, water management or circular use of resources?\nWhat existing natural or material resources could be reused, restored or strengthened?\n\nTogether\nWho uses this place today, and who is missing or excluded?\nWhat barriers prevent people from feeling welcome, safe or able to participate?\nWhat forms of care, collaboration or shared responsibility could help keep this place alive over time?",
     "requirements": "09_Participatory moments should be high-impact and clearly purposeful",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1zoMrk4WfkgFxiJbMJXZYYTuGGG4yusHC/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- A set of 3 questions coming from Opportunity mapping, research or other activities"
   },
   {
     "id": "open-space-technology",
@@ -463,8 +452,10 @@
     "examples": "Add picture or scheme of the shared agenda",
     "requirements": "09_Participatory moments should be high-impact and clearly purposeful",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1RuT1Cqn-Taqi8v24TrlztcVGtpw7n3BQ/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "roleplay-stepping-in-others-shoes",
@@ -482,7 +473,7 @@
     "duration": "45-90 m",
     "groupSize": "Not specified",
     "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
+    "facilitatorRatio": "1/5",
     "suppliesRequired": "Role cards (printed or handwritten), one per participant or group\nMarkers or pens\nSticky notes\nA shared board or flipchart for clustering debrief insights\nOptional: printed scenario map or photos of the place",
     "expectedOutputs": [
       "A documented set of needs and tensions voiced through each character",
@@ -499,14 +490,16 @@
     "examples": "In a co-design process for a small public park, participants were assigned the roles of a parent with a stroller, a teenager, an elderly person with mobility issues, and an old oak tree. During the role-play, it became clear that the main entrance was effectively inaccessible to two of the four characters. Furthermore, since there were few trees around, shade was scarce, and the oak tree suffered from the limited space available. After the role-play, the characters were represented on a sheet of paper and connected to each other using lines of different colors based on the synergies or conflicts identified during the role-play. Finally, the key synergies (the parent with the stroller and the elderly person taking shelter in the shade of the oak tree) and the key conflicts (the oak tree's roots making the ground uneven for the stroller, the teenager listening to loud music and disturbing the elderly person) were noted.",
     "requirements": "",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1MOuS1KykETIZ32dnsEjRHZVXVhA3Dcvb/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- A set of Role cards describing a specific user, stakeholder, or affected party (with the role and brief description); you might also use Personas or non-human personas"
   },
   {
     "id": "walkshop",
     "name": "Walkshop",
     "status": "Formatted for printing",
-    "typology": "06 Technique",
+    "typology": "06 Technique + Tool 12",
     "shortDesc": "Participants walk through the site, observe and record perceptions, emotions, barriers and sensory impressions in real time, then collectively translate the findings into spatial insights and design questions.",
     "purpose": "We want to explore the site collectively and capture how people perceive, feel and interpret different places in real time.",
     "phase": 2,
@@ -518,7 +511,7 @@
     "duration": "1h30 - 2h30",
     "groupSize": "Not specified",
     "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
+    "facilitatorRatio": "1/5",
     "suppliesRequired": "Printed maps of the area, preferably one per participant or small group\nRoute plan, including an accessible route option\nLarge synthesis map for the final discussion\nClipboards or hard writing surfaces\nPens, markers and pencils\nOptional: Stickers or coloured dots to mark emotions, barriers, opportunities and key points\nOptional: Phones or cameras for taking photos\nOptional: Audio recorder or phones for collecting voice notes and sounds, if relevant\nOptional: digital tool or app for collecting geolocated comments, photos, voice notes and emotional markers\nOptional: artistic collection tools, such as small bags/envelopes for material samples, texture rubbing sheets, or sensory prompt cards",
     "expectedOutputs": [
       "Individual and collective observations of the site (perceptions, emotions, barriers)",
@@ -535,8 +528,10 @@
     "examples": "",
     "requirements": "05_Local needs, everyday spatial knowledge, and community assets should be identified from the beginning",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1R9kuVdg4jrHppCRmhBWOj2rhc4vYUEmK/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "collective-actant-mapping",
@@ -554,7 +549,7 @@
     "duration": "45-90 m",
     "groupSize": "Not specified",
     "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
+    "facilitatorRatio": "1/10",
     "suppliesRequired": "Can be printed in different formats of as a big poster to allow many people to fill it",
     "expectedOutputs": [
       "A visual map of human, non-human, institutional and material actors shaping the place",
@@ -571,14 +566,16 @@
     "examples": "",
     "requirements": "",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1YzIdBIEKP_KQLh1zybTJZJsPbrL_qDxx/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "actant-journey-map",
     "name": "Actant Journey Map",
     "status": "Formatted for printing",
-    "typology": "Tool 11",
+    "typology": "Tool 11 + Tool 12",
     "shortDesc": "Participants follow the experience of a selected user, non-user or non-human actor across a map of the site, tracing barriers, emotions, conflicts and opportunities to translate them into design insights.",
     "purpose": "We want to understand how different people experience the place over time, across routes, touchpoints, emotions and barriers.",
     "phase": 2,
@@ -590,7 +587,7 @@
     "duration": "45-90 m",
     "groupSize": "Not specified",
     "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
+    "facilitatorRatio": "1/10",
     "suppliesRequired": "Printed base map of the area\nTransparent tracing sheets, one per participant or group, same fimesin of the map\nExtra printed copies of the base map, in case tracing sheets are not available\nCharacter or actant cards, including users, non-users and non-human actors\nSmall props, tokens or meeples to move across the map\nColoured markers or pens to trace different journeys\nSticky notes, preferably in different colours\nOptional: Small stickers or symbols to mark key moments",
     "expectedOutputs": [
       "A traced journey per actant showing barriers, emotions, conflicts and opportunities along the route",
@@ -607,44 +604,10 @@
     "examples": "",
     "requirements": "05_Local needs, everyday spatial knowledge, and community assets should be identified from the beginning",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
-  },
-  {
-    "id": "observation-prompt-card",
-    "name": "Observation prompt card",
-    "status": "Formatted for printing",
-    "typology": "TOOL 12  + 9 carte B/N",
-    "shortDesc": "Participants use prompt cards during a walkshop or journey mapping activity to observe the place through different NEB lenses, document what they notice on site, and compare findings afterwards to identify issues, values and opportunities.",
-    "purpose": "We want to help participants observe the place through the New European Bauhaus values, capturing sensory qualities, ecological conditions, social dynamics, barriers and signs of care directly on site.",
-    "phase": 2,
-    "phaseName": "Collective Understanding",
-    "objectiveTags": [
-      "To co-design"
-    ],
-    "mode": "Offline",
-    "duration": "Not specified",
-    "groupSize": "Not specified",
-    "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
-    "suppliesRequired": "",
-    "expectedOutputs": [
-      "On-site notes captured through different NEB-value lenses",
-      "A comparison of findings across participants and prompt cards",
-      "A short list of issues, values and opportunities identified in the place"
-    ],
-    "accessibilityNotes": "Print cards in large, high-contrast text; offer a verbal or audio-recorded alternative for participants who find writing on the move difficult.",
-    "usageTip": "Assign or let participants draw a different prompt card at each stop so the same place gets read through multiple lenses rather than everyone noticing the same things.",
-    "proTip": "Compare findings across cards right after the walk while memories are fresh — waiting until a later session loses much of the sensory detail that makes these observations useful.",
-    "implementationTime": "Not specified",
-    "developmentTime": "Not specified",
-    "howTo": "Observation propt cards can be added to the walkshop or to the actant journey mapping.\n1) At the beginning of the activity, give each participant or small group one or more cards. The facilitator can either assign specific cards to different groups, ask participants to choose one, or invite them to draw a card at each stop along the route or during the map exploration. This helps diversify the observations and ensures that the same place is read through different lenses.\n2) Participants use the cards to guide what they notice, sense and document on site or imagine to be there. The cards should help them observe and think about sensory qualities, social interactions, accessibility barriers, ecological conditions, signs of care or neglect, hidden resources and patterns of use.\n3) Use the cards again during the synthesis phase. Ask participants to share what they observed through each NEB lens and compare the results. This can help identify emotional hotspots, environmental issues, inclusion barriers, places of attachment, opportunities for care and tensions between different uses or values.",
-    "budgetAdaptation": "",
-    "examples": "",
-    "requirements": "",
-    "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1v4luxEBGoDxVnEVFDyHxDV0O1fpxo5Xw/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- A set of character cards, including different users, non-users and non-human actors; you might also use Personas or non-human personas"
   },
   {
     "id": "the-empathy-map",
@@ -679,8 +642,10 @@
     "examples": "",
     "requirements": "05_Local needs, everyday spatial knowledge, and community assets should be identified from the beginning",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1RYw3zp4yMr363VW-3qJnF3ySluwbvq_e/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "personas-non-human-personas",
@@ -715,8 +680,10 @@
     "examples": "Human persona: \"Amara, 72, retired seamstress. She crosses the park every morning to reach the market. She needs shaded benches to rest and is afraid of uneven paving after a fall last year. A transformed park with smooth, well-lit paths and greenery would give her back a sense of belonging.\"\nNon-human persona: \"The Old Oak, ~120 years old. My roots stabilise the slope and my canopy shelters 14 bird species. I need at least 15 metres of undisturbed soil around my base. Construction machinery within 10 metres would be life-threatening. A good outcome: I remain as a landmark and my presence becomes a design asset.\"\nNon-human persona (ecosystem): \"The Urban Stream beneath Via Rossini. I am partially culverted and polluted by runoff. I need de-sealing and riparian vegetation to recover. I provide natural cooling and water absorption, uncovering me would benefit both humans and biodiversity.\"",
     "requirements": "06_Contextual adaptation should be a core principle of the toolkit, aknowledging expectations and participation limits",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1eTHkjuy2dvX2M0JfCero7qNFSVnUNqII/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Any available research on the place regarding its users: observation notes, interview summaries, mapping data, ecological reports, or community input gathered in previous activities."
   },
   {
     "id": "scenario-building",
@@ -734,7 +701,7 @@
     "duration": "1h30 - 2h30",
     "groupSize": "Not specified",
     "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
+    "facilitatorRatio": "1/10",
     "suppliesRequired": "Prepare in advance: \n- a clear central question, for example: “How might this place evolve in the next 10 years?”\n- a fixed time horizon, for example 2035\n- 15–25 pre-written driver cards from the background research\n- a blank importance / uncertainty grid\n- a simple scenario canvas",
     "expectedOutputs": [
       "A refined set of driver cards plotted on an importance/uncertainty grid",
@@ -751,8 +718,10 @@
     "examples": "",
     "requirements": "08_Participation should start before key decisions are made and allow citizens to influence direction rather than react to predefined solutions.",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1jfWt0cQ0-zB7U9NSEsWzvyhGX1B_FAlS/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Challenge Statement\nPrepare in advance:\n- a clear central question, for example: “How might this place evolve in the next 10 years?”\n- a fixed time horizon, for example 2035\n- 15–25 pre-written driver cards from the background research\n- a blank importance / uncertainty grid\n- a simple scenario canvas"
   },
   {
     "id": "top-10-design-principles-manifesto",
@@ -787,15 +756,17 @@
     "examples": "About Nature\n1. Less Design Sprints, More Design Walks\nIn a world where everything is rushed, we slow down to focus, connect and become one with Nature & our community. Creating better outcomes for your projects and the world.\n2. Wander Aimlessly\nPractice being okay with not synthesising and being in the unknown. Aimlessly wandering around in the “forest” allows for discovering the undiscovered. You start to see, hear, smell and feel the previously invisible. These might hold the answers to sustainable and regenerative questions.\n\nAbout Design\n3. Co-create with nature, communities and economies\nThe era of creating value solely for the end-user and your business is ending. Our creations need to benefit nature, communities, and economies for all to thrive and survive in the near and far future.\n4. Prototype First, Design Second\nStart prototyping at the beginning. Make it now and determine the blindspots in your design research. From what you uncover, you design a pathway forward.",
     "requirements": "",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/11_x3myZmaFfRDIHyWRuZmrmWk1swwmFz/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Challenge Statement, developed scenarios, important insights from research"
   },
   {
     "id": "lo-fi-prototyping",
     "name": "Lo-fi prototyping",
     "status": "Formatted for printing",
     "typology": "09 Techinque",
-    "shortDesc": "We want to make co-designed ideas tangible through quick, low-cost and low-fidelity representations that participants can see, handle, experience and discuss before testing them on real life.",
+    "shortDesc": "Starting from one or more promising ideas, participants define what they need to learn from the prototype, choose the simplest format to make the idea tangible — such as sketches, mood boards, cardboard models, tape mock-ups, desktop walkthroughs, roleplay or paper/digital prototypes — and build quick alternatives that can be demonstrated, observed, adjusted and compared to decide the next step.",
     "purpose": "We want to make co-designed ideas tangible through quick, low-cost and low-fidelity representations that participants can see, handle, experience and discuss before testing them on real life.",
     "phase": 4,
     "phaseName": "Prototyping & Testing",
@@ -823,15 +794,17 @@
     "examples": "",
     "requirements": "",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1DjQmI1f38wXLyJav7lmvV6qWaYFqgEOS/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- One or more ideas or scenarios to prototype"
   },
   {
     "id": "tactical-urbanism",
     "name": "Tactical Urbanism",
     "status": "Formatted for printing",
     "typology": "10 Techinque",
-    "shortDesc": "We want to test possible spatial solutions directly on site through temporary, low-cost and reversible interventions, so that communities, designers and decision-makers can observe how people use them, collect feedback and refine ideas before making permanent changes.",
+    "shortDesc": "The tactical urbanism intervention is defined according to testing needs and feasibility. The intervention is kept simple, safe, accessible and proportionate to available time, budget and permissions. During the test, physical observation and digital feedback tools are combined to understand how people use the space and inform future design, decision-making, maintenance agreements or stewardship roles.",
     "purpose": "We want to test possible spatial solutions directly on site through temporary, low-cost and reversible interventions, so that communities, designers and decision-makers can observe how people use them, collect feedback and refine ideas before making permanent changes.",
     "phase": 4,
     "phaseName": "Prototyping & Testing",
@@ -859,24 +832,28 @@
     "examples": "Superblock (Superilla), Barcelona\nPiazze Aperte (Open Squares), Milan\nSuperkilen Park, Copenhagen\nPiazza dell'Immaginario, Prato\nPrecollinear Park, Torino",
     "requirements": "18_Fast, low-fidelity prototyping and iterative feedback loops should be used throughout the process",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/16Iu9XQps4eSPe1fDi5QTZT6R01YCku2R/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- One or more ideas to create"
   },
   {
     "id": "public-feedback-update",
     "name": "Public Feedback update",
     "status": "Content ready",
-    "typology": "Tool 17 + event report document (online)",
-    "shortDesc": "We want to support transparent communication and manage expectations by making the relationship between community input and project decisions visible.",
+    "typology": "Tool 17 + online resources",
+    "shortDesc": "A transparent record of what participants contributed, how the project responded, and what changed as a result, shared at each public event and online.",
     "purpose": "We want to support transparent communication and manage expectations by making the relationship between community input and project decisions visible.",
     "phase": 5,
     "phaseName": "Consolidation, Governance & Learning",
-    "objectiveTags": [],
-    "mode": "Offline",
-    "duration": "Not specified",
+    "objectiveTags": [
+      "To co-design"
+    ],
+    "mode": "Hybrid",
+    "duration": "5-20 m",
     "groupSize": "Not specified",
     "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
+    "facilitatorRatio": "Without a facilitator",
     "suppliesRequired": "",
     "expectedOutputs": [
       "A completed feedback log documenting community input and project decisions",
@@ -885,32 +862,36 @@
     "accessibilityNotes": "Display the update in large, high-contrast print at the venue entrance, and keep an online version compatible with screen readers for anyone who cannot attend in person.",
     "usageTip": "- Complete the table after each significant engagement, testing or decision-making phase; do not wait until the end of the process.\n- Use clear, non-technical language and remain faithful to what participants expressed.\n- Do not report only the ideas that were accepted. Explaining constraints and rejected proposals is essential for transparency and trust.\n- Distinguish between inputs that were not adopted and those that are still under review or outside the project’s scope.\n- Group similar contributions without hiding conflicting views or concerns raised by less-represented participants.\n- Revise the table when decisions change or new evidence becomes available.",
     "proTip": "Report rejected and out-of-scope proposals as clearly as accepted ones — omitting them is one of the fastest ways to erode trust in a co-creation process.",
-    "implementationTime": "Not specified",
+    "implementationTime": "5-20 m",
     "developmentTime": "Not specified",
     "howTo": "1) After each significant engagement, testing or decision-making phase, use the Event Report Template and the Feedback log (both available on our website) to document what happened and decisions taken.\n2) Group related contributions into a limited number of clear themes and transfer the main outcomes into the Public feedback update template.\n3) Bring the latest version to every public event. Display it at the entrance, near the working materials or during the closing session, and briefly explain what has changed since the previous activity.\n4) Publish the table on the project website or digital platform, as well as through other relevant communication channels. Update it whenever a decision, constraint or next step changes.\n5) Where possible, link each update to visible evidence, such as revised drawings, prototypes, meeting summaries, photographs or decision documents.\n6) Keep previous versions accessible so that participants can follow how contributions, decisions and project responses have evolved over time.",
     "budgetAdaptation": "",
     "examples": "",
     "requirements": "",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": "Add excel link: \nAdd doc link:"
+    "printableUrl": "https://drive.google.com/file/d/1Zx9OvTVS6xwiQGm5fiDAOa1BTUfYUpOL/view?usp=drive_link",
+    "onlineResources": "Online internal log link: https://docs.google.com/spreadsheets/d/1FQll_3y_9hzg5T5QZP3ab1V4dBVIRw3BlCk6W9cc1OI/edit?usp=sharing \nEvent report template: https://docs.google.com/document/d/1wD_lSov1zpotXRaJ-tqbSzFfWvhRJzZnv7-tfja_y9U/edit?tab=t.0",
+    "targetUsers": "Internal team",
+    "prerequisites": ""
   },
   {
     "id": "stewardship-canvas",
     "name": "Stewardship Canvas",
     "status": "Content ready",
-    "typology": "Tool 18 + online log",
-    "shortDesc": "We want to make existing stewardship initiatives visible, identify new care needs, and connect individuals, groups and organisations willing to contribute to the long-term care and activation of the place.",
+    "typology": "Tool 18 + online resources",
+    "shortDesc": "A shared overview of what needs care, who is already involved, and how others can contribute, tracking commitments over time.",
     "purpose": "We want to make existing stewardship initiatives visible, identify new care needs, and connect individuals, groups and organisations willing to contribute to the long-term care and activation of the place.",
     "phase": 5,
     "phaseName": "Consolidation, Governance & Learning",
-    "objectiveTags": [],
-    "mode": "Offline",
-    "duration": "Not specified",
+    "objectiveTags": [
+      "To self-govern"
+    ],
+    "mode": "Hybrid",
+    "duration": "5-20 m",
     "groupSize": "Not specified",
     "budget": "Flexible",
-    "facilitatorRatio": "Not specified",
-    "suppliesRequired": "",
+    "facilitatorRatio": "Without a facilitator",
+    "suppliesRequired": "Sticky notes, markers",
     "expectedOutputs": [
       "A documented map of existing stewardship initiatives and their current supporters",
       "New expressions of interest or confirmed commitments from residents and organisations",
@@ -919,14 +900,275 @@
     "accessibilityNotes": "Keep the canvas at an accessible height with large, high-contrast text; offer a digital version so people who cannot attend the public event in person can still register interest.",
     "usageTip": "- Present the templates as an invitation to contribute, not as a request for residents to replace public services or assume responsibilities that belong to municipalities, landowners or specialist professionals.\n- Use concrete language and identify specific elements or activities rather than speaking in general terms.\n- Distinguish clearly between a suggestion, an expression of interest and a confirmed commitment.\n- Encourage different forms of contribution, including time, knowledge, skills or coordination.\n- Connect new proposals to existing initiatives where possible.\n- Check whether contributors need permissions, resources or support before an initiative becomes active.\n- Do not treat empty spaces or unassigned needs as a failure; they highlight gaps in capacity or responsibility.",
     "proTip": "Distinguish clearly between a suggestion, an expression of interest and a confirmed commitment — treating all three the same way inflates stewardship capacity that isn't really there.",
-    "implementationTime": "Not specified",
+    "implementationTime": "5-20 m",
     "developmentTime": "Not specified",
     "howTo": "1) Before each public event, review the online internal version (available on our website) and pre-fill the two columns with the initiatives currently being developed and the actors already taking care of them.\n2) Leave the tool on sight during the event, at the beginning explain briefly what has changed since the previous activity, highlighting new agreements, ongoing initiatives and unresolved needs.\n3) At the end of the activities, invite participants to add their name, group or organisation next to an existing initiative and describe how they could contribute to existing and elements that needs care.\n4) Make clear that identifying a need does not make the person who proposed it responsible for addressing it.\n5) After the event, review the contributions, contact potential contributors where appropriate, and transfer the relevant information to the online internal version.\n6) Update the public template when an offer becomes a confirmed commitment, when a new actor joins, or when the status of an initiative changes.\n7) Keep previous versions accessible so participants can follow how stewardship needs, contributions and commitments evolve over time.",
     "budgetAdaptation": "",
     "examples": "",
     "requirements": "01_The scope of influence, decision rules, and use of inputs should be explicitly defined and transparently communicated",
     "reference": "",
+    "printableUrl": "https://drive.google.com/file/d/17FPj9jUdNbwSi07u99tC-7Q8ScIRBuUD/view?usp=drive_link",
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1Tc9B0ESxrcj_UTy57mp7hNyDxXf_dfdsOUMM-1j3m6c/edit?gid=710371929#gid=710371929",
+    "targetUsers": "Internal team",
+    "prerequisites": ""
+  },
+  {
+    "id": "start-park-card-game",
+    "name": "Start Park card game",
+    "status": "Content ready",
+    "typology": "Tool 20 + printable set",
+    "shortDesc": "The group plays together to design an outdoor public space that is sustainable, inclusive and creates positive experiences and a sense of belonging.\nThe game cards represent nature-based solutions, street furniture and activities. Each choice will have a cost, an impact on the space and a final score.",
+    "purpose": "We want to help non-expert participants understand and combine NBS, furniture, activities and inhabitants needs while considering the aspects related to Beauty, Sustainability, Inclusion, as stated in the New European Bauhaus (NEB) values.",
+    "phase": 3,
+    "objectiveTags": [],
+    "mode": "Offline",
+    "duration": "Not specified",
+    "groupSize": "Not specified",
+    "budget": "Flexible",
+    "facilitatorRatio": "Not specified",
+    "suppliesRequired": "",
+    "expectedOutputs": [
+      "A jointly designed outdoor space combining nature-based solutions, furniture and activities",
+      "A visible score reflecting the trade-offs between beauty, sustainability and inclusion",
+      "A shortlist of design moves the group is confident to carry into prototyping"
+    ],
+    "accessibilityNotes": "Playable seated at a table with no fine motor or reading demands beyond placing cards; talk the group through each card aloud so participants who are non-native speakers or have low literacy can follow by ear rather than text alone.",
+    "usageTip": "Play it as a bridge between \"To imagine scenarios\" and \"To test using prototypes\" — the choices made on the board translate directly into the lo-fi prototypes built in the next event.",
+    "proTip": "Keep score visible throughout so trade-offs stay transparent; a hidden or delayed score turns the game into guesswork instead of a real design conversation.",
+    "implementationTime": "Not specified",
+    "developmentTime": "Not specified",
+    "howTo": "See the rulebook",
+    "budgetAdaptation": "The rulebook and card set can be printed in black and white and laminated for reuse across multiple sessions instead of ordering a full-colour printed set.",
+    "examples": "",
+    "requirements": "- Challenge Statement,\n- Morphological study of the area",
+    "reference": "",
     "printableUrl": "",
-    "onlineResources": "Add excel link:"
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Challenge Statement\n- Morphological study of the area"
+  },
+  {
+    "id": "participatory-art-installation",
+    "name": "Participatory Art Installation",
+    "status": "Formatted for printing",
+    "typology": "11 Techinque",
+    "shortDesc": "Through a hands-on process guided by one or more local artists, the community is invited to build, inhabit, touch or modify the installation on site. The team observes sensory, emotional and appropriation signals, then uses them to adjust the scenario, feed the prototyping cycle and identify which elements are ready for real-life testing.",
+    "purpose": "We want to inject an artistic-installative practice as a prototyping tool and to understand how people spontaneously use the space.",
+    "phase": 4,
+    "objectiveTags": [
+      "To co-design",
+      "To self-govern"
+    ],
+    "mode": "Offline",
+    "duration": "up to 4h",
+    "groupSize": "Not specified",
+    "budget": "Flexible",
+    "facilitatorRatio": "1/+10",
+    "suppliesRequired": "Baseline (always): reclaimed and tactile materials (cardboard, timber offcuts, fabric, clay, salvaged street furniture), basic hand tools and fixings (tape, zip-ties, rope, scissors, saws), markers, and a simple ground cover/base to define the installation footprint.\n\nRegister-dependent (pick with the artist):\n\ntactile-material → extra raw/scrap materials, moldable media (clay, plaster);\nephemeral-performative → chalk, textiles, lightweight structures, simple sound/light;\ncartographic-narrative → large canvas/paper, transparent overlays, photos, pens;\nsensory-ecological → plants, soil, natural elements, aromatic/tactile species;\nplayful-ludic → modular blocks, cards, movable props.\n\nObservation & documentation: camera/phone, notebook or observation prompt cards, and something to log changes over time.\n\nSite & safety: permissions/host presence to signal the space may be used and altered, plus basic safety gear if building on site.",
+    "expectedOutputs": [
+      "A built, inhabitable installation that embodies one prioritised scenario from co-design",
+      "Sensory, emotional and appropriation signals collected through observation",
+      "A shortlist of elements with enough resonance to move into real-life testing"
+    ],
+    "accessibilityNotes": "Use reclaimed, tactile materials and low hand-tools so people with different abilities, ages and levels of manual dexterity can take part in the build; keep at least one calm, low-sensory zone away from tools and activity for participants who need it.",
+    "usageTip": "- The art director finds and connects the artists to the process; the facilitator guards process, inclusion, timing and the design read-out. Neither should absorb the other.\n- Follow any other instruction from the artist.\n- Close the loop with the artist in the room, so resonance becomes design decisions, not anecdotes.",
+    "proTip": "Let the installation be touched, moved and altered on site; appropriation by the public is the signal you are testing for, not a problem to prevent.",
+    "implementationTime": "up to 4h",
+    "developmentTime": "Not specified",
+    "howTo": "1) Prepare a brief for the artist. State: the issue to tackle, the people to involve, the site and its constraints (access, safety, permits, timing) and the prioritised scenario from the co-design session. Do not prescribe the artistic register: that choice belongs to the artist.\n2) Name explicitly the one thing you want to test (e.g. sense of belonging, comfort, memory, ecological care): a single question the installation must answer.\n3) With the guidance of an art director, involve local artist(s) in the process.\n4)Facilitate a hands-on build with accessible, tactile, reclaimed materials, so non-designers, children and marginalised residents contribute on equal terms with planners.\nInvite the community to inhabit, touch, move and modify the installation on site. Allow additions and changes: appropriation is the signal you are looking for.\n5) Monitor what is going on and what the installation leaves behind on people. How depends on the artist and on the assessment process agreed with them (methods in the appendix).\n6) Turn the sensory, emotional and appropriation signals into adjustments to the scenario and feed them back into the prototyping cycle. Flag the elements with enough resonance and buy-in to scale into real-life testing.",
+    "budgetAdaptation": "Baseline materials (reclaimed timber, cardboard, fabric, basic fixings) keep the installation low-cost; scale up only the register the artist recommends (tactile, performative, cartographic, ecological or playful) rather than all of them at once.",
+    "examples": "",
+    "requirements": "",
+    "reference": "",
+    "printableUrl": "https://drive.google.com/file/d/1IBiDPBXc_jvU5X1X0kinmo6b4TbZIrEf/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
+  },
+  {
+    "id": "after-event-feedback-collection",
+    "name": "After event feedback collection",
+    "status": "Formatted for printing",
+    "typology": "Tool 16 + online resources",
+    "shortDesc": "With the feedback canvas, participants can freely add comments about the activity, creating a collective snapshot of what they appreciated, what was unclear or difficult, and what should be improved. An online version can complement the canvas by collecting more detailed feedback after the event.",
+    "purpose": "We want to quickly collect participants' reactions immediately after any in-person event, so facilitators can fix what didn't work and reinforce what did.",
+    "phase": 5,
+    "objectiveTags": [
+      "To consult"
+    ],
+    "mode": "Hybrid",
+    "duration": "<5 m",
+    "groupSize": "Not specified",
+    "budget": "Flexible",
+    "facilitatorRatio": "Without a facilitator",
+    "suppliesRequired": "Sticky notes, markers, stickers",
+    "expectedOutputs": [
+      "A photographed canvas capturing what participants appreciated, found unclear, or want improved",
+      "Two or three recurring points validated aloud with the room before closing",
+      "A short list of adjustments to carry into the next event or online form"
+    ],
+    "accessibilityNotes": "Offer stickers and simple drawing alongside writing so people who do not share the working language or find writing difficult can still contribute; position the canvas at a height and location reachable from a wheelchair.",
+    "usageTip": "- Offer stickers/drawing as a first-class option, not a fallback: it lowers the barrier for people who don't like writing or don't share the working language.\n- Don't stand guard over the wall: proximity of a facilitator suppresses honest criticism. Step back.\n- Seed one or two example notes yourself if the wall stays empty; people copy the format once they see it.\n- Photograph the full sheet (and each quadrant) before dismantling. This photo is the raw dataset.",
+    "proTip": "Step back once the wall is seeded: a facilitator standing next to it suppresses honest criticism, even when that isn't the intention.",
+    "implementationTime": "<5 m",
+    "developmentTime": "Not specified",
+    "howTo": "1. Hang the canvas where it's easy to be seen: near the exit or the coffee area. Fill the header. Lay out the supply tray. Optional: print 3–4 candid photos taken during the event to seed the centre zone.\n2. People approach freely, in small groups, and stick their notes. This is intentionally non-linear and simultaneous: the strength of the format is that many hands populate it at once, and later arrivals react to what's already there.\n3. If time allows, the facilitator reads 2–3 recurring notes aloud and asks the room \"did we get this right?\" A live validation of the \"You said\" that will later become \"We did.\"\n\nYou can also create a more extended online form to send to the participants (full set of questions is available on our website)",
+    "budgetAdaptation": "The canvas can be a single sheet of paper on a wall instead of a printed template; the optional online form is free to set up with any basic survey tool.",
+    "examples": "",
+    "requirements": "",
+    "reference": "",
+    "printableUrl": "https://drive.google.com/file/d/1CWTr9l_j9RIyG-kKgOuHac5kh1NIRNF-/view?usp=drive_link",
+    "onlineResources": "https://docs.google.com/document/d/1isy0PtvlcPq2EvbDyYxcHEb9gNiLurO88GfAUlS7iHA/edit?tab=t.0",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
+  },
+  {
+    "id": "governance-log",
+    "name": "Governance Log",
+    "status": "Formatted for printing",
+    "typology": "12 Technique + online resources",
+    "shortDesc": "An internal record of who influences, decides and implements each governance issue, how decisions are made, and how responsibilities and outcomes evolve over time.",
+    "purpose": "We want to make decision-making responsibilities, participation opportunities and agreed outcomes transparent, while keeping an evolving record of how governance arrangements develop throughout the process.",
+    "phase": 5,
+    "objectiveTags": [
+      "To self-govern"
+    ],
+    "mode": "Online",
+    "duration": "Not specified",
+    "groupSize": "Not specified",
+    "budget": "Flexible",
+    "facilitatorRatio": "Without a facilitator",
+    "suppliesRequired": "NO",
+    "expectedOutputs": [
+      "A living record of governance issues, decision holders, involved actors and decision methods",
+      "A clear map of who can propose, contribute, decide and implement for each issue",
+      "A public-facing summary of decisions, status and next review dates"
+    ],
+    "accessibilityNotes": "Kept as an internal spreadsheet rather than a live participatory tool, so no direct accessibility accommodation is required for citizens; when translating entries to a public-facing platform, use plain, non-technical language.",
+    "usageTip": "Start the log before the first governance question actually comes up — retrofitting it after several undocumented decisions is far harder than keeping it live from the process's first week.",
+    "proTip": "Publish a plain-language version of the log's headline decisions on the public platform regularly; an internal-only log that is never shared back defeats its own transparency purpose.",
+    "implementationTime": "Not specified",
+    "developmentTime": "Not specified",
+    "howTo": "This is an internal tool, a baseline to share decions about governance and care with citizens. \n1) At the beginning of the process, list the main decisions or governance issues that are likely to arise.\n2) For each issue, identify the formal decision holder, clarify what is open to influence and record any fixed constraints.\n3) Indicate which actors should be involved, paying particular attention to groups that may otherwise be excluded from the decision.\n4) Update the remaining fields as the process develops, recording who can propose, who contributes, who decides and who is responsible for implementation.\n5) Specify the decision method so that participants understand how contributions will be considered and how the final decision will be made.\n6) Record the outcome or agreement reached, together with its current status and any planned review date.\n6) Update the log whenever responsibilities, constraints, decisions or implementation arrangements change.\n7) Transfer the relevant information to any public-facing platform you have, using clear and accessible language to explain what is being discussed, what has been decided and what happens next.\n8) Keep previous entries and updates accessible so that the evolution of decisions can be followed over time.",
+    "budgetAdaptation": "A shared spreadsheet is sufficient; no dedicated software is required.",
+    "examples": "",
+    "requirements": "",
+    "reference": "",
+    "printableUrl": "https://drive.google.com/file/d/1tqW0Bpy8O1uX-JmGPNfpkcg2Y2ZCJfv2/view?usp=drive_link",
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1vNa9Ytjk-T6deZXwYorNSQDshDRrIQDCJKSAU7abS_s/edit?gid=0#gid=0",
+    "targetUsers": "Internal team",
+    "prerequisites": ""
+  },
+  {
+    "id": "prioritization-guidelines",
+    "name": "Prioritization guidelines",
+    "status": "Formatted for printing",
+    "typology": "13 Technique",
+    "shortDesc": "A collection of structured process for comparing options, making trade-offs visible, and agreeing on a justified shortlist.",
+    "purpose": "We want to compare multiple ideas, needs or actions transparently and identify which ones should be developed, tested or addressed first.",
+    "phase": 5,
+    "objectiveTags": [
+      "To co-design",
+      "To consult"
+    ],
+    "mode": "Hybrid",
+    "duration": "5-20 m",
+    "groupSize": "Not specified",
+    "budget": "Flexible",
+    "facilitatorRatio": "1/+10",
+    "suppliesRequired": "Stickers, markers, sticky notes or digital devices",
+    "expectedOutputs": [
+      "A justified shortlist of ideas, needs or actions to develop, test or address first",
+      "A documented record of the criteria and method used to reach the shortlist",
+      "Minority preferences and significant concerns recorded alongside the result"
+    ],
+    "accessibilityNotes": "Offer both a physical dot-voting/sticky-note version and a digital version so participants can choose the format that suits their literacy, mobility and comfort with technology.",
+    "usageTip": "- Do not describe prioritisation as a final decision unless participants genuinely hold that authority.\n- Avoid relying only on dot-voting for complex or high-impact choices.\n- Use silent individual reflection before open discussion to reduce dominance.\n- Check whether the preferred options disadvantage absent or underrepresented groups.\n- Make criteria visible throughout the exercise.\n- When options are still uncertain, prioritise what should be tested, rather than what should immediately be implemented.",
+    "proTip": "Give participants quiet, individual reflection time before any group discussion; it measurably reduces the influence of the loudest voices in the room on the final ranking.",
+    "implementationTime": "5-20 m",
+    "developmentTime": "Not specified",
+    "howTo": "1) Clarify the purpose of the prioritisation and how the results will be used.\n2) Present the options and allow questions for clarification.\n3) Agree on or explain the criteria.\n4) Give participants time to assess the options individually.\n5) Apply the selected method.\n6) Review the result collectively rather than accepting the ranking automatically.\n7) Discuss minority preferences, possible exclusions and significant concerns.\n8) Record the shortlist, criteria, reasoning and next step.\n\nPossible methods are: \nDot-voting: Participants distribute a limited number of votes among the options. Useful for quickly identifying collective preferences.\nCriteria-based scoring: Participants assess each option against agreed criteria. Useful when the reasons behind the ranking need to be visible.\nImpact–feasibility matrix- Options are positioned according to their expected impact and feasibility. Useful for identifying promising and realistic actions.\nRanking: Participants arrange options in order of importance. This can be done individually, in small groups or collectively.\nFacilitated prioritisation: Participants discuss the strengths, risks and trade-offs of each option before agreeing on a shortlist.\nMulti-stage prioritisation: A quick first round reduces the number of options, followed by a more detailed assessment of the shortlist.",
+    "budgetAdaptation": "Dot-voting with stickers or a show of hands costs almost nothing; the digital equivalent works with any free polling tool.",
+    "examples": "",
+    "requirements": "",
+    "reference": "",
+    "printableUrl": "https://drive.google.com/file/d/1KXxH-5y44FiKSX7tHN7hGLrOgB3QIDrY/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
+  },
+  {
+    "id": "decision-making-guidelines",
+    "name": "Decision making guidelines",
+    "status": "Formatted for printing",
+    "typology": "14 Technique",
+    "shortDesc": "An overview of possible processes for choosing between options, clarifying who has authority, addressing objections, and recording how the final decision was reached.",
+    "purpose": "We want to make decisions through a clear and legitimate process, making authority, participation, responsibilities and the status of the decision transparent.",
+    "phase": 5,
+    "objectiveTags": [
+      "To self-govern",
+      "To co-design",
+      "To consult"
+    ],
+    "mode": "Hybrid",
+    "duration": "Not specified",
+    "groupSize": "Not specified",
+    "budget": "Flexible",
+    "facilitatorRatio": "1/+10",
+    "suppliesRequired": "NO",
+    "expectedOutputs": [
+      "A recorded decision with its rationale, conditions and responsibilities",
+      "A clear statement of who held authority and how participant input was considered",
+      "A communicated outcome explaining how contributions influenced the result"
+    ],
+    "accessibilityNotes": "Explain the chosen decision method in plain language before applying it, and confirm out loud that participants understood what they can and cannot influence — this matters most for methods (formal authority, delegated decision) where community influence is indirect.",
+    "usageTip": "- Consensus does not mean that everyone considers the option ideal; it means that everyone can sufficiently support or accept it.\n- Majority voting is efficient but may leave important minority concerns unresolved.\n- Formal authority should be exercised transparently, with a clear explanation of how community evidence was considered.\n- Do not use the language of co-decision when authority remains entirely with another actor.\n- Use experimental decisions when evidence is incomplete and the option can be tested safely and reversibly.\n- Document disagreement rather than forcing artificial agreement.",
+    "proTip": "Reach for an experimental/temporary decision whenever the evidence is incomplete; it lets the group move forward without pretending a contested choice is final.",
+    "implementationTime": "Not specified",
+    "developmentTime": "Not specified",
+    "howTo": "1) Formulate the decision question clearly and present the available options.\n2) Clarify the decision methods, if needed, identify the decision owner and what participants can and cannot influence.\n3) Give participants equal opportunities to express views and concerns.\n4) Apply the selected method.\n5) Check whether the result creates significant risks, exclusions or unresolved objections.\n6) Record the decision, rationale, conditions and responsibilities.\n7) Communicate the outcome and explain how participant input influenced it.\n\nDecision methods: \nFormal authority decision: The authorised municipality, landowner, department or organisation makes the decision and records its rationale.\nDecision after consultation: The decision owner considers participant input but retains responsibility for the final decision.\nConsensus: The group seeks an option that everyone can accept or support sufficiently to move forward.\nConsent decision: A proposal moves forward when no participant has a reasoned and substantial objection. This can be useful when full consensus is unrealistic but collective acceptance is important.\nMajority vote: The option receiving the agreed proportion of votes is selected.\nDelegated decision: A person, working group or committee is authorised to decide within a defined scope.\nJoint approval: Two or more actors must approve the decision, such as a municipality and a community group.\nExperimental decision during testing: The group agrees to test an option temporarily, collect evidence and revisit the decision before permanent implementation.",
+    "budgetAdaptation": "No materials beyond meeting time and a shared document to record the decision and rationale.",
+    "examples": "",
+    "requirements": "",
+    "reference": "",
+    "printableUrl": "https://drive.google.com/file/d/1hGsZbyJo8VRfb8AfQK3XLJNwB4_5fFSq/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
+  },
+  {
+    "id": "co-design-to-policy-pathway",
+    "name": "Co-design to Policy Pathway",
+    "status": "Formatted for printing",
+    "typology": "Tool 19",
+    "shortDesc": "The Policy Prototype Canvas helps translate a co-designed idea into the first structured steps of a policy-development process by clarifying conditions to address, key actors and possible steps to move forward. The canvas does not produce a policy by itself, but creates a common basis for coordination, commitment and further development.",
+    "purpose": "We want to translate co-designed proposals into credible pathways for institutional recognition, policy development and future implementation.",
+    "phase": 5,
+    "objectiveTags": [],
+    "mode": "Offline",
+    "duration": "20-45 m",
+    "groupSize": "Not specified",
+    "budget": "Flexible",
+    "facilitatorRatio": "Without a facilitator",
+    "suppliesRequired": "NO",
+    "expectedOutputs": [
+      "A completed canvas naming the proposal, the conditions for uptake, and key stakeholders",
+      "A roadmap of steps, owners and timing for moving the proposal toward policy",
+      "A shared reference document for internal coordination and public reporting"
+    ],
+    "accessibilityNotes": "Intended for internal/technical teams rather than the general public; when the roadmap is shared back with participants, translate it into a short plain-language summary of what will happen and by when.",
+    "usageTip": "Use the canvas as the first structured step toward policy uptake, not as a substitute for the legal, financial and political work formal adoption still requires.",
+    "proTip": "Assign every roadmap step a named responsible actor and a date before circulating the canvas — an unassigned step is the single most common reason good proposals stall after co-design ends.",
+    "implementationTime": "20-45 m",
+    "developmentTime": "Not specified",
+    "howTo": "1) Use the canvas as the starting point for a policy-development process, not as a substitute for the technical, legal, financial and political work required for formal adoption.\n2) Select one co-designed idea and briefly describe its key elements: what is being proposed, why it matters, what must be preserved ans what can still be adapted.\n3) List the conditions required for uptake, considering policy alignment, regulations, ownership, authorisations, feasibility, resources and organisational capacity.\n4) Identify the key stakeholders and assign the roles of decision owner, process owner, technical contributors, resource holders, community representatives and critical actors.\n5) Select the relevant policy activation strategies that can help move the proposal forward, add different ones if needed.\n6) Complete the roadmap by defining, for each step, what needs to be done, who is responsible and by when.\n7) Use the completed canvas as a shared reference for internal coordination, formal commitments and public reporting.",
+    "budgetAdaptation": "A single shared document or slide is sufficient; no dedicated software or printing is required.",
+    "examples": "",
+    "requirements": "",
+    "reference": "",
+    "printableUrl": "https://drive.google.com/file/d/1kH8vQ3Xu8wXj4i1xMv3jgrLyUzqoWfRw/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Internal team",
+    "prerequisites": ""
   }
 ]

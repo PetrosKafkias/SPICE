@@ -33,13 +33,15 @@
     "requirements": "03_A prontidão institucional, incluindo a disponibilidade para partilhar o controlo e a confiança dos planeadores nos cidadãos, deve ser avaliada antes de se iniciar a participação",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "people-competence-readiness-canvas",
     "name": "Ecrã de preparação de pessoas e competências",
     "status": "Formatado para impressão",
-    "typology": "Tool 02 + online excel",
+    "typology": "Tool 02 + online resources",
     "shortDesc": "Os municípios percorrem linha a linha para assinalar se cada competência necessária para o piloto está disponível interna ou externamente, preenchem quem é responsável e como as alcançar, identificam as competências em falta como linhas vazias e mantêm o canvas como um documento vivo atualizado nas principais fases do projeto.",
     "purpose": "Queremos identificar quais das competências necessárias temos internamente e reconhecer quais devemos procurar externamente.",
     "phase": 1,
@@ -71,13 +73,15 @@
     "requirements": "03_A prontidão institucional, incluindo a disponibilidade para partilhar o controlo e a confiança dos planeadores nos cidadãos, deve ser avaliada antes de se iniciar a participação",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1OSW2DXx3l8hK2wnRq-wTnjrAiH93HHMqUNTSlAryRuA/edit?usp=sharing",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "stakeholder-mapping",
     "name": "Mapeamento de partes interessadas",
     "status": "Formatado para impressão",
-    "typology": "01 Technique + Tool 03 + Excel Stakeholders's ID Repository",
+    "typology": "01 Technique + Tool 03 + online resources",
     "shortDesc": "Queremos mapear os atores de acordo com a sua influência, poder e relevância em relação aos valores do NEB e aos desafios locais",
     "purpose": "Queremos mapear os atores de acordo com a sua influência, poder e relevância em relação aos valores do NEB e aos desafios locais",
     "phase": 1,
@@ -108,46 +112,15 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": "Excel Stakeholders's ID Repository (link)"
-  },
-  {
-    "id": "allegato-single-stakeholder-s-id",
-    "name": "ID da única parte interessada",
-    "status": "Formatado para impressão",
-    "typology": "Tool 03 B/N no istruzioni (2 ID in ogni A4)",
-    "shortDesc": "NÃO",
-    "purpose": "NÃO",
-    "phase": 1,
-    "phaseName": "Framing & Readiness",
-    "objectiveTags": [],
-    "mode": "Off-line",
-    "duration": "Not specified",
-    "groupSize": "Não especificado",
-    "budget": "Flexible",
-    "facilitatorRatio": "Não especificado",
-    "suppliesRequired": "",
-    "expectedOutputs": [
-      "Um cartão de partes interessadas preenchido que capte a função, a relevância e os dados de contacto",
-      "Um cartão pronto para ser arquivado no repositório partilhado das partes interessadas"
-    ],
-    "accessibilityNotes": "Imprima num layout grande e de alto contraste com um espaço generoso para escrita; disponibilizar uma versão digital preenchível para quem não sabe escrever à mão.",
-    "usageTip": "Preencha um cartão por parte interessada à medida que são identificados e, em seguida, transfere os campos-chave para o Repositório de Partes Interessadas partilhado, para que o projeto mantenha um documento de referência único e consistente.",
-    "proTip": "Mantenha o cartão curto e factual — o seu valor é um registo rápido e consistente, não um perfil completo; guarde análises mais profundas para ferramentas como Personas ou Mapa de Empatia.",
-    "implementationTime": "Not specified",
-    "developmentTime": "Not specified",
-    "howTo": "NÃO",
-    "budgetAdaptation": "",
-    "examples": "",
-    "requirements": "",
-    "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1E_QXeg18hwTN7RilK-veVPRCtjsPBSEUBPKbmNzFcEY/edit?gid=0#gid=0",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "stakeholders-engagement-planning",
     "name": "Planeamento de envolvimento das partes interessadas",
     "status": "Formatado para impressão",
-    "typology": "Tool 04",
+    "typology": "Tool 04 + online resources",
     "shortDesc": "Para um evento específico, os participantes listam os grupos que desejam envolver e os aliados úteis para alcançar cada um deles e, em seguida, classificam esses aliados nas fases antes, durante e depois para planear como e quando construir as relações necessárias.",
     "purpose": "Queremos identificar aliados-chave para o envolvimento das pessoas e planear a interação com eles nos diferentes eventos.",
     "phase": 1,
@@ -179,7 +152,9 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": "Excel (link)"
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1SjHp00Nm6OieedH_WJTIPiHzrTc1kp8I4ifmGnfcHpo/edit?gid=662745604#gid=662745604",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Mapa de partes interessadas\n- Lista de possíveis aliados para grupos-alvo difíceis de alcançar"
   },
   {
     "id": "levels-of-participation-map",
@@ -215,7 +190,9 @@
     "requirements": "03_A prontidão institucional, incluindo a disponibilidade para partilhar o controlo e a confiança dos planeadores nos cidadãos, deve ser avaliada antes de se iniciar a participação",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Mapa de partes interessadas"
   },
   {
     "id": "participation-enablers-map",
@@ -251,7 +228,9 @@
     "requirements": "03_A prontidão institucional, incluindo a disponibilidade para partilhar o controlo e a confiança dos planeadores nos cidadãos, deve ser avaliada antes de se iniciar a participação",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Lista de grupos-alvo a envolver nas atividades"
   },
   {
     "id": "neb-adapted-swot-analysis",
@@ -287,7 +266,9 @@
     "requirements": "06_A adaptação contextual deve ser um princípio fundamental do kit de ferramentas, reconhecendo as expectativas e os limites de participação",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Lista de observações baseadas em evidências de atividades ou investigações anteriores"
   },
   {
     "id": "challenge-reframing",
@@ -323,7 +304,9 @@
     "requirements": "01_O âmbito de influência, as regras de decisão e a utilização de inputs devem ser definidos explicitamente e comunicados de forma transparente",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "key-informant-interviews",
@@ -356,7 +339,9 @@
     "requirements": "05_As necessidades locais, o conhecimento espacial quotidiano e os recursos da comunidade devem ser identificados desde o início",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1oICdZJA9wOkgDUb7mU309bEl5xXPFYLnDNiSozty2ug/edit?gid=366573815#gid=366573815",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "opportunity-map",
@@ -392,7 +377,9 @@
     "requirements": "08_A participação deve começar antes de serem tomadas decisões importantes e permitir que os cidadãos influenciem a direção em vez de reagir a soluções predefinidas.",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Declaração do desafio proveniente da Reestruturação do desafio\n- Um conjunto inicial de necessidades das pessoas, ativos existentes, barreiras, tensões, ideias, potenciais aliados, recursos, riscos e questões em aberto que as pessoas podem utilizar para o mapeamento"
   },
   {
     "id": "world-cafe",
@@ -428,7 +415,9 @@
     "requirements": "09_Os momentos participativos devem ser de elevado impacto e claramente propositados",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Um conjunto de 3 perguntas provenientes do Mapeamento de oportunidades, investigação ou outras atividades"
   },
   {
     "id": "open-space-technology",
@@ -464,7 +453,9 @@
     "requirements": "09_Os momentos participativos devem ser de elevado impacto e claramente propositados",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "roleplay-stepping-in-others-shoes",
@@ -500,13 +491,15 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Um conjunto de cartões de papéis que descrevem um utilizador específico, uma parte interessada ou uma parte afetada (com o papel e uma breve descrição); também pode utilizar Personas ou personas não humanas"
   },
   {
     "id": "walkshop",
     "name": "Walkshop",
     "status": "Formatado para impressão",
-    "typology": "06 Technique",
+    "typology": "06 Technique + Tool 12",
     "shortDesc": "Os participantes percorrem o local, observam e registam perceções, emoções, barreiras e impressões sensoriais em tempo real e, em seguida, traduzem coletivamente as descobertas em insights espaciais e questões de design.",
     "purpose": "Queremos explorar o site coletivamente e captar como as pessoas percecionam, sentem e interpretam diferentes lugares em tempo real.",
     "phase": 2,
@@ -535,8 +528,10 @@
     "examples": "",
     "requirements": "05_As necessidades locais, o conhecimento espacial quotidiano e os recursos da comunidade devem ser identificados desde o início",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1R9kuVdg4jrHppCRmhBWOj2rhc4vYUEmK/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "collective-actant-mapping",
@@ -572,13 +567,15 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "actant-journey-map",
     "name": "Mapa da viagem do Actant",
     "status": "Formatado para impressão",
-    "typology": "Tool 11",
+    "typology": "Tool 11 + Tool 12",
     "shortDesc": "Os participantes acompanham a experiência de um utilizador selecionado, não utilizador ou ator não humano num mapa do website, traçando barreiras, emoções, conflitos e oportunidades para os traduzir em insights de design.",
     "purpose": "Queremos compreender como as diferentes pessoas experienciam o lugar ao longo do tempo, através de percursos, pontos de contacto, emoções e barreiras.",
     "phase": 2,
@@ -608,43 +605,9 @@
     "requirements": "05_As necessidades locais, o conhecimento espacial quotidiano e os recursos da comunidade devem ser identificados desde o início",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
-  },
-  {
-    "id": "observation-prompt-card",
-    "name": "Cartão de pedido de observação",
-    "status": "Formatado para impressão",
-    "typology": "TOOL 12  + 9 carte B/N",
-    "shortDesc": "Os participantes utilizam cartões de alerta durante uma caminhada ou atividade de mapeamento de percursos para observar o local através de diferentes lentes do NEB, documentar o que observam no local e comparar as descobertas posteriormente para identificar problemas, valores e oportunidades.",
-    "purpose": "Queremos ajudar os participantes a observar o local através dos valores do Novo Bauhaus Europeu, captando qualidades sensoriais, condições ecológicas, dinâmicas sociais, barreiras e sinais de cuidado diretamente no local.",
-    "phase": 2,
-    "phaseName": "Collective Understanding",
-    "objectiveTags": [
-      "Para co-design"
-    ],
-    "mode": "Off-line",
-    "duration": "Not specified",
-    "groupSize": "Não especificado",
-    "budget": "Flexible",
-    "facilitatorRatio": "Não especificado",
-    "suppliesRequired": "",
-    "expectedOutputs": [
-      "Notas no local captadas através de diferentes lentes de valor NEB",
-      "Uma comparação das descobertas entre os participantes e os cartões de alerta",
-      "Uma pequena lista de questões, valores e oportunidades identificadas no local"
-    ],
-    "accessibilityNotes": "Imprima cartões em texto grande e de alto contraste; oferecer uma alternativa verbal ou gravada em áudio aos participantes que têm dificuldade em escrever em movimento.",
-    "usageTip": "Atribua ou deixe que os participantes desenhem um cartão de aviso diferente em cada paragem, de modo a que o mesmo local seja lido através de várias lentes, em vez de todos se aperceberem das mesmas coisas.",
-    "proTip": "Compare as descobertas nos cartões logo após a caminhada, enquanto as memórias estão frescas. Esperar até uma sessão posterior falha muitos dos detalhes sensoriais que tornam estas observações úteis.",
-    "implementationTime": "Not specified",
-    "developmentTime": "Not specified",
-    "howTo": "Os cartões de apoio à observação podem ser adicionados ao walkshop ou ao mapeamento da jornada do actante.\n1) No início da atividade, entregue a cada participante ou pequeno grupo um ou mais cartões. O dinamizador pode atribuir cartões específicos a diferentes grupos, pedir aos participantes que escolham um ou convidá-los a tirar um cartão em cada paragem ao longo do percurso ou durante a exploração do mapa. Isto ajuda a diversificar as observações e garante que o mesmo local é lido através de lentes diferentes.\n2) Os participantes utilizam os cartões para orientar o que percecionam, sentem e documentam no local ou imaginam estar lá. Os cartões devem ajudá-los a observar e a pensar sobre qualidades sensoriais, interações sociais, barreiras de acessibilidade, condições ecológicas, sinais de cuidado ou negligência, características ocultas e padrões de utilização.\n3) Utilize novamente as cartas durante a fase de síntese. Peça aos participantes para partilharem o que observaram através de cada lente NEB e compararem os resultados. Isto pode ajudar a identificar pontos críticos emocionais, questões ambientais, barreiras de inclusão, locais de vinculação, oportunidades de cuidado e tensões entre diferentes usos ou valores.",
-    "budgetAdaptation": "",
-    "examples": "",
-    "requirements": "",
-    "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Um conjunto de cartões de personagens, incluindo diferentes utilizadores, não utilizadores e atores não humanos; também pode utilizar Personas ou personas não humanas"
   },
   {
     "id": "the-empathy-map",
@@ -680,7 +643,9 @@
     "requirements": "05_As necessidades locais, o conhecimento espacial quotidiano e os recursos da comunidade devem ser identificados desde o início",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "personas-non-human-personas",
@@ -716,7 +681,9 @@
     "requirements": "06_A adaptação contextual deve ser um princípio fundamental do kit de ferramentas, reconhecendo as expectativas e os limites de participação",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Qualquer investigação disponível sobre o local relativamente aos seus utilizadores: notas de observação, resumos de entrevistas, dados de mapeamento, relatórios ecológicos ou contributos da comunidade recolhidos em atividades anteriores."
   },
   {
     "id": "scenario-building",
@@ -752,7 +719,9 @@
     "requirements": "08_A participação deve começar antes de serem tomadas decisões importantes e permitir que os cidadãos influenciem a direção em vez de reagir a soluções predefinidas.",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Declaração do desafio\nPrepare com antecedência:\n- uma questão central clara, por exemplo: \"Como poderá este lugar evoluir nos próximos 10 anos?\"\n- um horizonte temporal fixo, por exemplo 2035\n- 15–25 cartões de fatores de mudança pré-escritos a partir da investigação de base\n- uma grelha em branco de importância / incerteza\n- uma tela de cenário simples"
   },
   {
     "id": "top-10-design-principles-manifesto",
@@ -788,14 +757,16 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Declaração do desafio, cenários desenvolvidos, principais conclusões da investigação"
   },
   {
     "id": "lo-fi-prototyping",
     "name": "Prototipagem Lo-Fi",
     "status": "Formatado para impressão",
     "typology": "09 Techinque",
-    "shortDesc": "Queremos tornar tangíveis as ideias criadas em conjunto através de representações rápidas, de baixo custo e de baixa fidelidade que os participantes possam ver, manipular, experimentar e discutir antes de as testar na vida real.",
+    "shortDesc": "Partindo de uma ou mais ideias promissoras, os participantes definem o que precisam de aprender com o protótipo, escolhem o formato mais simples para tornar a ideia tangível — como esboços, mood boards, modelos de cartão, maquetes de fita adesiva, demonstrações de secretária, roleplay ou protótipos em papel/digitais — e constroem alternativas rápidas que podem ser demonstradas, observadas, ajustadas e comparadas para decidir o próximo passo.",
     "purpose": "Queremos tornar tangíveis as ideias criadas em conjunto através de representações rápidas, de baixo custo e de baixa fidelidade que os participantes possam ver, manipular, experimentar e discutir antes de as testar na vida real.",
     "phase": 4,
     "phaseName": "Prototyping & Testing",
@@ -824,14 +795,16 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Uma ou mais ideias ou cenários para prototipar"
   },
   {
     "id": "tactical-urbanism",
     "name": "Urbanismo Táctico",
     "status": "Formatado para impressão",
     "typology": "10 Techinque",
-    "shortDesc": "Queremos testar possíveis soluções espaciais diretamente no local através de intervenções temporárias, de baixo custo e reversíveis, para que as comunidades, designers e decisores possam observar como as pessoas as utilizam, recolher feedback e refinar ideias antes de fazerem mudanças permanentes.",
+    "shortDesc": "A intervenção de urbanismo tático é definida de acordo com as necessidades de teste e a viabilidade. A intervenção mantém-se simples, segura, acessível e proporcional ao tempo, orçamento e autorizações disponíveis. Durante o teste, a observação física e as ferramentas de feedback digital são combinadas para compreender como as pessoas utilizam o espaço e informar o design futuro, a tomada de decisões, os acordos de manutenção ou os papéis de administração.",
     "purpose": "Queremos testar possíveis soluções espaciais diretamente no local através de intervenções temporárias, de baixo custo e reversíveis, para que as comunidades, designers e decisores possam observar como as pessoas as utilizam, recolher feedback e refinar ideias antes de fazerem mudanças permanentes.",
     "phase": 4,
     "phaseName": "Prototyping & Testing",
@@ -860,14 +833,16 @@
     "requirements": "18_A prototipagem rápida e de baixa fidelidade e os ciclos de feedback iterativos devem ser utilizados em todo o processo",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Uma ou mais ideias a criar"
   },
   {
     "id": "public-feedback-update",
     "name": "Atualização do feedback público",
     "status": "Conteúdo pronto",
-    "typology": "Tool 17 + event report document (online)",
-    "shortDesc": "Queremos apoiar a comunicação transparente e gerir as expectativas, tornando visível a relação entre as contribuições da comunidade e as decisões do projeto.",
+    "typology": "Tool 17 + online resources",
+    "shortDesc": "Um registo transparente do que os participantes contribuíram, como o projeto respondeu e o que mudou como resultado, partilhado em cada evento público e online.",
     "purpose": "Queremos apoiar a comunicação transparente e gerir as expectativas, tornando visível a relação entre as contribuições da comunidade e as decisões do projeto.",
     "phase": 5,
     "phaseName": "Consolidation, Governance & Learning",
@@ -893,14 +868,16 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": "Add excel link: \nAdd doc link:"
+    "onlineResources": "Online internal log link: https://docs.google.com/spreadsheets/d/1FQll_3y_9hzg5T5QZP3ab1V4dBVIRw3BlCk6W9cc1OI/edit?usp=sharing \nEvent report template: https://docs.google.com/document/d/1wD_lSov1zpotXRaJ-tqbSzFfWvhRJzZnv7-tfja_y9U/edit?tab=t.0",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "stewardship-canvas",
     "name": "Ecrã de administração",
     "status": "Conteúdo pronto",
-    "typology": "Tool 18 + online log",
-    "shortDesc": "Queremos tornar visíveis as iniciativas de gestão existentes, identificar novas necessidades de cuidados e ligar indivíduos, grupos e organizações dispostos a contribuir para os cuidados de longa duração e para a ativação do local.",
+    "typology": "Tool 18 + online resources",
+    "shortDesc": "Uma visão geral partilhada do que precisa de cuidado, quem já está envolvido e como outros podem contribuir, acompanhando os compromissos ao longo do tempo.",
     "purpose": "Queremos tornar visíveis as iniciativas de gestão existentes, identificar novas necessidades de cuidados e ligar indivíduos, grupos e organizações dispostos a contribuir para os cuidados de longa duração e para a ativação do local.",
     "phase": 5,
     "phaseName": "Consolidation, Governance & Learning",
@@ -910,7 +887,7 @@
     "groupSize": "Não especificado",
     "budget": "Flexible",
     "facilitatorRatio": "Não especificado",
-    "suppliesRequired": "",
+    "suppliesRequired": "Post-its, marcadores",
     "expectedOutputs": [
       "Um mapa documentado das iniciativas de gestão existentes e dos seus atuais apoiantes",
       "Novas manifestações de interesse ou compromissos confirmados de residentes e organizações",
@@ -927,6 +904,8 @@
     "requirements": "01_O âmbito de influência, as regras de decisão e a utilização de inputs devem ser definidos explicitamente e comunicados de forma transparente",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": "Add excel link:"
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1Tc9B0ESxrcj_UTy57mp7hNyDxXf_dfdsOUMM-1j3m6c/edit?gid=710371929#gid=710371929",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   }
 ]

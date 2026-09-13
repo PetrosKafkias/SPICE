@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ArrowRight, Building2, ClipboardList, FileCheck2, Focus, Info, MapPinned, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Building2, Camera, ClipboardList, ExternalLink, FileCheck2, Focus, Info, MapPinned, Users, Vote } from 'lucide-react';
 import { Link, useLocation, useParams } from 'react-router';
 import SpicePublicShell from '../components/SpicePublicShell';
 import StandardPageHeader from '../components/StandardPageHeader';
@@ -25,12 +25,38 @@ interface Pilot {
   status: string;
 }
 
+interface PilotInitiativeLink {
+  id: number;
+  pilotSlug: string;
+}
+
+const PILOT_COORDINATES: Record<string, { lat: number; lon: number }> = {
+  thessaloniki: { lat: 40.626, lon: 22.954 },
+  rovaniemi: { lat: 66.5039, lon: 25.7294 },
+  'bielsko-biala': { lat: 49.8224, lon: 19.0444 },
+  cuba: { lat: 38.1667, lon: -7.8833 },
+};
+
+const PILOT_GALLERY: Record<string, { src: string; alt: TranslationKey }[]> = {};
+
+function osmEmbedUrl(lat: number, lon: number) {
+  const dLat = 0.008;
+  const dLon = 0.016;
+  const bbox = [lon - dLon, lat - dLat, lon + dLon, lat + dLat].join('%2C');
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat}%2C${lon}`;
+}
+
+function osmViewUrl(lat: number, lon: number) {
+  return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=15/${lat}/${lon}`;
+}
+
 export default function PilotSitesPage() {
   const { slug } = useParams();
   const location = useLocation();
   const { language, t } = useI18n();
   const [pilots, setPilots] = useState<Pilot[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [linkedInitiatives, setLinkedInitiatives] = useState<PilotInitiativeLink[]>([]);
 
   const loadPilots = async () => {
     setStatus('loading');
@@ -45,6 +71,16 @@ export default function PilotSitesPage() {
 
   useEffect(() => { void loadPilots(); }, []);
   useEffect(() => {
+    (async () => {
+      try {
+        const result = await apiRequest<{ initiatives: PilotInitiativeLink[] }>('/api/hub/initiatives');
+        setLinkedInitiatives(result.initiatives);
+      } catch {
+        setLinkedInitiatives([]);
+      }
+    })();
+  }, []);
+  useEffect(() => {
     if (status !== 'ready' || location.hash !== '#cross-site-evaluation') return;
     const frame = window.requestAnimationFrame(() => {
       document.getElementById('cross-site-evaluation')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -52,6 +88,12 @@ export default function PilotSitesPage() {
     return () => window.cancelAnimationFrame(frame);
   }, [location.hash, status]);
   const selected = useMemo(() => pilots.find((pilot) => pilot.slug === slug), [pilots, slug]);
+  const linkedInitiative = useMemo(
+    () => (selected ? linkedInitiatives.find((initiative) => initiative.pilotSlug === selected.slug) : undefined),
+    [linkedInitiatives, selected],
+  );
+  const coordinates = selected ? PILOT_COORDINATES[selected.slug] : undefined;
+  const gallery = selected ? PILOT_GALLERY[selected.slug] || [] : [];
   const pilotSiteDetails = useMemo(() => getPilotSiteDetails(language), [language]);
   const crossSiteConclusions = useMemo(() => getCrossSiteConclusions(language), [language]);
   const pilotText = (pilotSlug: string, field: 'city' | 'country' | 'title' | 'description' | 'focus') => (
@@ -93,7 +135,50 @@ export default function PilotSitesPage() {
                 </div>
                 <p className="mt-6 text-[17px] leading-relaxed text-[#555]">{pilotText(selected.slug, 'description')}</p>
                 <div className="mt-7 flex items-start gap-3 bg-[#fff4e9] p-5"><Focus size={22} className="mt-0.5 flex-shrink-0 text-[#ca7428]" /><div><p className="font-bold text-[#444]">{t('pilots.focus')}</p><p className="mt-1 text-[15px] text-[#555]">{pilotText(selected.slug, 'focus')}</p></div></div>
-                <Link to="/co-creation-hub" className="mt-7 inline-flex cursor-pointer items-center gap-2 bg-[#f68b2c] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#e07a20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#444]">{t('pilots.openToolkit')}<ArrowRight size={18} /></Link>
+
+                <div className="mt-7 flex flex-wrap items-center gap-3">
+                  <Link to="/co-creation-hub" className="inline-flex cursor-pointer items-center gap-2 bg-[#f68b2c] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#e07a20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#444]">{t('pilots.openToolkit')}<ArrowRight size={18} /></Link>
+                  {linkedInitiative && (
+                    <>
+                      <Link to={`/forum-voting?initiative=${linkedInitiative.id}`} className="inline-flex cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-5 py-3 font-semibold text-[#444] transition-colors hover:border-[#ca7428] hover:text-[#ca7428]"><Vote size={18} />{t('pilots.viewProposals')}</Link>
+                      <Link to={`/repository?pilotId=${linkedInitiative.id}`} className="inline-flex cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-5 py-3 font-semibold text-[#444] transition-colors hover:border-[#ca7428] hover:text-[#ca7428]"><FileCheck2 size={18} />{t('pilots.viewResults')}</Link>
+                    </>
+                  )}
+                </div>
+
+                {coordinates && (
+                  <div className="mt-8 border-t-2 border-[#eee] pt-7">
+                    <h3 className="flex items-center gap-2 text-[16px] font-bold text-[#444]"><MapPinned size={19} className="text-[#ca7428]" />{t('pilots.locationTitle')}</h3>
+                    <p className="mt-1 text-[13px] text-[#888]">{t('pilots.locationText')}</p>
+                    <div className="mt-4 overflow-hidden border-2 border-[#e5e5e5]">
+                      <iframe
+                        title={t('pilots.mapFrameTitle', { city: pilotText(selected.slug, 'city') })}
+                        src={osmEmbedUrl(coordinates.lat, coordinates.lon)}
+                        className="h-[280px] w-full border-0 md:h-[360px]"
+                        loading="lazy"
+                      />
+                    </div>
+                    <a href={osmViewUrl(coordinates.lat, coordinates.lon)} target="_blank" rel="noreferrer" className="mt-3 inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-semibold text-[#ca7428] hover:underline">
+                      {t('pilots.viewLargerMap')}<ExternalLink size={14} />
+                    </a>
+                  </div>
+                )}
+
+                <div className="mt-8 border-t-2 border-[#eee] pt-7">
+                  <h3 className="flex items-center gap-2 text-[16px] font-bold text-[#444]"><Camera size={19} className="text-[#ca7428]" />{t('pilots.galleryTitle')}</h3>
+                  {gallery.length > 0 ? (
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {gallery.map((photo) => (
+                        <img key={photo.src} src={photo.src} alt={t(photo.alt)} className="h-[180px] w-full object-cover" />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mt-4 flex min-h-[140px] flex-col items-center justify-center gap-2 border-2 border-dashed border-[#d5d6da] bg-[#fafafa] p-6 text-center">
+                      <Camera size={26} className="text-[#bbb]" />
+                      <p className="text-[13px] font-semibold text-[#888]">{t('pilots.galleryEmpty')}</p>
+                    </div>
+                  )}
+                </div>
 
                 {pilotSiteDetails[selected.slug] && (() => {
                   const site = pilotSiteDetails[selected.slug];

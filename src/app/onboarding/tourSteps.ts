@@ -40,7 +40,7 @@ const CITIZEN_STEPS: TourStep[] = [
   { id: 'tools', route: '/co-creation-hub', target: 'hub-tools', titleKey: 'tour.toolsTitle', bodyKey: 'tour.toolsBodyCitizen' },
   { id: 'forum', route: '/forum-voting', target: 'forum-main', titleKey: 'tour.forumTitle', bodyKey: 'tour.forumBodyCitizen' },
   { id: 'repository', route: '/repository', target: 'repository-main', titleKey: 'tour.repositoryTitle', bodyKey: 'tour.repositoryBodyCitizen' },
-  { id: 'toolkit', route: '/explore-toolkit', target: 'toolkit-main', titleKey: 'tour.toolkitTitle', bodyKey: 'tour.toolkitBody' },
+  { id: 'toolkit', route: '/analog-resources', target: 'toolkit-main', titleKey: 'tour.toolkitTitle', bodyKey: 'tour.toolkitBody' },
   FINISH,
 ];
 
@@ -51,7 +51,7 @@ const FACILITATOR_STEPS: TourStep[] = [
   { id: 'facilitator-actions', route: '/co-creation-hub', target: 'facilitator-actions', titleKey: 'tour.facilitatorActionsTitle', bodyKey: 'tour.facilitatorActionsBody' },
   { id: 'repository', route: '/repository', target: 'repository-main', titleKey: 'tour.repositoryTitle', bodyKey: 'tour.repositoryBodyFacilitator' },
   { id: 'forum', route: '/forum-voting', target: 'forum-main', titleKey: 'tour.forumTitle', bodyKey: 'tour.forumBodyFacilitator' },
-  { id: 'toolkit', route: '/explore-toolkit', target: 'toolkit-main', titleKey: 'tour.toolkitTitle', bodyKey: 'tour.toolkitBody' },
+  { id: 'toolkit', route: '/analog-resources', target: 'toolkit-main', titleKey: 'tour.toolkitTitle', bodyKey: 'tour.toolkitBody' },
   FINISH,
 ];
 

@@ -18,7 +18,7 @@ const NAV: NavItem[] = [
     items: [
       { label: 'Overview', to: '/overview' },
       { label: 'Process Guide', to: '/co-creation-guide' },
-      { label: 'Activities', to: '/explore-toolkit' },
+      { label: 'Activities', to: '/analog-resources' },
     ],
   },
   {

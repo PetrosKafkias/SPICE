@@ -24,6 +24,8 @@ export interface Tool {
   groupSize: string;
   budget: 'Flexible';
   facilitatorRatio: string;
+  targetUsers: 'Internal team' | 'Public participants';
+  prerequisites: string;
   suppliesRequired: string;
   expectedOutputs: string[];
   accessibilityNotes: string;
@@ -57,6 +59,7 @@ export const TOOLS: Tool[] = sourceTools.map((tool) => ({
   mode: tool.mode as Mode,
   budget: 'Flexible',
   status: tool.status as Tool['status'],
+  targetUsers: tool.targetUsers as Tool['targetUsers'],
 }));
 
 const LOCALIZED_TOOLS: Record<LocaleCode, typeof sourceTools> = {
@@ -79,6 +82,7 @@ export function getTools(language: LocaleCode): Tool[] {
       mode: source.mode as Mode,
       budget: 'Flexible',
       status: source.status as Tool['status'],
+      targetUsers: source.targetUsers as Tool['targetUsers'],
     };
   });
 }

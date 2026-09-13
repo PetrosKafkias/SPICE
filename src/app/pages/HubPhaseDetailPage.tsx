@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
-import { ArrowLeft, BookOpenText, CheckCircle2, CircleAlert, Clock, MessageSquareText, Plus, Send, Users } from 'lucide-react';
+import { ArrowLeft, BookOpenText, CheckCircle2, CircleAlert, Clock, FileEdit, MessageSquareText, Plus, Send, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import SpicePublicShell from '../components/SpicePublicShell';
 import LoadingState from '../components/LoadingState';
@@ -30,6 +30,7 @@ interface Phase {
   resultsVisible: boolean;
   eventTypes: string[];
   expectedOutputs: string[];
+  completionSummary: string | null;
   startDate: string | null;
   endDate: string | null;
   activities: Activity[];
@@ -112,6 +113,9 @@ function HubPhaseManagementPage() {
   const [activityReviewNotes, setActivityReviewNotes] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [reportDraft, setReportDraft] = useState('');
+  const [reportDirty, setReportDirty] = useState(false);
+  const [savingReport, setSavingReport] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -136,6 +140,28 @@ function HubPhaseManagementPage() {
   const canCoordinate = canManage || canFacilitate;
   const state = phase && initiative ? phaseState(phase.phaseNumber, initiative.currentPhaseNumber, Boolean(initiative.pilotFinalizedAt)) : null;
   const stateLabelKey: TranslationKey | null = state === 'completed' ? 'hub.phaseCompleted' : state === 'current' ? 'hub.phaseCurrent' : state === 'incomplete' ? 'hub.phaseUpcoming' : null;
+
+  useEffect(() => {
+    if (!reportDirty) setReportDraft(phase?.completionSummary || '');
+  }, [phase?.completionSummary, reportDirty]);
+
+  const saveReport = async () => {
+    if (!phase) return;
+    setSavingReport(true);
+    try {
+      await apiRequest(`/api/hub/initiatives/${initiativeId}/phases/${phase.phaseNumber}`, {
+        method: 'PATCH',
+        body: jsonBody({ completionSummary: reportDraft }),
+      });
+      setReportDirty(false);
+      await load();
+      toast.success(t('phaseDetail.reportSaved'));
+    } catch {
+      toast.error(t('phaseDetail.reportSaveFailed'));
+    } finally {
+      setSavingReport(false);
+    }
+  };
 
   const loadContributions = useCallback(async (activityId: number) => {
     try {
@@ -341,6 +367,12 @@ function HubPhaseManagementPage() {
                       ? t('phaseDetail.resultsAvailable')
                       : t('phaseDetail.resultsPending')}
                   </p>
+                  {phase.resultsVisible && phase.completionSummary && (
+                    <div className="mt-4 border-l-4 border-[#58723d] bg-[#f4f8ef] p-4 text-sm leading-relaxed text-[#444]">
+                      <p className="font-bold">{t('phaseDetail.reportTitle')}</p>
+                      <p className="mt-2 whitespace-pre-line">{phase.completionSummary}</p>
+                    </div>
+                  )}
                   <p className="mt-4 text-sm font-semibold text-[#8f4d18]">{t('phaseDetail.closed')}</p>
                   <div className="mt-5 flex flex-wrap gap-3">
                     {phase.resultsVisible && (
@@ -467,7 +499,7 @@ function HubPhaseManagementPage() {
                     <label className="block text-sm font-bold text-[#444]">{t('phaseDetail.startDate')}<input type="datetime-local" value={activityStartDate} onChange={(event) => setActivityStartDate(event.target.value)} className="mt-2 min-h-12 w-full border-2 border-[#bfc0c5] bg-white px-3 focus:border-[#ca7428] focus:outline-none" /></label>
                     <label className="block text-sm font-bold text-[#444]">{t('phaseDetail.endDate')}<input type="datetime-local" value={activityEndDate} onChange={(event) => setActivityEndDate(event.target.value)} className="mt-2 min-h-12 w-full border-2 border-[#bfc0c5] bg-white px-3 focus:border-[#ca7428] focus:outline-none" /></label>
                     <label className="block text-sm font-bold text-[#444]">{t('phaseDetail.location')}<input value={activityLocation} onChange={(event) => setActivityLocation(event.target.value)} className="mt-2 min-h-12 w-full border-2 border-[#bfc0c5] bg-white px-3 focus:border-[#ca7428] focus:outline-none" /></label>
-                    <label className="block text-sm font-bold text-[#444]">{t('phaseDetail.mode')}<select value={activityMode} onChange={(event) => setActivityMode(event.target.value as typeof activityMode)} className="mt-2 min-h-12 w-full border-2 border-[#bfc0c5] bg-white px-3 focus:border-[#ca7428] focus:outline-none"><option value="offline">{t('analogue.offline')}</option><option value="online">{t('analogue.online')}</option><option value="hybrid">{t('analogue.hybrid')}</option></select></label>
+                    <label className="block text-sm font-bold text-[#444]">{t('phaseDetail.mode')}<select value={activityMode} onChange={(event) => setActivityMode(event.target.value as typeof activityMode)} className="mt-2 min-h-12 w-full border-2 border-[#bfc0c5] bg-white px-3 focus:border-[#ca7428] focus:outline-none"><option value="offline">{t('resources.offline')}</option><option value="online">{t('resources.online')}</option><option value="hybrid">{t('resources.hybrid')}</option></select></label>
                     <label className="block text-sm font-bold text-[#444]">{t('phaseDetail.duration')}<input value={activityDuration} onChange={(event) => setActivityDuration(event.target.value)} className="mt-2 min-h-12 w-full border-2 border-[#bfc0c5] bg-white px-3 focus:border-[#ca7428] focus:outline-none" /></label>
                     <label className="block text-sm font-bold text-[#444]">{t('phaseDetail.requiredMaterials')}<input value={activityMaterials} onChange={(event) => setActivityMaterials(event.target.value)} className="mt-2 min-h-12 w-full border-2 border-[#bfc0c5] bg-white px-3 focus:border-[#ca7428] focus:outline-none" /></label>
                     <label className="block text-sm font-bold text-[#444] md:col-span-2">{t('phaseDetail.accessibilityNotes')}<textarea value={activityAccessibility} onChange={(event) => setActivityAccessibility(event.target.value)} rows={3} className="mt-2 w-full border-2 border-[#bfc0c5] bg-white p-3 focus:border-[#ca7428] focus:outline-none" /></label>
@@ -479,6 +511,31 @@ function HubPhaseManagementPage() {
                 </div>
               )}
             </section>
+
+            {canCoordinate && (
+              <section className="mt-8 max-w-3xl border-t-2 border-[#eee] pt-7" aria-labelledby="phase-report-title">
+                <h2 id="phase-report-title" className="flex items-center gap-2 text-[22px] font-bold text-[#444]"><FileEdit size={20} className="text-[#ca7428]" aria-hidden="true" /> {t('phaseDetail.reportTitle')}</h2>
+                <p className="mt-2 text-sm leading-relaxed text-[#666]">{t('phaseDetail.reportHelp')}</p>
+                <textarea
+                  value={reportDraft}
+                  onChange={(event) => { setReportDraft(event.target.value); setReportDirty(true); }}
+                  rows={6}
+                  className="mt-4 w-full resize-y border-2 border-[#bfc0c5] bg-white p-3 text-[#444] focus:border-[#ca7428] focus:outline-none"
+                  placeholder={t('phaseDetail.reportPlaceholder')}
+                />
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-xs font-semibold text-[#8f4d18]">
+                    {phase.phaseNumber === 5 ? t('phaseDetail.reportRequiredNote') : t('phaseDetail.reportOptionalNote')}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <Link to="/repository" className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 py-2 text-sm font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]"><BookOpenText size={16} /> {t('phaseDetail.uploadMaterials')}</Link>
+                    <button type="button" onClick={() => void saveReport()} disabled={savingReport || (!reportDirty)} className="inline-flex min-h-11 cursor-pointer items-center gap-2 bg-[#f68b2c] px-5 py-2.5 font-bold text-white disabled:cursor-wait disabled:opacity-60">
+                      <Send size={16} /> {savingReport ? t('phaseDetail.reportSaving') : t('phaseDetail.reportSave')}
+                    </button>
+                  </div>
+                </div>
+              </section>
+            )}
 
             {phase.enabledTools.length > 0 && (
               <div className="mt-6 max-w-3xl border-t-2 border-[#eee] pt-6">
@@ -497,7 +554,7 @@ function HubPhaseManagementPage() {
                         <p className="text-[14px] font-bold text-[#444]">{tool.name}</p>
                         <p className="line-clamp-2 text-[12px] leading-relaxed text-[#666]">{tool.shortDesc}</p>
                         <div className="mt-1 flex flex-wrap gap-1.5">
-                          <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ backgroundColor: mc.bg, color: mc.text }}>{t(`analogue.${tool.mode.toLowerCase()}` as 'analogue.online' | 'analogue.offline' | 'analogue.hybrid')}</span>
+                          <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ backgroundColor: mc.bg, color: mc.text }}>{t(`resources.${tool.mode.toLowerCase()}` as 'resources.online' | 'resources.offline' | 'resources.hybrid')}</span>
                           <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-[#444]"><Clock size={10} />{tool.duration}</span>
                           <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-[#444]"><Users size={10} />{tool.groupSize}</span>
                         </div>

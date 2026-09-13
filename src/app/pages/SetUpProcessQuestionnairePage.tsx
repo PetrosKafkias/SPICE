@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, ChevronDown, CircleAlert, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, CircleAlert, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import SpicePublicShell from '../components/SpicePublicShell';
 import LoadingState from '../components/LoadingState';
-import { getTools, type Mode } from '../data/tools';
+import { getTools } from '../data/tools';
 import { useI18n } from '../context/I18nContext';
 import type { TranslationKey } from '../i18n/translations';
 import { apiRequest, jsonBody } from '../lib/api';
@@ -40,9 +40,9 @@ const OBJECTIVES: { id: string; labelKey: TranslationKey; descKey: TranslationKe
 ];
 
 const PARTICIPATION_LEVELS: { id: string; labelKey: TranslationKey; descKey: TranslationKey }[] = [
-  { id: 'inform', labelKey: 'setup.participation.inform', descKey: 'setup.participation.informDesc' },
   { id: 'consult', labelKey: 'setup.participation.consult', descKey: 'setup.participation.consultDesc' },
-  { id: 'cocreate', labelKey: 'setup.participation.cocreate', descKey: 'setup.participation.cocreateDesc' },
+  { id: 'codevelop', labelKey: 'setup.participation.codevelop', descKey: 'setup.participation.codevelopDesc' },
+  { id: 'selfgovern', labelKey: 'setup.participation.selfgovern', descKey: 'setup.participation.selfgovernDesc' },
 ];
 
 const GOALS: { id: string; labelKey: TranslationKey }[] = [
@@ -50,21 +50,6 @@ const GOALS: { id: string; labelKey: TranslationKey }[] = [
   { id: 'intangible', labelKey: 'setup.goal.intangible' },
   { id: 'undefined', labelKey: 'setup.goal.undefined' },
 ];
-
-const GROUP_SIZES: { value: string; labelKey: TranslationKey }[] = [
-  { value: '< 10 people', labelKey: 'setup.group.lt10' }, { value: '10-25 people', labelKey: 'setup.group.10to25' },
-  { value: '25-50 people', labelKey: 'setup.group.25to50' }, { value: '50+ people', labelKey: 'setup.group.50plus' },
-];
-const DURATIONS: { value: string; labelKey: TranslationKey }[] = [
-  { value: '< 5 minutes', labelKey: 'setup.duration.lt5' }, { value: '5-30 minutes', labelKey: 'setup.duration.5to30' },
-  { value: '30 min - 2 hours', labelKey: 'setup.duration.30to120' }, { value: 'Half day', labelKey: 'setup.duration.halfDay' },
-  { value: 'Full day', labelKey: 'setup.duration.fullDay' }, { value: 'Multi-day', labelKey: 'setup.duration.multiDay' },
-];
-const FACILITATORS: { value: string; labelKey: TranslationKey }[] = [
-  { value: '1 person', labelKey: 'setup.facilitator.one' }, { value: '2-3 people', labelKey: 'setup.facilitator.twoThree' },
-  { value: '4+ people', labelKey: 'setup.facilitator.fourPlus' },
-];
-const MODES: Mode[] = ['Online', 'Offline', 'Hybrid'];
 
 function FieldError({ show, children }: { show: boolean; children: React.ReactNode }) {
   if (!show) return null;
@@ -107,35 +92,6 @@ function ChoiceCard({ label, desc, selected, onClick, multi = false, error = fal
         {desc && <span className="mt-1 block text-[12px] leading-relaxed text-[#777]">{desc}</span>}
       </span>
     </button>
-  );
-}
-
-function FilterSelect({ label, value, options, onChange, error, selectLabel, requiredMessage }: {
-  label: string;
-  value: string;
-  options: { value: string; label: string }[];
-  onChange: (value: string) => void;
-  error: boolean;
-  selectLabel: string;
-  requiredMessage: string;
-}) {
-  return (
-    <div>
-      <label className="mb-2 block text-[12px] font-semibold uppercase tracking-wide text-[#888]">{label}</label>
-      <div className="relative">
-        <select
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className="w-full appearance-none border bg-white px-3 py-2.5 pr-8 text-[13px] text-[#444] outline-none transition-colors hover:border-[#f68b2c]"
-          style={{ borderColor: error ? '#c0392b' : '#bfc0c5' }}
-        >
-          <option value="">{selectLabel}</option>
-          {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-        </select>
-        <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#888]" />
-      </div>
-      <FieldError show={error}>{requiredMessage}</FieldError>
-    </div>
   );
 }
 
@@ -211,20 +167,12 @@ export default function SetUpProcessQuestionnairePage() {
     });
   };
 
-  const translatedOption = useCallback((value: string, options: { value: string; labelKey: TranslationKey }[]) => (
-    options.find((option) => option.value === value) ? t(options.find((option) => option.value === value)!.labelKey) : value
-  ), [t]);
-
   const selections = useMemo(() => [
     processSetup.stage && t('setup.summaryStage', { value: t(STAGES.find((item) => item.id === processSetup.stage)?.labelKey || 'setup.stage.proposal') }),
     processSetup.objectives.length > 0 && t('setup.summaryObjectives', { value: processSetup.objectives.map((id) => t(OBJECTIVES.find((item) => item.id === id)?.labelKey || 'setup.objective.framing')).join(', ') }),
-    processSetup.level && t('setup.summaryParticipation', { value: t(PARTICIPATION_LEVELS.find((item) => item.id === processSetup.level)?.labelKey || 'setup.participation.inform') }),
+    processSetup.level && t('setup.summaryParticipation', { value: t(PARTICIPATION_LEVELS.find((item) => item.id === processSetup.level)?.labelKey || 'setup.participation.consult') }),
     processSetup.goal && t('setup.summaryGoal', { value: t(GOALS.find((item) => item.id === processSetup.goal)?.labelKey || 'setup.goal.undefined') }),
-    processSetup.groupSize && t('setup.summaryGroup', { value: translatedOption(processSetup.groupSize, GROUP_SIZES) }),
-    processSetup.duration && t('setup.summaryDuration', { value: translatedOption(processSetup.duration, DURATIONS) }),
-    processSetup.facilitator && t('setup.summaryFacilitation', { value: translatedOption(processSetup.facilitator, FACILITATORS) }),
-    processSetup.mode && t('setup.summaryMode', { value: t(`analogue.${processSetup.mode.toLowerCase()}` as 'analogue.online' | 'analogue.offline' | 'analogue.hybrid') }),
-  ].filter(Boolean), [processSetup, t, translatedOption]);
+  ].filter(Boolean), [processSetup, t]);
 
   const matchingCount = useMemo(() => {
     const phaseMap: Record<string, number[]> = {
@@ -241,9 +189,6 @@ export default function SetUpProcessQuestionnairePage() {
       return phaseMatch && modeMatch;
     }).length;
   }, [processSetup, tools]);
-  const localizedOptions = useCallback((options: { value: string; labelKey: TranslationKey }[]) => (
-    options.map((option) => ({ value: option.value, label: t(option.labelKey) }))
-  ), [t]);
 
   const handleSaveDraft = async () => {
     setSavingDraft(true);
@@ -265,9 +210,7 @@ export default function SetUpProcessQuestionnairePage() {
       ? !processSetup.stage
       : step === 2
         ? processSetup.objectives.length === 0
-        : step === 3
-          ? !processSetup.level || !processSetup.goal
-          : !processSetup.groupSize || !processSetup.duration || !processSetup.facilitator || !processSetup.mode;
+        : !processSetup.level || !processSetup.goal;
 
     if (requiredMissing) {
       toast.error(t('setup.completeRequired'));
@@ -277,7 +220,7 @@ export default function SetUpProcessQuestionnairePage() {
     try {
       await persistSetup();
       setSubmitted(false);
-      if (step < 4) setStep((current) => current + 1);
+      if (step < 3) setStep((current) => current + 1);
       else navigate('/setup-tools');
     } catch {
       toast.error(t('setup.saveFailed'));
@@ -320,7 +263,7 @@ export default function SetUpProcessQuestionnairePage() {
     <SpicePublicShell variant="public">
       <div className="spice-page spice-wide-page" style={{ fontFamily: 'Montserrat, sans-serif' }}>
         <div className="mb-6">
-          <p className="text-[13px] font-bold uppercase tracking-wide text-[#ca7428]">{t('setup.stepOfFour', { step })}</p>
+          <p className="text-[13px] font-bold uppercase tracking-wide text-[#ca7428]">{t('setup.stepOfThree', { step })}</p>
           <h1 className="mt-2 text-[32px] font-bold text-[#444]">{t('setup.title')}</h1>
           <p className="mt-2 max-w-[760px] text-[15px] font-medium leading-relaxed text-[#666]">
             {t('setup.intro')}
@@ -333,8 +276,8 @@ export default function SetUpProcessQuestionnairePage() {
           </div>
         )}
 
-        <ol className="mb-7 grid grid-cols-2 border-2 border-[#dedee1] bg-white md:grid-cols-4" aria-label={t('setup.progressLabel')}>
-          {(['setup.progress.stage', 'setup.progress.objectives', 'setup.progress.participation', 'setup.progress.practical'] as TranslationKey[]).map((key, index) => {
+        <ol className="mb-7 grid grid-cols-1 border-2 border-[#dedee1] bg-white md:grid-cols-3" aria-label={t('setup.progressLabel')}>
+          {(['setup.progress.stage', 'setup.progress.objectives', 'setup.progress.participation'] as TranslationKey[]).map((key, index) => {
             const number = index + 1;
             const complete = number < step;
             const current = number === step;
@@ -424,7 +367,7 @@ export default function SetUpProcessQuestionnairePage() {
 
             {step === 3 && <section className="spice-card p-5 md:p-7">
               <div className="flex items-center gap-3">
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-[#f68b2c] text-[15px] font-bold text-white">4</span>
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-[#f68b2c] text-[15px] font-bold text-white">3</span>
                 <div>
                   <h2 className="text-[18px] font-bold text-[#444]">{t('setup.goalTitle')}</h2>
                   <SectionHelper>{t('setup.selectionRequired')}</SectionHelper>
@@ -444,17 +387,6 @@ export default function SetUpProcessQuestionnairePage() {
               </div>
             </section>}
 
-            {step === 4 && <section className="spice-card p-5 md:p-7">
-              <h2 className="text-[22px] font-bold text-[#444]">{t('setup.practicalTitle')}</h2>
-              <SectionHelper>{t('setup.practicalText')}</SectionHelper>
-              <div className="mt-5 grid gap-5 sm:grid-cols-2">
-                <FilterSelect label={t('setup.groupSize')} value={processSetup.groupSize} options={localizedOptions(GROUP_SIZES)} onChange={(value) => updateProcessSetup({ groupSize: value })} error={getError('groupSize')} selectLabel={t('common.selectOne')} requiredMessage={t('common.requiredField')} />
-                <FilterSelect label={t('setup.duration')} value={processSetup.duration} options={localizedOptions(DURATIONS)} onChange={(value) => updateProcessSetup({ duration: value })} error={getError('duration')} selectLabel={t('common.selectOne')} requiredMessage={t('common.requiredField')} />
-                <FilterSelect label={t('setup.facilitation')} value={processSetup.facilitator} options={localizedOptions(FACILITATORS)} onChange={(value) => updateProcessSetup({ facilitator: value })} error={getError('facilitator')} selectLabel={t('common.selectOne')} requiredMessage={t('common.requiredField')} />
-                <FilterSelect label={t('setup.mode')} value={processSetup.mode} options={MODES.map((mode) => ({ value: mode, label: t(`analogue.${mode.toLowerCase()}` as 'analogue.online' | 'analogue.offline' | 'analogue.hybrid') }))} onChange={(value) => updateProcessSetup({ mode: value as Mode })} error={getError('mode')} selectLabel={t('common.selectOne')} requiredMessage={t('common.requiredField')} />
-              </div>
-            </section>}
-
             <div className="flex flex-wrap items-center gap-4 border-t border-gray-100 pt-4">
               <button type="button" onClick={() => void handleBack()} className="flex min-h-11 items-center gap-2 border-2 border-[#444] bg-white px-5 font-bold text-[#444]"><ArrowLeft size={16} />{t('setup.back')}</button>
               <button onClick={() => void handleSaveDraft()} disabled={savingDraft} className="flex min-h-11 items-center gap-2 px-5 font-bold text-[#ca7428] transition-colors hover:bg-[#fff3e8] disabled:opacity-60"><Save size={16} /> {savingDraft ? t('common.saving') : t('setup.saveDraft')}</button>
@@ -462,13 +394,13 @@ export default function SetUpProcessQuestionnairePage() {
               onClick={() => void handleContinue()}
                 className="flex items-center gap-2 bg-[#f68b2c] px-8 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-[#e07a20]"
               >
-                {t(step === 4 ? 'setup.reviewRecommendations' : 'setup.continue')} <ArrowRight size={16} />
+                {t(step === 3 ? 'setup.reviewRecommendations' : 'setup.continue')} <ArrowRight size={16} />
               </button>
               {draftMessage && <p className="text-[13px] font-semibold text-[#2e6e45]">{draftMessage}</p>}
             </div>
           </div>
 
-          {step === 4 && <aside className="flex w-full flex-shrink-0 flex-col gap-5 lg:w-[320px]">
+          {step === 3 && <aside className="flex w-full flex-shrink-0 flex-col gap-5 lg:w-[320px]">
             <div className="flex flex-col gap-4 spice-card p-5">
               <p className="text-[15px] font-bold text-[#444]">{t('setup.selectionsTitle')}</p>
               <div className="flex flex-col gap-2">

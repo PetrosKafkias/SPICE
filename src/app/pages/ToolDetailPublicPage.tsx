@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { ChevronLeft, Clock, Users, CheckSquare, Bot, Camera, FileText, ChevronRight, Lightbulb, LayoutPanelTop, ListOrdered, Link as LinkIcon, Radio, Settings, UserCog, Info } from 'lucide-react';
+import { ChevronLeft, Clock, Users, CheckSquare, Bot, Camera, FileText, ChevronRight, Lightbulb, LayoutPanelTop, ListOrdered, Link as LinkIcon, Radio, Settings, UserCog, Info, ClipboardCheck, UserCheck } from 'lucide-react';
 import SpicePublicShell from '../components/SpicePublicShell';
 import { getTools, PHASES } from '../data/tools';
 import { useAuth } from '../context/AuthContext';
@@ -44,7 +44,7 @@ export default function ToolDetailPublicPage() {
             {/* Header */}
             <div className="flex flex-col gap-4 spice-card p-6">
               {/* Back link */}
-              <button onClick={() => navigate('/explore-toolkit')} className="flex items-center gap-1.5 text-[13px] font-semibold text-[#ca7428] hover:text-[#a85f20] transition-colors">
+              <button onClick={() => navigate('/analog-resources')} className="flex items-center gap-1.5 text-[13px] font-semibold text-[#ca7428] hover:text-[#a85f20] transition-colors">
                 <ChevronLeft size={16} /> {t('toolDetail.back')}
               </button>
 
@@ -52,7 +52,7 @@ export default function ToolDetailPublicPage() {
               <div className="flex flex-wrap gap-2">
                 <span className="px-3 py-1.5 text-[13px] font-semibold rounded-full bg-[#f5f5f5] text-[#444] flex items-center gap-1.5"><Clock size={13} />{tool.duration}</span>
                 <span className="px-3 py-1.5 text-[13px] font-semibold rounded-full bg-[#f5f5f5] text-[#444] flex items-center gap-1.5"><Users size={13} />{tool.groupSize}</span>
-                <span className="px-3 py-1.5 text-[13px] font-semibold rounded-full" style={{ backgroundColor: mc.bg, color: mc.text }}>{t(`analogue.${tool.mode.toLowerCase()}` as 'analogue.online' | 'analogue.offline' | 'analogue.hybrid')}</span>
+                <span className="px-3 py-1.5 text-[13px] font-semibold rounded-full" style={{ backgroundColor: mc.bg, color: mc.text }}>{t(`resources.${tool.mode.toLowerCase()}` as 'resources.online' | 'resources.offline' | 'resources.hybrid')}</span>
               </div>
 
               <div>
@@ -76,6 +76,17 @@ export default function ToolDetailPublicPage() {
                 </button>
               </div>
             </div>
+
+            {tool.prerequisites && (
+              <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                <div className="border-b border-gray-100 px-6 py-4">
+                  <h2 className="flex items-center gap-2 text-[18px] font-bold text-[#444]"><ClipboardCheck size={20} className="text-[#ca7428]" />{t('toolDetail.prerequisites')}</h2>
+                </div>
+                <div className="p-6">
+                  <p className="whitespace-pre-line text-[14px] leading-relaxed text-[#555]">{tool.prerequisites}</p>
+                </div>
+              </div>
+            )}
 
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
               <div className="border-b border-gray-100 px-6 py-4">
@@ -181,11 +192,12 @@ export default function ToolDetailPublicPage() {
               <h3 className="text-[16px] font-bold text-[#444] mb-4">{t('toolDetail.quickSpecifications')}</h3>
               <div className="flex flex-col divide-y divide-gray-100">
                 {[
-                  { label: t('toolDetail.mode'), value: t(`analogue.${tool.mode.toLowerCase()}` as 'analogue.online' | 'analogue.offline' | 'analogue.hybrid'), icon: Radio },
+                  { label: t('toolDetail.mode'), value: t(`resources.${tool.mode.toLowerCase()}` as 'resources.online' | 'resources.offline' | 'resources.hybrid'), icon: Radio },
                   { label: t('toolDetail.duration'), value: tool.duration, icon: Clock },
                   { label: t('toolDetail.developmentTime'), value: tool.developmentTime, icon: Settings },
                   { label: t('toolDetail.groupSize'), value: tool.groupSize, icon: Users },
                   { label: t('toolDetail.facilitatorRatio'), value: tool.facilitatorRatio, icon: UserCog },
+                  { label: t('toolDetail.targetUsers'), value: t(tool.targetUsers === 'Internal team' ? 'resources.targetUsers.internal' : 'resources.targetUsers.public'), icon: UserCheck },
                   { label: t('toolDetail.supplies'), value: tool.suppliesRequired, icon: Info },
                 ].map(({ label, value, icon: Icon }) => (
                   <div key={label} className="flex items-start gap-2.5 py-3">

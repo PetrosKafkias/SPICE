@@ -16,7 +16,7 @@ const OPTIONS = [
     icon: Compass,
     titleKey: 'process.explore',
     textKey: 'process.exploreText',
-    action: '/explore-toolkit',
+    action: '/analog-resources',
   },
   {
     icon: DraftingCompass,

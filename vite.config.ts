@@ -19,7 +19,7 @@ export default defineConfig({
   server: {
     proxy: { '/api': 'http://127.0.0.1:5174' },
     watch: {
-      ignored: ['**/data/**', '**/dist/**', '**/.npm-cache/**', '**/.pnpm-store/**', '**/vite-dev*.log', '**/vite-dev.pid'],
+      ignored: ['**/data/**', '**/dist/**', '**/.npm-cache/**', '**/.pnpm-store/**', '**/vite-dev*.log', '**/vite-dev.pid', '**/.tmp-*/**'],
     },
   },
   plugins: [figmaAssetResolver(), react(), tailwindcss()],

@@ -33,13 +33,15 @@
     "requirements": "03_Instituutioiden valmius, mukaan lukien halukkuus jakaa valvontaa ja suunnittelijoiden luottamus kansalaisiin, tulee arvioida ennen osallistumisen käynnistämistä",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "people-competence-readiness-canvas",
     "name": "Ihmiset ja osaaminen -valmiuspohja",
     "status": "Muotoiltu tulostusta varten",
-    "typology": "Tool 02 + online excel",
+    "typology": "Tool 02 + online resources",
     "shortDesc": "Kunnat merkitsevät rivi riviltä, ​​onko kukin pilottiin tarvittava osaaminen saatavilla sisäisesti vai ulkoisesti, täytä vastuuhenkilöt ja miten heidät tavoittaa, huomaa puuttuvat kompetenssit tyhjinä riveinä ja pitävät kankaan elävänä dokumenttina ajan tasalla projektin avainvaiheissa.",
     "purpose": "Haluamme tunnistaa, mitä tarvittavia kompetensseja meillä on sisäisesti, ja tunnistaa, mitä meidän tulisi etsiä ulkopuolelta.",
     "phase": 1,
@@ -71,13 +73,15 @@
     "requirements": "03_Instituutioiden valmius, mukaan lukien halukkuus jakaa valvontaa ja suunnittelijoiden luottamus kansalaisiin, tulee arvioida ennen osallistumisen käynnistämistä",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1OSW2DXx3l8hK2wnRq-wTnjrAiH93HHMqUNTSlAryRuA/edit?usp=sharing",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "stakeholder-mapping",
     "name": "Sidosryhmien kartoitus",
     "status": "Muotoiltu tulostusta varten",
-    "typology": "01 Technique + Tool 03 + Excel Stakeholders's ID Repository",
+    "typology": "01 Technique + Tool 03 + online resources",
     "shortDesc": "Haluamme kartoittaa toimijat niiden vaikutuksen, voiman ja merkityksen mukaan suhteessa kansallisten toimielinten arvoihin ja paikallisiin haasteisiin",
     "purpose": "Haluamme kartoittaa toimijat niiden vaikutuksen, voiman ja merkityksen mukaan suhteessa kansallisten toimielinten arvoihin ja paikallisiin haasteisiin",
     "phase": 1,
@@ -108,46 +112,15 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": "Excel Stakeholders's ID Repository (link)"
-  },
-  {
-    "id": "allegato-single-stakeholder-s-id",
-    "name": "Yksittäisen sidosryhmän tunnus",
-    "status": "Muotoiltu tulostusta varten",
-    "typology": "Tool 03 B/N no istruzioni (2 ID in ogni A4)",
-    "shortDesc": "EI",
-    "purpose": "EI",
-    "phase": 1,
-    "phaseName": "Framing & Readiness",
-    "objectiveTags": [],
-    "mode": "Offline",
-    "duration": "Not specified",
-    "groupSize": "Ei määritetty",
-    "budget": "Flexible",
-    "facilitatorRatio": "Ei määritetty",
-    "suppliesRequired": "",
-    "expectedOutputs": [
-      "Yksi ​​täytetty sidosryhmäkortin rooli, osuvuus ja yhteystiedot",
-      "Kortti, joka on valmis talletettavaksi jaettuun sidosryhmien tietovarastoon"
-    ],
-    "accessibilityNotes": "Tulosta suurella, suuren kontrastin asettelulla ja runsaasti kirjoitustilaa; tee digitaalinen täytettävä versio kaikille, jotka eivät osaa kirjoittaa käsin.",
-    "usageTip": "Täytä yksi kortti jokaista sidosryhmää kohden, kun heidät tunnistetaan, ja siirrä sitten avainkentät jaettuun sidosryhmien tietovarastoon, jotta projekti säilyttää yhden johdonmukaisen viiteasiakirjan.",
-    "proTip": "Pidä kortti lyhyt ja asiallinen – sen arvo on nopea, johdonmukainen tietue, ei koko profiili. Tallenna tarkempi analyysi työkaluille, kuten Personoille tai Empathy Map -kartalle.",
-    "implementationTime": "Not specified",
-    "developmentTime": "Not specified",
-    "howTo": "EI",
-    "budgetAdaptation": "",
-    "examples": "",
-    "requirements": "",
-    "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1E_QXeg18hwTN7RilK-veVPRCtjsPBSEUBPKbmNzFcEY/edit?gid=0#gid=0",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "stakeholders-engagement-planning",
     "name": "Sidosryhmien sitoutumisen suunnittelu",
     "status": "Muotoiltu tulostusta varten",
-    "typology": "Tool 04",
+    "typology": "Tool 04 + online resources",
     "shortDesc": "Osallistujat luettelevat tiettyä tapahtumaa varten ryhmät, joihin he haluavat osallistua, ja liittolaiset, jotka ovat hyödyllisiä heidän saavuttamisessa, ja lajittelevat sitten liittolaiset ennen-, aikana- ja jälkeen-vaiheissa suunnitellakseen, miten ja milloin rakentavat tarvitsemansa suhteet.",
     "purpose": "Haluamme tunnistaa tärkeimmät liittolaiset ihmisten sitoutumiselle ja suunnitella vuorovaikutusta heidän kanssaan erilaisissa tapahtumissa.",
     "phase": 1,
@@ -179,7 +152,9 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": "Excel (link)"
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1SjHp00Nm6OieedH_WJTIPiHzrTc1kp8I4ifmGnfcHpo/edit?gid=662745604#gid=662745604",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Sidosryhmäkartta\n- Luettelo mahdollisista liittolaisista vaikeasti tavoitettaville kohderyhmille"
   },
   {
     "id": "levels-of-participation-map",
@@ -215,7 +190,9 @@
     "requirements": "03_Instituutioiden valmius, mukaan lukien halukkuus jakaa valvontaa ja suunnittelijoiden luottamus kansalaisiin, tulee arvioida ennen osallistumisen käynnistämistä",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Sidosryhmäkartta"
   },
   {
     "id": "participation-enablers-map",
@@ -251,7 +228,9 @@
     "requirements": "03_Instituutioiden valmius, mukaan lukien halukkuus jakaa valvontaa ja suunnittelijoiden luottamus kansalaisiin, tulee arvioida ennen osallistumisen käynnistämistä",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Luettelo kohderyhmistä, jotka osallistuvat toimintoihin"
   },
   {
     "id": "neb-adapted-swot-analysis",
@@ -287,7 +266,9 @@
     "requirements": "06_Kontekstuaalisen sopeutumisen tulisi olla työkalupakin ydinperiaate, joka tunnustaa odotukset ja osallistumisrajat",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Luettelo näyttöön perustuvista havainnoista aiemmista toiminnoista tai tutkimuksesta"
   },
   {
     "id": "challenge-reframing",
@@ -323,7 +304,9 @@
     "requirements": "01_Vaikuttamisen laajuus, päätöksentekosäännöt ja syötteiden käyttö tulee määritellä selkeästi ja niistä on tiedotettava avoimesti",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "key-informant-interviews",
@@ -356,7 +339,9 @@
     "requirements": "05_Paikalliset tarpeet, jokapäiväinen paikkatieto ja yhteisön omaisuus tulee tunnistaa alusta alkaen",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1oICdZJA9wOkgDUb7mU309bEl5xXPFYLnDNiSozty2ug/edit?gid=366573815#gid=366573815",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "opportunity-map",
@@ -392,7 +377,9 @@
     "requirements": "08_Osallistuminen tulisi aloittaa ennen keskeisten päätösten tekemistä ja antaa kansalaisille mahdollisuuden vaikuttaa suuntaan sen sijaan, että he reagoisivat ennalta määritettyihin ratkaisuihin.",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Haasteen kuvaus Haasteen uudelleenkehystyksestä\n- Alustava kokoelma ihmisten tarpeita, olemassa olevia voimavaroja, esteitä, jännitteitä, ideoita, mahdollisia liittolaisia, resursseja, riskejä ja avoimia kysymyksiä, joita ihmiset voivat käyttää kartoitukseen"
   },
   {
     "id": "world-cafe",
@@ -428,7 +415,9 @@
     "requirements": "09_Osallistuvien hetkien tulee olla vaikuttavia ja selkeästi tarkoituksenmukaisia",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Kolmen kysymyksen kokoelma, joka on peräisin Mahdollisuuskartoituksesta, tutkimuksesta tai muista toiminnoista"
   },
   {
     "id": "open-space-technology",
@@ -464,7 +453,9 @@
     "requirements": "09_Osallistuvien hetkien tulee olla vaikuttavia ja selkeästi tarkoituksenmukaisia",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "roleplay-stepping-in-others-shoes",
@@ -500,13 +491,15 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Kokoelma roolikortteja, jotka kuvaavat tiettyä käyttäjää, sidosryhmää tai vaikutuksen kohteena olevaa osapuolta (roolin ja lyhyen kuvauksen kanssa); voit myös käyttää Persoonia tai muita henkilöitä"
   },
   {
     "id": "walkshop",
     "name": "Walkshop",
     "status": "Muotoiltu tulostusta varten",
-    "typology": "06 Technique",
+    "typology": "06 Technique + Tool 12",
     "shortDesc": "Osallistujat kävelevät sivuston läpi, tarkkailevat ja tallentavat havaintoja, tunteita, esteitä ja aistivaikutelmia reaaliajassa ja muuttavat sitten yhdessä havainnot tilatietoiksi ja suunnittelukysymyksiksi.",
     "purpose": "Haluamme tutkia sivustoa yhdessä ja vangita, kuinka ihmiset näkevät, tuntevat ja tulkitsevat eri paikkoja reaaliajassa.",
     "phase": 2,
@@ -535,8 +528,10 @@
     "examples": "",
     "requirements": "05_Paikalliset tarpeet, jokapäiväinen paikkatieto ja yhteisön omaisuus tulee tunnistaa alusta alkaen",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "printableUrl": "https://drive.google.com/file/d/1R9kuVdg4jrHppCRmhBWOj2rhc4vYUEmK/view?usp=drive_link",
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "collective-actant-mapping",
@@ -572,13 +567,15 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "actant-journey-map",
     "name": "Aktiantin matkakartta",
     "status": "Muotoiltu tulostusta varten",
-    "typology": "Tool 11",
+    "typology": "Tool 11 + Tool 12",
     "shortDesc": "Osallistujat seuraavat valitun käyttäjän, ei-käyttäjän tai ei-ihmistoimijan kokemuksia sivuston kartalla, jäljittäen esteitä, tunteita, konflikteja ja mahdollisuuksia muuntaa ne suunnittelun oivalluksiksi.",
     "purpose": "Haluamme ymmärtää, miten eri ihmiset kokevat paikan ajan mittaan, eri reiteillä, kosketuspisteissä, tunteissa ja esteissä.",
     "phase": 2,
@@ -608,43 +605,9 @@
     "requirements": "05_Paikalliset tarpeet, jokapäiväinen paikkatieto ja yhteisön omaisuus tulee tunnistaa alusta alkaen",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
-  },
-  {
-    "id": "observation-prompt-card",
-    "name": "Havaintokehotekortti",
-    "status": "Muotoiltu tulostusta varten",
-    "typology": "TOOL 12  + 9 carte B/N",
-    "shortDesc": "Osallistujat käyttävät kehotekortteja walkshopin tai matkan kartoitustoiminnan aikana tarkkaillakseen paikkaa erilaisten NEB-linssien kautta, dokumentoidakseen, mitä he havaitsevat paikan päällä, ja vertaillakseen tuloksia myöhemmin tunnistaakseen ongelmia, arvoja ja mahdollisuuksia.",
-    "purpose": "Haluamme auttaa osallistujia havainnoimaan paikkaa uusien eurooppalaisten Bauhaus-arvojen avulla, jotka tallentavat aistilliset ominaisuudet, ekologiset olosuhteet, sosiaalisen dynamiikan, esteet ja hoidon merkit suoraan paikan päällä.",
-    "phase": 2,
-    "phaseName": "Collective Understanding",
-    "objectiveTags": [
-      "Yhteissuunnitteluun"
-    ],
-    "mode": "Offline",
-    "duration": "Not specified",
-    "groupSize": "Ei määritetty",
-    "budget": "Flexible",
-    "facilitatorRatio": "Ei määritetty",
-    "suppliesRequired": "",
-    "expectedOutputs": [
-      "Paikan päällä tehdyt muistiinpanot erilaisten NEB-objektiivien kautta",
-      "Osallistujien ja kehotekorttien löydösten vertailu",
-      "Lyhyt luettelo paikan päällä tunnistetuista ongelmista, arvoista ja mahdollisuuksista"
-    ],
-    "accessibilityNotes": "Tulosta kortit suurella ja kontrastisella tekstillä; Tarjoa sanallinen tai ääninauhoitettu vaihtoehto osallistujille, joille kirjoittaminen on liikkeellä ollessa vaikeaa.",
-    "usageTip": "Määritä tai anna osallistujien piirtää eri kehotekortti jokaisella pysäkillä, jotta sama paikka luetaan useiden linssien läpi sen sijaan, että kaikki huomaavat samoja asioita.",
-    "proTip": "Vertaa korttien löydöksiä heti kävelyn jälkeen, kun muistot ovat vielä tuoreita – odottamalla, kunnes myöhempi istunto menettää suuren osan aistinvaraisista yksityiskohdista, jotka tekevät näistä havainnoista hyödyllisiä.",
-    "implementationTime": "Not specified",
-    "developmentTime": "Not specified",
-    "howTo": "Havaintokortit voidaan lisätä walkshopiin tai aktantin matkakarttaan.\n1) Anna jokaiselle osallistujalle tai pienryhmälle toiminnan alussa yksi tai useampi kortti. Ohjaaja voi joko antaa tiettyjä kortteja eri ryhmille, pyytää osallistujia valitsemaan yhden tai pyytää heitä piirtämään kortin jokaiselle reitin pysäkille tai karttatutkimuksen aikana. Tämä auttaa monipuolistamaan havaintoja ja varmistaa, että sama paikka luetaan eri linssien läpi.\n2) Osallistujat ohjaavat korttien avulla, mitä he huomaavat, aistivat ja dokumentoivat paikan päällä tai kuvittelevat olevansa paikalla. Korttien tulee auttaa havainnoimaan ja pohtimaan aistinvaraisia ​​ominaisuuksia, sosiaalista vuorovaikutusta, saavutettavuuden esteitä, ekologisia olosuhteita, hoidon tai laiminlyönnin merkkejä, piilotettuja resursseja ja käyttötapoja.\n3) Käytä kortteja uudelleen synteesivaiheen aikana. Pyydä osallistujia kertomaan, mitä he havaitsivat kunkin NEB-linssin läpi ja vertaamaan tuloksia. Tämä voi auttaa tunnistamaan tunnepesäkkeitä, ympäristöongelmia, osallistamisen esteitä, kiintymyspaikkoja, hoitomahdollisuuksia ja jännitteitä eri käyttötapojen tai arvojen välillä.",
-    "budgetAdaptation": "",
-    "examples": "",
-    "requirements": "",
-    "reference": "",
-    "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Kokoelma hahmokortteja, mukaan lukien eri käyttäjät, ei-käyttäjät ja ei-inhimilliset toimijat; voit myös käyttää Persoonia tai muita henkilöitä"
   },
   {
     "id": "the-empathy-map",
@@ -680,7 +643,9 @@
     "requirements": "05_Paikalliset tarpeet, jokapäiväinen paikkatieto ja yhteisön omaisuus tulee tunnistaa alusta alkaen",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "personas-non-human-personas",
@@ -716,7 +681,9 @@
     "requirements": "06_Kontekstuaalisen sopeutumisen tulisi olla työkalupakin ydinperiaate, joka tunnustaa odotukset ja osallistumisrajat",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Kaikki saatavilla oleva tutkimus paikasta sen käyttäjiin liittyen: havaintomuistiinpanot, haastatteluyhteenvedot, kartoitustiedot, ekologiset raportit tai yhteisön panos, joka on kerätty aiemmissa toiminnoissa."
   },
   {
     "id": "scenario-building",
@@ -752,7 +719,9 @@
     "requirements": "08_Osallistuminen tulisi aloittaa ennen keskeisten päätösten tekemistä ja antaa kansalaisille mahdollisuuden vaikuttaa suuntaan sen sijaan, että he reagoisivat ennalta määritettyihin ratkaisuihin.",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Haasteen kuvaus\nValmistaudu etukäteen:\n- selkeä keskeinen kysymys, esimerkiksi: ”Miten tämä paikka voisi kehittyä seuraavien 10 vuoden aikana?”\n- kiinteä aikahorisontti, esimerkiksi 2035\n- 15–25 ennalta kirjoitettua ajurikorttia taustatutkimuksesta\n- tyhjä tärkeys-/epävarmuusruudukko\n- yksinkertainen skenaariokangas"
   },
   {
     "id": "top-10-design-principles-manifesto",
@@ -788,14 +757,16 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Haasteen kuvaus, kehitetyt skenaariot, tärkeät tutkimuksen havainnot"
   },
   {
     "id": "lo-fi-prototyping",
     "name": "Lo-fi-prototyyppien valmistus",
     "status": "Muotoiltu tulostusta varten",
     "typology": "09 Techinque",
-    "shortDesc": "Haluamme tehdä yhdessä suunnitelluista ideoista konkreettisia nopeilla, edullisilla ja tarkoilla esityksillä, joita osallistujat voivat nähdä, käsitellä, kokea ja keskustella ennen niiden testaamista tosielämässä.",
+    "shortDesc": "Lähtien liikkeelle yhdestä tai useammasta lupaavasta ideasta, osallistujat määrittelevät, mitä heidän täytyy oppia prototyypistä, valitsevat yksinkertaisimman muodon tehdäkseen idean konkreettiseksi — kuten luonnokset, tunnelmataulut, pahvimallit, teippimallit, työpöytäesittelyt, roolileikit tai paperi-/digitaaliset prototyypit — ja rakentavat nopeita vaihtoehtoja, joita voidaan esitellä, tarkkailla, muokata ja vertailla seuraavan askeleen päättämiseksi.",
     "purpose": "Haluamme tehdä yhdessä suunnitelluista ideoista konkreettisia nopeilla, edullisilla ja tarkoilla esityksillä, joita osallistujat voivat nähdä, käsitellä, kokea ja keskustella ennen niiden testaamista tosielämässä.",
     "phase": 4,
     "phaseName": "Prototyping & Testing",
@@ -824,14 +795,16 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Yksi tai useampi idea tai skenaario prototyypitettäväksi"
   },
   {
     "id": "tactical-urbanism",
     "name": "Taktinen urbanismi",
     "status": "Muotoiltu tulostusta varten",
     "typology": "10 Techinque",
-    "shortDesc": "Haluamme testata mahdollisia tilaratkaisuja suoraan paikan päällä tilapäisillä, edullisilla ja palautuvilla interventioilla, jotta yhteisöt, suunnittelijat ja päättäjät voivat seurata ihmisten käyttöä, kerätä palautetta ja tarkentaa ideoita ennen pysyvien muutosten tekemistä.",
+    "shortDesc": "Taktisen urbanismin interventio määritellään testaustarpeiden ja toteutettavuuden mukaan. Interventio pidetään yksinkertaisena, turvallisena, esteettömänä ja käytettävissä olevaan aikaan, budjettiin ja lupiin suhteutettuna. Testauksen aikana fyysinen havainnointi ja digitaaliset palautetyökalut yhdistetään, jotta ymmärretään, miten ihmiset käyttävät tilaa, ja jotta voidaan ohjata tulevaa suunnittelua, päätöksentekoa, ylläpitosopimuksia tai huoltajuusrooleja.",
     "purpose": "Haluamme testata mahdollisia tilaratkaisuja suoraan paikan päällä tilapäisillä, edullisilla ja palautuvilla interventioilla, jotta yhteisöt, suunnittelijat ja päättäjät voivat seurata ihmisten käyttöä, kerätä palautetta ja tarkentaa ideoita ennen pysyvien muutosten tekemistä.",
     "phase": 4,
     "phaseName": "Prototyping & Testing",
@@ -860,14 +833,16 @@
     "requirements": "18_Nopeaa, heikkolaatuista prototyyppien luomista ja iteratiivisia palautesilmukoita tulisi käyttää koko prosessin ajan",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": ""
+    "onlineResources": "",
+    "targetUsers": "Public participants",
+    "prerequisites": "- Yksi tai useampi luotava idea"
   },
   {
     "id": "public-feedback-update",
     "name": "Julkisen palautteen päivitys",
     "status": "Sisältö on valmis",
-    "typology": "Tool 17 + event report document (online)",
-    "shortDesc": "Haluamme tukea läpinäkyvää viestintää ja hallita odotuksia tekemällä yhteisön panoksen ja projektipäätösten välistä suhdetta näkyväksi.",
+    "typology": "Tool 17 + online resources",
+    "shortDesc": "Läpinäkyvä tallenne siitä, mitä osallistujat ovat antaneet, miten hanke on vastannut siihen ja mikä on muuttunut sen seurauksena, jaettuna jokaisessa julkisessa tilaisuudessa ja verkossa.",
     "purpose": "Haluamme tukea läpinäkyvää viestintää ja hallita odotuksia tekemällä yhteisön panoksen ja projektipäätösten välistä suhdetta näkyväksi.",
     "phase": 5,
     "phaseName": "Consolidation, Governance & Learning",
@@ -893,14 +868,16 @@
     "requirements": "",
     "reference": "",
     "printableUrl": "",
-    "onlineResources": "Add excel link: \nAdd doc link:"
+    "onlineResources": "Online internal log link: https://docs.google.com/spreadsheets/d/1FQll_3y_9hzg5T5QZP3ab1V4dBVIRw3BlCk6W9cc1OI/edit?usp=sharing \nEvent report template: https://docs.google.com/document/d/1wD_lSov1zpotXRaJ-tqbSzFfWvhRJzZnv7-tfja_y9U/edit?tab=t.0",
+    "targetUsers": "Public participants",
+    "prerequisites": ""
   },
   {
     "id": "stewardship-canvas",
     "name": "Stewardship Canvas",
     "status": "Sisältö on valmis",
-    "typology": "Tool 18 + online log",
-    "shortDesc": "Haluamme tehdä olemassa olevista taloudenhoitoaloitteista näkyviä, tunnistaa uusia hoitotarpeita ja yhdistää yksilöitä, ryhmiä ja organisaatioita, jotka haluavat osallistua pitkäaikaiseen hoitoon ja paikan aktivointiin.",
+    "typology": "Tool 18 + online resources",
+    "shortDesc": "Yhteinen yleiskatsaus siitä, mikä tarvitsee hoitoa, ketkä ovat jo mukana ja miten muut voivat osallistua, seuraten sitoumuksia ajan mittaan.",
     "purpose": "Haluamme tehdä olemassa olevista taloudenhoitoaloitteista näkyviä, tunnistaa uusia hoitotarpeita ja yhdistää yksilöitä, ryhmiä ja organisaatioita, jotka haluavat osallistua pitkäaikaiseen hoitoon ja paikan aktivointiin.",
     "phase": 5,
     "phaseName": "Consolidation, Governance & Learning",
@@ -910,7 +887,7 @@
     "groupSize": "Ei määritetty",
     "budget": "Flexible",
     "facilitatorRatio": "Ei määritetty",
-    "suppliesRequired": "",
+    "suppliesRequired": "Muistilaput, tussit",
     "expectedOutputs": [
       "Dokumentoitu kartta olemassa olevista taloudenhoitoaloitteista ja niiden nykyisistä kannattajista",
       "Uudet kiinnostuksenilmaisut tai vahvistetut sitoumukset asukkailta ja organisaatioilta",
@@ -926,7 +903,9 @@
     "examples": "",
     "requirements": "01_Vaikuttamisen laajuus, päätöksentekosäännöt ja syötteiden käyttö tulee määritellä selkeästi ja niistä on tiedotettava avoimesti",
     "reference": "",
-    "printableUrl": "",
-    "onlineResources": "Add excel link:"
+    "printableUrl": "https://drive.google.com/file/d/17FPj9jUdNbwSi07u99tC-7Q8ScIRBuUD/view?usp=drive_link",
+    "onlineResources": "https://docs.google.com/spreadsheets/d/1Tc9B0ESxrcj_UTy57mp7hNyDxXf_dfdsOUMM-1j3m6c/edit?gid=710371929#gid=710371929",
+    "targetUsers": "Internal team",
+    "prerequisites": ""
   }
 ]

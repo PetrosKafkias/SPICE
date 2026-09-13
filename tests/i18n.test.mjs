@@ -58,10 +58,10 @@ test('canonical phases, roles, and statuses use translation mappings', () => {
 test('pluralised catalogue counts use Intl plural rules', () => {
   const context = read('src/app/context/I18nContext.tsx');
   const repository = read('src/app/pages/RepositoryPublicPage.tsx');
-  const analogue = read('src/app/pages/ExploreToolkitPage.tsx');
+  const resources = read('src/app/pages/ExploreToolkitPage.tsx');
   const chatbot = read('src/app/components/AiChatbotWidget.tsx');
   assert.match(context, /new Intl\.PluralRules/);
   assert.match(repository, /repository\.found\.few/);
-  assert.match(analogue, /analogue\.results\.many/);
+  assert.match(resources, /resources\.results\.many/);
   assert.match(chatbot, /chatbot\.articles\.few/);
 });

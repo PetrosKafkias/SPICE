@@ -3,26 +3,22 @@ import { useNavigate } from 'react-router';
 import {
   Accessibility,
   Archive,
-  ArrowDown,
   ArrowRight,
   Bot,
   Box,
   BookOpenCheck,
   Building2,
-  CheckCircle2,
   ClipboardList,
   HeartHandshake,
   Landmark,
   Languages,
   Leaf,
-  Lightbulb,
   ListChecks,
   Map,
   MessageCircle,
   MonitorSmartphone,
   Palette,
   ShieldCheck,
-  Target,
   UsersRound,
   Vote,
   Workflow,
@@ -199,7 +195,7 @@ export default function HomePage() {
                   {t('nav.signUp')}
                 </button>
                 <button
-                  onClick={() => navigate('/explore-toolkit')}
+                  onClick={() => navigate('/analog-resources')}
                   className="cursor-pointer border-2 border-[#444] bg-white px-6 py-4 text-[16px] font-semibold text-[#444] transition-colors hover:border-[#ca7428] hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428] active:bg-[#f4f4f4]"
                 >
                   {t('home.exploreToolkit')}
@@ -254,53 +250,6 @@ export default function HomePage() {
               <p className="mt-5 text-center text-[13px] font-semibold leading-relaxed text-[#66513e]">
                 {t('home.ecosystemCaption')}
               </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="border-b border-[#e4e4e4] bg-[#f8f8f8] px-6 py-14 md:px-12">
-          <div className="mx-auto max-w-[1440px]">
-            <div className="mb-9 text-center">
-              <p className="text-[12px] font-bold uppercase text-[#ca7428]">{t('home.pathEyebrow')}</p>
-              <h2 className="mt-2 text-[28px] font-bold text-[#383838] md:text-[34px]">{t('home.pathTitle')}</h2>
-              <p className="mx-auto mt-3 max-w-[720px] text-[15px] font-medium leading-relaxed text-[#555]">{t('home.pathText')}</p>
-            </div>
-            <div className="grid gap-5 lg:grid-cols-3">
-              {[
-                {
-                  step: t('home.step1'), title: t('home.step1Title'),
-                  icon: Target,
-                  text: t('home.step1Text'), items: [t('home.step1Item1'), t('home.step1Item2'), t('home.step1Item3')],
-                },
-                {
-                  step: t('home.step2'), title: t('home.step2Title'),
-                  icon: Workflow,
-                  text: t('home.step2Text'), items: [t('home.step2Item1'), t('home.step2Item2'), t('home.step2Item3')],
-                },
-                {
-                  step: t('home.step3'), title: t('home.step3Title'),
-                  icon: Lightbulb,
-                  text: t('home.step3Text'), items: [t('home.step3Item1'), t('home.step3Item2'), t('home.step3Item3')],
-                },
-              ].map(({ step, title, icon: Icon, text, items }, index) => (
-                <article key={step} className="relative flex min-h-[285px] flex-col spice-card p-6">
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-[12px] font-bold uppercase text-[#ca7428]">{step}</span>
-                    <span className="grid h-11 w-11 place-items-center rounded-full bg-[#fff0e1] text-[#ca7428]"><Icon size={22} /></span>
-                  </div>
-                  <h3 className="mt-5 text-[22px] font-bold text-[#383838]">{title}</h3>
-                  <p className="mt-3 text-[14px] font-medium leading-relaxed text-[#555]">{text}</p>
-                  <ul className="mt-5 grid gap-2 text-[13px] font-semibold text-[#555]">
-                    {items.map((item) => <li key={item} className="flex items-center gap-2"><CheckCircle2 size={16} className="flex-none text-[#ca7428]" />{item}</li>)}
-                  </ul>
-                  {index < 2 ? (
-                    <>
-                      <ArrowDown className="absolute -bottom-4 right-5 z-10 rounded-full border-2 border-[#bfc0c5] bg-white p-1 text-[#ca7428] lg:hidden" size={32} aria-hidden="true" />
-                      <ArrowRight className="absolute -right-7 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border-2 border-[#bfc0c5] bg-white p-1 text-[#ca7428] lg:block" size={32} aria-hidden="true" />
-                    </>
-                  ) : null}
-                </article>
-              ))}
             </div>
           </div>
         </section>
@@ -372,23 +321,23 @@ export default function HomePage() {
           <div className="mx-auto max-w-[1440px]">
             <div className="mb-10 flex flex-col items-center gap-4 text-center">
               <ClipboardList size={34} className="text-black" />
-              <h2 className="text-[24px] font-bold text-black">{t('home.analogueTools')}</h2>
-              <p className="max-w-[760px] text-[15px] font-medium leading-relaxed text-[#555]">{t('home.analogueToolsText')}</p>
+              <h2 className="text-[24px] font-bold text-black">{t('home.analogResources')}</h2>
+              <p className="max-w-[760px] text-[15px] font-medium leading-relaxed text-[#555]">{t('home.analogResourcesText')}</p>
             </div>
             <p className="mb-4 text-center text-[13px] font-bold uppercase tracking-wide text-[#ca7428]">
-              {t('home.analoguePreviewCount', { visible: formatNumber(analoguePreview.length), total: formatNumber(sourceTools.length) })}
+              {t('home.analogResourcesPreviewCount', { visible: formatNumber(analoguePreview.length), total: formatNumber(sourceTools.length) })}
             </p>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {analoguePreview.map((tool) => (
                 <button key={tool.id} type="button" onClick={() => navigate(`/tool-detail/${tool.id}`)} className="spice-interactive-card group flex min-h-[220px] flex-col p-5 text-left">
-                  <span className="inline-flex min-h-9 w-fit items-center bg-[#fff0e1] px-3 text-[12px] font-bold uppercase text-[#ca7428]">{t('hub.phaseNumber', { phase: tool.phase })}</span>
+                  <span className="inline-flex min-h-9 w-fit items-center bg-[#fff0e1] px-3 text-[12px] font-bold uppercase text-[#ca7428]">{t('resources.objectiveNumber', { objective: tool.phase })}</span>
                   <h3 className="mt-5 text-[17px] font-bold leading-tight text-[#333]">{tool.name}</h3>
                   <p className="mt-3 line-clamp-4 text-[13px] font-medium leading-relaxed text-[#666]">{tool.shortDesc || t('home.sourceDescriptionUnavailable')}</p>
                 </button>
               ))}
             </div>
-            <button type="button" onClick={() => navigate('/analogue-tools')} className="mx-auto mt-8 flex min-h-12 cursor-pointer items-center justify-center border-2 border-[#444] bg-white px-7 py-3 text-[15px] font-bold text-[#444] transition-colors hover:border-[#ca7428] hover:text-[#ca7428] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]">
-              {t('home.exploreAnalogueTools')}
+            <button type="button" onClick={() => navigate('/analog-resources')} className="mx-auto mt-8 flex min-h-12 cursor-pointer items-center justify-center border-2 border-[#444] bg-white px-7 py-3 text-[15px] font-bold text-[#444] transition-colors hover:border-[#ca7428] hover:text-[#ca7428] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]">
+              {t('home.exploreAnalogResources')}
             </button>
           </div>
         </section>

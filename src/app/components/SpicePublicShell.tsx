@@ -5,7 +5,6 @@ import {
   Bell,
   Accessibility,
   ArrowUp,
-  Bot,
   ChevronDown,
   Cookie,
   Facebook,
@@ -18,7 +17,6 @@ import {
   X,
   Youtube,
 } from 'lucide-react';
-import ChatbotFloating from './ChatbotFloating';
 import AccessibilityWidget from './AccessibilityWidget';
 import CookieBanner from './CookieBanner';
 import FeedbackForm from './FeedbackForm';
@@ -62,7 +60,7 @@ const NAV_ITEMS: NavItem[] = [
   {
     labelKey: 'nav.tools',
     links: [
-      { labelKey: 'nav.analogueTools', to: '/analogue-tools' },
+      { labelKey: 'nav.analogResources', to: '/analog-resources' },
       { labelKey: 'nav.citivoice', to: '/citivoice-app' },
       { labelKey: 'nav.sceneEditor', to: '/3d-scene-editor' },
       { labelKey: 'nav.coCreationGuide', to: '/co-creation-guide' },
@@ -448,7 +446,7 @@ export function SpiceFooter() {
         <div className="flex flex-col gap-5">
           <p className="text-[15px] font-bold text-black">{t('nav.tools')}</p>
           <div className="flex flex-col gap-3 text-[14px] text-black">
-            <Link to="/analogue-tools" className="cursor-pointer transition-colors hover:text-[#ca7428]">{t('nav.analogueTools')}</Link>
+            <Link to="/analog-resources" className="cursor-pointer transition-colors hover:text-[#ca7428]">{t('nav.analogResources')}</Link>
             <Link to="/citivoice-app" className="cursor-pointer transition-colors hover:text-[#ca7428]">{t('nav.citivoice')}</Link>
             <Link to="/3d-scene-editor" className="cursor-pointer transition-colors hover:text-[#ca7428]">{t('nav.sceneEditor')}</Link>
             <Link to="/co-creation-guide" className="cursor-pointer transition-colors hover:text-[#ca7428]">{t('nav.coCreationGuide')}</Link>
@@ -492,7 +490,7 @@ export function SpiceFooter() {
 export default function SpicePublicShell({ children }: Props) {
   const navigate = useNavigate();
   const { t } = useI18n();
-  const [activePanel, setActivePanel] = useState<'accessibility' | 'privacy' | 'chatbot' | null>(null);
+  const [activePanel, setActivePanel] = useState<'accessibility' | 'privacy' | null>(null);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -521,13 +519,11 @@ export default function SpicePublicShell({ children }: Props) {
       <SpiceNav />
       <main className="flex-1 bg-[#f7f7f7]">{children}</main>
       <SpiceFooter />
-      <ChatbotFloating open={activePanel === 'chatbot'} onOpenChange={(open) => setActivePanel(open ? 'chatbot' : null)} docked />
       <AccessibilityWidget open={activePanel === 'accessibility'} onOpenChange={(open) => setActivePanel(open ? 'accessibility' : null)} docked />
       <div className="fixed bottom-5 left-1/2 z-[60] flex w-auto -translate-x-1/2 items-center gap-2 rounded-[28px] bg-[#f2ccab] px-6 py-3 shadow-[0_8px_28px_rgba(0,0,0,0.28)] transition-[width,padding,background-color] duration-250 motion-reduce:transition-none" role="toolbar" aria-label={t('controls.label')}>
         {[
           { id: 'accessibility' as const, label: t('controls.accessibility'), icon: Accessibility },
           { id: 'privacy' as const, label: t('cookie.read'), icon: Cookie },
-          { id: 'chatbot' as const, label: t('controls.chatbot'), icon: Bot },
         ].map(({ id, label, icon: Icon }) => (
           <button key={id} type="button" onClick={() => setActivePanel((current) => current === id ? null : id)} title={label} aria-label={label} aria-pressed={activePanel === id} className={`grid h-12 w-12 cursor-pointer place-items-center rounded-full border-[3px] border-white text-white transition-[transform,background-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-[#a95f20] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#444] motion-reduce:transform-none ${activePanel === id ? 'bg-[#8f4d18] shadow-[0_0_0_4px_rgba(202,116,40,0.25)]' : 'bg-[#ca7428]'}`}>
             <Icon size={25} />

@@ -70,7 +70,7 @@ export const en = {
   'nav.coCreationHub': 'Co-Creation Hub',
   'nav.coCreationGuide': 'Co-Creation Guide',
   'nav.tools': 'Tools',
-  'nav.analogueTools': 'Analogue Tools',
+  'nav.analogResources': 'Analog Resources',
   'nav.citivoice': 'CitiVoice App',
   'nav.sceneEditor': '3D Scene Editor',
   'nav.aiChatbot': 'AI Chatbot',
@@ -121,8 +121,8 @@ export const en = {
   'role.Citizen': 'Citizen',
   'role.Facilitator': 'Facilitator',
   'role.MunicipalityStaff': 'Municipality / Pilot Coordinator',
-  'role.Researcher': 'Researcher',
-  'role.Admin': 'Admin',
+  
+  
   'language.label': 'Language',
   'language.english': 'English',
   'language.greek': 'Greek',
@@ -148,13 +148,13 @@ export const en = {
   'auth.confirmPasswordRequired': 'Confirm your password.',
   'auth.passwordMismatch': 'Passwords do not match.',
   'auth.pilotPlaceholder': 'Select a pilot site',
-  'auth.rolePlaceholder': 'Select a role',
+  
   'auth.pilotRequired': 'Select a pilot site.',
-  'auth.roleRequired': 'Select a role.',
+  
   'auth.accountCreatedTitle': 'Check your email',
   'auth.accountCreated': 'Account created successfully. Please check your email to verify your account.',
-  'auth.accountPendingApproval': 'This role also requires administrator approval before its permissions activate. You can sign in as soon as your email is verified, with citizen-level access until then.',
-  'auth.roleRequiresApproval': 'This role requires administrator approval before its permissions activate.',
+  
+  
   'hub.pendingApprovalNotice': 'Your {{role}} access is pending administrator approval. You currently have citizen-level access.',
   'hub.errorLoadInitiatives': 'Unable to load pilot sites.',
   'hub.errorLoadRoadmap': 'Unable to load the pilot-site roadmap.',
@@ -183,7 +183,7 @@ export const en = {
   'hub.phaseNotStarted': 'This pilot site has not started its current phase yet.',
   'hub.toolsEnabledForPhase': 'Tools enabled for this phase',
   'hub.preparePhaseActivities': 'Prepare phase activities',
-  'hub.uploadWorkshopOutput': 'Upload workshop output to the Repository',
+  'hub.uploadWorkshopOutput': 'Write phase report',
   'hub.prepareDraftProposal': 'Prepare a draft proposal',
   'hub.loadingPilot': 'Loading your pilot site…',
   'hub.noPilotAssigned': 'No pilot site has been assigned',
@@ -220,7 +220,7 @@ export const en = {
   'auth.verified': 'Your email has been verified successfully. You can now sign in.',
   'auth.verificationFailed': 'Verification failed',
   'auth.pilotSite': 'Pilot site',
-  'auth.role': 'Role',
+  
   'auth.remember': 'Remember me',
   'auth.forgot': 'Forgot password?',
   'auth.createAccount': 'Sign Up',
@@ -246,9 +246,9 @@ export const en = {
   'home.pilotSites': 'Pilot Sites',
   'home.pillars': 'Our Pillars',
   'home.tools': 'Tools built for everyone',
-  'home.analogueTools': 'Analogue Tools',
-  'home.analogueToolsText': 'Explore printable and facilitator-led participatory methods designed to support inclusive co-creation in workshops, public events, and hybrid settings.',
-  'home.exploreAnalogueTools': 'Explore Analogue Tools',
+  'home.analogResources': 'Analog Resources',
+  'home.analogResourcesText': 'Printable and facilitator-led participatory resources, organised by the five SPICE objectives, designed to support inclusive co-creation in workshops, public events, and hybrid settings.',
+  'home.exploreAnalogResources': 'Explore Analog Resources',
   'home.sourceDescriptionUnavailable': 'A detailed description is not yet available in the source workbook.',
   'home.digitalTools': 'Digital Tools',
   'home.explorePlatform': 'Explore the SPICE Platform',
@@ -262,10 +262,10 @@ export const en = {
   'home.explorePilots': 'Explore Pilot Sites',
   'home.pilot.thessaloniki': 'Thessaloniki', 'home.pilot.rovaniemi': 'Rovaniemi', 'home.pilot.bielsko': 'Bielsko-Biala', 'home.pilot.cuba': 'Cuba',
   'home.country.greece': 'Greece', 'home.country.finland': 'Finland', 'home.country.poland': 'Poland', 'home.country.portugal': 'Portugal',
-  'home.pillar.accessibility': 'Accessibility', 'home.pillar.accessibilityText': 'Accessible, keyboard-friendly interfaces for users of all abilities.',
-  'home.pillar.privacy': 'Privacy First', 'home.pillar.privacyText': 'Secure, transparent handling of citizen accounts and contributions.',
-  'home.pillar.impact': 'Real Impact', 'home.pillar.impactText': 'A direct channel from community input to municipal decision-making.',
-  'home.pillar.channel': 'Open Channel', 'home.pillar.channelText': 'A shared space for opinions, proposals, designs, and local stories.',
+  'home.pillar.accessibility': 'Accessibility', 'home.pillar.accessibilityText': 'Every SPICE tool, from analogue workshop templates to the 3D Scene Editor, works with a keyboard and screen reader in five languages, so no resident is locked out of shaping their neighbourhood.',
+  'home.pillar.privacy': 'Privacy First', 'home.pillar.privacyText': 'Citizen, facilitator, and municipality accounts stay role-separated, so people can contribute openly in the Discuss and Decide forum without exposing more than they choose.',
+  'home.pillar.impact': 'Real Impact', 'home.pillar.impactText': 'An idea raised in a workshop or the forum is tracked through the Co-Creation Hub into a municipal decision, and published in the Repository, so it is never lost after the session ends.',
+  'home.pillar.channel': 'Open Channel', 'home.pillar.channelText': 'One platform carries the conversation across in-person workshops, the digital forum, the 3D Scene Editor, and the AI Chatbot, so every voice reaches the same shared record.',
   'home.tool.processText': 'Discover pilot sites, participate in open activities, and manage the journey from one central Hub.',
   'home.tool.sceneText': 'Edit, visualize, and compare public-space scenarios in a 3D environment.',
   'home.tool.aiTitle': 'AI Chatbot', 'home.tool.aiText': 'Get clear, project-specific guidance and answers based on SPICE resources and documents.',
@@ -281,7 +281,7 @@ export const en = {
   'home.feature.content': 'Pilot-Ready Content', 'home.feature.contentText': 'Project pages, feedback forms, summaries, and materials can be localized for each city.',
   'controls.label': 'SPICE quick controls',
   'controls.accessibility': 'Accessibility settings',
-  'controls.chatbot': 'Open SPICE assistant',
+  
   'controls.scrollTop': 'Scroll to top',
   'hub.eyebrow': 'SPICE Digital Toolkit',
   'hub.title': 'Co-Creation Hub',
@@ -317,28 +317,28 @@ export const en = {
   'hub.dashboardIntroCitizen': 'Follow your local co-creation journey, take part in open activities, and explore published tools and outcomes.',
   'hub.statCoCreationTools': 'Co-Creation tools',
   'hub.statActivePilots': 'Active pilots',
-  'hub.statSelectedTools': 'Selected tools',
+  
   'hub.statCitizenContributions': 'Citizen contributions',
   'hub.statAvailableTools': 'Available tools',
-  'hub.statMyContributions': 'My contributions',
-  'hub.statOpenActivities': 'Open activities',
-  'hub.currentWorkspace': 'Current pilot workspace',
-  'hub.workspaceSnapshot': 'Role responsibilities and live workload',
-  'hub.workspaceResponsibilityMunicipality': 'You own the process, approve public activity, issue official decisions, and deliberately advance each phase.',
+  
+  
+  
+  
+  
   'hub.workspaceResponsibilityFacilitator': 'You prepare and deliver participation activities, document evidence, moderate participation, and hand structured outputs to the Municipality.',
-  'hub.workspaceResponsibilityCitizen': 'You can take part in published activities, discuss and vote on proposals, and follow the Municipality response and next phase.',
+  
   'hub.workspaceResponsibilityAdmin': 'You maintain platform access, assignments, pilot configuration, moderation, integrations, and the audit record.',
-  'hub.roleHandoverExplanation': 'Work stays traceable when it moves between roles. Pending handovers show which role must act next.',
-  'hub.statActivitiesReadyReview': 'Activities awaiting review',
-  'hub.statDraftActivities': 'Activities to prepare',
-  'hub.statParticipationClosed': 'Summaries required',
-  'hub.statCompletedActivities': 'Completed activities',
-  'hub.statDecisionsPending': 'Decisions required',
-  'hub.statVotingOpen': 'Votes open',
-  'hub.statResultsPublished': 'Published outcomes',
-  'hub.statActivities': 'Activities',
-  'hub.statProposals': 'Proposals',
-  'hub.statPendingHandovers': 'Pending handovers',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'hub.yourPilot': 'Your Pilot',
   'hub.managePilotSite': 'Manage pilot site',
   'hub.previewAsCitizen': 'Preview as citizen',
@@ -500,29 +500,30 @@ export const en = {
   'methodology.eyebrow': 'SPICE Methodology',
   'methodology.title': 'Co-creation methodology for inclusive public spaces',
   'methodology.subtitle': 'A structured process that helps pilots move from shared understanding to practical design options, feedback, documentation, and decision support.',
+  'methodology.iterationLoop': 'Iteration loop — rapid co-creation and prototyping',
   'methodology.openGuide': 'Open Co-Creation Guide',
-  'methodology.phase1': 'Framing & readiness',
-  'methodology.phase1Text': 'Define the local challenge, map stakeholders, review readiness, and choose the right participation setup for the pilot.',
-  'methodology.phase2': 'Collective understanding',
-  'methodology.phase2Text': 'Gather local knowledge through maps, walks, surveys, workshops, comments, and shared observations.',
-  'methodology.phase3': 'Scenario co-design',
-  'methodology.phase3Text': 'Turn inputs into design options, compare alternatives, and discuss trade-offs with citizens and planning teams.',
-  'methodology.phase4': 'Decision support',
-  'methodology.phase4Text': 'Summarize outcomes, share evidence, document decisions, and keep the community informed after participation.',
-  'methodology.phase5': 'Consolidation & learning',
-  'methodology.phase5Text': 'Evaluate the process, formalize responsibilities, preserve outputs, and carry lessons into future decisions.',
-  'methodology.used': 'How the method is used',
-  'methodology.used1': 'It turns broad participation goals into a clear sequence of phases, tools, activities, outputs, and decision points.',
-  'methodology.used2': 'Municipalities and facilitators can plan workshops, choose suitable tools, set expectations, and explain why each activity matters.',
-  'methodology.used3': 'Workshop results, CitiVoice feedback, 3D scenarios, and repository documents stay connected between activities.',
-  'methodology.used4': 'Citizen input becomes structured outcomes through mapping, clustering, voting, summaries, reports, and follow-up actions.',
-  'methodology.evidence': 'Evidence sources',
-  'methodology.toolkitDoc': 'Toolkit document',
-  'methodology.toolkitDocText': 'SPICE Toolkit Method Guide v2.1',
-  'methodology.diagnostic': 'Pilot diagnostic',
-  'methodology.diagnosticText': 'Thessaloniki Pilot Diagnostic Report',
-  'methodology.repository': 'Repository context',
-  'methodology.repositoryText': 'Workshop notes, public feedback, maps, exports, and linked reports',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'account.navigation': 'Navigation',
   'account.details': 'User Details',
   'account.security': 'Security',
@@ -713,6 +714,12 @@ export const en = {
   'citivoice.points': 'Points',
   'citivoice.clusters': 'Clusters',
   'citivoice.topLocations': 'Top locations',
+  'citivoice.useCase': 'Use case',
+  'citivoice.useCaseAll': 'All locations (citywide)',
+  'citivoice.centeredOn': 'Centered on {{location}}',
+  'citivoice.contributionsForLocation': '{{count}} contributions from this location',
+  'citivoice.topKeywords': 'Top keywords for this location',
+  'citivoice.clearUseCase': 'Clear and show all locations',
   'citivoice.engagement': 'Engagement over time',
   'citivoice.week': 'Week {{number}}',
   'citivoice.sentiment': 'Sentiment summary',
@@ -798,7 +805,7 @@ export const en = {
   'pilots.title': 'SPICE Pilot Sites',
   'pilots.subtitle': 'Four local contexts, one shared approach to inclusive public-space co-creation.',
   'pilots.focus': 'Pilot focus',
-  'pilots.openToolkit': 'Open related toolkit',
+  'pilots.openToolkit': 'Open related toolkit', 'pilots.viewProposals': 'View proposals', 'pilots.viewResults': 'View results', 'pilots.locationTitle': 'Where this pilot takes place', 'pilots.locationText': 'An interactive map centered on the pilot site.', 'pilots.mapFrameTitle': 'Map of {{city}}', 'pilots.viewLargerMap': 'View larger map', 'pilots.galleryTitle': 'Photos of the place', 'pilots.galleryEmpty': 'Photos from this pilot will be added here soon.',
   'pilots.mapAlt': 'Map showing SPICE citizen feedback locations',
   'pilots.notFound': 'Pilot site not found.',
   'pilots.thessalonikiAlt': 'Aerial view of the Thessaloniki pilot area',
@@ -1023,52 +1030,52 @@ export const en = {
   'tour.getStartedBody': 'Complete the guided setup before opening participation to citizens.',
   'role.Guest': 'Guest',
   'role.PlatformAdministrator': 'Platform Administrator',
-  'journey.eyebrow': 'Role workspace',
-  'journey.permissions': 'Actions follow your account permissions',
-  'journey.step': 'Step {{count}}',
-  'journey.current': 'Current step',
-  'journey.citizen.title': 'Your participation journey',
-  'journey.citizen.description': 'Understand what is open, contribute in an accessible format, and follow how community input affects decisions.',
-  'journey.citizen.1.title': 'Understand the pilot',
-  'journey.citizen.1.description': 'Review the current phase, participation boundaries, and what the municipality is asking from the community.',
-  'journey.citizen.1.action': 'Open pilot context',
-  'journey.citizen.2.title': 'Take part',
-  'journey.citizen.2.description': 'Join open activities, discussions, votes, and CitiVoice feedback linked to your pilot.',
-  'journey.citizen.2.action': 'View open discussion',
-  'journey.citizen.3.title': 'Review what changed',
-  'journey.citizen.3.description': 'See responses, updated scenarios, and evidence produced from participant input.',
-  'journey.citizen.3.action': 'Review results',
-  'journey.citizen.4.title': 'Follow next steps',
-  'journey.citizen.4.description': 'Use notifications and repository outputs to track commitments beyond a single event.',
-  'journey.citizen.4.action': 'Open notifications',
-  'journey.facilitator.title': 'Your facilitation journey',
-  'journey.facilitator.description': 'Turn the municipality frame into inclusive activities, support participation, and document reusable evidence.',
-  'journey.facilitator.1.title': 'Prepare the session',
-  'journey.facilitator.1.description': 'Confirm the objective, expected output, participant needs, accessibility support, timing, and responsibilities.',
-  'journey.facilitator.1.action': 'Explore methods',
-  'journey.facilitator.2.title': 'Configure activities',
-  'journey.facilitator.2.description': 'Select suitable tools and open structured activities for the assigned pilot and phase.',
-  'journey.facilitator.2.action': 'Open assigned pilot',
-  'journey.facilitator.3.title': 'Facilitate and observe',
-  'journey.facilitator.3.description': 'Protect equitable participation, capture intended and unexpected findings, and keep the group connected to the objective.',
-  'journey.facilitator.3.action': 'Open workspace',
-  'journey.facilitator.4.title': 'Document outputs',
-  'journey.facilitator.4.description': 'Upload workshop records, expected outputs, and lessons for municipality review and future phases.',
-  'journey.facilitator.4.action': 'Open repository',
-  'journey.municipality.title': 'Your pilot governance journey',
-  'journey.municipality.description': 'Set credible participation boundaries, enable delivery, review evidence, and connect outcomes to formal decisions.',
-  'journey.municipality.1.title': 'Frame the process',
-  'journey.municipality.1.description': 'Define scope, non-negotiables, participation ambition, decision links, resources, and responsible people.',
-  'journey.municipality.1.action': 'Set up the process',
-  'journey.municipality.2.title': 'Enable delivery',
-  'journey.municipality.2.description': 'Assign a facilitator, select phase tools, configure participation, and publish clear instructions.',
-  'journey.municipality.2.action': 'Manage the Hub',
-  'journey.municipality.3.title': 'Review and respond',
-  'journey.municipality.3.description': 'Review participant input and facilitator outputs, issue official responses, and explain what changed.',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'journey.municipality.3.action': 'Review proposals',
-  'journey.municipality.4.title': 'Decide and sustain',
-  'journey.municipality.4.description': 'Publish decisions, responsibilities, governance arrangements, and transferable learning.',
-  'journey.municipality.4.action': 'Manage outputs',
+  
+  
+  
   'hub.initiativeLoadError': 'Unable to load this pilot site.',
   'hub.backToHub': 'Back to Co-Creation Hub',
   'hub.loadingPilotSite': 'Loading pilot site...',
@@ -1173,20 +1180,26 @@ export const en = {
   'status.visible': 'Visible',
   'status.locked': 'Locked',
   'status.hidden': 'Hidden',
-  'journey.admin.title': 'Your platform governance journey',
-  'journey.admin.description': 'Keep organisations, roles, pilots, moderation, and integrations dependable across the SPICE ecosystem.',
-  'journey.admin.1.title': 'Approve access',
-  'journey.admin.1.description': 'Review staff accounts and ensure each user has the minimum role needed for their work.',
-  'journey.admin.1.action': 'Manage users',
-  'journey.admin.2.title': 'Monitor pilots',
-  'journey.admin.2.description': 'Check pilot status, stalled phases, and cross-organisation data quality without taking municipal decisions.',
-  'journey.admin.2.action': 'Review pilots',
-  'journey.admin.3.title': 'Support governance',
-  'journey.admin.3.description': 'Review moderation, repository publication, and audit activity across the platform.',
-  'journey.admin.3.action': 'Open governance',
-  'journey.admin.4.title': 'Maintain services',
-  'journey.admin.4.description': 'Monitor integrations and platform settings while preserving traceability and least privilege.',
-  'journey.admin.4.action': 'Review integrations',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  'phase.1.objective': 'To frame and assess readiness',
+  'phase.2.objective': 'To understand with the community',
+  'phase.3.objective': 'To imagine scenarios and solutions',
+  'phase.4.objective': 'To test using prototypes',
+  'phase.5.objective': 'To consolidate and learn',
   'phase.1.question': 'Are we ready to co-design, and on what terms?',
   'phase.1.outcome': 'An agreed process frame covering participation ambition, decision boundaries, relevant actors, and organisational conditions.',
   'phase.2.question': 'How do different actors understand the place and its challenges?',
@@ -1197,6 +1210,47 @@ export const en = {
   'phase.4.outcome': 'Situated evidence that supports the revision, validation, combination, or rejection of proposed solutions.',
   'phase.5.question': 'What stays, who takes care of it, and what did we learn?',
   'phase.5.outcome': 'Agreed next steps, governance or stewardship arrangements, documented learning, and a clear route into future action.',
+  'phase.1.fullDescription': 'Establish the conditions under which the participatory process will operate, together with the process promoter and key internal stakeholders. This includes clarifying the scope of the project, its constraints, the available resources, the relationship with formal decision-making and the degree of influence that participants can realistically exercise.',
+  'phase.1.actionsIntro': 'Confirm the scope, constraints and non-negotiable elements.',
+  'phase.1.action1': 'Clarify what participants can influence, what remains outside the process and how results will connect to formal planning, design and implementation.',
+  'phase.1.action2': 'Align the expectations of the process promoter, municipal actors and other key stakeholders.',
+  'phase.1.action3': 'Assess available capacities, competences and resources, and identify capacity-building needs.',
+  'phase.1.action4': 'Create or validate the stakeholder map, paying particular attention to people and groups who may otherwise remain excluded.',
+  'phase.2.fullDescription': 'Develop a shared and plural understanding of the place, its actors and the challenges to be addressed before moving towards solutions. This objective combines available technical and contextual information with local knowledge, lived experiences and different interpretations of the area.',
+  'phase.2.action1': 'Collect and organise the contextual information required to understand the area, including spatial, environmental, socio-economic and cultural data.',
+  'phase.2.action2': 'Engage inhabitants, users, public authorities, professionals and other relevant actors in interpreting the place from different perspectives.',
+  'phase.2.action3': 'Elicit local and experiential knowledge, including everyday practices, meanings, attachments, unmet needs and points of conflict.',
+  'phase.2.action4': 'Identify environmental and social impacts, dependencies and vulnerabilities that may not be immediately visible.',
+  'phase.2.action5': 'Use the NEB values as lenses for understanding and discussing the context, rather than as criteria for prematurely evaluating solutions.',
+  'phase.2.action6': 'Consolidate the findings into a limited number of clearly formulated and collectively recognised challenges.',
+  'phase.3.fullDescription': 'Translate the shared understanding developed in the previous objective into a range of possible and desirable futures. Rather than immediately converging on a single final solution, participants explore alternative scenarios, concepts and design directions and make the rationale behind their choices explicit.',
+  'phase.3.action1': 'Reframe the priority challenges as opportunities for collective design and experimentation.',
+  'phase.3.action2': 'Generate multiple scenarios, ideas and concepts before selecting or combining possible directions.',
+  'phase.3.action3': 'Support the participation of people with different forms of knowledge, experience and expertise in the creative process.',
+  'phase.3.action4': 'Consider inclusiveness, accessibility, shared use, spatial quality, identity, experience and environmental performance together.',
+  'phase.3.action5': 'Make visible the assumptions, values and trade-offs underlying different proposals.',
+  'phase.3.action6': 'Negotiate the relationships between sustainability, beauty and togetherness rather than assuming that they will automatically align.',
+  'phase.3.action7': 'Document the reasons behind the choices made and identify which elements still require further investigation or testing.',
+  'phase.4.fullDescription': 'Make selected ideas sufficiently tangible to be experienced, discussed and tested in relation to the real context. Temporary uses, simulations, mock-ups and other forms of prototyping allow participants and project teams to verify assumptions, observe practical effects and improve proposals before final decisions are taken.',
+  'phase.4.action1': 'Select the ideas, components or assumptions that most need to be tested.',
+  'phase.4.action2': 'Formulate clear testing questions concerning use, accessibility, experience, feasibility, environmental effects or management.',
+  'phase.4.action3': 'Develop temporary, low-fidelity or reversible prototypes proportionate to the questions being explored.',
+  'phase.4.action4': 'Enable users and other relevant actors to experience the proposals and directly influence their adjustment.',
+  'phase.4.action5': 'Observe both intended and unintended uses, reactions and practical consequences.',
+  'phase.4.action6': 'Collect qualitative evidence, such as observations, stories and participant feedback, together with lightweight quantitative evidence where appropriate.',
+  'phase.4.action7': 'Record what was learned, what needs to change and how the proposal has been revised.',
+  'phase.4.action8': 'Communicate how feedback has affected the development of the project.',
+  'phase.5.fullDescription': 'Translate the results of the participatory process into responsibilities, commitments and forms of action that can continue beyond individual events or the end of the project. This objective connects the proposals developed through co-design and testing with governance, stewardship, policy, planning and long-term management, while also creating space to reflect on what has been learned.',
+  'phase.5.actionsIntro': 'Governance or stewardship proposal based on:',
+  'phase.5.action1': 'Consolidate the main proposals, decisions and lessons generated throughout the process.',
+  'phase.5.action2': 'Clarify which outcomes can be implemented, which require further development and which cannot be taken forward.',
+  'phase.5.action3': 'Identify the actors responsible for decisions, implementation, maintenance, programming and continued community involvement.',
+  'phase.5.action4': 'Define possible governance or stewardship arrangements, including opportunities for shared responsibility and self-governance where appropriate.',
+  'phase.5.action5': 'Identify the capacities, resources, authorisations and institutional conditions required to sustain the results.',
+  'phase.5.action6': 'Connect the outcomes with relevant policy, planning, design, funding and management processes.',
+  'phase.5.action7': 'Reflect on the quality of the participatory process, including who participated, whose perspectives influenced decisions and which groups remained underrepresented.',
+  'phase.5.action8': 'Document and communicate decisions, commitments and next steps so that participants can follow the evolution of the project.',
+  'phase.5.action9': 'Preserve the learning generated through the process and make it transferable to future initiatives.',
   'privacy.languageLabel': 'Policy language',
   'privacy.eyebrow': 'Trust and transparency',
   'privacy.title': 'Privacy Policy',
@@ -1411,34 +1465,37 @@ export const en = {
   'glossary.relatedTerms': 'Related terms:',
   'glossary.openRelated': 'Open related SPICE page',
   'glossary.expandTerm': 'Show details for {{term}}',
-  'analogue.eyebrow': 'SPICE participatory methods',
-  'analogue.title': 'Analogue Tools',
-  'analogue.description': '{{count}} facilitator-led methods for offline and hybrid co-creation, from stakeholder mapping to prototyping.',
-  'analogue.searchPlaceholder': 'Search by tool, objective, or keyword',
-  'analogue.allModes': 'All modes',
-  'analogue.allStatuses': 'All statuses',
-  'analogue.online': 'Online',
-  'analogue.offline': 'Offline',
-  'analogue.hybrid': 'Hybrid',
-  'analogue.formatted': 'Formatted for printing',
-  'analogue.contentReady': 'Content ready',
-  'analogue.gridView': 'Grid view',
-  'analogue.listView': 'List view',
-  'analogue.results': '{{count}} tools found',
-  'analogue.phaseResults': '{{count}} tools',
-  'analogue.results.one': '{{count}} tool found',
-  'analogue.results.few': '{{count}} tools found',
-  'analogue.results.many': '{{count}} tools found',
-  'analogue.results.other': '{{count}} tools found',
-  'analogue.phaseResults.one': '{{count}} tool',
-  'analogue.phaseResults.few': '{{count}} tools',
-  'analogue.phaseResults.many': '{{count}} tools',
-  'analogue.phaseResults.other': '{{count}} tools',
-  'analogue.moreInformation': 'More information',
-  'analogue.noResults': 'No tools match your search.',
-  'analogue.clearFilters': 'Clear filters',
-  'home.analoguePreviewCount': '{{visible}} example methods from {{total}} in the full toolkit',
-  'toolDetail.back': 'Back to analogue tools',
+  'resources.eyebrow': 'SPICE participatory methods',
+  'resources.title': 'Analog Resources',
+  'resources.description': '{{count}} facilitator-led methods for offline and hybrid co-creation, organised by the five SPICE objectives, from stakeholder mapping to prototyping.',
+  'resources.searchPlaceholder': 'Search by resource, objective, or keyword',
+  'resources.allModes': 'All modes',
+  'resources.allStatuses': 'All statuses',
+  'resources.online': 'Online',
+  'resources.offline': 'Offline',
+  'resources.hybrid': 'Hybrid',
+  'resources.targetUsers.internal': 'Internal team',
+  'resources.targetUsers.public': 'Public participants',
+  'resources.formatted': 'Formatted for printing',
+  'resources.contentReady': 'Content ready',
+  'resources.gridView': 'Grid view',
+  'resources.listView': 'List view',
+  'resources.results': '{{count}} resources found',
+  'resources.phaseResults': '{{count}} resources',
+  'resources.results.one': '{{count}} resource found',
+  'resources.results.few': '{{count}} resources found',
+  'resources.results.many': '{{count}} resources found',
+  'resources.results.other': '{{count}} resources found',
+  'resources.phaseResults.one': '{{count}} resource',
+  'resources.phaseResults.few': '{{count}} resources',
+  'resources.phaseResults.many': '{{count}} resources',
+  'resources.phaseResults.other': '{{count}} resources',
+  'resources.moreInformation': 'More information',
+  'resources.noResults': 'No resources match your search.',
+  'resources.clearFilters': 'Clear filters',
+  'resources.objectiveNumber': 'Objective {{objective}}',
+  'home.analogResourcesPreviewCount': '{{visible}} example resources from {{total}} in the full platform',
+  'toolDetail.back': 'Back to analog resources',
   'toolDetail.phase': 'Phase {{phase}} | {{name}}',
   'toolDetail.inProcess': "In your pilot's process",
   'toolDetail.askAi': 'Ask the AI guide about this tool',
@@ -1461,6 +1518,8 @@ export const en = {
   'toolDetail.groupSize': 'Group size',
   'toolDetail.facilitatorRatio': 'Facilitator ratio',
   'toolDetail.supplies': 'Supplies required',
+  'toolDetail.targetUsers': 'Target users',
+  'toolDetail.prerequisites': 'Prerequisites',
   'toolDetail.related': 'Related tools - {{phase}}',
   'toolDetail.defaultHowTo': 'Review the purpose with participants, prepare the materials, facilitate the activity, and document the shared outputs.',
   'toolDetail.defaultRequirements': 'No additional preparation requirements are specified in the approved source workbook.',
@@ -1484,27 +1543,27 @@ export const en = {
   'home.digitalEnablementTitle': 'Digital Enablement',
   'home.digitalEnablementText': 'Technology supports engagement, evidence, and access.',
   'home.ecosystemCaption': 'Analogue and digital tools support inclusive participation from local challenge to shared decision.',
-  'home.pathEyebrow': 'A clear path through SPICE',
-  'home.pathTitle': 'From a local aim to shared outcomes',
-  'home.pathText': 'Frame what matters, bring the right people and tools together, then turn participation into useful evidence and action.',
-  'home.step1': 'Step 1',
-  'home.step1Title': 'Define the Aim',
-  'home.step1Text': 'Understand the challenge, frame the pilot, identify stakeholders, and set participation objectives.',
-  'home.step1Item1': 'Local challenge',
-  'home.step1Item2': 'Pilot context',
-  'home.step1Item3': 'Participation goals',
-  'home.step2': 'Step 2',
-  'home.step2Title': 'Co-Create with SPICE',
-  'home.step2Text': 'Follow the methodology and combine analogue methods, digital services, deliberation, and knowledge.',
-  'home.step2Item1': 'Methods and tools',
-  'home.step2Item2': 'Discussion and voting',
-  'home.step2Item3': 'Shared resources',
-  'home.step3': 'Step 3',
-  'home.step3Title': 'Create Outcomes',
-  'home.step3Text': 'Turn community input into ideas, priorities, documented outputs, reports, and better-informed decisions.',
-  'home.step3Item1': 'Shared understanding',
-  'home.step3Item2': 'Evidence and reports',
-  'home.step3Item3': 'Actionable priorities',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'home.pilotSitesText': 'Discover the four European pilot contexts where communities are testing inclusive approaches to reshaping public space.',
   'home.pillarsText': 'The shared principles that keep every SPICE activity accessible, responsible, participatory, and connected to real decisions.',
   'home.digitalToolsText': 'Use SPICE digital services to guide a process, collect local input, explore spatial ideas, and receive contextual support.',
@@ -1545,16 +1604,13 @@ export const en = {
   'common.activities.one': '{{count}} activity',
   'common.activities.other': '{{count}} activities',
   'setup.step1': 'Pilot process setup',
-  'setup.stepOfFour': 'Step {{step}} of 4 · Process setup',
+  'setup.stepOfThree': 'Step {{step}} of 3 · Process setup',
   'setup.progressLabel': 'Process setup progress',
   'setup.progress.stage': 'Stage',
   'setup.progress.objectives': 'Objectives',
   'setup.progress.participation': 'Participation',
-  'setup.progress.practical': 'Practical setup',
   'setup.title': 'Set up your co-creation process',
   'setup.intro': 'Tell us about your pilot, participation goals and practical context. Your answers will help SPICE tailor the co-creation journey and recommend suitable tools and activities.',
-  'setup.practicalTitle': 'Practical setup',
-  'setup.practicalText': 'Define the practical conditions that shape accessible and realistic participation.',
   'setup.back': 'Back',
   'setup.continue': 'Continue',
   'setup.reviewRecommendations': 'Review recommendations',
@@ -1613,33 +1669,33 @@ export const en = {
   'setup.objective.consolidation': 'Consolidation, Governance and Learning',
   'setup.objective.consolidationDesc': 'Turn results into responsibilities, outputs, learning, and next steps.',
   'setup.participationTitle': 'Frame the level of participation in the process',
-  'setup.participation.inform': 'Inform and explain',
-  'setup.participation.informDesc': 'Use clear materials to help people understand the project and decisions.',
-  'setup.participation.consult': 'Consult and collect feedback',
-  'setup.participation.consultDesc': 'Ask citizens and stakeholders to comment, vote, map, or respond.',
-  'setup.participation.cocreate': 'Co-create with participants',
-  'setup.participation.cocreateDesc': 'Work together on ideas, scenarios, priorities, and future actions.',
+  'setup.participation.consult': 'Consult',
+  'setup.participation.consultDesc': 'Citizens and stakeholders share needs, perceptions, preferences or feedback that inform the process — the final decision stays with the process promoter.',
+  'setup.participation.codevelop': 'Co-develop',
+  'setup.participation.codevelopDesc': 'Citizens, stakeholders, experts and institutions work together to interpret challenges, generate ideas, and develop scenarios — a stronger, shared influence within institutional constraints.',
+  'setup.participation.selfgovern': 'Self-govern',
+  'setup.participation.selfgovernDesc': 'Communities or local actors take a lasting role in initiating, managing or adapting actions over time — ownership, stewardship and long-term governance.',
   'setup.goalTitle': 'Frame the goal of the participatory process',
   'setup.goal.physical': 'Physical site intervention',
   'setup.goal.intangible': 'Intangible results, events, or community organisation',
   'setup.goal.undefined': 'Not defined yet',
-  'setup.groupSize': 'Group size',
+  
   'setup.duration': 'Duration',
-  'setup.facilitation': 'Facilitation',
+  
   'setup.mode': 'Mode',
-  'setup.group.lt10': 'Fewer than 10 people',
-  'setup.group.10to25': '10–25 people',
-  'setup.group.25to50': '25–50 people',
-  'setup.group.50plus': 'More than 50 people',
-  'setup.duration.lt5': 'Fewer than 5 minutes',
-  'setup.duration.5to30': '5–30 minutes',
-  'setup.duration.30to120': '30 minutes – 2 hours',
-  'setup.duration.halfDay': 'Half day',
-  'setup.duration.fullDay': 'Full day',
-  'setup.duration.multiDay': 'Multiple days',
-  'setup.facilitator.one': '1 person',
-  'setup.facilitator.twoThree': '2–3 people',
-  'setup.facilitator.fourPlus': '4 or more people',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'setup.additionalFilters': 'Additional filters',
   'setup.selectionsTitle': 'Your selections',
   'setup.selectionsEmpty': 'Your selections will appear here.',
@@ -2004,6 +2060,16 @@ export const en = {
   'phaseDetail.supportContact': 'Support contact',
   'phaseDetail.selectedTools': 'Tools used in this activity',
   'phaseDetail.publishedInstructionDetails': 'Activity instructions and practical details',
+  'phaseDetail.reportTitle': 'Phase wrap-up report',
+  'phaseDetail.reportHelp': 'After each event, capture what happened here: the process, who took part, the main results, critical observations and lessons learned. Once published, this becomes the record shared with participants and the municipality.',
+  'phaseDetail.reportPlaceholder': 'Summarise the process, participation, main results, and lessons learned…',
+  'phaseDetail.reportRequiredNote': 'A report of at least 20 characters is required before this final objective can be marked complete.',
+  'phaseDetail.reportOptionalNote': 'Recommended after every event, so the record stays clear for whoever picks up the process next.',
+  'phaseDetail.uploadMaterials': 'Upload photos and documents',
+  'phaseDetail.reportSave': 'Save report',
+  'phaseDetail.reportSaving': 'Saving…',
+  'phaseDetail.reportSaved': 'Report saved.',
+  'phaseDetail.reportSaveFailed': 'Could not save the report. Please try again.',
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -2020,14 +2086,14 @@ const el: Record<TranslationKey, string> = {
   'status.under_review': 'Υπό εξέταση', 'status.approved': 'Εγκεκριμένη', 'status.declined': 'Απορρίφθηκε', 'status.rejected': 'Απορρίφθηκε', 'status.implemented': 'Υλοποιήθηκε',
   'status.municipality_review': 'Έλεγχος από τον δήμο', 'status.discussion_open': 'Ανοιχτή συζήτηση', 'status.voting_open': 'Ανοιχτή ψηφοφορία', 'status.participation_closed': 'Η συμμετοχή ολοκληρώθηκε', 'status.decision_pending': 'Αναμένεται απόφαση',
   'status.suspended': 'Σε αναστολή', 'status.public': 'Δημόσια', 'status.private': 'Ιδιωτική', 'status.invitation_only': 'Μόνο με πρόσκληση',
-  'nav.analogueTools': 'Αναλογικά Εργαλεία', 'nav.aiChatbot': 'AI Chatbot', 'nav.scenarios': 'Σενάρια', 'nav.resources': 'Πόροι', 'nav.signUp': 'Εγγραφή',
-  'home.analogueTools': 'Αναλογικά Εργαλεία', 'home.analogueToolsText': 'Συμμετοχικές μέθοδοι διευκόλυνσης, επιλεγμένες απευθείας από το εγκεκριμένο αρχείο πηγής του SPICE.', 'home.exploreAnalogueTools': 'Εξερευνήστε όλα τα αναλογικά εργαλεία', 'home.sourceDescriptionUnavailable': 'Δεν υπάρχει ακόμη λεπτομερής περιγραφή στο αρχείο πηγής.', 'home.digitalTools': 'Ψηφιακά Εργαλεία', 'home.explorePlatform': 'Εξερευνήστε την Πλατφόρμα SPICE', 'home.tool.methodologyText': 'Κατανοήστε πώς οι μέθοδοι SPICE συνδέουν δραστηριότητες, γνώμες πολιτών και δομημένα αποτελέσματα.', 'home.tool.scenariosText': 'Εξετάστε εναλλακτικές, συγκρίνετε συμβιβασμούς και υποστηρίξτε μια κοινή κατεύθυνση σχεδιασμού.',
-  'controls.label': 'Γρήγορες ρυθμίσεις SPICE', 'controls.accessibility': 'Ρυθμίσεις προσβασιμότητας', 'controls.chatbot': 'Άνοιγμα βοηθού SPICE', 'controls.scrollTop': 'Μετάβαση στην κορυφή',
+  'nav.analogResources': 'Αναλογικοί Πόροι', 'nav.aiChatbot': 'AI Chatbot', 'nav.scenarios': 'Σενάρια', 'nav.resources': 'Πόροι', 'nav.signUp': 'Εγγραφή',
+  'home.analogResources': 'Αναλογικοί Πόροι', 'home.analogResourcesText': 'Συμμετοχικοί πόροι διευκόλυνσης, οργανωμένοι στους πέντε στόχους του SPICE, επιλεγμένοι απευθείας από το εγκεκριμένο αρχείο πηγής του SPICE.', 'home.exploreAnalogResources': 'Εξερευνήστε όλους τους αναλογικούς πόρους', 'home.sourceDescriptionUnavailable': 'Δεν υπάρχει ακόμη λεπτομερής περιγραφή στο αρχείο πηγής.', 'home.digitalTools': 'Ψηφιακά Εργαλεία', 'home.explorePlatform': 'Εξερευνήστε την Πλατφόρμα SPICE', 'home.tool.methodologyText': 'Κατανοήστε πώς οι μέθοδοι SPICE συνδέουν δραστηριότητες, γνώμες πολιτών και δομημένα αποτελέσματα.', 'home.tool.scenariosText': 'Εξετάστε εναλλακτικές, συγκρίνετε συμβιβασμούς και υποστηρίξτε μια κοινή κατεύθυνση σχεδιασμού.',
+  'controls.label': 'Γρήγορες ρυθμίσεις SPICE', 'controls.accessibility': 'Ρυθμίσεις προσβασιμότητας', 'controls.scrollTop': 'Μετάβαση στην κορυφή',
   'common.loading': 'Φόρτωση...', 'common.saving': 'Αποθήκευση...', 'common.save': 'Αποθήκευση αλλαγών', 'common.cancel': 'Ακύρωση', 'common.close': 'Κλείσιμο', 'common.back': 'Πίσω', 'common.continue': 'Συνέχεια', 'common.search': 'Αναζήτηση', 'common.retry': 'Δοκιμάστε ξανά', 'common.signInRequired': 'Απαιτείται σύνδεση', 'common.error': 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.', 'navigation.loading': 'Φόρτωση της επιλεγμένης σελίδας...', 'navigation.ready': 'Η σελίδα είναι έτοιμη', 'auth.requiredMessage': 'Συνδεθείτε για να συνεχίσετε. Μετά τη σύνδεση θα επιστρέψετε στη σελίδα ή την ενέργεια που επιλέξατε.',
   'nav.coCreation': 'Συνδημιουργία', 'nav.coCreationProcess': 'Διαδικασία Συνδημιουργίας', 'nav.coCreationHub': 'Κόμβος Συνδημιουργίας', 'nav.coCreationGuide': 'Οδηγός Συνδημιουργίας', 'nav.tools': 'Εργαλεία', 'nav.citivoice': 'Εφαρμογή CitiVoice', 'nav.sceneEditor': 'Επεξεργαστής 3D Σκηνής', 'nav.forum': 'Συζήτηση και Απόφαση', 'nav.repository': 'Αποθετήριο', 'nav.impact': 'Αντίκτυπος', 'nav.methodology': 'Μεθοδολογία', 'nav.glossary': 'Γλωσσάρι', 'nav.insights': 'Δείκτες & Αποτελέσματα', 'nav.pilotSites': 'Πιλοτικές Περιοχές', 'nav.demoGuide': 'Επίδειξη & Οδηγός', 'nav.account': 'Λογαριασμός', 'nav.notifications': 'Ειδοποιήσεις', 'nav.signIn': 'Σύνδεση', 'nav.signOut': 'Αποσύνδεση', 'nav.getStarted': 'Εγγραφή', 'nav.main': 'Κύρια πλοήγηση', 'nav.mobile': 'Πλοήγηση κινητού', 'nav.toggleMenu': 'Εναλλαγή μενού',
   'language.label': 'Γλώσσα', 'language.english': 'Αγγλικά', 'language.greek': 'Ελληνικά', 'language.finnish': 'Φινλανδικά', 'language.polish': 'Πολωνικά', 'language.portuguese': 'Πορτογαλικά',
-  'toolkit.title': 'Κόμβος Συνδημιουργίας', 'toolkit.subtitle': 'Πλατφόρμα Ψηφιακών Εργαλείων', 'toolkit.activePilot': 'Ενεργή πιλοτική δράση', 'toolkit.feedbackOpen': 'Ανοιχτή ανατροφοδότηση - Φάση 3', 'toolkit.overview': 'Επισκόπηση', 'toolkit.setup': 'Ρύθμιση της διαδικασίας μου', 'toolkit.explore': 'Εξερεύνηση εργαλείων', 'toolkit.scenarios': 'Πιθανά σενάρια', 'toolkit.myContributions': 'Οι συνεισφορές μου', 'toolkit.citivoiceMap': 'Χάρτης CitiVoice', 'toolkit.sceneEditor': '3D Συνδημιουργία', 'toolkit.reports': 'Αναφορές & Εξαγωγή', 'toolkit.toolsOutputs': 'Εργαλεία & αποτελέσματα', 'toolkit.manage': 'Διαχείριση', 'toolkit.help': 'Βοήθεια', 'toolkit.viewNotifications': 'Προβολή ειδοποιήσεων', 'toolkit.noUnread': 'Δεν έχετε μη αναγνωσμένες ειδοποιήσεις.', 'toolkit.unreadCount': 'Έχετε {{count}} μη αναγνωσμένες ειδοποιήσεις.', 'toolkit.keyboardHelp': 'Βοήθεια πληκτρολογίου', 'toolkit.fontSize': 'Μέγεθος γραμματοσειράς', 'toolkit.highContrast': 'Υψηλή αντίθεση', 'toolkit.reducedMotion': 'Μειωμένη κίνηση', 'role.Citizen': 'Πολίτης', 'role.Facilitator': 'Συντονιστής', 'role.MunicipalityStaff': 'Δήμος / Συντονιστής πιλοτικής περιοχής', 'role.Researcher': 'Ερευνητής', 'role.Admin': 'Διαχειριστής',
-  'auth.backHome': 'Επιστροφή στην αρχική', 'auth.welcome': 'Καλώς ήρθατε', 'auth.subtitle': 'Εισαγάγετε τα στοιχεία σας για πρόσβαση στον χώρο εργασίας', 'auth.signIn': 'Σύνδεση', 'auth.register': 'Εγγραφή', 'auth.email': 'Διεύθυνση email', 'auth.password': 'Κωδικός πρόσβασης', 'auth.fullName': 'Ονοματεπώνυμο', 'auth.pilotSite': 'Πιλοτική περιοχή', 'auth.role': 'Ρόλος', 'auth.remember': 'Να με θυμάσαι', 'auth.forgot': 'Ξεχάσατε τον κωδικό;', 'auth.createAccount': 'Εγγραφή', 'auth.termsPrefix': 'Συμφωνώ με τους', 'auth.terms': 'Όρους Χρήσης', 'auth.and': 'και την', 'auth.privacy': 'Πολιτική Απορρήτου', 'auth.signingIn': 'Σύνδεση...', 'auth.creating': 'Δημιουργία λογαριασμού...', 'auth.demoTitle': 'Ενεργοποιώντας τη διαδικασία συνδημιουργίας του αύριο.', 'auth.demoText': 'Συμμετέχετε με πολίτες στις τέσσερις πιλοτικές περιοχές για τη διαμόρφωση συμπεριληπτικών δημόσιων χώρων.', 'auth.activeContributors': 'Ενεργοί συμμετέχοντες', 'auth.designs': 'Σχέδια', 'auth.municipalities': 'Σε συνεργασία με τους πιλοτικούς δήμους',
+  'toolkit.title': 'Κόμβος Συνδημιουργίας', 'toolkit.subtitle': 'Πλατφόρμα Ψηφιακών Εργαλείων', 'toolkit.activePilot': 'Ενεργή πιλοτική δράση', 'toolkit.feedbackOpen': 'Ανοιχτή ανατροφοδότηση - Φάση 3', 'toolkit.overview': 'Επισκόπηση', 'toolkit.setup': 'Ρύθμιση της διαδικασίας μου', 'toolkit.explore': 'Εξερεύνηση εργαλείων', 'toolkit.scenarios': 'Πιθανά σενάρια', 'toolkit.myContributions': 'Οι συνεισφορές μου', 'toolkit.citivoiceMap': 'Χάρτης CitiVoice', 'toolkit.sceneEditor': '3D Συνδημιουργία', 'toolkit.reports': 'Αναφορές & Εξαγωγή', 'toolkit.toolsOutputs': 'Εργαλεία & αποτελέσματα', 'toolkit.manage': 'Διαχείριση', 'toolkit.help': 'Βοήθεια', 'toolkit.viewNotifications': 'Προβολή ειδοποιήσεων', 'toolkit.noUnread': 'Δεν έχετε μη αναγνωσμένες ειδοποιήσεις.', 'toolkit.unreadCount': 'Έχετε {{count}} μη αναγνωσμένες ειδοποιήσεις.', 'toolkit.keyboardHelp': 'Βοήθεια πληκτρολογίου', 'toolkit.fontSize': 'Μέγεθος γραμματοσειράς', 'toolkit.highContrast': 'Υψηλή αντίθεση', 'toolkit.reducedMotion': 'Μειωμένη κίνηση', 'role.Citizen': 'Πολίτης', 'role.Facilitator': 'Συντονιστής', 'role.MunicipalityStaff': 'Δήμος / Συντονιστής πιλοτικής περιοχής', 
+  'auth.backHome': 'Επιστροφή στην αρχική', 'auth.welcome': 'Καλώς ήρθατε', 'auth.subtitle': 'Εισαγάγετε τα στοιχεία σας για πρόσβαση στον χώρο εργασίας', 'auth.signIn': 'Σύνδεση', 'auth.register': 'Εγγραφή', 'auth.email': 'Διεύθυνση email', 'auth.password': 'Κωδικός πρόσβασης', 'auth.fullName': 'Ονοματεπώνυμο', 'auth.pilotSite': 'Πιλοτική περιοχή', 'auth.remember': 'Να με θυμάσαι', 'auth.forgot': 'Ξεχάσατε τον κωδικό;', 'auth.createAccount': 'Εγγραφή', 'auth.termsPrefix': 'Συμφωνώ με τους', 'auth.terms': 'Όρους Χρήσης', 'auth.and': 'και την', 'auth.privacy': 'Πολιτική Απορρήτου', 'auth.signingIn': 'Σύνδεση...', 'auth.creating': 'Δημιουργία λογαριασμού...', 'auth.demoTitle': 'Ενεργοποιώντας τη διαδικασία συνδημιουργίας του αύριο.', 'auth.demoText': 'Συμμετέχετε με πολίτες στις τέσσερις πιλοτικές περιοχές για τη διαμόρφωση συμπεριληπτικών δημόσιων χώρων.', 'auth.activeContributors': 'Ενεργοί συμμετέχοντες', 'auth.designs': 'Σχέδια', 'auth.municipalities': 'Σε συνεργασία με τους πιλοτικούς δήμους',
   'home.heroTitle': 'Συνδημιουργήστε τη Συμπεριληπτική Πόλη σας', 'home.heroText': 'Το SPICE δίνει τη δυνατότητα σε πολίτες και σχεδιαστές να δημιουργούν συνεργατικά ανθεκτικούς, προσβάσιμους και ζωντανούς δημόσιους χώρους.', 'home.startCreating': 'Εγγραφή', 'home.watchDemo': 'Δείτε την επίδειξη', 'home.pilotSites': 'Πιλοτικές Περιοχές', 'home.pillars': 'Οι Πυλώνες μας', 'home.tools': 'Εργαλεία για όλους', 'home.multilingual': 'Πολυγλωσσική Υποστήριξη', 'home.multilingualHeading': 'Συμπεριληπτικό στον σχεδιασμό, πολυγλωσσικό στην πράξη.', 'home.multilingualText': 'Το SPICE είναι διαθέσιμο σε πέντε ευρωπαϊκές γλώσσες ώστε κάθε συμμετέχων να κατανοεί, να συνεισφέρει και να παρακολουθεί τα αποτελέσματα με σιγουριά.', 'home.exploreGlossary': 'Εξερευνήστε το Γλωσσάρι', 'home.ready': 'Έτοιμοι να διαμορφώσετε το μέλλον της πιλοτικής σας περιοχής;', 'home.readyText': 'Συμμετέχετε στο τοπικό έργο αστικού σχεδιασμού και κάντε τη φωνή σας να ακουστεί.', 'home.createAccount': 'Εγγραφή', 'home.explorePilots': 'Εξερευνήστε τις Πιλοτικές Περιοχές',
   'account.navigation': 'Πλοήγηση', 'account.details': 'Στοιχεία Χρήστη', 'account.security': 'Ασφάλεια', 'account.privacy': 'Απόρρητο', 'account.manageTitle': 'Διαχείριση λογαριασμού', 'account.manageText': 'Διατηρήστε ενημερωμένα το προφίλ, τα στοιχεία επικοινωνίας, τη γλώσσα και τις προτιμήσεις ασφαλείας.', 'account.edit': 'Επεξεργασία στοιχείων', 'account.email': 'Διεύθυνση email', 'account.pilot': 'Πιλοτική περιοχή', 'account.role': 'Ρόλος χρήστη', 'account.phone': 'Τηλέφωνο', 'account.context': 'Το Πιλοτικό σας Πλαίσιο', 'account.activeLocation': 'Ενεργή τοποθεσία έργου: {{pilot}}', 'account.saved': 'Το προφίλ σας ενημερώθηκε με επιτυχία.', 'account.currentPassword': 'Τρέχων κωδικός', 'account.newPassword': 'Νέος κωδικός', 'account.visibility': 'Ορατότητα προφίλ', 'account.analytics': 'Ανάλυση χρήσης', 'account.recommendations': 'Εξατομικευμένες προτάσεις', 'account.export': 'Εξαγωγή δεδομένων', 'account.download': 'Λήψη δεδομένων',
   'notifications.title': 'Ειδοποιήσεις', 'notifications.subtitle': 'Μείνετε ενημερωμένοι για τα έργα και τις συνεισφορές που σας ενδιαφέρουν.', 'notifications.markAll': 'Σήμανση όλων ως αναγνωσμένων', 'notifications.search': 'Αναζήτηση ειδοποιήσεων', 'notifications.all': 'Όλες', 'notifications.unread': 'Μη αναγνωσμένες', 'notifications.archived': 'Αρχειοθετημένες', 'notifications.empty': 'Δεν υπάρχουν ειδοποιήσεις σε αυτή την προβολή.', 'notifications.markRead': 'Σήμανση ως αναγνωσμένη', 'notifications.markUnread': 'Σήμανση ως μη αναγνωσμένη', 'notifications.archive': 'Αρχειοθέτηση',
@@ -2049,7 +2115,7 @@ const el: Record<TranslationKey, string> = {
   'forum.phaseLabel': 'Φάση {{number}} — {{phase}}', 'forum.phaseShort': 'Φάση {{number}}', 'forum.voteFor': 'Ψηφίστε αυτή την επιλογή', 'forum.linkedEvidence': 'Συνδεδεμένο αποτέλεσμα SPICE', 'forum.evolutionHistory': 'Εξέλιξη πρότασης και ιστορικό αποφάσεων',
   'forum.history.created': 'Δημιουργήθηκε', 'forum.history.status_changed': 'Αλλαγή κατάστασης', 'forum.history.official_decision': 'Επίσημη απόφαση Δήμου',
   'forum.title': 'Συζήτηση και Απόφαση', 'forum.subtitle': 'Μοιραστείτε ιδέες, συζητήστε προτάσεις, ψηφίστε εναλλακτικές και παρακολουθήστε πώς λαμβάνονται οι αποφάσεις.', 'forum.submit': 'Υποβολή πρότασης', 'forum.comments': 'Σχόλια', 'forum.addComment': 'Προσθήκη σχολίου', 'forum.post': 'Δημοσίευση σχολίου', 'forum.signInPrompt': 'Συνδεθείτε για να συνεισφέρετε, να σχολιάσετε ή να ψηφίσετε.', 'forum.noResults': 'Καμία πρόταση δεν ταιριάζει στα φίλτρα.', 'forum.clearFilters': 'Καθαρισμός φίλτρων', 'forum.officialResponse': 'Επίσημη απάντηση - Δήμος Θεσσαλονίκης',
-  'pilots.title': 'Πιλοτικές Περιοχές SPICE', 'pilots.subtitle': 'Τέσσερα τοπικά πλαίσια, μία κοινή προσέγγιση για συμπεριληπτική συνδημιουργία.', 'pilots.focus': 'Εστίαση πιλοτικής δράσης', 'pilots.openToolkit': 'Άνοιγμα σχετικών εργαλείων', 'demo.title': 'Επίδειξη & Οδηγός Χρήστη SPICE', 'demo.subtitle': 'Δείτε την πλατφόρμα σε λειτουργία και ακολουθήστε τον οδηγό για να ξεκινήσετε.', 'demo.videoFallback': 'Δεν ήταν δυνατή η φόρτωση του βίντεο. Ανοίξτε το απευθείας στο YouTube.', 'demo.openYoutube': 'Άνοιγμα στο YouTube', 'demo.guideTitle': 'Οδηγός χρήστη',
+  'pilots.title': 'Πιλοτικές Περιοχές SPICE', 'pilots.subtitle': 'Τέσσερα τοπικά πλαίσια, μία κοινή προσέγγιση για συμπεριληπτική συνδημιουργία.', 'pilots.focus': 'Εστίαση πιλοτικής δράσης', 'pilots.openToolkit': 'Άνοιγμα σχετικών εργαλείων', 'pilots.viewProposals': 'Προβολή προτάσεων', 'pilots.viewResults': 'Προβολή αποτελεσμάτων', 'pilots.locationTitle': 'Πού πραγματοποιείται αυτό το πιλοτικό έργο', 'pilots.locationText': 'Ένας διαδραστικός χάρτης κεντραρισμένος στην πιλοτική περιοχή.', 'pilots.mapFrameTitle': 'Χάρτης της {{city}}', 'pilots.viewLargerMap': 'Προβολή μεγαλύτερου χάρτη', 'pilots.galleryTitle': 'Φωτογραφίες του χώρου', 'pilots.galleryEmpty': 'Φωτογραφίες από αυτό το πιλοτικό έργο θα προστεθούν σύντομα.', 'demo.title': 'Επίδειξη & Οδηγός Χρήστη SPICE', 'demo.subtitle': 'Δείτε την πλατφόρμα σε λειτουργία και ακολουθήστε τον οδηγό για να ξεκινήσετε.', 'demo.videoFallback': 'Δεν ήταν δυνατή η φόρτωση του βίντεο. Ανοίξτε το απευθείας στο YouTube.', 'demo.openYoutube': 'Άνοιγμα στο YouTube', 'demo.guideTitle': 'Οδηγός χρήστη',
   'footer.navigation': 'Πλοήγηση', 'footer.other': 'Άλλα', 'footer.follow': 'Ακολουθήστε μας', 'footer.funded': 'Χρηματοδοτείται από την Ευρωπαϊκή Ένωση', 'footer.disclaimer': 'Χρηματοδοτείται από την Ευρωπαϊκή Ένωση. Οι απόψεις που εκφράζονται ανήκουν αποκλειστικά στους συγγραφείς και δεν αντικατοπτρίζουν απαραίτητα τις απόψεις της ΕΕ ή της CINEA.', 'footer.rights': '©2026, Ανάπτυξη & φιλοξενία από τη DREVEN. Με επιφύλαξη παντός δικαιώματος.',
   'cookie.message': 'Το SPICE χρησιμοποιεί απαραίτητα cookies για ασφαλείς συνεδρίες και προαιρετικές προτιμήσεις για βελτίωση της εμπειρίας.', 'cookie.accept': 'Αποδοχή όλων', 'cookie.manage': 'Διαχείριση προτιμήσεων', 'cookie.reject': 'Απόρριψη μη απαραίτητων cookies', 'cookie.read': 'Διαβάστε την Πολιτική Απορρήτου',
   'cookie.title': 'Οι επιλογές απορρήτου σας', 'cookie.accountNotice': 'Μπορείτε να ελέγχετε ανά πάσα στιγμή τον τρόπο με τον οποίο το SPICE χρησιμοποιεί cookies. Τα απαραίτητα cookies προστατεύουν τον λογαριασμό σας· τα προαιρετικά χρησιμοποιούνται μόνο με την άδειά σας.', 'cookie.viewPolicy': 'Προβολή Πολιτικής Απορρήτου', 'cookie.optionsTitle': 'Επιλέξτε προαιρετικά cookies', 'cookie.essential': 'Απαραίτητα cookies', 'cookie.essentialText': 'Απαιτούνται για ασφαλή σύνδεση, συνεδρίες και βασικές λειτουργίες της πλατφόρμας.', 'cookie.alwaysOn': 'Πάντα ενεργά', 'cookie.analytics': 'Ανάλυση χρήσης', 'cookie.analyticsText': 'Μας βοηθά να κατανοούμε τη χρήση και να βελτιώνουμε την πλατφόρμα.', 'cookie.personalization': 'Εξατομίκευση', 'cookie.personalizationText': 'Αποθηκεύει προαιρετικές προτιμήσεις και παρέχει σχετικές προτάσεις.', 'cookie.save': 'Αποθήκευση προτιμήσεων', 'cookie.accepted': 'Αποθηκεύτηκαν όλες οι προτιμήσεις cookies.', 'cookie.rejected': 'Είναι πλέον ενεργά μόνο τα απαραίτητα cookies.', 'cookie.saved': 'Οι προτιμήσεις cookies αποθηκεύτηκαν.',
@@ -2068,13 +2134,13 @@ const el: Record<TranslationKey, string> = {
   'auth.confirmPasswordRequired': 'Επιβεβαιώστε τον κωδικό πρόσβασής σας.',
   'auth.passwordMismatch': 'Οι κωδικοί πρόσβασης δεν ταιριάζουν.',
   'auth.pilotPlaceholder': 'Επιλέξτε έναν πιλοτικό ιστότοπο',
-  'auth.rolePlaceholder': 'Επιλέξτε έναν ρόλο',
+  
   'auth.pilotRequired': 'Επιλέξτε έναν πιλοτικό ιστότοπο.',
-  'auth.roleRequired': 'Επιλέξτε έναν ρόλο.',
+  
   'auth.accountCreatedTitle': 'Ελέγξτε το email σας',
   'auth.accountCreated': 'Ο λογαριασμός δημιουργήθηκε με επιτυχία. Ελέγξτε το email σας για να επαληθεύσετε τον λογαριασμό σας.',
-  'auth.accountPendingApproval': 'Αυτός ο ρόλος απαιτεί επίσης έγκριση διαχειριστή πριν από την ενεργοποίηση των αδειών του. Μπορείτε να συνδεθείτε μόλις επαληθευτεί το email σας, με πρόσβαση σε επίπεδο πολίτη μέχρι τότε.',
-  'auth.roleRequiresApproval': 'Αυτός ο ρόλος απαιτεί έγκριση διαχειριστή πριν από την ενεργοποίηση των αδειών του.',
+  
+  
   'hub.pendingApprovalNotice': 'Η πρόσβασή σας στο {{role}} εκκρεμεί για την έγκριση του διαχειριστή. Αυτήν τη στιγμή έχετε πρόσβαση σε επίπεδο πολίτη.',
   'auth.previewVerification': 'Ανοίξτε την προεπισκόπηση τοπικής επαλήθευσης',
   'auth.goToSignIn': 'Μεταβείτε στη σύνδεση',
@@ -2091,13 +2157,13 @@ const el: Record<TranslationKey, string> = {
   'home.country.poland': 'Πολωνία',
   'home.country.portugal': 'Πορτογαλία',
   'home.pillar.accessibility': 'Προσβασιμότητα',
-  'home.pillar.accessibilityText': 'Προσβάσιμες, φιλικές προς το πληκτρολόγιο διεπαφές για χρήστες όλων των ικανοτήτων.',
+  'home.pillar.accessibilityText': 'Κάθε εργαλείο του SPICE, από τα αναλογικά υλικά εργαστηρίων έως τον 3D Επεξεργαστή Σκηνής, λειτουργεί με πληκτρολόγιο και αναγνώστη οθόνης σε πέντε γλώσσες, ώστε κανένας κάτοικος να μην αποκλείεται από τη διαμόρφωση της γειτονιάς του.',
   'home.pillar.privacy': 'Πρώτα το απόρρητο',
-  'home.pillar.privacyText': 'Ασφαλής, διαφανής χειρισμός λογαριασμών και συνεισφορών πολιτών.',
+  'home.pillar.privacyText': 'Οι λογαριασμοί πολιτών, συντονιστών και δήμων παραμένουν διαχωρισμένοι ανά ρόλο, ώστε ο κόσμος να συμμετέχει ανοιχτά στο φόρουμ Συζήτησης και Απόφασης χωρίς να εκθέτει περισσότερα από όσα επιλέγει.',
   'home.pillar.impact': 'Πραγματικός αντίκτυπος',
-  'home.pillar.impactText': 'Ένα άμεσο κανάλι από τη συμβολή της κοινότητας στη λήψη δημοτικών αποφάσεων.',
+  'home.pillar.impactText': 'Μια ιδέα που τίθεται σε ένα εργαστήριο ή στο φόρουμ παρακολουθείται μέσα από το Co-Creation Hub έως τη δημοτική απόφαση και δημοσιεύεται στο Αποθετήριο, χωρίς ποτέ να χάνεται μετά το τέλος της συνάντησης.',
   'home.pillar.channel': 'Ανοίξτε το κανάλι',
-  'home.pillar.channelText': 'Ένας κοινόχρηστος χώρος για απόψεις, προτάσεις, σχέδια και τοπικές ιστορίες.',
+  'home.pillar.channelText': 'Μία ενιαία πλατφόρμα μεταφέρει τη συζήτηση από τα δια ζώσης εργαστήρια στο ψηφιακό φόρουμ, τον 3D Επεξεργαστή Σκηνής και τον Βοηθό ΑΙ, ώστε κάθε φωνή να καταλήγει στο ίδιο κοινό αρχείο.',
   'home.tool.processText': 'Ανακαλύψτε πιλοτικές τοποθεσίες, συμμετάσχετε σε ανοιχτές δραστηριότητες και διαχειριστείτε το ταξίδι από έναν κεντρικό κόμβο.',
   'home.tool.sceneText': 'Επεξεργαστείτε, οπτικοποιήστε και συγκρίνετε σενάρια δημόσιου χώρου σε ένα τρισδιάστατο περιβάλλον.',
   'home.tool.aiTitle': 'AI Chatbot',
@@ -2139,28 +2205,28 @@ const el: Record<TranslationKey, string> = {
   'hub.dashboardIntroCitizen': 'Ακολουθήστε το τοπικό σας ταξίδι συνδημιουργίας, λάβετε μέρος σε ανοιχτές δραστηριότητες και εξερευνήστε δημοσιευμένα εργαλεία και αποτελέσματα.',
   'hub.statCoCreationTools': 'Εργαλεία συν-δημιουργίας',
   'hub.statActivePilots': 'Ενεργοί πιλοτικοί χώροι',
-  'hub.statSelectedTools': 'Επιλεγμένα εργαλεία',
+  
   'hub.statCitizenContributions': 'Συμφορές πολιτών',
   'hub.statAvailableTools': 'Διαθέσιμα εργαλεία',
-  'hub.statMyContributions': 'Οι συνεισφορές μου',
-  'hub.statOpenActivities': 'Ανοιχτές δραστηριότητες',
-  'hub.currentWorkspace': 'Τρέχων χώρος εργασίας πιλότου',
-  'hub.workspaceSnapshot': 'Ευθύνες ρόλου και τρέχουσες εκκρεμότητες',
-  'hub.workspaceResponsibilityMunicipality': 'Ο Δήμος έχει την ευθύνη της διαδικασίας, εγκρίνει τη δημόσια συμμετοχή, εκδίδει επίσημες αποφάσεις και προχωρά ρητά κάθε φάση.',
+  
+  
+  
+  
+  
   'hub.workspaceResponsibilityFacilitator': 'Προετοιμάζετε και υλοποιείτε δραστηριότητες συμμετοχής, τεκμηριώνετε τα στοιχεία, συντονίζετε τη συμμετοχή και παραδίδετε δομημένα αποτελέσματα στον Δήμο.',
-  'hub.workspaceResponsibilityCitizen': 'Μπορείτε να συμμετέχετε σε δημοσιευμένες δραστηριότητες, να συζητάτε και να ψηφίζετε προτάσεις και να παρακολουθείτε την απόφαση του Δήμου και την επόμενη φάση.',
+  
   'hub.workspaceResponsibilityAdmin': 'Διαχειρίζεστε την πρόσβαση, τις αναθέσεις, τη ρύθμιση πιλότων, τον συντονισμό, τις διασυνδέσεις και το αρχείο ελέγχου.',
-  'hub.roleHandoverExplanation': 'Η εργασία παραμένει ανιχνεύσιμη όταν περνά μεταξύ ρόλων. Οι εκκρεμείς παραδόσεις δείχνουν ποιος ρόλος πρέπει να ενεργήσει στη συνέχεια.',
-  'hub.statActivitiesReadyReview': 'Δραστηριότητες προς έλεγχο',
-  'hub.statDraftActivities': 'Δραστηριότητες προς προετοιμασία',
-  'hub.statParticipationClosed': 'Απαιτούμενες συνόψεις',
-  'hub.statCompletedActivities': 'Ολοκληρωμένες δραστηριότητες',
-  'hub.statDecisionsPending': 'Απαιτούμενες αποφάσεις',
-  'hub.statVotingOpen': 'Ανοιχτές ψηφοφορίες',
-  'hub.statResultsPublished': 'Δημοσιευμένα αποτελέσματα',
-  'hub.statActivities': 'Δραστηριότητες',
-  'hub.statProposals': 'Προτάσεις',
-  'hub.statPendingHandovers': 'Εκκρεμείς παραδόσεις',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'hub.yourPilot': 'Ο πιλότος σας',
   'hub.managePilotSite': 'Διαχείριση πιλοτικού ιστότοπου',
   'hub.previewAsCitizen': 'Προεπισκόπηση ως πολίτης',
@@ -2298,29 +2364,30 @@ const el: Record<TranslationKey, string> = {
   'methodology.eyebrow': 'Μεθοδολογία SPICE',
   'methodology.title': 'Μεθοδολογία συνδημιουργίας για δημόσιους χώρους χωρίς αποκλεισμούς',
   'methodology.subtitle': 'Μια δομημένη διαδικασία που βοηθά τους πιλότους να περάσουν από την κοινή κατανόηση σε πρακτικές επιλογές σχεδίασης, σχόλια, τεκμηρίωση και υποστήριξη αποφάσεων.',
+  'methodology.iterationLoop': 'Βρόχος επανάληψης — ταχεία συνδημιουργία και δημιουργία πρωτοτύπων',
   'methodology.openGuide': 'Ανοίξτε τον Οδηγό συν-δημιουργίας',
-  'methodology.phase1': 'Καδράρισμα και ετοιμότητα',
-  'methodology.phase1Text': 'Ορίστε την τοπική πρόκληση, χαρτογραφήστε τα ενδιαφερόμενα μέρη, ελέγξτε την ετοιμότητα και επιλέξτε τη σωστή ρύθμιση συμμετοχής για το πιλότο.',
-  'methodology.phase2': 'Συλλογική κατανόηση',
-  'methodology.phase2Text': 'Συλλέξτε τοπικές γνώσεις μέσα από χάρτες, περιπάτους, έρευνες, εργαστήρια, σχόλια και κοινές παρατηρήσεις.',
-  'methodology.phase3': 'Σχεδιασμός σεναρίου',
-  'methodology.phase3Text': 'Μετατρέψτε τις εισροές σε επιλογές σχεδίασης, συγκρίνετε εναλλακτικές και συζητήστε συμβιβασμούς με πολίτες και ομάδες σχεδιασμού.',
-  'methodology.phase4': 'Υποστήριξη αποφάσεων',
-  'methodology.phase4Text': 'Συνοψίστε τα αποτελέσματα, μοιραστείτε στοιχεία, τεκμηριώστε αποφάσεις και κρατήστε την κοινότητα ενήμερη μετά τη συμμετοχή.',
-  'methodology.phase5': 'Ενοποίηση και εκμάθηση',
-  'methodology.phase5Text': 'Αξιολογήστε τη διαδικασία, επισημοποιήστε τις ευθύνες, διατηρήστε τα αποτελέσματα και λάβετε μαθήματα για μελλοντικές αποφάσεις.',
-  'methodology.used': 'Πώς χρησιμοποιείται η μέθοδος',
-  'methodology.used1': 'Μετατρέπει τους στόχους ευρείας συμμετοχής σε μια σαφή ακολουθία φάσεων, εργαλείων, δραστηριοτήτων, αποτελεσμάτων και σημείων λήψης αποφάσεων.',
-  'methodology.used2': 'Οι δήμοι και οι διαμεσολαβητές μπορούν να προγραμματίσουν εργαστήρια, να επιλέξουν κατάλληλα εργαλεία, να θέτουν προσδοκίες και να εξηγήσουν γιατί κάθε δραστηριότητα έχει σημασία.',
-  'methodology.used3': 'Αποτελέσματα εργαστηρίου, σχόλια CitiVoice, τρισδιάστατα σενάρια και έγγραφα αποθήκης παραμένουν συνδεδεμένα μεταξύ των δραστηριοτήτων.',
-  'methodology.used4': 'Η εισαγωγή πολιτών γίνεται δομημένα αποτελέσματα μέσω χαρτογράφησης, ομαδοποίησης, ψηφοφορίας, περιλήψεων, αναφορών και επακόλουθων ενεργειών.',
-  'methodology.evidence': 'Πηγές αποδεικτικών στοιχείων',
-  'methodology.toolkitDoc': 'Έγγραφο Εργαλειοθήκης',
-  'methodology.toolkitDocText': 'Οδηγός μεθόδου SPICE Toolkit v2.1',
-  'methodology.diagnostic': 'Πιλοτικό διαγνωστικό',
-  'methodology.diagnosticText': 'Διαγνωστική Έκθεση πιλότου Θεσσαλονίκης',
-  'methodology.repository': 'Περιβάλλον αποθήκης',
-  'methodology.repositoryText': 'Σημειώσεις εργαστηρίου, δημόσια σχόλια, χάρτες, εξαγωγές και συνδεδεμένες αναφορές',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'account.profileDetails': 'Λεπτομέρειες προφίλ',
   'account.profileText': 'Ενημερώστε τις λεπτομέρειες που χρησιμοποιούνται στον λογαριασμό SPICE και στον πιλοτικό χώρο εργασίας σας.',
   'account.fullName': 'Ονοματεπώνυμο',
@@ -2368,6 +2435,12 @@ const el: Record<TranslationKey, string> = {
   'citivoice.points': 'Σημεία',
   'citivoice.clusters': 'Συμπλέγματα',
   'citivoice.topLocations': 'Κορυφαίες τοποθεσίες',
+  'citivoice.useCase': 'Περίπτωση χρήσης',
+  'citivoice.useCaseAll': 'Όλες οι τοποθεσίες (σε όλη την πόλη)',
+  'citivoice.centeredOn': 'Κεντραρισμένο στο {{location}}',
+  'citivoice.contributionsForLocation': '{{count}} συνεισφορές από αυτή την τοποθεσία',
+  'citivoice.topKeywords': 'Κορυφαίες λέξεις-κλειδιά για αυτή την τοποθεσία',
+  'citivoice.clearUseCase': 'Καθαρισμός και εμφάνιση όλων των τοποθεσιών',
   'citivoice.engagement': 'Συμμετοχή διαχρονικά',
   'citivoice.sentiment': 'Σύνοψη συναισθήματος',
   'citivoice.concerns': 'Βασικές ανησυχίες ανά κατηγορία',
@@ -2567,66 +2640,72 @@ const el: Record<TranslationKey, string> = {
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
   'role.Guest': 'Επισκέπτης',
   'role.PlatformAdministrator': 'Διαχειριστής πλατφόρμας',
-  'journey.eyebrow': 'Χώρος εργασίας ρόλων',
-  'journey.permissions': 'Οι ενέργειες ακολουθούν τα δικαιώματα του λογαριασμού σας',
-  'journey.step': 'Βήμα {{count}}',
-  'journey.current': 'Τρέχον βήμα',
-  'journey.citizen.title': 'Το ταξίδι συμμετοχής σας',
-  'journey.citizen.description': 'Κατανοήστε τι είναι ανοιχτό, συνεισφέρετε σε προσβάσιμη μορφή και παρακολουθήστε τον τρόπο με τον οποίο η συμβολή της κοινότητας επηρεάζει τις αποφάσεις.',
-  'journey.citizen.1.title': 'Κατανοήστε τον πιλότο',
-  'journey.citizen.1.description': 'Ελέγξτε την τρέχουσα φάση, τα όρια συμμετοχής και τι ζητά ο δήμος από την κοινότητα.',
-  'journey.citizen.1.action': 'Ανοίξτε το πιλοτικό πλαίσιο',
-  'journey.citizen.2.title': 'Λάβετε μέρος',
-  'journey.citizen.2.description': 'Λάβετε μέρος σε ανοιχτές δραστηριότητες, συζητήσεις, ψηφοφορίες και σχόλια CitiVoice που συνδέονται με τον πιλότο σας.',
-  'journey.citizen.2.action': 'Προβολή ανοιχτής συζήτησης',
-  'journey.citizen.3.title': 'Ελέγξτε τι άλλαξε',
-  'journey.citizen.3.description': 'Δείτε απαντήσεις, ενημερωμένα σενάρια και αποδεικτικά στοιχεία που προέρχονται από τα στοιχεία των συμμετεχόντων.',
-  'journey.citizen.3.action': 'Ελέγξτε τα αποτελέσματα',
-  'journey.citizen.4.title': 'Ακολουθήστε τα επόμενα βήματα',
-  'journey.citizen.4.description': 'Χρησιμοποιήστε ειδοποιήσεις και εξόδους αποθετηρίου για να παρακολουθείτε δεσμεύσεις πέρα ​​από ένα μεμονωμένο συμβάν.',
-  'journey.citizen.4.action': 'Ανοίξτε τις ειδοποιήσεις',
-  'journey.facilitator.title': 'Το ταξίδι διευκόλυνσής σας',
-  'journey.facilitator.description': 'Μετατρέψτε το πλαίσιο του δήμου σε δραστηριότητες χωρίς αποκλεισμούς, υποστηρίξτε τη συμμετοχή και τεκμηριώστε επαναχρησιμοποιήσιμα στοιχεία.',
-  'journey.facilitator.1.title': 'Προετοιμάστε τη συνεδρία',
-  'journey.facilitator.1.description': 'Επιβεβαιώστε τον στόχο, την αναμενόμενη απόδοση, τις ανάγκες των συμμετεχόντων, την υποστήριξη προσβασιμότητας, το χρονοδιάγραμμα και τις ευθύνες.',
-  'journey.facilitator.1.action': 'Εξερευνήστε μεθόδους',
-  'journey.facilitator.2.title': 'Διαμόρφωση δραστηριοτήτων',
-  'journey.facilitator.2.description': 'Επιλέξτε κατάλληλα εργαλεία και ανοίξτε δομημένες δραστηριότητες για το πιλότο και τη φάση που έχει εκχωρηθεί.',
-  'journey.facilitator.2.action': 'Ανοίξτε τον εκχωρημένο πιλότο',
-  'journey.facilitator.3.title': 'Διευκολύνετε και παρατηρήστε',
-  'journey.facilitator.3.description': 'Προστατέψτε τη δίκαιη συμμετοχή, αποτυπώστε επιδιωκόμενα και απροσδόκητα ευρήματα και διατηρήστε την ομάδα συνδεδεμένη με τον στόχο.',
-  'journey.facilitator.3.action': 'Ανοίξτε τον χώρο εργασίας',
-  'journey.facilitator.4.title': 'Έξοδοι εγγράφων',
-  'journey.facilitator.4.description': 'Μεταφορτώστε αρχεία εργαστηρίου, αναμενόμενα αποτελέσματα και μαθήματα για αναθεώρηση του δήμου και μελλοντικές φάσεις.',
-  'journey.facilitator.4.action': 'Ανοίξτε το αποθετήριο',
-  'journey.municipality.title': 'Το πιλοτικό σας ταξίδι διακυβέρνησης',
-  'journey.municipality.description': 'Ορίστε αξιόπιστα όρια συμμετοχής, ενεργοποιήστε την παράδοση, ελέγξτε τα στοιχεία και συνδέστε τα αποτελέσματα με επίσημες αποφάσεις.',
-  'journey.municipality.1.title': 'Προσθέστε τη διαδικασία',
-  'journey.municipality.1.description': 'Ορίστε το εύρος, τα μη διαπραγματεύσιμα, τη φιλοδοξία συμμετοχής, τους συνδέσμους αποφάσεων, τους πόρους και τους υπεύθυνους ανθρώπους.',
-  'journey.municipality.1.action': 'Ρυθμίστε τη διαδικασία',
-  'journey.municipality.2.title': 'Ενεργοποίηση παράδοσης',
-  'journey.municipality.2.description': 'Ορίστε έναν συντονιστή, επιλέξτε εργαλεία φάσης, διαμορφώστε τη συμμετοχή και δημοσιεύστε σαφείς οδηγίες.',
-  'journey.municipality.2.action': 'Διαχείριση του Hub',
-  'journey.municipality.3.title': 'Ελέγξτε και απαντήστε',
-  'journey.municipality.3.description': 'Ελέγξτε τις εισροές των συμμετεχόντων και τα αποτελέσματα του συντονιστή, εκδώστε επίσημες απαντήσεις και εξηγήστε τι άλλαξε.',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'journey.municipality.3.action': 'Ελέγξτε τις προτάσεις',
-  'journey.municipality.4.title': 'Αποφασίστε και διατηρήστε',
-  'journey.municipality.4.description': 'Δημοσιεύστε αποφάσεις, ευθύνες, ρυθμίσεις διακυβέρνησης και μεταβιβάσιμη μάθηση.',
-  'journey.municipality.4.action': 'Διαχείριση εξόδων',
-  'journey.admin.title': 'Το ταξίδι διακυβέρνησης της πλατφόρμας σας',
-  'journey.admin.description': 'Διατηρήστε αξιόπιστους οργανισμούς, ρόλους, πιλότους, μετριοπάθεια και ενσωματώσεις σε όλο το οικοσύστημα SPICE.',
-  'journey.admin.1.title': 'Έγκριση πρόσβασης',
-  'journey.admin.1.description': 'Ελέγξτε τους λογαριασμούς του προσωπικού και βεβαιωθείτε ότι κάθε χρήστης έχει τον ελάχιστο ρόλο που απαιτείται για την εργασία του.',
-  'journey.admin.1.action': 'Διαχείριση χρηστών',
-  'journey.admin.2.title': 'Πιλότοι παρακολούθησης',
-  'journey.admin.2.description': 'Ελέγξτε την κατάσταση του πιλότου, τις σταματημένες φάσεις και την ποιότητα των δεδομένων μεταξύ οργανισμών χωρίς να λάβετε δημοτικές αποφάσεις.',
-  'journey.admin.2.action': 'Ελέγξτε πιλότους',
-  'journey.admin.3.title': 'Υποστήριξη διακυβέρνησης',
-  'journey.admin.3.description': 'Ελέγξτε την εποπτεία, τη δημοσίευση αποθετηρίου και τη δραστηριότητα ελέγχου σε όλη την πλατφόρμα.',
-  'journey.admin.3.action': 'Ανοικτή διακυβέρνηση',
-  'journey.admin.4.title': 'Διατήρηση υπηρεσιών',
-  'journey.admin.4.description': 'Παρακολουθήστε τις ενσωματώσεις και τις ρυθμίσεις πλατφόρμας διατηρώντας παράλληλα την ιχνηλασιμότητα και τα λιγότερα προνόμια.',
-  'journey.admin.4.action': 'Ελέγξτε τις ενσωματώσεις',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  'phase.1.objective': 'Να πλαισιώσουμε και να αξιολογήσουμε την ετοιμότητα',
+  'phase.2.objective': 'Να κατανοήσουμε μαζί με την κοινότητα',
+  'phase.3.objective': 'Να φανταστούμε σενάρια και λύσεις',
+  'phase.4.objective': 'Να δοκιμάσουμε μέσω πρωτοτύπων',
+  'phase.5.objective': 'Να εδραιώσουμε και να μάθουμε',
   'phase.1.question': 'Είμαστε έτοιμοι να συν-σχεδιάζουμε και με ποιους όρους;',
   'phase.1.outcome': 'Ένα συμφωνημένο πλαίσιο διαδικασίας που καλύπτει τη φιλοδοξία συμμετοχής, τα όρια αποφάσεων, τους σχετικούς παράγοντες και τις οργανωτικές συνθήκες.',
   'phase.2.question': 'Πώς κατανοούν διαφορετικοί ηθοποιοί τον τόπο και τις προκλήσεις του;',
@@ -2637,6 +2716,47 @@ const el: Record<TranslationKey, string> = {
   'phase.4.outcome': 'Τεκμηριωμένα στοιχεία που υποστηρίζουν την αναθεώρηση, την επικύρωση, τον συνδυασμό ή την απόρριψη προτεινόμενων λύσεων.',
   'phase.5.question': 'Τι μένει, ποιος το φροντίζει και τι μάθαμε;',
   'phase.5.outcome': 'Συμφωνημένα επόμενα βήματα, ρυθμίσεις διακυβέρνησης ή διαχείρισης, τεκμηριωμένη μάθηση και σαφής διαδρομή για μελλοντική δράση.',
+  'phase.1.fullDescription': 'Καθορίστε τις συνθήκες υπό τις οποίες θα λειτουργήσει η συμμετοχική διαδικασία, μαζί με τον φορέα προώθησης της διαδικασίας και τα βασικά εσωτερικά ενδιαφερόμενα μέρη. Αυτό περιλαμβάνει τη διευκρίνιση του πεδίου εφαρμογής του έργου, των περιορισμών του, των διαθέσιμων πόρων, της σχέσης με την επίσημη λήψη αποφάσεων και του βαθμού επιρροής που μπορούν ρεαλιστικά να ασκήσουν οι συμμετέχοντες.',
+  'phase.1.actionsIntro': 'Επιβεβαιώστε το πεδίο εφαρμογής, τους περιορισμούς και τα μη διαπραγματεύσιμα στοιχεία.',
+  'phase.1.action1': 'Διευκρινίστε τι μπορούν να επηρεάσουν οι συμμετέχοντες, τι παραμένει εκτός διαδικασίας και πώς τα αποτελέσματα θα συνδεθούν με τον επίσημο σχεδιασμό, τον σχεδιασμό και την υλοποίηση.',
+  'phase.1.action2': 'Ευθυγραμμίστε τις προσδοκίες του φορέα προώθησης της διαδικασίας, των δημοτικών παραγόντων και άλλων βασικών ενδιαφερόμενων μερών.',
+  'phase.1.action3': 'Αξιολογήστε τις διαθέσιμες ικανότητες, τις αρμοδιότητες και τους πόρους, και εντοπίστε τις ανάγκες ανάπτυξης ικανοτήτων.',
+  'phase.1.action4': 'Δημιουργήστε ή επικυρώστε τον χάρτη ενδιαφερόμενων μερών, δίνοντας ιδιαίτερη προσοχή σε άτομα και ομάδες που ενδέχεται διαφορετικά να παραμείνουν εκτός.',
+  'phase.2.fullDescription': 'Αναπτύξτε μια κοινή και πολυφωνική κατανόηση του τόπου, των παραγόντων του και των προκλήσεων που πρέπει να αντιμετωπιστούν πριν προχωρήσετε σε λύσεις. Αυτός ο στόχος συνδυάζει διαθέσιμες τεχνικές και συγκειμενικές πληροφορίες με τοπική γνώση, βιωμένες εμπειρίες και διαφορετικές ερμηνείες της περιοχής.',
+  'phase.2.action1': 'Συλλέξτε και οργανώστε τις συγκειμενικές πληροφορίες που απαιτούνται για την κατανόηση της περιοχής, συμπεριλαμβανομένων χωρικών, περιβαλλοντικών, κοινωνικοοικονομικών και πολιτιστικών δεδομένων.',
+  'phase.2.action2': 'Εμπλέξτε κατοίκους, χρήστες, δημόσιες αρχές, επαγγελματίες και άλλους σχετικούς παράγοντες στην ερμηνεία του τόπου από διαφορετικές οπτικές γωνίες.',
+  'phase.2.action3': 'Αντλήστε τοπική και βιωματική γνώση, συμπεριλαμβανομένων καθημερινών πρακτικών, νοημάτων, δεσμών, ανικανοποίητων αναγκών και σημείων σύγκρουσης.',
+  'phase.2.action4': 'Εντοπίστε περιβαλλοντικές και κοινωνικές επιπτώσεις, εξαρτήσεις και ευπάθειες που ενδέχεται να μην είναι άμεσα ορατές.',
+  'phase.2.action5': 'Χρησιμοποιήστε τις αξίες NEB ως φακούς για την κατανόηση και τη συζήτηση του πλαισίου, και όχι ως κριτήρια για πρόωρη αξιολόγηση λύσεων.',
+  'phase.2.action6': 'Ενοποιήστε τα ευρήματα σε έναν περιορισμένο αριθμό σαφώς διατυπωμένων και συλλογικά αναγνωρισμένων προκλήσεων.',
+  'phase.3.fullDescription': 'Μετατρέψτε την κοινή κατανόηση που αναπτύχθηκε στον προηγούμενο στόχο σε ένα εύρος πιθανών και επιθυμητών μελλόντων. Αντί να συγκλίνουν άμεσα σε μία τελική λύση, οι συμμετέχοντες διερευνούν εναλλακτικά σενάρια, ιδέες και κατευθύνσεις σχεδιασμού και καθιστούν σαφή τη λογική πίσω από τις επιλογές τους.',
+  'phase.3.action1': 'Επαναδιατυπώστε τις προκλήσεις προτεραιότητας ως ευκαιρίες για συλλογικό σχεδιασμό και πειραματισμό.',
+  'phase.3.action2': 'Δημιουργήστε πολλαπλά σενάρια, ιδέες και έννοιες πριν επιλέξετε ή συνδυάσετε πιθανές κατευθύνσεις.',
+  'phase.3.action3': 'Υποστηρίξτε τη συμμετοχή ατόμων με διαφορετικές μορφές γνώσης, εμπειρίας και εξειδίκευσης στη δημιουργική διαδικασία.',
+  'phase.3.action4': 'Λάβετε υπόψη μαζί τη συμπερίληψη, την προσβασιμότητα, την κοινή χρήση, την χωρική ποιότητα, την ταυτότητα, την εμπειρία και την περιβαλλοντική απόδοση.',
+  'phase.3.action5': 'Καταστήστε ορατές τις υποθέσεις, τις αξίες και τους συμβιβασμούς που διέπουν διαφορετικές προτάσεις.',
+  'phase.3.action6': 'Διαπραγματευτείτε τις σχέσεις μεταξύ βιωσιμότητας, ομορφιάς και συλλογικότητας αντί να υποθέτετε ότι θα ευθυγραμμιστούν αυτόματα.',
+  'phase.3.action7': 'Τεκμηριώστε τους λόγους πίσω από τις επιλογές που έγιναν και εντοπίστε ποια στοιχεία χρειάζονται ακόμη περαιτέρω διερεύνηση ή δοκιμή.',
+  'phase.4.fullDescription': 'Καταστήστε τις επιλεγμένες ιδέες αρκετά απτές ώστε να βιωθούν, να συζητηθούν και να δοκιμαστούν σε σχέση με το πραγματικό πλαίσιο. Προσωρινές χρήσεις, προσομοιώσεις, μακέτες και άλλες μορφές δημιουργίας πρωτοτύπων επιτρέπουν στους συμμετέχοντες και τις ομάδες του έργου να επαληθεύσουν υποθέσεις, να παρατηρήσουν πρακτικές επιπτώσεις και να βελτιώσουν τις προτάσεις πριν ληφθούν οι τελικές αποφάσεις.',
+  'phase.4.action1': 'Επιλέξτε τις ιδέες, τα στοιχεία ή τις υποθέσεις που χρειάζονται περισσότερο δοκιμή.',
+  'phase.4.action2': 'Διατυπώστε σαφείς ερωτήσεις δοκιμής σχετικά με τη χρήση, την προσβασιμότητα, την εμπειρία, τη σκοπιμότητα, τις περιβαλλοντικές επιπτώσεις ή τη διαχείριση.',
+  'phase.4.action3': 'Αναπτύξτε προσωρινά, χαμηλής πιστότητας ή αναστρέψιμα πρωτότυπα ανάλογα με τα ερωτήματα που διερευνώνται.',
+  'phase.4.action4': 'Επιτρέψτε στους χρήστες και σε άλλους σχετικούς παράγοντες να βιώσουν τις προτάσεις και να επηρεάσουν άμεσα την προσαρμογή τους.',
+  'phase.4.action5': 'Παρατηρήστε τόσο τις σκόπιμες όσο και τις μη σκόπιμες χρήσεις, αντιδράσεις και πρακτικές συνέπειες.',
+  'phase.4.action6': 'Συλλέξτε ποιοτικά στοιχεία, όπως παρατηρήσεις, ιστορίες και σχόλια συμμετεχόντων, μαζί με ελαφριά ποσοτικά στοιχεία όπου χρειάζεται.',
+  'phase.4.action7': 'Καταγράψτε τι μάθατε, τι πρέπει να αλλάξει και πώς έχει αναθεωρηθεί η πρόταση.',
+  'phase.4.action8': 'Επικοινωνήστε πώς τα σχόλια επηρέασαν την ανάπτυξη του έργου.',
+  'phase.5.fullDescription': 'Μετατρέψτε τα αποτελέσματα της συμμετοχικής διαδικασίας σε αρμοδιότητες, δεσμεύσεις και μορφές δράσης που μπορούν να συνεχιστούν πέρα από τις μεμονωμένες εκδηλώσεις ή το τέλος του έργου. Αυτός ο στόχος συνδέει τις προτάσεις που αναπτύχθηκαν μέσω της συνδημιουργίας και της δοκιμής με τη διακυβέρνηση, τη διαχείριση, την πολιτική, τον σχεδιασμό και τη μακροπρόθεσμη διαχείριση, ενώ παράλληλα δημιουργεί χώρο για προβληματισμό σχετικά με όσα μάθαμε.',
+  'phase.5.actionsIntro': 'Πρόταση διακυβέρνησης ή διαχείρισης με βάση:',
+  'phase.5.action1': 'Ενοποιήστε τις κύριες προτάσεις, αποφάσεις και διδάγματα που δημιουργήθηκαν καθ’ όλη τη διάρκεια της διαδικασίας.',
+  'phase.5.action2': 'Διευκρινίστε ποια αποτελέσματα μπορούν να υλοποιηθούν, ποια χρειάζονται περαιτέρω ανάπτυξη και ποια δεν μπορούν να προχωρήσουν.',
+  'phase.5.action3': 'Εντοπίστε τους παράγοντες που είναι υπεύθυνοι για αποφάσεις, υλοποίηση, συντήρηση, προγραμματισμό και συνεχή εμπλοκή της κοινότητας.',
+  'phase.5.action4': 'Ορίστε πιθανές ρυθμίσεις διακυβέρνησης ή διαχείρισης, συμπεριλαμβανομένων ευκαιριών για κοινή ευθύνη και αυτοδιαχείριση όπου κρίνεται σκόπιμο.',
+  'phase.5.action5': 'Εντοπίστε τις ικανότητες, τους πόρους, τις εξουσιοδοτήσεις και τις θεσμικές προϋποθέσεις που απαιτούνται για τη διατήρηση των αποτελεσμάτων.',
+  'phase.5.action6': 'Συνδέστε τα αποτελέσματα με σχετικές διαδικασίες πολιτικής, σχεδιασμού, μελέτης, χρηματοδότησης και διαχείρισης.',
+  'phase.5.action7': 'Αναστοχαστείτε την ποιότητα της συμμετοχικής διαδικασίας, συμπεριλαμβανομένου του ποιος συμμετείχε, ποιες οπτικές επηρέασαν τις αποφάσεις και ποιες ομάδες παρέμειναν υποεκπροσωπούμενες.',
+  'phase.5.action8': 'Τεκμηριώστε και επικοινωνήστε αποφάσεις, δεσμεύσεις και επόμενα βήματα ώστε οι συμμετέχοντες να μπορούν να παρακολουθούν την εξέλιξη του έργου.',
+  'phase.5.action9': 'Διατηρήστε τη μάθηση που παρήχθη μέσω της διαδικασίας και καταστήστε την μεταβιβάσιμη σε μελλοντικές πρωτοβουλίες.',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
   'privacy.languageLabel': 'Γλώσσα πολιτικής',
@@ -2807,28 +2927,31 @@ const el: Record<TranslationKey, string> = {
   'glossary.expandTerm': 'Εμφάνιση λεπτομερειών για {{term}}',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
-  'analogue.eyebrow': 'Συμμετοχικές μέθοδοι SPICE',
-  'analogue.title': 'Αναλογικά εργαλεία',
-  'analogue.description': '{{count}} μέθοδοι καθοδηγούμενες από διευκολυντές για εκτός σύνδεσης και υβριδική συν-δημιουργία, από τη χαρτογράφηση των ενδιαφερόμενων μερών έως τη δημιουργία πρωτοτύπων.',
-  'analogue.searchPlaceholder': 'Αναζήτηση κατά εργαλείο, στόχο ή λέξη-κλειδί',
-  'analogue.allModes': 'Όλες οι λειτουργίες',
-  'analogue.allStatuses': 'Όλες οι καταστάσεις',
-  'analogue.online': 'Διαδικτυακός',
-  'analogue.offline': 'Εκτός σύνδεσης',
-  'analogue.hybrid': 'Υβριδικό',
-  'analogue.formatted': 'Μορφοποιήθηκε για εκτύπωση',
-  'analogue.contentReady': 'Έτοιμο περιεχόμενο',
-  'analogue.gridView': 'Προβολή πλέγματος',
-  'analogue.listView': 'Προβολή λίστας',
-  'analogue.results': 'Βρέθηκαν {{count}} εργαλεία',
-  'analogue.phaseResults': '{{count}} εργαλεία',
-  'analogue.moreInformation': 'Περισσότερες πληροφορίες',
-  'analogue.noResults': 'Δεν υπάρχουν εργαλεία που να αντιστοιχούν στην αναζήτησή σας.',
-  'analogue.clearFilters': 'Διαγραφή φίλτρων',
+  'resources.eyebrow': 'Συμμετοχικές μέθοδοι SPICE',
+  'resources.title': 'Αναλογικοί Πόροι',
+  'resources.description': '{{count}} μέθοδοι καθοδηγούμενες από διευκολυντές, οργανωμένες στους πέντε στόχους του SPICE, από τη χαρτογράφηση των ενδιαφερόμενων μερών έως τη δημιουργία πρωτοτύπων.',
+  'resources.searchPlaceholder': 'Αναζήτηση κατά πόρο, στόχο ή λέξη-κλειδί',
+  'resources.allModes': 'Όλες οι λειτουργίες',
+  'resources.allStatuses': 'Όλες οι καταστάσεις',
+  'resources.online': 'Διαδικτυακός',
+  'resources.offline': 'Εκτός σύνδεσης',
+  'resources.hybrid': 'Υβριδικό',
+  'resources.targetUsers.internal': 'Εσωτερική ομάδα',
+  'resources.targetUsers.public': 'Συμμετέχοντες κοινού',
+  'resources.formatted': 'Μορφοποιήθηκε για εκτύπωση',
+  'resources.contentReady': 'Έτοιμο περιεχόμενο',
+  'resources.gridView': 'Προβολή πλέγματος',
+  'resources.listView': 'Προβολή λίστας',
+  'resources.results': 'Βρέθηκαν {{count}} πόροι',
+  'resources.phaseResults': '{{count}} πόροι',
+  'resources.moreInformation': 'Περισσότερες πληροφορίες',
+  'resources.noResults': 'Δεν υπάρχουν πόροι που να αντιστοιχούν στην αναζήτησή σας.',
+  'resources.objectiveNumber': 'Στόχος {{objective}}',
+  'resources.clearFilters': 'Διαγραφή φίλτρων',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
-  'home.analoguePreviewCount': '{{visible}} παραδείγματα μεθόδων από {{total}} στην πλήρη εργαλειοθήκη',
-  'toolDetail.back': 'Επιστροφή στα αναλογικά εργαλεία',
+  'home.analogResourcesPreviewCount': '{{visible}} παραδείγματα πόρων από {{total}} στην πλατφόρμα',
+  'toolDetail.back': 'Επιστροφή στους αναλογικούς πόρους',
   'toolDetail.phase': 'Φάση {{phase}} | {{name}}',
   'toolDetail.inProcess': 'Στη διαδικασία του πιλότου σας',
   'toolDetail.askAi': 'Ρωτήστε τον οδηγό τεχνητής νοημοσύνης σχετικά με αυτό το εργαλείο',
@@ -2851,6 +2974,8 @@ const el: Record<TranslationKey, string> = {
   'toolDetail.groupSize': 'Μέγεθος ομάδας',
   'toolDetail.facilitatorRatio': 'Αναλογία διευκόλυνσης',
   'toolDetail.supplies': 'Απαιτούνται προμήθειες',
+  'toolDetail.targetUsers': 'Χρήστες-στόχος',
+  'toolDetail.prerequisites': 'Προαπαιτούμενα',
   'toolDetail.related': 'Σχετικά εργαλεία - {{phase}}',
   'toolDetail.defaultHowTo': 'Ελέγξτε τον σκοπό με τους συμμετέχοντες, προετοιμάστε το υλικό, διευκολύνετε τη δραστηριότητα και τεκμηριώστε τα κοινόχρηστα αποτελέσματα.',
   'toolDetail.defaultRequirements': 'Δεν καθορίζονται πρόσθετες απαιτήσεις προετοιμασίας στο εγκεκριμένο βιβλίο εργασίας πηγής.',
@@ -2876,27 +3001,27 @@ const el: Record<TranslationKey, string> = {
   'home.digitalEnablementTitle': 'Ψηφιακή ενεργοποίηση',
   'home.digitalEnablementText': 'Η τεχνολογία υποστηρίζει αφοσίωση, αποδείξεις και πρόσβαση.',
   'home.ecosystemCaption': 'Τα αναλογικά και ψηφιακά εργαλεία υποστηρίζουν τη συμμετοχή χωρίς αποκλεισμούς από την τοπική πρόκληση έως την κοινή απόφαση.',
-  'home.pathEyebrow': 'Μια ξεκάθαρη διαδρομή μέσω του SPICE',
-  'home.pathTitle': 'Από έναν τοπικό στόχο έως τα κοινά αποτελέσματα',
-  'home.pathText': 'Προγραμματίστε ό,τι έχει σημασία, συγκεντρώστε τα κατάλληλα άτομα και εργαλεία και μετά μετατρέψτε τη συμμετοχή σε χρήσιμα στοιχεία και δράση.',
-  'home.step1': 'Βήμα 1',
-  'home.step1Title': 'Ορίστε τον στόχο',
-  'home.step1Text': 'Κατανοήστε την πρόκληση, πλαισιώστε το πιλοτικό, προσδιορίστε τα ενδιαφερόμενα μέρη και θέστε στόχους συμμετοχής.',
-  'home.step1Item1': 'Τοπική πρόκληση',
-  'home.step1Item2': 'Πιλοτικό πλαίσιο',
-  'home.step1Item3': 'Στόχοι συμμετοχής',
-  'home.step2': 'Βήμα 2',
-  'home.step2Title': 'Συν-δημιουργία με το SPICE',
-  'home.step2Text': 'Ακολουθήστε τη μεθοδολογία και συνδυάστε αναλογικές μεθόδους, ψηφιακές υπηρεσίες, συζήτηση και γνώση.',
-  'home.step2Item1': 'Μέθοδοι και εργαλεία',
-  'home.step2Item2': 'Συζήτηση και ψηφοφορία',
-  'home.step2Item3': 'Κοινόχρηστοι πόροι',
-  'home.step3': 'Βήμα 3',
-  'home.step3Title': 'Δημιουργία αποτελεσμάτων',
-  'home.step3Text': 'Μετατρέψτε τη συμβολή της κοινότητας σε ιδέες, προτεραιότητες, τεκμηριωμένα αποτελέσματα, αναφορές και καλύτερα ενημερωμένες αποφάσεις.',
-  'home.step3Item1': 'Κοινή κατανόηση',
-  'home.step3Item2': 'Στοιχεία και αναφορές',
-  'home.step3Item3': 'Προτεραιότητες με δυνατότητα δράσης',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'home.pilotSitesText': 'Ανακαλύψτε τα τέσσερα ευρωπαϊκά πιλοτικά πλαίσια όπου οι κοινότητες δοκιμάζουν περιεκτικές προσεγγίσεις για την αναμόρφωση του δημόσιου χώρου.',
   'home.pillarsText': 'Οι κοινές αρχές που διατηρούν κάθε δραστηριότητα SPICE προσβάσιμη, υπεύθυνη, συμμετοχική και συνδεδεμένη με πραγματικές αποφάσεις.',
   'home.digitalToolsText': 'Χρησιμοποιήστε τις ψηφιακές υπηρεσίες SPICE για να καθοδηγήσετε μια διαδικασία, να συλλέξετε τοπικά στοιχεία, να εξερευνήσετε χωρικές ιδέες και να λάβετε υποστήριξη με βάση τα συμφραζόμενα.',
@@ -2942,16 +3067,13 @@ const el: Record<TranslationKey, string> = {
   'common.activities.one': '{{count}} δραστηριότητα',
   'common.activities.other': '{{count}} δραστηριότητες',
   'setup.step1': 'Ρύθμιση συμμετοχικής διαδικασίας',
-  'setup.stepOfFour': 'Βήμα {{step}} από 4 · Ρύθμιση διαδικασίας',
+  'setup.stepOfThree': 'Βήμα {{step}} από 3 · Ρύθμιση διαδικασίας',
   'setup.progressLabel': 'Πρόοδος ρύθμισης διαδικασίας',
   'setup.progress.stage': 'Στάδιο',
   'setup.progress.objectives': 'Στόχοι',
   'setup.progress.participation': 'Συμμετοχή',
-  'setup.progress.practical': 'Πρακτική ρύθμιση',
   'setup.title': 'Ρυθμίστε τη διαδικασία συνδημιουργίας σας',
   'setup.intro': 'Πείτε μας για την πιλοτική περιοχή, τους στόχους συμμετοχής και το πρακτικό πλαίσιο. Οι απαντήσεις σας θα βοηθήσουν το SPICE να προσαρμόσει τη διαδρομή συνδημιουργίας και να προτείνει κατάλληλα εργαλεία και δραστηριότητες.',
-  'setup.practicalTitle': 'Πρακτική ρύθμιση',
-  'setup.practicalText': 'Ορίστε τις πρακτικές συνθήκες για προσβάσιμη και ρεαλιστική συμμετοχή.',
   'setup.back': 'Πίσω',
   'setup.continue': 'Συνέχεια',
   'setup.reviewRecommendations': 'Ελέγξτε τις προτάσεις',
@@ -3010,33 +3132,33 @@ const el: Record<TranslationKey, string> = {
   'setup.objective.consolidation': 'Ενοποίηση, Διακυβέρνηση και Μάθηση',
   'setup.objective.consolidationDesc': 'Μετατρέψτε τα αποτελέσματα σε ευθύνες, αποτελέσματα, μάθηση και επόμενα βήματα.',
   'setup.participationTitle': 'Προγραμματίστε το επίπεδο συμμετοχής στη διαδικασία',
-  'setup.participation.inform': 'Ενημερώστε και εξηγήστε',
-  'setup.participation.informDesc': 'Χρησιμοποιήστε σαφή υλικά για να βοηθήσετε τους ανθρώπους να κατανοήσουν το έργο και τις αποφάσεις.',
-  'setup.participation.consult': 'Συμβουλευτείτε και συλλέξτε σχόλια',
-  'setup.participation.consultDesc': 'Ζητήστε από τους πολίτες και τους ενδιαφερόμενους να σχολιάσουν, να ψηφίσουν, να χαρτογραφήσουν ή να απαντήσουν.',
-  'setup.participation.cocreate': 'Δημιουργήστε από κοινού με τους συμμετέχοντες',
-  'setup.participation.cocreateDesc': 'Συνεργαστείτε για ιδέες, σενάρια, προτεραιότητες και μελλοντικές ενέργειες.',
+  'setup.participation.consult': 'Συμβουλευτικά',
+  'setup.participation.consultDesc': 'Πολίτες και ενδιαφερόμενοι μοιράζονται ανάγκες, αντιλήψεις, προτιμήσεις ή σχόλια που τροφοδοτούν τη διαδικασία — η τελική απόφαση παραμένει στον φορέα προώθησης.',
+  'setup.participation.codevelop': 'Συνδιαμόρφωση',
+  'setup.participation.codevelopDesc': 'Πολίτες, ενδιαφερόμενοι, ειδικοί και φορείς συνεργάζονται για να ερμηνεύσουν προκλήσεις, να παράγουν ιδέες και να αναπτύξουν σενάρια — ισχυρότερη, κοινή επιρροή εντός θεσμικών περιορισμών.',
+  'setup.participation.selfgovern': 'Αυτοδιαχείριση',
+  'setup.participation.selfgovernDesc': 'Κοινότητες ή τοπικοί φορείς αναλαμβάνουν διαρκή ρόλο στην έναρξη, διαχείριση ή προσαρμογή δράσεων με την πάροδο του χρόνου — ιδιοκτησία, φροντίδα και μακροπρόθεσμη διακυβέρνηση.',
   'setup.goalTitle': 'Προγραμματίστε τον στόχο της συμμετοχικής διαδικασίας',
   'setup.goal.physical': 'Παρέμβαση φυσικής τοποθεσίας',
   'setup.goal.intangible': 'Άυλα αποτελέσματα, εκδηλώσεις ή κοινοτικός οργανισμός',
   'setup.goal.undefined': 'Δεν έχει οριστεί ακόμα',
-  'setup.groupSize': 'Μέγεθος ομάδας',
+  
   'setup.duration': 'Διάρκεια',
-  'setup.facilitation': 'Διευκόλυνση',
+  
   'setup.mode': 'Λειτουργία',
-  'setup.group.lt10': 'Λιγότερα από 10 άτομα',
-  'setup.group.10to25': '10–25 άτομα',
-  'setup.group.25to50': '25–50 άτομα',
-  'setup.group.50plus': 'Περισσότερα από 50 άτομα',
-  'setup.duration.lt5': 'Λιγότερα από 5 λεπτά',
-  'setup.duration.5to30': '5–30 λεπτά',
-  'setup.duration.30to120': '30 λεπτά – 2 ώρες',
-  'setup.duration.halfDay': 'Μισή μέρα',
-  'setup.duration.fullDay': 'Ολόκληρη μέρα',
-  'setup.duration.multiDay': 'Πολλές ημέρες',
-  'setup.facilitator.one': '1 άτομο',
-  'setup.facilitator.twoThree': '2–3 άτομα',
-  'setup.facilitator.fourPlus': '4 ή περισσότερα άτομα',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'setup.additionalFilters': 'Πρόσθετα φίλτρα',
   'setup.selectionsTitle': 'Οι επιλογές σας',
   'setup.selectionsEmpty': 'Οι επιλογές σας θα εμφανιστούν εδώ.',
@@ -3349,7 +3471,7 @@ const el: Record<TranslationKey, string> = {
   'hub.phaseNotStarted': 'Αυτός ο πιλοτικός ιστότοπος δεν έχει ξεκινήσει ακόμα την τρέχουσα φάση του.',
   'hub.toolsEnabledForPhase': 'Εργαλεία ενεργοποιημένα για αυτήν τη φάση',
   'hub.preparePhaseActivities': 'Προετοιμάστε δραστηριότητες φάσης',
-  'hub.uploadWorkshopOutput': 'Μεταφορτώστε τα αποτελέσματα του εργαστηρίου στο Αποθετήριο',
+  'hub.uploadWorkshopOutput': 'Γράψτε την αναφορά στόχου',
   'hub.prepareDraftProposal': 'Ετοιμάστε ένα προσχέδιο πρότασης',
   'hub.loadingPilot': 'Φόρτωση πιλοτικού ιστότοπου…',
   'hub.noPilotAssigned': 'Δεν έχει εκχωρηθεί πιλοτική τοποθεσία',
@@ -3681,14 +3803,14 @@ const el: Record<TranslationKey, string> = {
   'glossary.results.few': '{{visible}} από {{total}} όρους γλωσσαρίου',
   'glossary.results.many': '{{visible}} από {{total}} όρους γλωσσαρίου',
   'glossary.results.other': '{{visible}} από {{total}} όρους γλωσσαρίου',
-  'analogue.results.one': 'Βρέθηκε {{count}} εργαλείο',
-  'analogue.results.few': 'Βρέθηκαν {{count}} εργαλεία',
-  'analogue.results.many': 'Βρέθηκαν {{count}} εργαλεία',
-  'analogue.results.other': 'Βρέθηκαν {{count}} εργαλεία',
-  'analogue.phaseResults.one': '{{count}} εργαλείο',
-  'analogue.phaseResults.few': '{{count}} εργαλεία',
-  'analogue.phaseResults.many': '{{count}} εργαλεία',
-  'analogue.phaseResults.other': '{{count}} εργαλεία',
+  'resources.results.one': 'Βρέθηκε {{count}} πόρος',
+  'resources.results.few': 'Βρέθηκαν {{count}} πόροι',
+  'resources.results.many': 'Βρέθηκαν {{count}} πόροι',
+  'resources.results.other': 'Βρέθηκαν {{count}} πόροι',
+  'resources.phaseResults.one': '{{count}} πόρος',
+  'resources.phaseResults.few': '{{count}} πόροι',
+  'resources.phaseResults.many': '{{count}} πόροι',
+  'resources.phaseResults.other': '{{count}} πόροι',
   'chatbot.collections.one': '{{count}} συλλογή',
   'chatbot.collections.few': '{{count}} συλλογές',
   'chatbot.collections.many': '{{count}} συλλογές',
@@ -3845,17 +3967,27 @@ const el: Record<TranslationKey, string> = {
   'phaseDetail.supportContact': 'Επικοινωνία υποστήριξης',
   'phaseDetail.selectedTools': 'Εργαλεία δραστηριότητας',
   'phaseDetail.publishedInstructionDetails': 'Οδηγίες και πρακτικές λεπτομέρειες δραστηριότητας',
+  'phaseDetail.reportTitle': 'Αναφορά ολοκλήρωσης στόχου',
+  'phaseDetail.reportHelp': 'Μετά από κάθε εκδήλωση, καταγράψτε εδώ τι συνέβη: τη διαδικασία, ποιοι συμμετείχαν, τα κύρια αποτελέσματα, κριτικές παρατηρήσεις και διδάγματα. Μόλις δημοσιευτεί, αυτό γίνεται το αρχείο που μοιράζεται με τους συμμετέχοντες και τον δήμο.',
+  'phaseDetail.reportPlaceholder': 'Συνοψίστε τη διαδικασία, τη συμμετοχή, τα κύρια αποτελέσματα και τα διδάγματα…',
+  'phaseDetail.reportRequiredNote': 'Απαιτείται αναφορά τουλάχιστον 20 χαρακτήρων πριν αυτός ο τελικός στόχος μπορέσει να σημειωθεί ως ολοκληρωμένος.',
+  'phaseDetail.reportOptionalNote': 'Συνιστάται μετά από κάθε εκδήλωση, ώστε το αρχείο να παραμένει σαφές για όποιον αναλάβει στη συνέχεια τη διαδικασία.',
+  'phaseDetail.uploadMaterials': 'Ανεβάστε φωτογραφίες και έγγραφα',
+  'phaseDetail.reportSave': 'Αποθήκευση αναφοράς',
+  'phaseDetail.reportSaving': 'Αποθήκευση…',
+  'phaseDetail.reportSaved': 'Η αναφορά αποθηκεύτηκε.',
+  'phaseDetail.reportSaveFailed': 'Δεν ήταν δυνατή η αποθήκευση της αναφοράς. Δοκιμάστε ξανά.',
 };
 
 const fi: Record<TranslationKey, string> = {
-  'nav.analogueTools': 'Analogiset työkalut', 'nav.aiChatbot': 'AI-chatbot', 'nav.scenarios': 'Skenaariot', 'nav.resources': 'Resurssit', 'nav.signUp': 'Rekisteröidy',
-  'home.analogueTools': 'Analogiset työkalut', 'home.analogueToolsText': 'Ohjatut osallistavat menetelmät suoraan hyväksytystä SPICE-lähdetaulukosta.', 'home.exploreAnalogueTools': 'Tutustu kaikkiin analogisiin työkaluihin', 'home.sourceDescriptionUnavailable': 'Tarkkaa kuvausta ei vielä ole lähdetaulukossa.', 'home.digitalTools': 'Digitaaliset työkalut', 'home.explorePlatform': 'Tutustu SPICE-alustaan', 'home.tool.methodologyText': 'Tutustu siihen, miten SPICE yhdistää toiminnan, osallistujien tiedon ja jäsennellyt tulokset.', 'home.tool.scenariosText': 'Tarkastele vaihtoehtoja, vertaa kompromisseja ja tue yhteistä suunnittelusuuntaa.',
-  'controls.label': 'SPICE-pikatoiminnot', 'controls.accessibility': 'Saavutettavuusasetukset', 'controls.chatbot': 'Avaa SPICE-avustaja', 'controls.scrollTop': 'Siirry sivun alkuun',
+  'nav.analogResources': 'Analogiset resurssit', 'nav.aiChatbot': 'AI-chatbot', 'nav.scenarios': 'Skenaariot', 'nav.resources': 'Resurssit', 'nav.signUp': 'Rekisteröidy',
+  'home.analogResources': 'Analogiset resurssit', 'home.analogResourcesText': 'Ohjatut osallistavat resurssit, jäsenneltynä SPICEn viiden tavoitteen mukaan, suoraan hyväksytystä SPICE-lähdetaulukosta.', 'home.exploreAnalogResources': 'Tutustu kaikkiin analogisiin resursseihin', 'home.sourceDescriptionUnavailable': 'Tarkkaa kuvausta ei vielä ole lähdetaulukossa.', 'home.digitalTools': 'Digitaaliset työkalut', 'home.explorePlatform': 'Tutustu SPICE-alustaan', 'home.tool.methodologyText': 'Tutustu siihen, miten SPICE yhdistää toiminnan, osallistujien tiedon ja jäsennellyt tulokset.', 'home.tool.scenariosText': 'Tarkastele vaihtoehtoja, vertaa kompromisseja ja tue yhteistä suunnittelusuuntaa.',
+  'controls.label': 'SPICE-pikatoiminnot', 'controls.accessibility': 'Saavutettavuusasetukset', 'controls.scrollTop': 'Siirry sivun alkuun',
   'common.loading': 'Ladataan...', 'common.saving': 'Tallennetaan...', 'common.save': 'Tallenna muutokset', 'common.cancel': 'Peruuta', 'common.close': 'Sulje', 'common.back': 'Takaisin', 'common.continue': 'Jatka', 'common.search': 'Haku', 'common.retry': 'Yritä uudelleen', 'common.signInRequired': 'Kirjautuminen vaaditaan', 'common.error': 'Jokin meni pieleen. Yritä uudelleen.', 'navigation.loading': 'Valittua sivua ladataan...', 'navigation.ready': 'Sivu on valmis', 'auth.requiredMessage': 'Kirjaudu sisään jatkaaksesi. Kirjautumisen jälkeen palaat valitsemallesi sivulle tai toimintoon.',
   'nav.coCreation': 'Yhteisluominen', 'nav.coCreationProcess': 'Yhteisluomisprosessi', 'nav.coCreationHub': 'Yhteisluomiskeskus', 'nav.coCreationGuide': 'Yhteisluomisopas', 'nav.tools': 'Työkalut', 'nav.citivoice': 'CitiVoice-sovellus', 'nav.sceneEditor': '3D-näkymäeditori', 'nav.forum': 'Keskustele ja päätä', 'nav.repository': 'Arkisto', 'nav.impact': 'Vaikutus', 'nav.methodology': 'Menetelmä', 'nav.glossary': 'Sanasto', 'nav.insights': 'Näkymät ja tulokset', 'nav.pilotSites': 'Pilottikohteet', 'nav.demoGuide': 'Demo ja käyttöopas', 'nav.account': 'Tili', 'nav.notifications': 'Ilmoitukset', 'nav.signIn': 'Kirjaudu', 'nav.signOut': 'Kirjaudu ulos', 'nav.getStarted': 'Rekisteröidy', 'nav.main': 'Päänavigointi', 'nav.mobile': 'Mobiilinavigointi', 'nav.toggleMenu': 'Avaa valikko',
   'language.label': 'Kieli', 'language.english': 'Englanti', 'language.greek': 'Kreikka', 'language.finnish': 'Suomi', 'language.polish': 'Puola', 'language.portuguese': 'Portugali',
-  'toolkit.title': 'Yhteisluomiskeskus', 'toolkit.subtitle': 'Digitaalinen työkalualusta', 'toolkit.activePilot': 'Aktiivinen pilotti', 'toolkit.feedbackOpen': 'Palaute avoinna - Vaihe 3', 'toolkit.overview': 'Yleiskatsaus', 'toolkit.setup': 'Määritä prosessini', 'toolkit.explore': 'Tutustu työkaluihin', 'toolkit.scenarios': 'Mahdolliset skenaariot', 'toolkit.myContributions': 'Omat osallistumiseni', 'toolkit.citivoiceMap': 'CitiVoice-kartta', 'toolkit.sceneEditor': '3D-yhteisluominen', 'toolkit.reports': 'Raportit ja vienti', 'toolkit.toolsOutputs': 'Työkalut ja tulokset', 'toolkit.manage': 'Hallinta', 'toolkit.help': 'Ohje', 'toolkit.viewNotifications': 'Näytä ilmoitukset', 'toolkit.noUnread': 'Ei lukemattomia ilmoituksia.', 'toolkit.unreadCount': 'Sinulla on {{count}} lukematonta ilmoitusta.', 'toolkit.keyboardHelp': 'Näppäimistöohje', 'toolkit.fontSize': 'Kirjasinkoko', 'toolkit.highContrast': 'Suuri kontrasti', 'toolkit.reducedMotion': 'Vähennetty liike', 'role.Citizen': 'Asukas', 'role.Facilitator': 'Ohjaaja', 'role.MunicipalityStaff': 'Kunta / pilottikoordinaattori', 'role.Researcher': 'Tutkija', 'role.Admin': 'Ylläpitäjä',
-  'auth.backHome': 'Takaisin etusivulle', 'auth.welcome': 'Tervetuloa', 'auth.subtitle': 'Anna tunnuksesi työtilaan pääsyä varten', 'auth.signIn': 'Kirjaudu', 'auth.register': 'Rekisteröidy', 'auth.email': 'Sähköpostiosoite', 'auth.password': 'Salasana', 'auth.fullName': 'Koko nimi', 'auth.pilotSite': 'Pilottikohde', 'auth.role': 'Rooli', 'auth.remember': 'Muista minut', 'auth.forgot': 'Unohditko salasanan?', 'auth.createAccount': 'Rekisteröidy', 'auth.termsPrefix': 'Hyväksyn', 'auth.terms': 'käyttöehdot', 'auth.and': 'ja', 'auth.privacy': 'tietosuojakäytännön', 'auth.signingIn': 'Kirjaudutaan...', 'auth.creating': 'Luodaan tiliä...', 'auth.demoTitle': 'Huomisen yhteisluomisprosessin mahdollistaja.', 'auth.demoText': 'Liity neljän pilottikohteen asukkaisiin muotoilemaan osallistavia julkisia tiloja.', 'auth.activeContributors': 'Aktiiviset osallistujat', 'auth.designs': 'Suunnitelmat', 'auth.municipalities': 'Yhteistyössä pilottikuntien kanssa',
+  'toolkit.title': 'Yhteisluomiskeskus', 'toolkit.subtitle': 'Digitaalinen työkalualusta', 'toolkit.activePilot': 'Aktiivinen pilotti', 'toolkit.feedbackOpen': 'Palaute avoinna - Vaihe 3', 'toolkit.overview': 'Yleiskatsaus', 'toolkit.setup': 'Määritä prosessini', 'toolkit.explore': 'Tutustu työkaluihin', 'toolkit.scenarios': 'Mahdolliset skenaariot', 'toolkit.myContributions': 'Omat osallistumiseni', 'toolkit.citivoiceMap': 'CitiVoice-kartta', 'toolkit.sceneEditor': '3D-yhteisluominen', 'toolkit.reports': 'Raportit ja vienti', 'toolkit.toolsOutputs': 'Työkalut ja tulokset', 'toolkit.manage': 'Hallinta', 'toolkit.help': 'Ohje', 'toolkit.viewNotifications': 'Näytä ilmoitukset', 'toolkit.noUnread': 'Ei lukemattomia ilmoituksia.', 'toolkit.unreadCount': 'Sinulla on {{count}} lukematonta ilmoitusta.', 'toolkit.keyboardHelp': 'Näppäimistöohje', 'toolkit.fontSize': 'Kirjasinkoko', 'toolkit.highContrast': 'Suuri kontrasti', 'toolkit.reducedMotion': 'Vähennetty liike', 'role.Citizen': 'Asukas', 'role.Facilitator': 'Ohjaaja', 'role.MunicipalityStaff': 'Kunta / pilottikoordinaattori', 
+  'auth.backHome': 'Takaisin etusivulle', 'auth.welcome': 'Tervetuloa', 'auth.subtitle': 'Anna tunnuksesi työtilaan pääsyä varten', 'auth.signIn': 'Kirjaudu', 'auth.register': 'Rekisteröidy', 'auth.email': 'Sähköpostiosoite', 'auth.password': 'Salasana', 'auth.fullName': 'Koko nimi', 'auth.pilotSite': 'Pilottikohde', 'auth.remember': 'Muista minut', 'auth.forgot': 'Unohditko salasanan?', 'auth.createAccount': 'Rekisteröidy', 'auth.termsPrefix': 'Hyväksyn', 'auth.terms': 'käyttöehdot', 'auth.and': 'ja', 'auth.privacy': 'tietosuojakäytännön', 'auth.signingIn': 'Kirjaudutaan...', 'auth.creating': 'Luodaan tiliä...', 'auth.demoTitle': 'Huomisen yhteisluomisprosessin mahdollistaja.', 'auth.demoText': 'Liity neljän pilottikohteen asukkaisiin muotoilemaan osallistavia julkisia tiloja.', 'auth.activeContributors': 'Aktiiviset osallistujat', 'auth.designs': 'Suunnitelmat', 'auth.municipalities': 'Yhteistyössä pilottikuntien kanssa',
   'home.heroTitle': 'Yhteisluo osallistava kaupunkisi', 'home.heroText': 'SPICE auttaa asukkaita ja suunnittelijoita luomaan yhdessä kestäviä, saavutettavia ja elinvoimaisia julkisia tiloja.', 'home.startCreating': 'Rekisteröidy', 'home.watchDemo': 'Katso demo', 'home.pilotSites': 'Pilottikohteet', 'home.pillars': 'Peruspilarimme', 'home.tools': 'Työkaluja kaikille', 'home.multilingual': 'Monikielinen tuki', 'home.multilingualHeading': 'Osallistava suunnittelultaan, monikielinen käytännössä.', 'home.multilingualText': 'SPICE on saatavilla viidellä eurooppalaisella kielellä, jotta jokainen voi ymmärtää, osallistua ja seurata tuloksia luottavaisesti.', 'home.exploreGlossary': 'Tutustu sanastoon', 'home.ready': 'Valmis muotoilemaan pilottisi tulevaisuutta?', 'home.readyText': 'Liity paikalliseen kaupunkisuunnitteluhankkeeseen ja tuo äänesi kuuluviin.', 'home.createAccount': 'Rekisteröidy', 'home.explorePilots': 'Tutustu pilottikohteisiin',
   'account.navigation': 'Navigointi', 'account.details': 'Käyttäjätiedot', 'account.security': 'Turvallisuus', 'account.privacy': 'Tietosuoja', 'account.manageTitle': 'Hallitse tiliäsi', 'account.manageText': 'Pidä profiili, yhteystiedot, kieli ja turvallisuusasetukset ajan tasalla.', 'account.edit': 'Muokkaa tietoja', 'account.email': 'Sähköpostiosoite', 'account.pilot': 'Pilotti', 'account.role': 'Käyttäjärooli', 'account.phone': 'Puhelin', 'account.context': 'Pilottikontekstisi', 'account.activeLocation': 'Aktiivinen projektipaikka: {{pilot}}', 'account.saved': 'Profiilisi päivitettiin onnistuneesti.', 'account.currentPassword': 'Nykyinen salasana', 'account.newPassword': 'Uusi salasana', 'account.visibility': 'Profiilin näkyvyys', 'account.analytics': 'Käyttöanalytiikka', 'account.recommendations': 'Henkilökohtaiset suositukset', 'account.export': 'Vie tietosi', 'account.download': 'Lataa tiedot',
   'notifications.title': 'Ilmoitukset', 'notifications.subtitle': 'Pysy ajan tasalla sinulle tärkeistä hankkeista ja osallistumisesta.', 'notifications.markAll': 'Merkitse kaikki luetuiksi', 'notifications.search': 'Hae ilmoituksia', 'notifications.all': 'Kaikki', 'notifications.unread': 'Lukemattomat', 'notifications.archived': 'Arkistoidut', 'notifications.empty': 'Tässä näkymässä ei ole ilmoituksia.', 'notifications.markRead': 'Merkitse luetuksi', 'notifications.markUnread': 'Merkitse lukemattomaksi', 'notifications.archive': 'Arkistoi',
@@ -3876,7 +4008,7 @@ const fi: Record<TranslationKey, string> = {
   'forum.phaseLabel': 'Vaihe {{number}} — {{phase}}', 'forum.phaseShort': 'Vaihe {{number}}', 'forum.voteFor': 'Äänestä tätä vaihtoehtoa', 'forum.linkedEvidence': 'Yhdistetty SPICE-tulos', 'forum.evolutionHistory': 'Ehdotuksen kehitys ja päätöshistoria',
   'forum.history.created': 'Luotu', 'forum.history.status_changed': 'Tila muuttui', 'forum.history.official_decision': 'Kunnan virallinen päätös',
   'forum.title': 'Keskustele ja päätä', 'forum.subtitle': 'Jaa ideoita, keskustele ehdotuksista, äänestä vaihtoehdoista ja seuraa, miten päätökset tehdään.', 'forum.submit': 'Lähetä ehdotus', 'forum.comments': 'Kommentit', 'forum.addComment': 'Lisää kommentti', 'forum.post': 'Julkaise kommentti', 'forum.signInPrompt': 'Kirjaudu sisään osallistuaksesi, kommentoidaksesi tai äänestääksesi.', 'forum.noResults': 'Mikään ehdotus ei vastaa suodattimia.', 'forum.clearFilters': 'Tyhjennä suodattimet', 'forum.officialResponse': 'Virallinen vastaus - Thessalonikin kunta',
-  'pilots.title': 'SPICE-pilottikohteet', 'pilots.subtitle': 'Neljä paikallista kontekstia, yksi yhteinen osallistavan yhteisluomisen tapa.', 'pilots.focus': 'Pilotin painopiste', 'pilots.openToolkit': 'Avaa liittyvät työkalut', 'demo.title': 'SPICE-demo ja käyttöopas', 'demo.subtitle': 'Katso alusta toiminnassa ja aloita oma yhteisluomisprosessisi oppaan avulla.', 'demo.videoFallback': 'Videota ei voitu ladata. Avaa se suoraan YouTubessa.', 'demo.openYoutube': 'Avaa YouTubessa', 'demo.guideTitle': 'Käyttöopas',
+  'pilots.title': 'SPICE-pilottikohteet', 'pilots.subtitle': 'Neljä paikallista kontekstia, yksi yhteinen osallistavan yhteisluomisen tapa.', 'pilots.focus': 'Pilotin painopiste', 'pilots.openToolkit': 'Avaa liittyvät työkalut', 'pilots.viewProposals': 'Näytä ehdotukset', 'pilots.viewResults': 'Näytä tulokset', 'pilots.locationTitle': 'Missä tämä pilotti sijaitsee', 'pilots.locationText': 'Interaktiivinen kartta keskitettynä pilottikohteeseen.', 'pilots.mapFrameTitle': 'Kartta: {{city}}', 'pilots.viewLargerMap': 'Näytä suurempi kartta', 'pilots.galleryTitle': 'Kuvia paikasta', 'pilots.galleryEmpty': 'Tämän pilotin kuvat lisätään tänne pian.', 'demo.title': 'SPICE-demo ja käyttöopas', 'demo.subtitle': 'Katso alusta toiminnassa ja aloita oma yhteisluomisprosessisi oppaan avulla.', 'demo.videoFallback': 'Videota ei voitu ladata. Avaa se suoraan YouTubessa.', 'demo.openYoutube': 'Avaa YouTubessa', 'demo.guideTitle': 'Käyttöopas',
   'footer.navigation': 'Navigointi', 'footer.other': 'Muut', 'footer.follow': 'Seuraa meitä', 'footer.funded': 'Euroopan unionin rahoittama', 'footer.disclaimer': 'Euroopan unionin rahoittama. Esitetyt näkemykset ovat tekijöiden omia eivätkä välttämättä vastaa EU:n tai CINEA:n näkemyksiä.', 'footer.rights': '©2026, Kehitys ja ylläpito DREVEN. Kaikki oikeudet pidätetään.', 'cookie.message': 'SPICE käyttää välttämättömiä evästeitä turvallisiin istuntoihin ja valinnaisia asetuksia kokemuksen parantamiseen.', 'cookie.accept': 'Hyväksy kaikki', 'cookie.manage': 'Hallitse asetuksia', 'cookie.reject': 'Hylkää ei-välttämättömät evästeet', 'cookie.read': 'Lue tietosuojakäytäntö',
   'cookie.title': 'Tietosuoja-asetuksesi', 'cookie.accountNotice': 'Voit hallita SPICE-evästeiden käyttöä milloin tahansa. Välttämättömät evästeet suojaavat tiliäsi; valinnaisia käytetään vain luvallasi.', 'cookie.viewPolicy': 'Näytä tietosuojakäytäntö', 'cookie.optionsTitle': 'Valitse valinnaiset evästeet', 'cookie.essential': 'Välttämättömät evästeet', 'cookie.essentialText': 'Tarvitaan turvalliseen kirjautumiseen, istuntoihin ja alustan perustoimintoihin.', 'cookie.alwaysOn': 'Aina käytössä', 'cookie.analytics': 'Käyttöanalytiikka', 'cookie.analyticsText': 'Auttaa meitä ymmärtämään käyttöä ja parantamaan alustaa.', 'cookie.personalization': 'Personointi', 'cookie.personalizationText': 'Muistaa valinnaiset asetukset ja tarjoaa olennaisia ehdotuksia.', 'cookie.save': 'Tallenna asetukset', 'cookie.accepted': 'Kaikki evästeasetukset on tallennettu.', 'cookie.rejected': 'Vain välttämättömät evästeet ovat nyt käytössä.', 'cookie.saved': 'Evästeasetuksesi on tallennettu.',
   'auth.signOutTitle': 'Kirjaudutaanko ulos SPICEstä?', 'auth.signOutMessage': 'Haluatko varmasti kirjautua ulos? Suojattujen työkalujen käyttö edellyttää uutta kirjautumista.', 'auth.signOutConfirm': 'Kirjaudu ulos', 'auth.signingOut': 'Kirjaudutaan ulos...',
@@ -3894,13 +4026,13 @@ const fi: Record<TranslationKey, string> = {
   'auth.confirmPasswordRequired': 'Vahvista salasanasi.',
   'auth.passwordMismatch': 'Salasanat eivät täsmää.',
   'auth.pilotPlaceholder': 'Valitse pilottisivusto',
-  'auth.rolePlaceholder': 'Valitse rooli',
+  
   'auth.pilotRequired': 'Valitse pilottisivusto.',
-  'auth.roleRequired': 'Valitse rooli.',
+  
   'auth.accountCreatedTitle': 'Tarkista sähköpostisi',
   'auth.accountCreated': 'Tilin luominen onnistui. Tarkista sähköpostisi vahvistaaksesi tilisi.',
-  'auth.accountPendingApproval': 'Tämä rooli vaatii myös järjestelmänvalvojan hyväksynnän ennen kuin sen käyttöoikeudet aktivoituvat. Voit kirjautua sisään heti, kun sähköpostiosoitteesi on vahvistettu, ja siihen asti kansalaistason käyttöoikeuksilla.',
-  'auth.roleRequiresApproval': 'Tämä rooli vaatii järjestelmänvalvojan hyväksynnän ennen kuin sen käyttöoikeudet aktivoituvat.',
+  
+  
   'hub.pendingApprovalNotice': 'Käyttöoikeutesi {{role}} odottaa järjestelmänvalvojan hyväksyntää. Sinulla on tällä hetkellä kansalaistason käyttöoikeudet.',
   'auth.previewVerification': 'Avaa paikallinen vahvistuksen esikatselu',
   'auth.goToSignIn': 'Siirry sisäänkirjautumiseen',
@@ -3917,13 +4049,13 @@ const fi: Record<TranslationKey, string> = {
   'home.country.poland': 'Puola',
   'home.country.portugal': 'Portugali',
   'home.pillar.accessibility': 'Esteettömyys',
-  'home.pillar.accessibilityText': 'Käytettävissä olevat, näppäimistöystävälliset käyttöliittymät kaikentasoisille käyttäjille.',
+  'home.pillar.accessibilityText': 'Jokainen SPICE-työkalu, analogisista työpajamalleista 3D-näyttämöeditoriin, toimii näppäimistöllä ja ruudunlukijalla viidellä kielellä, jotta yksikään asukas ei jää ulkopuolelle oman naapurustonsa muokkaamisesta.',
   'home.pillar.privacy': 'Tietosuoja ensin',
-  'home.pillar.privacyText': 'Turvallinen ja läpinäkyvä kansalaisten tilien ja maksujen käsittely.',
+  'home.pillar.privacyText': 'Kansalaisten, fasilitaattoreiden ja kuntien tilit pysyvät erillään roolin mukaan, jotta ihmiset voivat osallistua avoimesti Keskustele ja päätä -foorumilla paljastamatta enempää kuin haluavat.',
   'home.pillar.impact': 'Todellinen vaikutus',
-  'home.pillar.impactText': 'Suora kanava yhteisön panoksesta kunnan päätöksentekoon.',
+  'home.pillar.impactText': 'Työpajassa tai foorumilla esitetty idea seurataan Co-Creation Hubin kautta kunnan päätökseen ja julkaistaan Arkistossa, joten se ei koskaan katoa tapaamisen jälkeen.',
   'home.pillar.channel': 'Avaa kanava',
-  'home.pillar.channelText': 'Jaettu tila mielipiteille, ehdotuksille, suunnitelmille ja paikallisille tarinoille.',
+  'home.pillar.channelText': 'Yksi alusta kuljettaa keskustelun lähitapaamisista digitaaliseen foorumiin, 3D-näyttämöeditoriin ja tekoälychatbottiin, jotta jokainen ääni päätyy samaan yhteiseen tallenteeseen.',
   'home.tool.processText': 'Löydä pilottikohteita, osallistu avoimiin aktiviteetteihin ja hallitse matkaa yhdestä keskuskeskuksesta.',
   'home.tool.sceneText': 'Muokkaa, visualisoi ja vertaa julkisen tilan skenaarioita 3D-ympäristössä.',
   'home.tool.aiTitle': 'AI Chatbot',
@@ -3975,28 +4107,28 @@ const fi: Record<TranslationKey, string> = {
   'hub.dashboardIntroCitizen': 'Seuraa paikallista yhteisluontimatkaasi, osallistu avoimiin aktiviteetteihin ja tutustu julkaistuihin työkaluihin ja tuloksiin.',
   'hub.statCoCreationTools': 'Yhteisluonnin työkalut',
   'hub.statActivePilots': 'Aktiiviset pilotit',
-  'hub.statSelectedTools': 'Valitut työkalut',
+  
   'hub.statCitizenContributions': 'Kansalaisten lahjoitukset',
   'hub.statAvailableTools': 'Saatavilla olevat työkalut',
-  'hub.statMyContributions': 'Omat panokseni',
-  'hub.statOpenActivities': 'Avoimet toiminnot',
-  'hub.currentWorkspace': 'Pilotin nykyinen työtila',
-  'hub.workspaceSnapshot': 'Roolin vastuut ja ajantasainen työtilanne',
-  'hub.workspaceResponsibilityMunicipality': 'Kunta omistaa prosessin, hyväksyy julkiset toiminnot, tekee viralliset päätökset ja siirtää prosessin harkitusti seuraavaan vaiheeseen.',
+  
+  
+  
+  
+  
   'hub.workspaceResponsibilityFacilitator': 'Valmistelet ja toteutat osallistumistoiminnot, dokumentoit aineiston, moderoit osallistumista ja luovutat jäsennellyt tulokset kunnalle.',
-  'hub.workspaceResponsibilityCitizen': 'Voit osallistua julkaistuihin toimintoihin, keskustella ja äänestää ehdotuksista sekä seurata kunnan vastausta ja seuraavaa vaihetta.',
+  
   'hub.workspaceResponsibilityAdmin': 'Ylläpidät käyttöoikeuksia, tehtäviä, pilottien asetuksia, moderointia, integraatioita ja tarkastuslokia.',
-  'hub.roleHandoverExplanation': 'Työ säilyy jäljitettävänä roolien välillä. Odottavat luovutukset osoittavat, minkä roolin on toimittava seuraavaksi.',
-  'hub.statActivitiesReadyReview': 'Tarkistusta odottavat toiminnot',
-  'hub.statDraftActivities': 'Valmisteltavat toiminnot',
-  'hub.statParticipationClosed': 'Vaaditut yhteenvedot',
-  'hub.statCompletedActivities': 'Valmiit toiminnot',
-  'hub.statDecisionsPending': 'Päätöstä odottavat',
-  'hub.statVotingOpen': 'Avoimet äänestykset',
-  'hub.statResultsPublished': 'Julkaistut tulokset',
-  'hub.statActivities': 'Toiminnot',
-  'hub.statProposals': 'Ehdotukset',
-  'hub.statPendingHandovers': 'Odottavat luovutukset',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'hub.yourPilot': 'Oma pilottisi',
   'hub.managePilotSite': 'Hallinnoi pilottisivustoa',
   'hub.previewAsCitizen': 'Esikatsele kansalaisena',
@@ -4158,29 +4290,30 @@ const fi: Record<TranslationKey, string> = {
   'methodology.eyebrow': 'SPICE-menetelmät',
   'methodology.title': 'Yhteisluontimenetelmä osallistaviin julkisiin tiloihin',
   'methodology.subtitle': 'Järjestetty prosessi, joka auttaa pilotteja siirtymään yhteisymmärryksestä käytännön suunnitteluvaihtoehtoihin, palautteeseen, dokumentaatioon ja päätöksentekoon.',
+  'methodology.iterationLoop': 'Iterointisilmukka — nopea yhteisluominen ja prototyyppien tekeminen',
   'methodology.openGuide': 'Avaa yhteisluontiopas',
-  'methodology.phase1': 'Kehystys ja valmius',
-  'methodology.phase1Text': 'Määrittele paikallinen haaste, kartoita sidosryhmät, tarkista valmiudet ja valitse pilotille oikeat osallistumisasetukset.',
-  'methodology.phase2': 'Yhteinen ymmärrys',
-  'methodology.phase2Text': 'Kerä paikallistietoa karttojen, kävelyretkien, kyselyiden, työpajojen, kommenttien ja jaettujen havaintojen avulla.',
-  'methodology.phase3': 'Skenaarion yhteissuunnittelu',
-  'methodology.phase3Text': 'Muuta panostukset suunnitteluvaihtoehdoiksi, vertaa vaihtoehtoja ja keskustele kompromisseista kansalaisten ja suunnittelutiimien kanssa.',
-  'methodology.phase4': 'Päätösten tuki',
-  'methodology.phase4Text': 'Tee yhteenveto tuloksista, jaa todisteita, dokumentoi päätökset ja pidä yhteisö ajan tasalla osallistumisen jälkeen.',
-  'methodology.phase5': 'Konsolidoituminen ja oppiminen',
-  'methodology.phase5Text': 'Arvioi prosessi, muotoile vastuut, säilytä tulokset ja ota oppia tulevissa päätöksissä.',
-  'methodology.used': 'Kuinka menetelmää käytetään',
-  'methodology.used1': 'Se muuttaa laajat osallistumistavoitteet selkeäksi vaiheiden, työkalujen, toimintojen, tulosten ja päätöspisteiden sarjaksi.',
-  'methodology.used2': 'Kunnat ja ohjaajat voivat suunnitella työpajoja, valita sopivia työkaluja, asettaa odotuksia ja selittää, miksi jokainen toiminta on tärkeä.',
-  'methodology.used3': 'Työpajatulokset, CitiVoice-palaute, 3D-skenaariot ja arkiston asiakirjat pysyvät yhteydessä toimintojen välillä.',
-  'methodology.used4': 'Kansalaisten panoksesta tulee strukturoituja tuloksia kartoittamisen, klusteroinnin, äänestämisen, yhteenvetojen, raporttien ja seurantatoimien avulla.',
-  'methodology.evidence': 'Todistelähteet',
-  'methodology.toolkitDoc': 'Työkalupakkausdokumentti',
-  'methodology.toolkitDocText': 'SPICE Toolkit Method Guide v2.1',
-  'methodology.diagnostic': 'Pilotdiagnostiikka',
-  'methodology.diagnosticText': 'Thessalonikin pilotin diagnostiikkaraportti',
-  'methodology.repository': 'Arkiston konteksti',
-  'methodology.repositoryText': 'Työpajamuistiinpanot, julkinen palaute, kartat, viennit ja linkitetyt raportit',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'account.profileDetails': 'Profiilin tiedot',
   'account.profileText': 'Päivitä SPICE-tililläsi ja pilottityötilallasi käytetyt tiedot.',
   'account.fullName': 'Koko nimi',
@@ -4228,6 +4361,12 @@ const fi: Record<TranslationKey, string> = {
   'citivoice.points': 'Pisteet',
   'citivoice.clusters': 'Klusterit',
   'citivoice.topLocations': 'Suosituimmat paikat',
+  'citivoice.useCase': 'Käyttötapaus',
+  'citivoice.useCaseAll': 'Kaikki paikat (koko kaupunki)',
+  'citivoice.centeredOn': 'Keskitetty kohteeseen {{location}}',
+  'citivoice.contributionsForLocation': '{{count}} palautetta tästä paikasta',
+  'citivoice.topKeywords': 'Suosituimmat avainsanat tälle paikalle',
+  'citivoice.clearUseCase': 'Tyhjennä ja näytä kaikki paikat',
   'citivoice.engagement': 'Sitoutuminen ajan myötä',
   'citivoice.sentiment': 'Mielialan yhteenveto',
   'citivoice.concerns': 'Tärkeimmät huolenaiheet luokittain',
@@ -4427,66 +4566,72 @@ const fi: Record<TranslationKey, string> = {
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
   'role.Guest': 'Vieras',
   'role.PlatformAdministrator': 'Alustan järjestelmänvalvoja',
-  'journey.eyebrow': 'Roolityötila',
-  'journey.permissions': 'Toiminnot noudattavat tilisi käyttöoikeuksia',
-  'journey.step': 'Vaihe {{count}}',
-  'journey.current': 'Nykyinen vaihe',
-  'journey.citizen.title': 'Osallistumatkasi',
-  'journey.citizen.description': 'Ymmärrä, mikä on avointa, osallistu saavutettavassa muodossa ja seuraa, kuinka yhteisön panos vaikuttaa päätöksiin.',
-  'journey.citizen.1.title': 'Ymmärrä pilotti',
-  'journey.citizen.1.description': 'Tarkista nykyinen vaihe, osallistumisrajat ja mitä kunta pyytää yhteisöltä.',
-  'journey.citizen.1.action': 'Avaa pilottikonteksti',
-  'journey.citizen.2.title': 'Osallistu',
-  'journey.citizen.2.description': 'Liity pilottiisi linkitettyyn avoimiin aktiviteetteihin, keskusteluihin, äänestyksiin ja CitiVoice-palautteeseen.',
-  'journey.citizen.2.action': 'Näytä avoin keskustelu',
-  'journey.citizen.3.title': 'Tarkista, mikä muuttui',
-  'journey.citizen.3.description': 'Katso vastaukset, päivitetyt skenaariot ja osallistujien antamat todisteet.',
-  'journey.citizen.3.action': 'Tarkista tulokset',
-  'journey.citizen.4.title': 'Seuraa seuraavia ohjeita',
-  'journey.citizen.4.description': 'Ilmoitusten ja tietovaraston tulosteiden avulla voit seurata sitoumuksia yhden tapahtuman ulkopuolella.',
-  'journey.citizen.4.action': 'Avaa ilmoitukset',
-  'journey.facilitator.title': 'Hallinnointimatkasi',
-  'journey.facilitator.description': 'Tee kuntakehyksestä osallistavaa toimintaa, tue osallistumista ja dokumentoi uudelleenkäytettäviä todisteita.',
-  'journey.facilitator.1.title': 'Valmista istunto',
-  'journey.facilitator.1.description': 'Vahvista tavoite, odotettu tulos, osallistujien tarpeet, esteettömyystuki, ajoitus ja vastuut.',
-  'journey.facilitator.1.action': 'Tutustu menetelmiin',
-  'journey.facilitator.2.title': 'Määritä toiminnot',
-  'journey.facilitator.2.description': 'Valitse sopivat työkalut ja avoimet jäsennellyt toiminnot osoitettuun pilottiin ja vaiheeseen.',
-  'journey.facilitator.2.action': 'Avaa määritetty pilotti',
-  'journey.facilitator.3.title': 'Helpota ja tarkkaile',
-  'journey.facilitator.3.description': 'Suojaa tasapuolinen osallistuminen, tallenna aiotut ja odottamattomat löydöt ja pidä ryhmä yhteydessä tavoitteeseen.',
-  'journey.facilitator.3.action': 'Avaa työtila',
-  'journey.facilitator.4.title': 'Asiakirjan tulosteet',
-  'journey.facilitator.4.description': 'Lähetä työpajatietueet, odotetut tulokset ja oppitunnit kuntatarkastelua ja tulevia vaiheita varten.',
-  'journey.facilitator.4.action': 'Avaa arkisto',
-  'journey.municipality.title': 'Pilot-hallintamatkasi',
-  'journey.municipality.description': 'Aseta uskottavat osallistumisrajat, mahdollista toimitus, tarkista todisteet ja yhdistä tulokset muodollisiin päätöksiin.',
-  'journey.municipality.1.title': 'Kehitä prosessi',
-  'journey.municipality.1.description': 'Määrittele laajuus, ei-neuvoteltavat, osallistumistavoitteet, päätöksentekolinkit, resurssit ja vastuulliset ihmiset.',
-  'journey.municipality.1.action': 'Määritä prosessi',
-  'journey.municipality.2.title': 'Ota toimitus käyttöön',
-  'journey.municipality.2.description': 'Määritä fasilitaattori, valitse vaihetyökalut, määritä osallistuminen ja julkaise selkeät ohjeet.',
-  'journey.municipality.2.action': 'Hallitse keskitintä',
-  'journey.municipality.3.title': 'Tarkista ja vastaa',
-  'journey.municipality.3.description': 'Tarkista osallistujien panokset ja fasilitaattorin tuotokset, anna virallisia vastauksia ja selitä, mikä muuttui.',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'journey.municipality.3.action': 'Tarkista ehdotukset',
-  'journey.municipality.4.title': 'Päätä ja tue',
-  'journey.municipality.4.description': 'Julkaise päätökset, vastuut, hallintojärjestelyt ja siirrettävä oppiminen.',
-  'journey.municipality.4.action': 'Hallinnoi tulosteita',
-  'journey.admin.title': 'Alustasi hallinnointimatkasi',
-  'journey.admin.description': 'Pidä organisaatiot, roolit, pilotit, moderointi ja integraatiot luotettavina koko SPICE-ekosysteemissä.',
-  'journey.admin.1.title': 'Hyväksy käyttöoikeus',
-  'journey.admin.1.description': 'Tarkista henkilökunnan tilit ja varmista, että jokaisella käyttäjällä on työnsä edellyttämä vähimmäisrooli.',
-  'journey.admin.1.action': 'Hallinnoi käyttäjiä',
-  'journey.admin.2.title': 'Seuraa pilotteja',
-  'journey.admin.2.description': 'Tarkista pilottitilanne, pysähtyneet vaiheet ja organisaatioiden välisten tietojen laatu tekemättä kunnallisia päätöksiä.',
-  'journey.admin.2.action': 'Tarkista pilotit',
-  'journey.admin.3.title': 'Tue hallintoa',
-  'journey.admin.3.description': 'Tarkista moderointi, tietovaraston julkaisu ja tarkastustoiminta alustalla.',
-  'journey.admin.3.action': 'Avoin hallinto',
-  'journey.admin.4.title': 'Palveluiden ylläpito',
-  'journey.admin.4.description': 'Seuraa integraatioita ja alustaasetuksia säilyttäen samalla jäljitettävyyden ja vähiten oikeudet.',
-  'journey.admin.4.action': 'Tarkista integraatiot',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  'phase.1.objective': 'Kehystää ja arvioida valmiutta',
+  'phase.2.objective': 'Ymmärtää yhdessä yhteisön kanssa',
+  'phase.3.objective': 'Kuvitella skenaarioita ja ratkaisuja',
+  'phase.4.objective': 'Testata prototyyppien avulla',
+  'phase.5.objective': 'Vakiinnuttaa ja oppia',
   'phase.1.question': 'Olemmeko valmiita yhteissuunnitteluun ja millä ehdoilla?',
   'phase.1.outcome': 'Sovittu prosessikehys, joka kattaa osallistumistavoitteet, päätösrajat, asiaankuuluvat toimijat ja organisaatioehdot.',
   'phase.2.question': 'Miten eri toimijat ymmärtävät paikan ja sen haasteet?',
@@ -4497,6 +4642,47 @@ const fi: Record<TranslationKey, string> = {
   'phase.4.outcome': 'Situoitu näyttö, joka tukee ehdotettujen ratkaisujen tarkistamista, validointia, yhdistämistä tai hylkäämistä.',
   'phase.5.question': 'Mitä jää, kuka siitä huolehtii ja mitä opimme?',
   'phase.5.outcome': 'Sovitut seuraavat vaiheet, hallinto- tai hoitojärjestelyt, dokumentoitu oppiminen ja selkeä reitti tulevaan toimintaan.',
+  'phase.1.fullDescription': 'Määritä yhdessä prosessin edistäjän ja keskeisten sisäisten sidosryhmien kanssa olosuhteet, joissa osallistumisprosessi toimii. Tämä sisältää hankkeen laajuuden, sen rajoitteiden, käytettävissä olevien resurssien, virallisen päätöksenteon suhteen ja osallistujien todellisen vaikutusmahdollisuuden selkeyttämisen.',
+  'phase.1.actionsIntro': 'Vahvista laajuus, rajoitteet ja neuvottelemattomat elementit.',
+  'phase.1.action1': 'Selkeytä, mihin osallistujat voivat vaikuttaa, mikä jää prosessin ulkopuolelle ja miten tulokset yhdistyvät viralliseen suunnitteluun, muotoiluun ja toteutukseen.',
+  'phase.1.action2': 'Sovita yhteen prosessin edistäjän, kunnan toimijoiden ja muiden keskeisten sidosryhmien odotukset.',
+  'phase.1.action3': 'Arvioi käytettävissä olevat valmiudet, osaaminen ja resurssit sekä tunnista valmiuksien kehittämistarpeet.',
+  'phase.1.action4': 'Luo tai vahvista sidosryhmäkartta kiinnittäen erityistä huomiota ihmisiin ja ryhmiin, jotka muutoin saattaisivat jäädä ulkopuolelle.',
+  'phase.2.fullDescription': 'Kehitä jaettu ja moniääninen ymmärrys paikasta, sen toimijoista ja ratkaistavista haasteista ennen ratkaisuihin siirtymistä. Tämä tavoite yhdistää saatavilla olevan teknisen ja kontekstuaalisen tiedon paikalliseen tietoon, koettuihin kokemuksiin ja alueen erilaisiin tulkintoihin.',
+  'phase.2.action1': 'Kerää ja järjestä alueen ymmärtämiseen tarvittava kontekstitieto, mukaan lukien tilaan, ympäristöön, sosioekonomiaan ja kulttuuriin liittyvä tieto.',
+  'phase.2.action2': 'Osallista asukkaat, käyttäjät, viranomaiset, ammattilaiset ja muut asiaankuuluvat toimijat tulkitsemaan paikkaa eri näkökulmista.',
+  'phase.2.action3': 'Kerää paikallista ja kokemuksellista tietoa, mukaan lukien arkiset käytännöt, merkitykset, kiintymykset, täyttymättömät tarpeet ja ristiriitakohdat.',
+  'phase.2.action4': 'Tunnista ympäristölliset ja sosiaaliset vaikutukset, riippuvuudet ja haavoittuvuudet, jotka eivät välttämättä ole heti näkyvissä.',
+  'phase.2.action5': 'Käytä NEB-arvoja linsseinä kontekstin ymmärtämiseen ja käsittelyyn, ei kriteereinä ratkaisujen ennenaikaiseen arviointiin.',
+  'phase.2.action6': 'Kokoa havainnot rajalliseksi määräksi selkeästi muotoiltuja ja yhteisesti tunnustettuja haasteita.',
+  'phase.3.fullDescription': 'Muunna edellisessä tavoitteessa kehitetty jaettu ymmärrys joukoksi mahdollisia ja toivottavia tulevaisuuksia. Sen sijaan, että siirryttäisiin suoraan yhteen lopulliseen ratkaisuun, osallistujat tutkivat vaihtoehtoisia skenaarioita, konsepteja ja suunnittelusuuntia ja tekevät valintojensa perustelut näkyviksi.',
+  'phase.3.action1': 'Muotoile ensisijaiset haasteet uudelleen yhteisen suunnittelun ja kokeilun mahdollisuuksiksi.',
+  'phase.3.action2': 'Tuota useita skenaarioita, ideoita ja konsepteja ennen mahdollisten suuntien valitsemista tai yhdistämistä.',
+  'phase.3.action3': 'Tue erilaisen tiedon, kokemuksen ja asiantuntemuksen omaavien ihmisten osallistumista luovaan prosessiin.',
+  'phase.3.action4': 'Ota huomioon yhdessä osallisuus, esteettömyys, yhteiskäyttö, tilallinen laatu, identiteetti, kokemus ja ympäristön suorituskyky.',
+  'phase.3.action5': 'Tee näkyväksi eri ehdotusten taustalla olevat oletukset, arvot ja kompromissit.',
+  'phase.3.action6': 'Neuvottele kestävyyden, kauneuden ja yhteisöllisyyden välisistä suhteista sen sijaan, että oletettaisiin niiden mukautuvan automaattisesti.',
+  'phase.3.action7': 'Dokumentoi tehtyjen valintojen perusteet ja tunnista, mitkä elementit vaativat vielä lisätutkimusta tai testausta.',
+  'phase.4.fullDescription': 'Tee valituista ideoista riittävän konkreettisia, jotta niitä voidaan kokea, keskustella ja testata suhteessa todelliseen kontekstiin. Väliaikaiset käyttötavat, simulaatiot, mallit ja muut prototyyppimuodot mahdollistavat osallistujien ja hanketiimien tarkistaa oletuksia, havainnoida käytännön vaikutuksia ja parantaa ehdotuksia ennen lopullisia päätöksiä.',
+  'phase.4.action1': 'Valitse ideat, osat tai oletukset, jotka eniten kaipaavat testausta.',
+  'phase.4.action2': 'Muotoile selkeät testauskysymykset käytöstä, esteettömyydestä, kokemuksesta, toteutettavuudesta, ympäristövaikutuksista tai hallinnasta.',
+  'phase.4.action3': 'Kehitä väliaikaisia, matalan tarkkuuden tai palautuvia prototyyppejä suhteessa tutkittaviin kysymyksiin.',
+  'phase.4.action4': 'Mahdollista käyttäjien ja muiden asiaankuuluvien toimijoiden kokea ehdotukset ja vaikuttaa suoraan niiden muokkaamiseen.',
+  'phase.4.action5': 'Havainnoi sekä tarkoitettuja että tahattomia käyttötapoja, reaktioita ja käytännön seurauksia.',
+  'phase.4.action6': 'Kerää laadullista näyttöä, kuten havaintoja, tarinoita ja osallistujapalautetta, sekä kevyttä määrällistä näyttöä tarvittaessa.',
+  'phase.4.action7': 'Kirjaa, mitä opittiin, mitä pitää muuttaa ja miten ehdotusta on tarkistettu.',
+  'phase.4.action8': 'Viesti, miten palaute on vaikuttanut hankkeen kehitykseen.',
+  'phase.5.fullDescription': 'Muunna osallistumisprosessin tulokset vastuiksi, sitoumuksiksi ja toiminnan muodoiksi, jotka voivat jatkua yksittäisten tapahtumien tai hankkeen päättymisen jälkeenkin. Tämä tavoite yhdistää yhteissuunnittelun ja testauksen kautta kehitetyt ehdotukset hallintoon, hoivaan, politiikkaan, suunnitteluun ja pitkän aikavälin hallintaan, ja luo samalla tilaa pohtia opittua.',
+  'phase.5.actionsIntro': 'Hallinto- tai hoitoehdotus, joka perustuu:',
+  'phase.5.action1': 'Kokoa yhteen prosessin aikana syntyneet keskeiset ehdotukset, päätökset ja opit.',
+  'phase.5.action2': 'Selkeytä, mitkä tulokset voidaan toteuttaa, mitkä vaativat lisäkehitystä ja mitkä eivät voi edetä.',
+  'phase.5.action3': 'Tunnista toimijat, jotka vastaavat päätöksistä, toteutuksesta, ylläpidosta, ohjelmoinnista ja jatkuvasta yhteisön osallistumisesta.',
+  'phase.5.action4': 'Määritä mahdolliset hallinto- tai hoitojärjestelyt, mukaan lukien mahdollisuudet jaettuun vastuuseen ja itsehallintoon tarvittaessa.',
+  'phase.5.action5': 'Tunnista tulosten ylläpitämiseen tarvittavat valmiudet, resurssit, valtuutukset ja institutionaaliset edellytykset.',
+  'phase.5.action6': 'Yhdistä tulokset asiaankuuluviin politiikka-, suunnittelu-, muotoilu-, rahoitus- ja hallintaprosesseihin.',
+  'phase.5.action7': 'Pohdi osallistumisprosessin laatua, mukaan lukien ketkä osallistuivat, kenen näkökulmat vaikuttivat päätöksiin ja mitkä ryhmät jäivät aliedustetuiksi.',
+  'phase.5.action8': 'Dokumentoi ja viesti päätökset, sitoumukset ja seuraavat vaiheet, jotta osallistujat voivat seurata hankkeen etenemistä.',
+  'phase.5.action9': 'Säilytä prosessin kautta syntynyt oppiminen ja tee siitä siirrettävää tuleviin aloitteisiin.',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
   'privacy.languageLabel': 'Käytännön kieli',
@@ -4667,28 +4853,31 @@ const fi: Record<TranslationKey, string> = {
   'glossary.expandTerm': 'Näytä tiedot kohteelle {{term}}',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
-  'analogue.eyebrow': 'SPICE-osallistumismenetelmät',
-  'analogue.title': 'Analogiset työkalut',
-  'analogue.description': '{{count}} fasilitaattorin johtamaa menetelmää offline- ja hybridi-yhteisluomiseen sidosryhmien kartoittamisesta prototyyppien luomiseen.',
-  'analogue.searchPlaceholder': 'Hae työkalun, tavoitteen tai avainsanan mukaan',
-  'analogue.allModes': 'Kaikki tilat',
-  'analogue.allStatuses': 'Kaikki tilat',
-  'analogue.online': 'Verkossa',
-  'analogue.offline': 'Lähitoteutus',
-  'analogue.hybrid': 'Hybridi',
-  'analogue.formatted': 'Muotoiltu tulostusta varten',
-  'analogue.contentReady': 'Sisältö on valmis',
-  'analogue.gridView': 'Ruudukkonäkymä',
-  'analogue.listView': 'Luettelonäkymä',
-  'analogue.results': 'Löytyi {{count}} työkalua',
-  'analogue.phaseResults': '{{count}} työkalua',
-  'analogue.moreInformation': 'Lisätietoja',
-  'analogue.noResults': 'Ei hakuasi vastaavia työkaluja.',
-  'analogue.clearFilters': 'Tyhjennä suodattimet',
+  'resources.eyebrow': 'SPICE-osallistumismenetelmät',
+  'resources.title': 'Analogiset resurssit',
+  'resources.description': '{{count}} fasilitaattorin johtamaa menetelmää offline- ja hybridi-yhteisluomiseen, jäsenneltynä SPICEn viiden tavoitteen mukaan, sidosryhmien kartoittamisesta prototyyppien luomiseen.',
+  'resources.searchPlaceholder': 'Hae resurssin, tavoitteen tai avainsanan mukaan',
+  'resources.allModes': 'Kaikki tilat',
+  'resources.allStatuses': 'Kaikki tilat',
+  'resources.online': 'Verkossa',
+  'resources.offline': 'Lähitoteutus',
+  'resources.hybrid': 'Hybridi',
+  'resources.targetUsers.internal': 'Sisäinen tiimi',
+  'resources.targetUsers.public': 'Julkiset osallistujat',
+  'resources.formatted': 'Muotoiltu tulostusta varten',
+  'resources.contentReady': 'Sisältö on valmis',
+  'resources.gridView': 'Ruudukkonäkymä',
+  'resources.listView': 'Luettelonäkymä',
+  'resources.results': 'Löytyi {{count}} resurssia',
+  'resources.phaseResults': '{{count}} resurssia',
+  'resources.moreInformation': 'Lisätietoja',
+  'resources.objectiveNumber': 'Tavoite {{objective}}',
+  'resources.noResults': 'Ei hakuasi vastaavia resursseja.',
+  'resources.clearFilters': 'Tyhjennä suodattimet',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
-  'home.analoguePreviewCount': '{{visible}} esimerkkimenetelmää käyttäjältä {{total}} täydessä työkalupakkissa',
-  'toolDetail.back': 'Takaisin analogisiin työkaluihin',
+  'home.analogResourcesPreviewCount': '{{visible}} esimerkkiresurssia yhteensä {{total}}:sta koko alustalla',
+  'toolDetail.back': 'Takaisin analogisiin resursseihin',
   'toolDetail.phase': 'Vaihe {{phase}} | {{name}}',
   'toolDetail.inProcess': 'Kokeiluprosessissasi',
   'toolDetail.askAi': 'Kysy tekoälyoppaasta tästä työkalusta',
@@ -4711,6 +4900,8 @@ const fi: Record<TranslationKey, string> = {
   'toolDetail.groupSize': 'Ryhmän koko',
   'toolDetail.facilitatorRatio': 'Ohjelman suhde',
   'toolDetail.supplies': 'Tarvikkeita tarvitaan',
+  'toolDetail.targetUsers': 'Kohderyhmä',
+  'toolDetail.prerequisites': 'Edellytykset',
   'toolDetail.related': 'Aiheeseen liittyvät työkalut - {{phase}}',
   'toolDetail.defaultHowTo': 'Tarkista tarkoitus osallistujien kanssa, valmistele materiaalit, helpota toimintaa ja dokumentoi jaetut tulokset.',
   'toolDetail.defaultRequirements': 'Hyväksytyssä lähdetyökirjassa ei ole määritetty muita valmisteluvaatimuksia.',
@@ -4736,27 +4927,27 @@ const fi: Record<TranslationKey, string> = {
   'home.digitalEnablementTitle': 'Digitaalinen käyttöönotto',
   'home.digitalEnablementText': 'Teknologia tukee sitoutumista, todisteita ja pääsyä.',
   'home.ecosystemCaption': 'Analogiset ja digitaaliset työkalut tukevat osallistavaa osallistumista paikallisesta haasteesta yhteiseen päätökseen.',
-  'home.pathEyebrow': 'Selkeä polku SPICE:n läpi',
-  'home.pathTitle': 'Paikallisesta tavoitteesta yhteisiin tuloksiin',
-  'home.pathText': 'Kehittele tärkeät asiat, kokoa oikeat ihmiset ja työkalut yhteen ja muuta osallistumisesta hyödyllistä näyttöä ja toimintaa.',
-  'home.step1': 'Vaihe 1',
-  'home.step1Title': 'Määrittele tavoite',
-  'home.step1Text': 'Ymmärrä haaste, suunnittele pilotti, tunnista sidosryhmät ja aseta osallistumistavoitteet.',
-  'home.step1Item1': 'Paikallinen haaste',
-  'home.step1Item2': 'Kokeilukonteksti',
-  'home.step1Item3': 'Osallistumistavoitteet',
-  'home.step2': 'Vaihe 2',
-  'home.step2Title': 'Luo yhdessä SPICE:n kanssa',
-  'home.step2Text': 'Noudata menetelmiä ja yhdistä analogiset menetelmät, digitaaliset palvelut, harkinta ja tieto.',
-  'home.step2Item1': 'Menetelmät ja työkalut',
-  'home.step2Item2': 'Keskustelu ja äänestys',
-  'home.step2Item3': 'Jaetut resurssit',
-  'home.step3': 'Vaihe 3',
-  'home.step3Title': 'Luo tuloksia',
-  'home.step3Text': 'Tee yhteisön panoksesta ideoita, prioriteetteja, dokumentoituja tuloksia, raportteja ja tietoisempia päätöksiä.',
-  'home.step3Item1': 'Jaettu ymmärrys',
-  'home.step3Item2': 'Todisteet ja raportit',
-  'home.step3Item3': 'Toimintokykyiset prioriteetit',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'home.pilotSitesText': 'Tutustu neljään eurooppalaiseen pilottikontekstiin, joissa yhteisöt testaavat osallistavia lähestymistapoja julkisen tilan muokkaamiseen.',
   'home.pillarsText': 'Jaetut periaatteet, jotka pitävät jokaisen SPICE-toiminnan saatavilla, vastuullisena, osallistuvana ja yhteydessä todellisiin päätöksiin.',
   'home.digitalToolsText': 'Käytä SPICEn digitaalisia palveluita prosessin ohjaamiseen, paikallisen panoksen keräämiseen, tilaideoiden tutkimiseen ja kontekstuaaliseen tukeen.',
@@ -4802,16 +4993,13 @@ const fi: Record<TranslationKey, string> = {
   'common.activities.one': '{{count}} toimintaa',
   'common.activities.other': '{{count}} toimintaa',
   'setup.step1': 'Osallistumisprosessin määritys',
-  'setup.stepOfFour': 'Vaihe {{step}}/4 · Prosessin määritys',
+  'setup.stepOfThree': 'Vaihe {{step}}/3 · Prosessin määritys',
   'setup.progressLabel': 'Prosessin määrityksen edistyminen',
   'setup.progress.stage': 'Nykyvaihe',
   'setup.progress.objectives': 'Tavoitteet',
   'setup.progress.participation': 'Osallistuminen',
-  'setup.progress.practical': 'Käytännön järjestelyt',
   'setup.title': 'Määritä yhteiskehittämisprosessi',
   'setup.intro': 'Kerro pilotista, osallistumisen tavoitteista ja käytännön olosuhteista. Vastaustesi avulla SPICE mukauttaa yhteiskehittämisen polkua ja suosittelee sopivia työkaluja ja toimintoja.',
-  'setup.practicalTitle': 'Käytännön järjestelyt',
-  'setup.practicalText': 'Määritä saavutettavan ja realistisen osallistumisen käytännön ehdot.',
   'setup.back': 'Takaisin',
   'setup.continue': 'Jatka',
   'setup.reviewRecommendations': 'Tarkista suositukset',
@@ -4870,33 +5058,33 @@ const fi: Record<TranslationKey, string> = {
   'setup.objective.consolidation': 'Konsolidointi, hallinto ja oppiminen',
   'setup.objective.consolidationDesc': 'Tee tuloksista vastuuta, tuloksia, oppimista ja seuraavia vaiheita.',
   'setup.participationTitle': 'Määritä prosessiin osallistumisen taso',
-  'setup.participation.inform': 'Ilmoita ja selitä',
-  'setup.participation.informDesc': 'Käytä selkeitä materiaaleja auttaaksesi ihmisiä ymmärtämään projektia ja päätöksiä.',
-  'setup.participation.consult': 'Keskustele ja kerää palautetta',
-  'setup.participation.consultDesc': 'Pyydä kansalaisia ​​ja sidosryhmiä kommentoimaan, äänestämään, kartoittamaan tai vastaamaan.',
-  'setup.participation.cocreate': 'Luo yhdessä osallistujien kanssa',
-  'setup.participation.cocreateDesc': 'Työskentele yhdessä ideoiden, skenaarioiden, prioriteettien ja tulevien toimien parissa.',
+  'setup.participation.consult': 'Kuuleminen',
+  'setup.participation.consultDesc': 'Kansalaiset ja sidosryhmät jakavat tarpeita, näkemyksiä, toiveita tai palautetta, joka ohjaa prosessia — lopullinen päätös pysyy prosessin edistäjällä.',
+  'setup.participation.codevelop': 'Yhteiskehittäminen',
+  'setup.participation.codevelopDesc': 'Kansalaiset, sidosryhmät, asiantuntijat ja instituutiot työskentelevät yhdessä tulkitakseen haasteita, tuottaakseen ideoita ja kehittääkseen skenaarioita — vahvempi, jaettu vaikutusvalta institutionaalisten rajoitteiden puitteissa.',
+  'setup.participation.selfgovern': 'Itsehallinto',
+  'setup.participation.selfgovernDesc': 'Yhteisöt tai paikalliset toimijat ottavat pysyvän roolin toimien käynnistämisessä, hallinnoinnissa tai mukauttamisessa ajan myötä — omistajuutta, hoivaa ja pitkän aikavälin hallintoa.',
   'setup.goalTitle': 'Määritä osallistuvan prosessin tavoite',
   'setup.goal.physical': 'Sivuston fyysinen puuttuminen',
   'setup.goal.intangible': 'Aineettomat tulokset, tapahtumat tai yhteisöorganisaatio',
   'setup.goal.undefined': 'Ei vielä määritetty',
-  'setup.groupSize': 'Ryhmän koko',
+  
   'setup.duration': 'Kesto',
-  'setup.facilitation': 'Helpottaminen',
+  
   'setup.mode': 'Tila',
-  'setup.group.lt10': 'Alle 10 henkilöä',
-  'setup.group.10to25': '10–25 henkilöä',
-  'setup.group.25to50': '25–50 henkilöä',
-  'setup.group.50plus': 'Yli 50 henkilöä',
-  'setup.duration.lt5': 'Alle 5 minuuttia',
-  'setup.duration.5to30': '5–30 minuuttia',
-  'setup.duration.30to120': '30 minuuttia – 2 tuntia',
-  'setup.duration.halfDay': 'Puoli päivää',
-  'setup.duration.fullDay': 'Koko päivä',
-  'setup.duration.multiDay': 'Useita päiviä',
-  'setup.facilitator.one': '1 henkilö',
-  'setup.facilitator.twoThree': '2–3 henkilöä',
-  'setup.facilitator.fourPlus': '4 henkilöä tai enemmän',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'setup.additionalFilters': 'Lisäsuodattimet',
   'setup.selectionsTitle': 'Valintasi',
   'setup.selectionsEmpty': 'Valintasi näkyvät tässä.',
@@ -5209,7 +5397,7 @@ const fi: Record<TranslationKey, string> = {
   'hub.phaseNotStarted': 'Tämä pilottisivusto ei ole vielä aloittanut nykyistä vaihettaan.',
   'hub.toolsEnabledForPhase': 'Työkalut käytössä tässä vaiheessa',
   'hub.preparePhaseActivities': 'Valmista vaiheen toiminnot',
-  'hub.uploadWorkshopOutput': 'Lähetä työpajan tulos arkistoon',
+  'hub.uploadWorkshopOutput': 'Kirjoita vaiheraportti',
   'hub.prepareDraftProposal': 'Valmista ehdotusluonnos',
   'hub.loadingPilot': 'Ladataan pilottisivustoasi…',
   'hub.noPilotAssigned': 'Kokeilupaikkaa ei ole määritetty',
@@ -5541,14 +5729,14 @@ const fi: Record<TranslationKey, string> = {
   'glossary.results.few': '{{visible}}/{{total}} sanaston termiä',
   'glossary.results.many': '{{visible}}/{{total}} sanaston termiä',
   'glossary.results.other': '{{visible}}/{{total}} sanaston termiä',
-  'analogue.results.one': '{{count}} työkalu löytyi',
-  'analogue.results.few': 'Löytyi {{count}} työkalua',
-  'analogue.results.many': 'Löytyi {{count}} työkalua',
-  'analogue.results.other': 'Löytyi {{count}} työkalua',
-  'analogue.phaseResults.one': '{{count}} työkalu',
-  'analogue.phaseResults.few': '{{count}} työkalua',
-  'analogue.phaseResults.many': '{{count}} työkalua',
-  'analogue.phaseResults.other': '{{count}} työkalua',
+  'resources.results.one': '{{count}} resurssi löytyi',
+  'resources.results.few': 'Löytyi {{count}} resurssia',
+  'resources.results.many': 'Löytyi {{count}} resurssia',
+  'resources.results.other': 'Löytyi {{count}} resurssia',
+  'resources.phaseResults.one': '{{count}} resurssi',
+  'resources.phaseResults.few': '{{count}} resurssia',
+  'resources.phaseResults.many': '{{count}} resurssia',
+  'resources.phaseResults.other': '{{count}} resurssia',
   'chatbot.collections.one': '{{count}} kokoelma',
   'chatbot.collections.few': '{{count}} kokoelmaa',
   'chatbot.collections.many': '{{count}} kokoelmaa',
@@ -5705,17 +5893,27 @@ const fi: Record<TranslationKey, string> = {
   'phaseDetail.supportContact': 'Tukiyhteys',
   'phaseDetail.selectedTools': 'Toiminnassa käytettävät työkalut',
   'phaseDetail.publishedInstructionDetails': 'Toimintaohjeet ja käytännön tiedot',
+  'phaseDetail.reportTitle': 'Tavoitteen yhteenvetoraportti',
+  'phaseDetail.reportHelp': 'Kirjaa tähän jokaisen tapahtuman jälkeen, mitä tapahtui: prosessi, osallistujat, tärkeimmät tulokset, kriittiset havainnot ja opit. Julkaisun jälkeen tästä tulee osallistujien ja kunnan kanssa jaettu tallenne.',
+  'phaseDetail.reportPlaceholder': 'Tiivistä prosessi, osallistuminen, tärkeimmät tulokset ja opit…',
+  'phaseDetail.reportRequiredNote': 'Vähintään 20 merkin raportti vaaditaan, ennen kuin tämä viimeinen tavoite voidaan merkitä valmiiksi.',
+  'phaseDetail.reportOptionalNote': 'Suositellaan jokaisen tapahtuman jälkeen, jotta tallenne pysyy selkeänä seuraavalle prosessin jatkajalle.',
+  'phaseDetail.uploadMaterials': 'Lataa kuvia ja asiakirjoja',
+  'phaseDetail.reportSave': 'Tallenna raportti',
+  'phaseDetail.reportSaving': 'Tallennetaan…',
+  'phaseDetail.reportSaved': 'Raportti tallennettu.',
+  'phaseDetail.reportSaveFailed': 'Raporttia ei voitu tallentaa. Yritä uudelleen.',
 };
 
 const pl: Record<TranslationKey, string> = {
-  'nav.analogueTools': 'Narzędzia analogowe', 'nav.aiChatbot': 'Chatbot AI', 'nav.scenarios': 'Scenariusze', 'nav.resources': 'Zasoby', 'nav.signUp': 'Zarejestruj się',
-  'home.analogueTools': 'Narzędzia analogowe', 'home.analogueToolsText': 'Facylitowane metody partycypacyjne wybrane bezpośrednio z zatwierdzonego pliku źródłowego SPICE.', 'home.exploreAnalogueTools': 'Poznaj wszystkie narzędzia analogowe', 'home.sourceDescriptionUnavailable': 'Szczegółowy opis nie jest jeszcze dostępny w pliku źródłowym.', 'home.digitalTools': 'Narzędzia cyfrowe', 'home.explorePlatform': 'Poznaj platformę SPICE', 'home.tool.methodologyText': 'Zobacz, jak metody SPICE łączą działania, głos mieszkańców i uporządkowane wyniki.', 'home.tool.scenariosText': 'Przeglądaj warianty, porównuj kompromisy i wspieraj wspólny kierunek projektu.',
-  'controls.label': 'Szybkie opcje SPICE', 'controls.accessibility': 'Ustawienia dostępności', 'controls.chatbot': 'Otwórz asystenta SPICE', 'controls.scrollTop': 'Przewiń na górę',
+  'nav.analogResources': 'Zasoby analogowe', 'nav.aiChatbot': 'Chatbot AI', 'nav.scenarios': 'Scenariusze', 'nav.resources': 'Zasoby', 'nav.signUp': 'Zarejestruj się',
+  'home.analogResources': 'Zasoby analogowe', 'home.analogResourcesText': 'Facylitowane zasoby partycypacyjne, uporządkowane według pięciu celów SPICE, wybrane bezpośrednio z zatwierdzonego pliku źródłowego SPICE.', 'home.exploreAnalogResources': 'Poznaj wszystkie zasoby analogowe', 'home.sourceDescriptionUnavailable': 'Szczegółowy opis nie jest jeszcze dostępny w pliku źródłowym.', 'home.digitalTools': 'Narzędzia cyfrowe', 'home.explorePlatform': 'Poznaj platformę SPICE', 'home.tool.methodologyText': 'Zobacz, jak metody SPICE łączą działania, głos mieszkańców i uporządkowane wyniki.', 'home.tool.scenariosText': 'Przeglądaj warianty, porównuj kompromisy i wspieraj wspólny kierunek projektu.',
+  'controls.label': 'Szybkie opcje SPICE', 'controls.accessibility': 'Ustawienia dostępności', 'controls.scrollTop': 'Przewiń na górę',
   'common.loading': 'Ładowanie...', 'common.saving': 'Zapisywanie...', 'common.save': 'Zapisz zmiany', 'common.cancel': 'Anuluj', 'common.close': 'Zamknij', 'common.back': 'Wstecz', 'common.continue': 'Kontynuuj', 'common.search': 'Szukaj', 'common.retry': 'Spróbuj ponownie', 'common.signInRequired': 'Wymagane logowanie', 'common.error': 'Coś poszło nie tak. Spróbuj ponownie.', 'navigation.loading': 'Ładowanie wybranej strony...', 'navigation.ready': 'Strona jest gotowa', 'auth.requiredMessage': 'Zaloguj się, aby kontynuować. Po zalogowaniu wrócisz do wybranej strony lub czynności.',
   'nav.coCreation': 'Współtworzenie', 'nav.coCreationProcess': 'Proces współtworzenia', 'nav.coCreationHub': 'Centrum współtworzenia', 'nav.coCreationGuide': 'Przewodnik współtworzenia', 'nav.tools': 'Narzędzia', 'nav.citivoice': 'Aplikacja CitiVoice', 'nav.sceneEditor': 'Edytor scen 3D', 'nav.forum': 'Dyskutuj i decyduj', 'nav.repository': 'Repozytorium', 'nav.impact': 'Wpływ', 'nav.methodology': 'Metodyka', 'nav.glossary': 'Słownik', 'nav.insights': 'Analizy i wyniki', 'nav.pilotSites': 'Lokalizacje pilotażowe', 'nav.demoGuide': 'Demo i przewodnik', 'nav.account': 'Konto', 'nav.notifications': 'Powiadomienia', 'nav.signIn': 'Zaloguj się', 'nav.signOut': 'Wyloguj się', 'nav.getStarted': 'Zarejestruj się', 'nav.main': 'Nawigacja główna', 'nav.mobile': 'Nawigacja mobilna', 'nav.toggleMenu': 'Przełącz menu',
   'language.label': 'Język', 'language.english': 'Angielski', 'language.greek': 'Grecki', 'language.finnish': 'Fiński', 'language.polish': 'Polski', 'language.portuguese': 'Portugalski',
-  'toolkit.title': 'Centrum współtworzenia', 'toolkit.subtitle': 'Platforma narzędzi cyfrowych', 'toolkit.activePilot': 'Aktywny pilotaż', 'toolkit.feedbackOpen': 'Opinie otwarte - Etap 3', 'toolkit.overview': 'Przegląd', 'toolkit.setup': 'Skonfiguruj mój proces', 'toolkit.explore': 'Poznaj narzędzia', 'toolkit.scenarios': 'Możliwe scenariusze', 'toolkit.myContributions': 'Moje działania', 'toolkit.citivoiceMap': 'Mapa CitiVoice', 'toolkit.sceneEditor': 'Współtworzenie 3D', 'toolkit.reports': 'Raporty i eksport', 'toolkit.toolsOutputs': 'Narzędzia i wyniki', 'toolkit.manage': 'Zarządzanie', 'toolkit.help': 'Pomoc', 'toolkit.viewNotifications': 'Zobacz powiadomienia', 'toolkit.noUnread': 'Brak nieprzeczytanych powiadomień.', 'toolkit.unreadCount': 'Masz {{count}} nieprzeczytanych powiadomień.', 'toolkit.keyboardHelp': 'Pomoc klawiatury', 'toolkit.fontSize': 'Rozmiar tekstu', 'toolkit.highContrast': 'Wysoki kontrast', 'toolkit.reducedMotion': 'Ograniczony ruch', 'role.Citizen': 'Mieszkaniec', 'role.Facilitator': 'Facylitator', 'role.MunicipalityStaff': 'Gmina / Koordynator pilotażu', 'role.Researcher': 'Badacz', 'role.Admin': 'Administrator',
-  'auth.backHome': 'Powrót do strony głównej', 'auth.welcome': 'Witamy', 'auth.subtitle': 'Wprowadź dane, aby uzyskać dostęp do obszaru roboczego', 'auth.signIn': 'Zaloguj się', 'auth.register': 'Zarejestruj się', 'auth.email': 'Adres e-mail', 'auth.password': 'Hasło', 'auth.fullName': 'Imię i nazwisko', 'auth.pilotSite': 'Lokalizacja pilotażowa', 'auth.role': 'Rola', 'auth.remember': 'Zapamiętaj mnie', 'auth.forgot': 'Nie pamiętasz hasła?', 'auth.createAccount': 'Zarejestruj się', 'auth.termsPrefix': 'Akceptuję', 'auth.terms': 'Warunki użytkowania', 'auth.and': 'oraz', 'auth.privacy': 'Politykę prywatności', 'auth.signingIn': 'Logowanie...', 'auth.creating': 'Tworzenie konta...', 'auth.demoTitle': 'Umożliwiamy proces współtworzenia jutra.', 'auth.demoText': 'Dołącz do mieszkańców czterech lokalizacji pilotażowych i kształtuj inkluzywne przestrzenie publiczne.', 'auth.activeContributors': 'Aktywni uczestnicy', 'auth.designs': 'Projekty', 'auth.municipalities': 'We współpracy z gminami pilotażowymi',
+  'toolkit.title': 'Centrum współtworzenia', 'toolkit.subtitle': 'Platforma narzędzi cyfrowych', 'toolkit.activePilot': 'Aktywny pilotaż', 'toolkit.feedbackOpen': 'Opinie otwarte - Etap 3', 'toolkit.overview': 'Przegląd', 'toolkit.setup': 'Skonfiguruj mój proces', 'toolkit.explore': 'Poznaj narzędzia', 'toolkit.scenarios': 'Możliwe scenariusze', 'toolkit.myContributions': 'Moje działania', 'toolkit.citivoiceMap': 'Mapa CitiVoice', 'toolkit.sceneEditor': 'Współtworzenie 3D', 'toolkit.reports': 'Raporty i eksport', 'toolkit.toolsOutputs': 'Narzędzia i wyniki', 'toolkit.manage': 'Zarządzanie', 'toolkit.help': 'Pomoc', 'toolkit.viewNotifications': 'Zobacz powiadomienia', 'toolkit.noUnread': 'Brak nieprzeczytanych powiadomień.', 'toolkit.unreadCount': 'Masz {{count}} nieprzeczytanych powiadomień.', 'toolkit.keyboardHelp': 'Pomoc klawiatury', 'toolkit.fontSize': 'Rozmiar tekstu', 'toolkit.highContrast': 'Wysoki kontrast', 'toolkit.reducedMotion': 'Ograniczony ruch', 'role.Citizen': 'Mieszkaniec', 'role.Facilitator': 'Facylitator', 'role.MunicipalityStaff': 'Gmina / Koordynator pilotażu', 
+  'auth.backHome': 'Powrót do strony głównej', 'auth.welcome': 'Witamy', 'auth.subtitle': 'Wprowadź dane, aby uzyskać dostęp do obszaru roboczego', 'auth.signIn': 'Zaloguj się', 'auth.register': 'Zarejestruj się', 'auth.email': 'Adres e-mail', 'auth.password': 'Hasło', 'auth.fullName': 'Imię i nazwisko', 'auth.pilotSite': 'Lokalizacja pilotażowa', 'auth.remember': 'Zapamiętaj mnie', 'auth.forgot': 'Nie pamiętasz hasła?', 'auth.createAccount': 'Zarejestruj się', 'auth.termsPrefix': 'Akceptuję', 'auth.terms': 'Warunki użytkowania', 'auth.and': 'oraz', 'auth.privacy': 'Politykę prywatności', 'auth.signingIn': 'Logowanie...', 'auth.creating': 'Tworzenie konta...', 'auth.demoTitle': 'Umożliwiamy proces współtworzenia jutra.', 'auth.demoText': 'Dołącz do mieszkańców czterech lokalizacji pilotażowych i kształtuj inkluzywne przestrzenie publiczne.', 'auth.activeContributors': 'Aktywni uczestnicy', 'auth.designs': 'Projekty', 'auth.municipalities': 'We współpracy z gminami pilotażowymi',
   'home.heroTitle': 'Współtwórz swoje inkluzywne miasto', 'home.heroText': 'SPICE umożliwia mieszkańcom i planistom wspólne projektowanie odpornych, dostępnych i tętniących życiem przestrzeni publicznych.', 'home.startCreating': 'Zarejestruj się', 'home.watchDemo': 'Obejrzyj demo', 'home.pilotSites': 'Lokalizacje pilotażowe', 'home.pillars': 'Nasze filary', 'home.tools': 'Narzędzia dla wszystkich', 'home.multilingual': 'Wsparcie wielojęzyczne', 'home.multilingualHeading': 'Inkluzywny z założenia, wielojęzyczny w praktyce.', 'home.multilingualText': 'SPICE jest dostępny w pięciu językach europejskich, aby każdy mógł rozumieć, uczestniczyć i śledzić wyniki.', 'home.exploreGlossary': 'Otwórz słownik', 'home.ready': 'Gotowi kształtować przyszłość pilotażu?', 'home.readyText': 'Dołącz do lokalnego projektu miejskiego i zabierz głos.', 'home.createAccount': 'Zarejestruj się', 'home.explorePilots': 'Poznaj lokalizacje pilotażowe',
   'account.navigation': 'Nawigacja', 'account.details': 'Dane użytkownika', 'account.security': 'Bezpieczeństwo', 'account.privacy': 'Prywatność', 'account.manageTitle': 'Zarządzaj kontem', 'account.manageText': 'Aktualizuj profil, dane kontaktowe, język i ustawienia bezpieczeństwa.', 'account.edit': 'Edytuj dane', 'account.email': 'Adres e-mail', 'account.pilot': 'Pilotaż', 'account.role': 'Rola użytkownika', 'account.phone': 'Telefon', 'account.context': 'Twój kontekst pilotażowy', 'account.activeLocation': 'Aktywna lokalizacja projektu: {{pilot}}', 'account.saved': 'Profil został zaktualizowany.', 'account.currentPassword': 'Obecne hasło', 'account.newPassword': 'Nowe hasło', 'account.visibility': 'Widoczność profilu', 'account.analytics': 'Analityka użytkowania', 'account.recommendations': 'Spersonalizowane rekomendacje', 'account.export': 'Eksportuj dane', 'account.download': 'Pobierz dane',
   'notifications.title': 'Powiadomienia', 'notifications.subtitle': 'Bądź na bieżąco z ważnymi projektami i aktywnościami.', 'notifications.markAll': 'Oznacz wszystkie jako przeczytane', 'notifications.search': 'Szukaj powiadomień', 'notifications.all': 'Wszystkie', 'notifications.unread': 'Nieprzeczytane', 'notifications.archived': 'Zarchiwizowane', 'notifications.empty': 'Brak powiadomień w tym widoku.', 'notifications.markRead': 'Oznacz jako przeczytane', 'notifications.markUnread': 'Oznacz jako nieprzeczytane', 'notifications.archive': 'Archiwizuj',
@@ -5736,7 +5934,7 @@ const pl: Record<TranslationKey, string> = {
   'forum.phaseLabel': 'Faza {{number}} — {{phase}}', 'forum.phaseShort': 'Faza {{number}}', 'forum.voteFor': 'Zagłosuj na tę opcję', 'forum.linkedEvidence': 'Powiązany wynik SPICE', 'forum.evolutionHistory': 'Rozwój propozycji i historia decyzji',
   'forum.history.created': 'Utworzono', 'forum.history.status_changed': 'Zmieniono status', 'forum.history.official_decision': 'Oficjalna decyzja gminy',
   'forum.title': 'Dyskutuj i decyduj', 'forum.subtitle': 'Dziel się pomysłami, omawiaj propozycje, głosuj na alternatywy i śledź sposób podejmowania decyzji.', 'forum.submit': 'Dodaj propozycję', 'forum.comments': 'Komentarze', 'forum.addComment': 'Dodaj komentarz', 'forum.post': 'Opublikuj komentarz', 'forum.signInPrompt': 'Zaloguj się, aby dodawać treści, komentować lub głosować.', 'forum.noResults': 'Brak propozycji pasujących do filtrów.', 'forum.clearFilters': 'Wyczyść filtry', 'forum.officialResponse': 'Oficjalna odpowiedź - Gmina Saloniki',
-  'pilots.title': 'Lokalizacje pilotażowe SPICE', 'pilots.subtitle': 'Cztery lokalne konteksty, jedno wspólne podejście do inkluzywnego współtworzenia.', 'pilots.focus': 'Zakres pilotażu', 'pilots.openToolkit': 'Otwórz powiązane narzędzia', 'demo.title': 'Demo i przewodnik SPICE', 'demo.subtitle': 'Zobacz platformę w działaniu i rozpocznij własny proces współtworzenia.', 'demo.videoFallback': 'Nie udało się załadować filmu. Otwórz go bezpośrednio w YouTube.', 'demo.openYoutube': 'Otwórz w YouTube', 'demo.guideTitle': 'Przewodnik użytkownika',
+  'pilots.title': 'Lokalizacje pilotażowe SPICE', 'pilots.subtitle': 'Cztery lokalne konteksty, jedno wspólne podejście do inkluzywnego współtworzenia.', 'pilots.focus': 'Zakres pilotażu', 'pilots.openToolkit': 'Otwórz powiązane narzędzia', 'pilots.viewProposals': 'Zobacz propozycje', 'pilots.viewResults': 'Zobacz wyniki', 'pilots.locationTitle': 'Gdzie odbywa się ten pilotaż', 'pilots.locationText': 'Interaktywna mapa wyśrodkowana na lokalizacji pilotażu.', 'pilots.mapFrameTitle': 'Mapa: {{city}}', 'pilots.viewLargerMap': 'Zobacz większą mapę', 'pilots.galleryTitle': 'Zdjęcia miejsca', 'pilots.galleryEmpty': 'Zdjęcia z tego pilotażu zostaną wkrótce dodane.', 'demo.title': 'Demo i przewodnik SPICE', 'demo.subtitle': 'Zobacz platformę w działaniu i rozpocznij własny proces współtworzenia.', 'demo.videoFallback': 'Nie udało się załadować filmu. Otwórz go bezpośrednio w YouTube.', 'demo.openYoutube': 'Otwórz w YouTube', 'demo.guideTitle': 'Przewodnik użytkownika',
   'footer.navigation': 'Nawigacja', 'footer.other': 'Inne', 'footer.follow': 'Obserwuj nas', 'footer.funded': 'Finansowane przez Unię Europejską', 'footer.disclaimer': 'Finansowane przez Unię Europejską. Wyrażone poglądy należą do autorów i nie muszą odzwierciedlać stanowiska UE ani CINEA.', 'footer.rights': '©2026, Opracowanie i hosting: DREVEN. Wszelkie prawa zastrzeżone.', 'cookie.message': 'SPICE używa niezbędnych plików cookie do bezpiecznych sesji oraz opcjonalnych preferencji.', 'cookie.accept': 'Akceptuj wszystkie', 'cookie.manage': 'Zarządzaj preferencjami', 'cookie.reject': 'Odrzuć opcjonalne pliki cookie', 'cookie.read': 'Przeczytaj Politykę prywatności',
   'cookie.title': 'Twoje ustawienia prywatności', 'cookie.accountNotice': 'W każdej chwili możesz kontrolować sposób używania plików cookie przez SPICE. Niezbędne pliki chronią konto; opcjonalne są używane tylko za Twoją zgodą.', 'cookie.viewPolicy': 'Wyświetl Politykę prywatności', 'cookie.optionsTitle': 'Wybierz opcjonalne pliki cookie', 'cookie.essential': 'Niezbędne pliki cookie', 'cookie.essentialText': 'Wymagane do bezpiecznego logowania, sesji i podstawowych funkcji platformy.', 'cookie.alwaysOn': 'Zawsze aktywne', 'cookie.analytics': 'Analityka użytkowania', 'cookie.analyticsText': 'Pomaga nam zrozumieć sposób korzystania z platformy i ją ulepszać.', 'cookie.personalization': 'Personalizacja', 'cookie.personalizationText': 'Zapamiętuje opcjonalne ustawienia i dostarcza trafne sugestie.', 'cookie.save': 'Zapisz ustawienia', 'cookie.accepted': 'Zapisano wszystkie ustawienia plików cookie.', 'cookie.rejected': 'Aktywne są teraz tylko niezbędne pliki cookie.', 'cookie.saved': 'Ustawienia plików cookie zostały zapisane.',
   'auth.signOutTitle': 'Wylogować się ze SPICE?', 'auth.signOutMessage': 'Czy na pewno chcesz się wylogować? Dostęp do chronionych narzędzi będzie wymagał ponownego logowania.', 'auth.signOutConfirm': 'Wyloguj się', 'auth.signingOut': 'Wylogowywanie...',
@@ -5754,13 +5952,13 @@ const pl: Record<TranslationKey, string> = {
   'auth.confirmPasswordRequired': 'Potwierdź swoje hasło.',
   'auth.passwordMismatch': 'Hasła nie pasują.',
   'auth.pilotPlaceholder': 'Wybierz witrynę pilotażową',
-  'auth.rolePlaceholder': 'Wybierz rolę',
+  
   'auth.pilotRequired': 'Wybierz witrynę pilotażową.',
-  'auth.roleRequired': 'Wybierz rolę.',
+  
   'auth.accountCreatedTitle': 'Sprawdź pocztę',
   'auth.accountCreated': 'Konto zostało utworzone pomyślnie. Sprawdź swoją pocztę e-mail, aby zweryfikować swoje konto.',
-  'auth.accountPendingApproval': 'Ta rola wymaga również zgody administratora przed aktywacją jej uprawnień. Możesz zalogować się natychmiast po zweryfikowaniu Twojego adresu e-mail, do tego czasu będziesz mieć dostęp na poziomie obywatelskim.',
-  'auth.roleRequiresApproval': 'Ta rola wymaga zgody administratora przed aktywacją jej uprawnień.',
+  
+  
   'hub.pendingApprovalNotice': 'Twój dostęp do {{role}} oczekuje na zatwierdzenie przez administratora. Obecnie masz dostęp na poziomie obywatelskim.',
   'auth.previewVerification': 'Otwórz podgląd weryfikacji lokalnej',
   'auth.goToSignIn': 'Przejdź do logowania',
@@ -5777,13 +5975,13 @@ const pl: Record<TranslationKey, string> = {
   'home.country.poland': 'Polska',
   'home.country.portugal': 'Portugalia',
   'home.pillar.accessibility': 'Dostępność',
-  'home.pillar.accessibilityText': 'Przystępne, przyjazne dla klawiatury interfejsy dla użytkowników o każdym poziomie umiejętności.',
+  'home.pillar.accessibilityText': 'Każde narzędzie SPICE, od analogowych szablonów warsztatowych po edytor scen 3D, działa z klawiaturą i czytnikiem ekranu w pięciu językach, dzięki czemu żaden mieszkaniec nie jest wykluczony z kształtowania swojej okolicy.',
   'home.pillar.privacy': 'Prywatność przede wszystkim',
-  'home.pillar.privacyText': 'Bezpieczna i przejrzysta obsługa kont obywateli i wpłat.',
+  'home.pillar.privacyText': 'Konta mieszkańców, facylitatorów i gmin pozostają rozdzielone według ról, dzięki czemu ludzie mogą otwarcie uczestniczyć w forum Dyskutuj i decyduj, nie ujawniając więcej, niż chcą.',
   'home.pillar.impact': 'Prawdziwy wpływ',
-  'home.pillar.impactText': 'Bezpośredni kanał przekazujący wkład społeczności do procesu decyzyjnego na szczeblu gminnym.',
+  'home.pillar.impactText': 'Pomysł zgłoszony na warsztacie lub forum jest śledzony poprzez Co-Creation Hub aż do decyzji gminy i publikowany w Repozytorium, więc nigdy nie ginie po zakończeniu spotkania.',
   'home.pillar.channel': 'Otwórz kanał',
-  'home.pillar.channelText': 'Wspólna przestrzeń, w której można zamieszczać opinie, propozycje, projekty i lokalne historie.',
+  'home.pillar.channelText': 'Jedna platforma prowadzi rozmowę przez warsztaty stacjonarne, cyfrowe forum, edytor scen 3D i czatbota AI, dzięki czemu każdy głos trafia do tego samego wspólnego zapisu.',
   'home.tool.processText': 'Odkrywaj witryny pilotażowe, bierz udział w otwartych działaniach i zarządzaj podróżą z jednego centralnego centrum.',
   'home.tool.sceneText': 'Edytuj, wizualizuj i porównuj scenariusze przestrzeni publicznej w środowisku 3D.',
   'home.tool.aiTitle': 'Chatbot AI',
@@ -5835,28 +6033,28 @@ const pl: Record<TranslationKey, string> = {
   'hub.dashboardIntroCitizen': 'Śledź swoją lokalną podróż współtworzenia, bierz udział w otwartych działaniach i poznaj opublikowane narzędzia i wyniki.',
   'hub.statCoCreationTools': 'Narzędzia współtworzenia',
   'hub.statActivePilots': 'Aktywne pilotaże',
-  'hub.statSelectedTools': 'Wybrane narzędzia',
+  
   'hub.statCitizenContributions': 'Wkład obywateli',
   'hub.statAvailableTools': 'Dostępne narzędzia',
-  'hub.statMyContributions': 'Mój wkład',
-  'hub.statOpenActivities': 'Otwarte działania',
-  'hub.currentWorkspace': 'Bieżący obszar roboczy pilotażu',
-  'hub.workspaceSnapshot': 'Obowiązki roli i bieżące zadania',
-  'hub.workspaceResponsibilityMunicipality': 'Gmina odpowiada za proces, zatwierdza działania publiczne, wydaje oficjalne decyzje i świadomie przechodzi do kolejnych faz.',
+  
+  
+  
+  
+  
   'hub.workspaceResponsibilityFacilitator': 'Przygotowujesz i prowadzisz działania partycypacyjne, dokumentujesz dowody, moderujesz udział i przekazujesz gminie uporządkowane wyniki.',
-  'hub.workspaceResponsibilityCitizen': 'Możesz brać udział w opublikowanych działaniach, dyskutować i głosować nad propozycjami oraz śledzić odpowiedź gminy i kolejną fazę.',
+  
   'hub.workspaceResponsibilityAdmin': 'Zarządzasz dostępem, przydziałami, konfiguracją pilotaży, moderacją, integracjami i dziennikiem audytowym.',
-  'hub.roleHandoverExplanation': 'Praca pozostaje identyfikowalna podczas przekazywania między rolami. Oczekujące przekazania wskazują rolę, która musi działać jako następna.',
-  'hub.statActivitiesReadyReview': 'Działania do przeglądu',
-  'hub.statDraftActivities': 'Działania do przygotowania',
-  'hub.statParticipationClosed': 'Wymagane podsumowania',
-  'hub.statCompletedActivities': 'Ukończone działania',
-  'hub.statDecisionsPending': 'Wymagane decyzje',
-  'hub.statVotingOpen': 'Otwarte głosowania',
-  'hub.statResultsPublished': 'Opublikowane wyniki',
-  'hub.statActivities': 'Działania',
-  'hub.statProposals': 'Propozycje',
-  'hub.statPendingHandovers': 'Oczekujące przekazania',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'hub.yourPilot': 'Twój pilot',
   'hub.managePilotSite': 'Zarządzaj witryną pilotażową',
   'hub.previewAsCitizen': 'Wyświetl podgląd jako obywatel',
@@ -6018,29 +6216,30 @@ const pl: Record<TranslationKey, string> = {
   'methodology.eyebrow': 'Metodologia SPICE',
   'methodology.title': 'Metodologia współtworzenia włączających przestrzeni publicznych',
   'methodology.subtitle': 'Ustrukturyzowany proces, który pomaga pilotom przejść od wspólnego zrozumienia do praktycznych opcji projektowych, informacji zwrotnych, dokumentacji i wspierania decyzji.',
+  'methodology.iterationLoop': 'Pętla iteracji — szybkie współtworzenie i prototypowanie',
   'methodology.openGuide': 'Otwórz przewodnik wspólnego tworzenia',
-  'methodology.phase1': 'Kramowanie i gotowość',
-  'methodology.phase1Text': 'Zdefiniuj lokalne wyzwanie, zmapuj zainteresowane strony, sprawdź gotowość i wybierz odpowiednią konfigurację udziału w pilotażu.',
-  'methodology.phase2': 'Wspólne zrozumienie',
-  'methodology.phase2Text': 'Zbieraj lokalną wiedzę za pomocą map, spacerów, ankiet, warsztatów, komentarzy i wspólnych obserwacji.',
-  'methodology.phase3': 'Współtworzenie scenariusza',
-  'methodology.phase3Text': 'Przekształcaj dane wejściowe w opcje projektu, porównuj alternatywy i omawiaj kompromisy z obywatelami i zespołami planującymi.',
-  'methodology.phase4': 'Wspomaganie decyzji',
-  'methodology.phase4Text': 'Podsumuj wyniki, udostępnij dowody, dokumentuj decyzje i informuj społeczność po wzięciu udziału.',
-  'methodology.phase5': 'Konsolidacja i nauka',
-  'methodology.phase5Text': 'Oceń proces, sformalizuj obowiązki, zachowaj wyniki i wyciągnij wnioski na przyszłe decyzje.',
-  'methodology.used': 'Jak stosować tę metodę',
-  'methodology.used1': 'Zamienia ogólne cele uczestnictwa w jasną sekwencję faz, narzędzi, działań, wyników i punktów decyzyjnych.',
-  'methodology.used2': 'Gminy i moderatorzy mogą planować warsztaty, wybierać odpowiednie narzędzia, ustalać oczekiwania i wyjaśniać, dlaczego każde działanie jest ważne.',
-  'methodology.used3': 'Wyniki warsztatów, opinie CitiVoice, scenariusze 3D i dokumenty w repozytorium pozostają połączone między działaniami.',
-  'methodology.used4': 'Wkład obywateli staje się ustrukturyzowanym rezultatem poprzez mapowanie, grupowanie, głosowanie, podsumowania, raporty i działania następcze.',
-  'methodology.evidence': 'Źródła dowodów',
-  'methodology.toolkitDoc': 'Dokument zestawu narzędzi',
-  'methodology.toolkitDocText': 'Przewodnik po metodach zestawu narzędzi SPICE, wersja 2.1',
-  'methodology.diagnostic': 'Diagnostyka pilotażowa',
-  'methodology.diagnosticText': 'Pilotażowy raport diagnostyczny z Salonik',
-  'methodology.repository': 'Kontekst repozytorium',
-  'methodology.repositoryText': 'Notatki z warsztatów, opinie opinii publicznej, mapy, eksporty i połączone raporty',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'account.profileDetails': 'Szczegóły profilu',
   'account.profileText': 'Zaktualizuj szczegóły używane na Twoim koncie SPICE i w pilotażowym obszarze roboczym.',
   'account.fullName': 'Imię i nazwisko',
@@ -6088,6 +6287,12 @@ const pl: Record<TranslationKey, string> = {
   'citivoice.points': 'Punkty',
   'citivoice.clusters': 'Klastry',
   'citivoice.topLocations': 'Najpopularniejsze lokalizacje',
+  'citivoice.useCase': 'Przypadek użycia',
+  'citivoice.useCaseAll': 'Wszystkie lokalizacje (całe miasto)',
+  'citivoice.centeredOn': 'Wyśrodkowano na {{location}}',
+  'citivoice.contributionsForLocation': '{{count}} zgłoszeń z tej lokalizacji',
+  'citivoice.topKeywords': 'Najczęstsze słowa kluczowe dla tej lokalizacji',
+  'citivoice.clearUseCase': 'Wyczyść i pokaż wszystkie lokalizacje',
   'citivoice.engagement': 'Zaangażowanie w czasie',
   'citivoice.sentiment': 'Podsumowanie nastrojów',
   'citivoice.concerns': 'Główne obawy według kategorii',
@@ -6287,66 +6492,72 @@ const pl: Record<TranslationKey, string> = {
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
   'role.Guest': 'Gość',
   'role.PlatformAdministrator': 'Administrator platformy',
-  'journey.eyebrow': 'Przestrzeń robocza roli',
-  'journey.permissions': 'Działania zależą od uprawnień Twojego konta',
-  'journey.step': 'Krok {{count}}',
-  'journey.current': 'Bieżący krok',
-  'journey.citizen.title': 'Twoja podróż poprzez uczestnictwo',
-  'journey.citizen.description': 'Zrozum, co jest otwarte, wnoś swój wkład w przystępnym formacie i śledź, jak wkład społeczności wpływa na decyzje.',
-  'journey.citizen.1.title': 'Zrozumienie pilota',
-  'journey.citizen.1.description': 'Przejrzyj bieżący etap, granice uczestnictwa i oczekiwania gminy od społeczności.',
-  'journey.citizen.1.action': 'Otwórz kontekst pilotażowy',
-  'journey.citizen.2.title': 'Weź udział',
-  'journey.citizen.2.description': 'Dołącz do otwartych działań, dyskusji, głosów i opinii CitiVoice powiązanych z Twoim programem pilotażowym.',
-  'journey.citizen.2.action': 'Wyświetl otwartą dyskusję',
-  'journey.citizen.3.title': 'Sprawdź, co się zmieniło',
-  'journey.citizen.3.description': 'Zobacz odpowiedzi, zaktualizowane scenariusze i dowody opracowane na podstawie danych uczestników.',
-  'journey.citizen.3.action': 'Przejrzyj wyniki',
-  'journey.citizen.4.title': 'Wykonaj kolejne kroki',
-  'journey.citizen.4.description': 'Korzystaj z powiadomień i wyników repozytorium, aby śledzić zobowiązania wykraczające poza pojedyncze zdarzenie.',
-  'journey.citizen.4.action': 'Otwórz powiadomienia',
-  'journey.facilitator.title': 'Twoja podróż facylitacyjna',
-  'journey.facilitator.description': 'Przekształć ramy gminy w działania włączające, wspieraj uczestnictwo i dokumentuj dowody nadające się do ponownego wykorzystania.',
-  'journey.facilitator.1.title': 'Przygotuj sesję',
-  'journey.facilitator.1.description': 'Potwierdź cel, oczekiwany wynik, potrzeby uczestników, wsparcie w zakresie dostępności, harmonogram i obowiązki.',
-  'journey.facilitator.1.action': 'Odkryj metody',
-  'journey.facilitator.2.title': 'Skonfiguruj działania',
-  'journey.facilitator.2.description': 'Wybierz odpowiednie narzędzia i działania o otwartej strukturze dla przypisanego pilotażu i fazy.',
-  'journey.facilitator.2.action': 'Otwórz przydzielonego pilota',
-  'journey.facilitator.3.title': 'Ułatwiaj i obserwuj',
-  'journey.facilitator.3.description': 'Chroń równy udział, wychwytuj zamierzone i nieoczekiwane ustalenia oraz utrzymuj kontakt grupy z celem.',
-  'journey.facilitator.3.action': 'Otwórz obszar roboczy',
-  'journey.facilitator.4.title': 'Wyjścia dokumentów',
-  'journey.facilitator.4.description': 'Prześlij zapisy warsztatów, oczekiwane wyniki i wnioski do przeglądu przez gminę i przyszłych etapów.',
-  'journey.facilitator.4.action': 'Otwórz repozytorium',
-  'journey.municipality.title': 'Twoja pilotażowa podróż w zakresie zarządzania',
-  'journey.municipality.description': 'Ustal wiarygodne granice uczestnictwa, umożliwij realizację, przeglądaj dowody i łącz wyniki z formalnymi decyzjami.',
-  'journey.municipality.1.title': 'Określ proces',
-  'journey.municipality.1.description': 'Określ zakres, elementy niepodlegające negocjacjom, ambicje uczestnictwa, powiązania decyzyjne, zasoby i odpowiedzialnych ludzi.',
-  'journey.municipality.1.action': 'Skonfiguruj proces',
-  'journey.municipality.2.title': 'Włącz dostarczanie',
-  'journey.municipality.2.description': 'Przypisz moderatora, wybierz narzędzia fazy, skonfiguruj uczestnictwo i opublikuj jasne instrukcje.',
-  'journey.municipality.2.action': 'Zarządzaj centrum',
-  'journey.municipality.3.title': 'Przejrzyj i odpowiedz',
-  'journey.municipality.3.description': 'Przejrzyj uwagi uczestników i wyniki koordynatora, wydawaj oficjalne odpowiedzi i wyjaśniaj, co się zmieniło.',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'journey.municipality.3.action': 'Przejrzyj propozycje',
-  'journey.municipality.4.title': 'Zdecyduj i podtrzymaj',
-  'journey.municipality.4.description': 'Publikuj decyzje, obowiązki, ustalenia dotyczące zarządzania i wiedzę, którą można przenieść.',
-  'journey.municipality.4.action': 'Zarządzaj wynikami',
-  'journey.admin.title': 'Twoja podróż w zakresie zarządzania platformą',
-  'journey.admin.description': 'Zapewnij niezawodność organizacji, ról, pilotów, moderacji i integracji w całym ekosystemie SPICE.',
-  'journey.admin.1.title': 'Zatwierdź dostęp',
-  'journey.admin.1.description': 'Przejrzyj konta pracowników i upewnij się, że każdy użytkownik ma minimalną rolę potrzebną do swojej pracy.',
-  'journey.admin.1.action': 'Zarządzaj użytkownikami',
-  'journey.admin.2.title': 'Monitoruj programy pilotażowe',
-  'journey.admin.2.description': 'Sprawdź status programu pilotażowego, zablokowane fazy i jakość danych między organizacjami bez podejmowania decyzji na szczeblu lokalnym.',
-  'journey.admin.2.action': 'Przejrzyj programy pilotażowe',
-  'journey.admin.3.title': 'Wspieraj zarządzanie',
-  'journey.admin.3.description': 'Przejrzyj moderację, publikację repozytorium i kontrolę aktywności na całej platformie.',
-  'journey.admin.3.action': 'Otwarte zarządzanie',
-  'journey.admin.4.title': 'Utrzymuj usługi',
-  'journey.admin.4.description': 'Monitoruj integracje i ustawienia platformy, zachowując jednocześnie identyfikowalność i najniższe uprawnienia.',
-  'journey.admin.4.action': 'Przejrzyj integracje',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  'phase.1.objective': 'Aby określić ramy i ocenić gotowość',
+  'phase.2.objective': 'Aby zrozumieć wspólnie ze społecznością',
+  'phase.3.objective': 'Aby wyobrazić sobie scenariusze i rozwiązania',
+  'phase.4.objective': 'Aby testować za pomocą prototypów',
+  'phase.5.objective': 'Aby skonsolidować i wyciągnąć wnioski',
   'phase.1.question': 'Czy jesteśmy gotowi na współprojektowanie i na jakich zasadach?',
   'phase.1.outcome': 'Uzgodnione ramy procesu obejmujące ambicje uczestnictwa, granice decyzji, odpowiednich aktorów i warunki organizacyjne.',
   'phase.2.question': 'Jak różni aktorzy rozumieją to miejsce i związane z nim wyzwania?',
@@ -6357,6 +6568,47 @@ const pl: Record<TranslationKey, string> = {
   'phase.4.outcome': 'Umiejscowiony dowód potwierdzający rewizję, zatwierdzenie, połączenie lub odrzucenie proponowanych rozwiązań.',
   'phase.5.question': 'Co zostaje, kto się tym zajmuje i czego się nauczyliśmy?',
   'phase.5.outcome': 'Uzgodnione kolejne kroki, ustalenia dotyczące zarządzania lub zarządzania, udokumentowana nauka i jasna droga do przyszłych działań.',
+  'phase.1.fullDescription': 'Ustal warunki, w jakich będzie działać proces partycypacyjny, wspólnie z inicjatorem procesu i kluczowymi wewnętrznymi interesariuszami. Obejmuje to wyjaśnienie zakresu projektu, jego ograniczeń, dostępnych zasobów, relacji z formalnym podejmowaniem decyzji oraz stopnia wpływu, jaki uczestnicy mogą realistycznie wywierać.',
+  'phase.1.actionsIntro': 'Potwierdź zakres, ograniczenia i elementy niepodlegające negocjacjom.',
+  'phase.1.action1': 'Wyjaśnij, na co uczestnicy mogą wpływać, co pozostaje poza procesem i jak wyniki będą powiązane z formalnym planowaniem, projektowaniem i wdrażaniem.',
+  'phase.1.action2': 'Uzgodnij oczekiwania inicjatora procesu, przedstawicieli gminy i innych kluczowych interesariuszy.',
+  'phase.1.action3': 'Oceń dostępne zdolności, kompetencje i zasoby oraz zidentyfikuj potrzeby w zakresie budowania potencjału.',
+  'phase.1.action4': 'Utwórz lub zweryfikuj mapę interesariuszy, zwracając szczególną uwagę na osoby i grupy, które w przeciwnym razie mogłyby zostać pominięte.',
+  'phase.2.fullDescription': 'Wypracuj wspólne i wieloaspektowe zrozumienie miejsca, jego aktorów oraz wyzwań, które należy podjąć, zanim przejdzie się do rozwiązań. Ten cel łączy dostępne informacje techniczne i kontekstowe z lokalną wiedzą, doświadczeniami życiowymi i różnymi interpretacjami obszaru.',
+  'phase.2.action1': 'Zbierz i uporządkuj informacje kontekstowe potrzebne do zrozumienia obszaru, w tym dane przestrzenne, środowiskowe, społeczno-gospodarcze i kulturowe.',
+  'phase.2.action2': 'Zaangażuj mieszkańców, użytkowników, władze publiczne, specjalistów i innych istotnych aktorów w interpretację miejsca z różnych perspektyw.',
+  'phase.2.action3': 'Pozyskaj lokalną i doświadczalną wiedzę, w tym codzienne praktyki, znaczenia, przywiązania, niezaspokojone potrzeby i punkty konfliktu.',
+  'phase.2.action4': 'Zidentyfikuj wpływy środowiskowe i społeczne, zależności i podatności, które mogą nie być od razu widoczne.',
+  'phase.2.action5': 'Wykorzystaj wartości KOW jako pryzmat do rozumienia i omawiania kontekstu, a nie jako kryteria przedwczesnej oceny rozwiązań.',
+  'phase.2.action6': 'Skonsoliduj ustalenia w ograniczoną liczbę jasno sformułowanych i wspólnie uznanych wyzwań.',
+  'phase.3.fullDescription': 'Przełóż wspólne zrozumienie wypracowane w poprzednim celu na zakres możliwych i pożądanych przyszłości. Zamiast od razu zbiegać się w jednym ostatecznym rozwiązaniu, uczestnicy badają alternatywne scenariusze, koncepcje i kierunki projektowe oraz jasno przedstawiają uzasadnienie swoich wyborów.',
+  'phase.3.action1': 'Przeformułuj priorytetowe wyzwania jako możliwości wspólnego projektowania i eksperymentowania.',
+  'phase.3.action2': 'Wygeneruj wiele scenariuszy, pomysłów i koncepcji przed wyborem lub połączeniem możliwych kierunków.',
+  'phase.3.action3': 'Wspieraj udział osób o różnych formach wiedzy, doświadczenia i eksperckości w procesie twórczym.',
+  'phase.3.action4': 'Rozważ razem inkluzywność, dostępność, wspólne użytkowanie, jakość przestrzenną, tożsamość, doświadczenie i wydajność środowiskową.',
+  'phase.3.action5': 'Uwidocznij założenia, wartości i kompromisy leżące u podstaw różnych propozycji.',
+  'phase.3.action6': 'Negocjuj relacje między zrównoważonym rozwojem, pięknem i wspólnotowością, zamiast zakładać, że automatycznie się zharmonizują.',
+  'phase.3.action7': 'Udokumentuj powody dokonanych wyborów i zidentyfikuj, które elementy nadal wymagają dalszego badania lub testowania.',
+  'phase.4.fullDescription': 'Spraw, aby wybrane pomysły były wystarczająco namacalne, by można je było doświadczyć, przedyskutować i przetestować w odniesieniu do rzeczywistego kontekstu. Tymczasowe użytkowanie, symulacje, makiety i inne formy prototypowania pozwalają uczestnikom i zespołom projektowym zweryfikować założenia, zaobserwować praktyczne efekty i udoskonalić propozycje przed podjęciem ostatecznych decyzji.',
+  'phase.4.action1': 'Wybierz pomysły, elementy lub założenia, które najbardziej wymagają przetestowania.',
+  'phase.4.action2': 'Sformułuj jasne pytania testowe dotyczące użytkowania, dostępności, doświadczenia, wykonalności, wpływu środowiskowego lub zarządzania.',
+  'phase.4.action3': 'Opracuj tymczasowe, niskiej wierności lub odwracalne prototypy proporcjonalne do badanych pytań.',
+  'phase.4.action4': 'Umożliw użytkownikom i innym istotnym aktorom doświadczenie propozycji i bezpośredni wpływ na ich dostosowanie.',
+  'phase.4.action5': 'Obserwuj zarówno zamierzone, jak i niezamierzone sposoby użytkowania, reakcje i praktyczne konsekwencje.',
+  'phase.4.action6': 'Zbierz dowody jakościowe, takie jak obserwacje, historie i opinie uczestników, wraz z lekkimi dowodami ilościowymi w razie potrzeby.',
+  'phase.4.action7': 'Zapisz, czego się nauczono, co należy zmienić i jak propozycja została zmodyfikowana.',
+  'phase.4.action8': 'Poinformuj, jak informacje zwrotne wpłynęły na rozwój projektu.',
+  'phase.5.fullDescription': 'Przełóż wyniki procesu partycypacyjnego na obowiązki, zobowiązania i formy działania, które mogą trwać poza pojedynczymi wydarzeniami lub zakończeniem projektu. Ten cel łączy propozycje opracowane poprzez współprojektowanie i testowanie z zarządzaniem, opieką, polityką, planowaniem i długoterminowym zarządzaniem, jednocześnie tworząc przestrzeń do refleksji nad tym, czego się nauczono.',
+  'phase.5.actionsIntro': 'Propozycja zarządzania lub opieki oparta na:',
+  'phase.5.action1': 'Skonsoliduj główne propozycje, decyzje i wnioski wypracowane w trakcie całego procesu.',
+  'phase.5.action2': 'Wyjaśnij, które wyniki można wdrożyć, które wymagają dalszego rozwoju, a które nie mogą zostać podjęte.',
+  'phase.5.action3': 'Zidentyfikuj aktorów odpowiedzialnych za decyzje, wdrażanie, utrzymanie, programowanie i dalsze zaangażowanie społeczności.',
+  'phase.5.action4': 'Zdefiniuj możliwe ustalenia dotyczące zarządzania lub opieki, w tym możliwości wspólnej odpowiedzialności i samorządności, gdy jest to właściwe.',
+  'phase.5.action5': 'Zidentyfikuj zdolności, zasoby, upoważnienia i warunki instytucjonalne wymagane do utrzymania wyników.',
+  'phase.5.action6': 'Połącz wyniki z odpowiednimi procesami politycznymi, planistycznymi, projektowymi, finansowymi i zarządczymi.',
+  'phase.5.action7': 'Zastanów się nad jakością procesu partycypacyjnego, w tym nad tym, kto uczestniczył, czyje perspektywy wpłynęły na decyzje i które grupy pozostały niedostatecznie reprezentowane.',
+  'phase.5.action8': 'Udokumentuj i przekaż decyzje, zobowiązania i kolejne kroki, aby uczestnicy mogli śledzić rozwój projektu.',
+  'phase.5.action9': 'Zachowaj wiedzę wypracowaną w trakcie procesu i uczyń ją transferowalną do przyszłych inicjatyw.',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
   'privacy.languageLabel': 'Język zasad',
@@ -6527,28 +6779,31 @@ const pl: Record<TranslationKey, string> = {
   'glossary.expandTerm': 'Pokaż szczegóły dla {{term}}',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
-  'analogue.eyebrow': 'Metody partycypacyjne SPICE',
-  'analogue.title': 'Narzędzia analogowe',
-  'analogue.description': '{{count}} metody prowadzone przez facylitatora do współtworzenia offline i hybrydowego, od mapowania interesariuszy po prototypowanie.',
-  'analogue.searchPlaceholder': 'Szukaj według narzędzia, celu lub słowa kluczowego',
-  'analogue.allModes': 'Wszystkie tryby',
-  'analogue.allStatuses': 'Wszystkie stany',
-  'analogue.online': 'Online',
-  'analogue.offline': 'Stacjonarnie',
-  'analogue.hybrid': 'Hybryda',
-  'analogue.formatted': 'Sformatowany do druku',
-  'analogue.contentReady': 'Treść gotowa',
-  'analogue.gridView': 'Widok siatki',
-  'analogue.listView': 'Widok listy',
-  'analogue.results': 'Znaleziono {{count}} narzędzi',
-  'analogue.phaseResults': '{{count}} narzędzia',
-  'analogue.moreInformation': 'Więcej informacji',
-  'analogue.noResults': 'Żadne narzędzie nie pasuje do Twojego wyszukiwania.',
-  'analogue.clearFilters': 'Wyczyść filtry',
+  'resources.eyebrow': 'Metody partycypacyjne SPICE',
+  'resources.title': 'Zasoby analogowe',
+  'resources.description': '{{count}} metody prowadzone przez facylitatora do współtworzenia offline i hybrydowego, uporządkowane według pięciu celów SPICE, od mapowania interesariuszy po prototypowanie.',
+  'resources.searchPlaceholder': 'Szukaj według zasobu, celu lub słowa kluczowego',
+  'resources.allModes': 'Wszystkie tryby',
+  'resources.allStatuses': 'Wszystkie stany',
+  'resources.online': 'Online',
+  'resources.offline': 'Stacjonarnie',
+  'resources.hybrid': 'Hybryda',
+  'resources.targetUsers.internal': 'Zespół wewnętrzny',
+  'resources.targetUsers.public': 'Uczestnicy publiczni',
+  'resources.formatted': 'Sformatowany do druku',
+  'resources.contentReady': 'Treść gotowa',
+  'resources.gridView': 'Widok siatki',
+  'resources.listView': 'Widok listy',
+  'resources.results': 'Znaleziono {{count}} zasobów',
+  'resources.phaseResults': '{{count}} zasobów',
+  'resources.objectiveNumber': 'Cel {{objective}}',
+  'resources.moreInformation': 'Więcej informacji',
+  'resources.noResults': 'Żaden zasób nie pasuje do Twojego wyszukiwania.',
+  'resources.clearFilters': 'Wyczyść filtry',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
-  'home.analoguePreviewCount': '{{visible}} przykładowe metody z {{total}} w pełnym zestawie narzędzi',
-  'toolDetail.back': 'Powrót do narzędzi analogowych',
+  'home.analogResourcesPreviewCount': '{{visible}} przykładowych zasobów z {{total}} na platformie',
+  'toolDetail.back': 'Powrót do zasobów analogowych',
   'toolDetail.phase': 'Faza {{phase}} | {{name}}',
   'toolDetail.inProcess': 'W procesie pilotażowym',
   'toolDetail.askAi': 'Zapytaj przewodnika AI o tym narzędziu',
@@ -6571,6 +6826,8 @@ const pl: Record<TranslationKey, string> = {
   'toolDetail.groupSize': 'Wielkość grupy',
   'toolDetail.facilitatorRatio': 'Stosunek koordynatora',
   'toolDetail.supplies': 'Wymagane zaopatrzenie',
+  'toolDetail.targetUsers': 'Grupa docelowa',
+  'toolDetail.prerequisites': 'Wymagania wstępne',
   'toolDetail.related': 'Powiązane narzędzia - {{phase}}',
   'toolDetail.defaultHowTo': 'Przeanalizuj cel z uczestnikami, przygotuj materiały, ułatwij działanie i udokumentuj wspólne wyniki.',
   'toolDetail.defaultRequirements': 'W zatwierdzonym skoroszycie źródłowym nie określono żadnych dodatkowych wymagań dotyczących przygotowania.',
@@ -6596,27 +6853,27 @@ const pl: Record<TranslationKey, string> = {
   'home.digitalEnablementTitle': 'Współpraca cyfrowa',
   'home.digitalEnablementText': 'Technologia wspiera zaangażowanie, dowody i dostęp.',
   'home.ecosystemCaption': 'Narzędzia analogowe i cyfrowe wspierają włączające uczestnictwo od lokalnego wyzwania po wspólną decyzję.',
-  'home.pathEyebrow': 'Jasna ścieżka przez SPICE',
-  'home.pathTitle': 'Od lokalnego celu do wspólnych wyników',
-  'home.pathText': 'Umieść w ramkę to, co ważne, zbierz odpowiednich ludzi i narzędzia, a następnie zamień uczestnictwo w przydatne dowody i działania.',
-  'home.step1': 'Krok 1',
-  'home.step1Title': 'Określ cel',
-  'home.step1Text': 'Zrozum wyzwanie, opracuj projekt pilotażowy, zidentyfikuj zainteresowane strony i ustal cele uczestnictwa.',
-  'home.step1Item1': 'Lokalne wyzwanie',
-  'home.step1Item2': 'Kontekst pilotażowy',
-  'home.step1Item3': 'Cele uczestnictwa',
-  'home.step2': 'Krok 2',
-  'home.step2Title': 'Współtwórz z SPICE',
-  'home.step2Text': 'Postępuj zgodnie z metodologią i łącz metody analogowe, usługi cyfrowe, rozważania i wiedzę.',
-  'home.step2Item1': 'Metody i narzędzia',
-  'home.step2Item2': 'Dyskusja i głosowanie',
-  'home.step2Item3': 'Udostępnione zasoby',
-  'home.step3': 'Krok 3',
-  'home.step3Title': 'Twórz wyniki',
-  'home.step3Text': 'Przekształcaj wkład społeczności w pomysły, priorytety, udokumentowane wyniki, raporty i decyzje oparte na bardziej świadomych informacjach.',
-  'home.step3Item1': 'Wspólne zrozumienie',
-  'home.step3Item2': 'Dowody i raporty',
-  'home.step3Item3': 'Priorytety, które można zastosować',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'home.pilotSitesText': 'Odkryj cztery europejskie konteksty pilotażowe, w których społeczności testują włączające podejścia do przekształcania przestrzeni publicznej.',
   'home.pillarsText': 'Wspólne zasady, dzięki którym każde działanie SPICE jest dostępne, odpowiedzialne, partycypacyjne i powiązane z rzeczywistymi decyzjami.',
   'home.digitalToolsText': 'Korzystaj z usług cyfrowych SPICE, aby kierować procesem, zbierać informacje lokalne, badać pomysły przestrzenne i otrzymywać wsparcie kontekstowe.',
@@ -6662,16 +6919,13 @@ const pl: Record<TranslationKey, string> = {
   'common.activities.one': '{{count}} aktywność',
   'common.activities.other': '{{count}} aktywności',
   'setup.step1': 'Konfiguracja procesu partycypacyjnego',
-  'setup.stepOfFour': 'Krok {{step}} z 4 · Konfiguracja procesu',
+  'setup.stepOfThree': 'Krok {{step}} z 3 · Konfiguracja procesu',
   'setup.progressLabel': 'Postęp konfiguracji procesu',
   'setup.progress.stage': 'Etap',
   'setup.progress.objectives': 'Cele',
   'setup.progress.participation': 'Partycypacja',
-  'setup.progress.practical': 'Ustawienia praktyczne',
   'setup.title': 'Skonfiguruj proces współtworzenia',
   'setup.intro': 'Opowiedz nam o pilotażu, celach partycypacji i warunkach praktycznych. Odpowiedzi pomogą SPICE dopasować ścieżkę współtworzenia oraz polecić odpowiednie narzędzia i działania.',
-  'setup.practicalTitle': 'Ustawienia praktyczne',
-  'setup.practicalText': 'Określ warunki praktyczne sprzyjające dostępnej i realistycznej partycypacji.',
   'setup.back': 'Wstecz',
   'setup.continue': 'Kontynuuj',
   'setup.reviewRecommendations': 'Przejrzyj rekomendacje',
@@ -6730,33 +6984,33 @@ const pl: Record<TranslationKey, string> = {
   'setup.objective.consolidation': 'Konsolidacja, zarządzanie i uczenie się',
   'setup.objective.consolidationDesc': 'Przekształć wyniki w obowiązki, wyniki, naukę i kolejne kroki.',
   'setup.participationTitle': 'Określ poziom uczestnictwa w procesie',
-  'setup.participation.inform': 'Poinformuj i wyjaśnij',
-  'setup.participation.informDesc': 'Używaj przejrzystych materiałów, aby pomóc ludziom zrozumieć projekt i decyzje.',
-  'setup.participation.consult': 'Skonsultuj się i zbierz opinie',
-  'setup.participation.consultDesc': 'Poproś obywateli i zainteresowane strony o komentowanie, głosowanie, tworzenie map lub udzielanie odpowiedzi.',
-  'setup.participation.cocreate': 'Współtwórz z uczestnikami',
-  'setup.participation.cocreateDesc': 'Wspólnie pracujcie nad pomysłami, scenariuszami, priorytetami i przyszłymi działaniami.',
+  'setup.participation.consult': 'Konsultacje',
+  'setup.participation.consultDesc': 'Mieszkańcy i interesariusze dzielą się potrzebami, spostrzeżeniami, preferencjami lub opiniami, które zasilają proces — ostateczna decyzja pozostaje po stronie inicjatora procesu.',
+  'setup.participation.codevelop': 'Współtworzenie',
+  'setup.participation.codevelopDesc': 'Mieszkańcy, interesariusze, eksperci i instytucje wspólnie interpretują wyzwania, generują pomysły i rozwijają scenariusze — silniejszy, wspólny wpływ w ramach ograniczeń instytucjonalnych.',
+  'setup.participation.selfgovern': 'Samorządność',
+  'setup.participation.selfgovernDesc': 'Społeczności lub lokalni aktorzy przejmują trwałą rolę w inicjowaniu, zarządzaniu lub dostosowywaniu działań w czasie — własność, opieka i długoterminowe zarządzanie.',
   'setup.goalTitle': 'Określ cel procesu partycypacyjnego',
   'setup.goal.physical': 'Fizyczna interwencja w witrynie',
   'setup.goal.intangible': 'Wyniki niematerialne, wydarzenia lub organizacja społeczna',
   'setup.goal.undefined': 'Jeszcze nie zdefiniowano',
-  'setup.groupSize': 'Wielkość grupy',
+  
   'setup.duration': 'Czas trwania',
-  'setup.facilitation': 'Ułatwienia',
+  
   'setup.mode': 'Tryb',
-  'setup.group.lt10': 'Mniej niż 10 osób',
-  'setup.group.10to25': '10–25 osób',
-  'setup.group.25to50': '25–50 osób',
-  'setup.group.50plus': 'Ponad 50 osób',
-  'setup.duration.lt5': 'Mniej niż 5 minut',
-  'setup.duration.5to30': '5–30 minut',
-  'setup.duration.30to120': '30 minut – 2 godziny',
-  'setup.duration.halfDay': 'Pół dnia',
-  'setup.duration.fullDay': 'Cały dzień',
-  'setup.duration.multiDay': 'Kilka dni',
-  'setup.facilitator.one': '1 osoba',
-  'setup.facilitator.twoThree': '2–3 osoby',
-  'setup.facilitator.fourPlus': '4 lub więcej osób',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'setup.additionalFilters': 'Dodatkowe filtry',
   'setup.selectionsTitle': 'Twoje wybory',
   'setup.selectionsEmpty': 'Twoje wybory pojawią się tutaj.',
@@ -7069,7 +7323,7 @@ const pl: Record<TranslationKey, string> = {
   'hub.phaseNotStarted': 'Ta witryna pilotażowa nie rozpoczęła jeszcze swojej obecnej fazy.',
   'hub.toolsEnabledForPhase': 'Narzędzia włączone dla tej fazy',
   'hub.preparePhaseActivities': 'Przygotuj czynności związane z fazą',
-  'hub.uploadWorkshopOutput': 'Prześlij wyniki warsztatów do Repozytorium',
+  'hub.uploadWorkshopOutput': 'Napisz raport celu',
   'hub.prepareDraftProposal': 'Przygotuj wersję roboczą propozycji',
   'hub.loadingPilot': 'Ładowanie witryny pilotażowej…',
   'hub.noPilotAssigned': 'Nie przypisano żadnej witryny pilotażowej',
@@ -7401,14 +7655,14 @@ const pl: Record<TranslationKey, string> = {
   'glossary.results.few': '{{visible}} z {{total}} terminów ze słownika',
   'glossary.results.many': '{{visible}} z {{total}} terminów ze słownika',
   'glossary.results.other': '{{visible}} z {{total}} terminów ze słownika',
-  'analogue.results.one': 'Znaleziono {{count}} narzędzie',
-  'analogue.results.few': 'Znaleziono {{count}} narzędzia',
-  'analogue.results.many': 'Znaleziono {{count}} narzędzi',
-  'analogue.results.other': 'Znaleziono {{count}} narzędzi',
-  'analogue.phaseResults.one': '{{count}} narzędzie',
-  'analogue.phaseResults.few': '{{count}} narzędzia',
-  'analogue.phaseResults.many': '{{count}} narzędzi',
-  'analogue.phaseResults.other': '{{count}} narzędzia',
+  'resources.results.one': 'Znaleziono {{count}} zasób',
+  'resources.results.few': 'Znaleziono {{count}} zasoby',
+  'resources.results.many': 'Znaleziono {{count}} zasobów',
+  'resources.results.other': 'Znaleziono {{count}} zasobów',
+  'resources.phaseResults.one': '{{count}} zasób',
+  'resources.phaseResults.few': '{{count}} zasoby',
+  'resources.phaseResults.many': '{{count}} zasobów',
+  'resources.phaseResults.other': '{{count}} zasobów',
   'chatbot.collections.one': '{{count}} kolekcja',
   'chatbot.collections.few': '{{count}} kolekcje',
   'chatbot.collections.many': '{{count}} kolekcji',
@@ -7565,17 +7819,27 @@ const pl: Record<TranslationKey, string> = {
   'phaseDetail.supportContact': 'Kontakt wsparcia',
   'phaseDetail.selectedTools': 'Narzędzia używane w działaniu',
   'phaseDetail.publishedInstructionDetails': 'Instrukcje i szczegóły praktyczne',
+  'phaseDetail.reportTitle': 'Raport podsumowujący cel',
+  'phaseDetail.reportHelp': 'Po każdym wydarzeniu zapisz tutaj, co się wydarzyło: przebieg procesu, kto wziął udział, główne wyniki, krytyczne obserwacje i wnioski. Po opublikowaniu staje się to zapisem udostępnianym uczestnikom i gminie.',
+  'phaseDetail.reportPlaceholder': 'Podsumuj przebieg procesu, udział, główne wyniki i wnioski…',
+  'phaseDetail.reportRequiredNote': 'Przed oznaczeniem tego ostatniego celu jako ukończonego wymagany jest raport liczący co najmniej 20 znaków.',
+  'phaseDetail.reportOptionalNote': 'Zalecane po każdym wydarzeniu, aby zapis pozostał czytelny dla każdego, kto przejmie proces w przyszłości.',
+  'phaseDetail.uploadMaterials': 'Prześlij zdjęcia i dokumenty',
+  'phaseDetail.reportSave': 'Zapisz raport',
+  'phaseDetail.reportSaving': 'Zapisywanie…',
+  'phaseDetail.reportSaved': 'Raport zapisany.',
+  'phaseDetail.reportSaveFailed': 'Nie udało się zapisać raportu. Spróbuj ponownie.',
 };
 
 const pt: Record<TranslationKey, string> = {
-  'nav.analogueTools': 'Ferramentas analógicas', 'nav.aiChatbot': 'Chatbot de IA', 'nav.scenarios': 'Cenários', 'nav.resources': 'Recursos', 'nav.signUp': 'Registar',
-  'home.analogueTools': 'Ferramentas analógicas', 'home.analogueToolsText': 'Métodos participativos facilitados selecionados diretamente do ficheiro fonte SPICE aprovado.', 'home.exploreAnalogueTools': 'Explorar todas as ferramentas analógicas', 'home.sourceDescriptionUnavailable': 'Ainda não existe uma descrição detalhada no ficheiro fonte.', 'home.digitalTools': 'Ferramentas digitais', 'home.explorePlatform': 'Explorar a Plataforma SPICE', 'home.tool.methodologyText': 'Compreenda como os métodos SPICE ligam atividades, contributos dos cidadãos e resultados estruturados.', 'home.tool.scenariosText': 'Reveja alternativas, compare compromissos e apoie uma direção de design partilhada.',
-  'controls.label': 'Controlos rápidos SPICE', 'controls.accessibility': 'Definições de acessibilidade', 'controls.chatbot': 'Abrir assistente SPICE', 'controls.scrollTop': 'Voltar ao topo',
+  'nav.analogResources': 'Recursos analógicos', 'nav.aiChatbot': 'Chatbot de IA', 'nav.scenarios': 'Cenários', 'nav.resources': 'Recursos', 'nav.signUp': 'Registar',
+  'home.analogResources': 'Recursos analógicos', 'home.analogResourcesText': 'Recursos participativos facilitados, organizados pelos cinco objetivos do SPICE, selecionados diretamente do ficheiro fonte SPICE aprovado.', 'home.exploreAnalogResources': 'Explorar todos os recursos analógicos', 'home.sourceDescriptionUnavailable': 'Ainda não existe uma descrição detalhada no ficheiro fonte.', 'home.digitalTools': 'Ferramentas digitais', 'home.explorePlatform': 'Explorar a Plataforma SPICE', 'home.tool.methodologyText': 'Compreenda como os métodos SPICE ligam atividades, contributos dos cidadãos e resultados estruturados.', 'home.tool.scenariosText': 'Reveja alternativas, compare compromissos e apoie uma direção de design partilhada.',
+  'controls.label': 'Controlos rápidos SPICE', 'controls.accessibility': 'Definições de acessibilidade', 'controls.scrollTop': 'Voltar ao topo',
   'common.loading': 'A carregar...', 'common.saving': 'A guardar...', 'common.save': 'Guardar alterações', 'common.cancel': 'Cancelar', 'common.close': 'Fechar', 'common.back': 'Voltar', 'common.continue': 'Continuar', 'common.search': 'Pesquisar', 'common.retry': 'Tentar novamente', 'common.signInRequired': 'É necessário iniciar sessão', 'common.error': 'Ocorreu um erro. Tente novamente.', 'navigation.loading': 'A carregar a página selecionada...', 'navigation.ready': 'Página pronta', 'auth.requiredMessage': 'Inicie sessão para continuar. Depois de entrar, regressará à página ou atividade selecionada.',
   'nav.coCreation': 'Cocriação', 'nav.coCreationProcess': 'Processo de Cocriação', 'nav.coCreationHub': 'Centro de Cocriação', 'nav.coCreationGuide': 'Guia de Cocriação', 'nav.tools': 'Ferramentas', 'nav.citivoice': 'Aplicação CitiVoice', 'nav.sceneEditor': 'Editor de Cena 3D', 'nav.forum': 'Discutir e decidir', 'nav.repository': 'Repositório', 'nav.impact': 'Impacto', 'nav.methodology': 'Metodologia', 'nav.glossary': 'Glossário', 'nav.insights': 'Indicadores e Resultados', 'nav.pilotSites': 'Locais Piloto', 'nav.demoGuide': 'Demonstração e Guia', 'nav.account': 'Conta', 'nav.notifications': 'Notificações', 'nav.signIn': 'Entrar', 'nav.signOut': 'Sair', 'nav.getStarted': 'Registar', 'nav.main': 'Navegação principal', 'nav.mobile': 'Navegação móvel', 'nav.toggleMenu': 'Alternar menu',
   'language.label': 'Idioma', 'language.english': 'Inglês', 'language.greek': 'Grego', 'language.finnish': 'Finlandês', 'language.polish': 'Polaco', 'language.portuguese': 'Português',
-  'toolkit.title': 'Centro de Cocriação', 'toolkit.subtitle': 'Plataforma de Ferramentas Digitais', 'toolkit.activePilot': 'Piloto ativo', 'toolkit.feedbackOpen': 'Contributos abertos - Fase 3', 'toolkit.overview': 'Visão geral', 'toolkit.setup': 'Configurar o meu processo', 'toolkit.explore': 'Explorar ferramentas', 'toolkit.scenarios': 'Cenários possíveis', 'toolkit.myContributions': 'Os meus contributos', 'toolkit.citivoiceMap': 'Mapa CitiVoice', 'toolkit.sceneEditor': 'Cocriação 3D', 'toolkit.reports': 'Relatórios e Exportação', 'toolkit.toolsOutputs': 'Ferramentas e resultados', 'toolkit.manage': 'Gestão', 'toolkit.help': 'Ajuda', 'toolkit.viewNotifications': 'Ver notificações', 'toolkit.noUnread': 'Não tem notificações por ler.', 'toolkit.unreadCount': 'Tem {{count}} notificações por ler.', 'toolkit.keyboardHelp': 'Ajuda de teclado', 'toolkit.fontSize': 'Tamanho do texto', 'toolkit.highContrast': 'Alto contraste', 'toolkit.reducedMotion': 'Movimento reduzido', 'role.Citizen': 'Cidadão', 'role.Facilitator': 'Facilitador', 'role.MunicipalityStaff': 'Município / Coordenador do piloto', 'role.Researcher': 'Investigador', 'role.Admin': 'Administrador',
-  'auth.backHome': 'Voltar à página inicial', 'auth.welcome': 'Bem-vindo', 'auth.subtitle': 'Introduza as suas credenciais para aceder ao espaço de trabalho', 'auth.signIn': 'Entrar', 'auth.register': 'Registar', 'auth.email': 'Endereço de email', 'auth.password': 'Palavra-passe', 'auth.fullName': 'Nome completo', 'auth.pilotSite': 'Local piloto', 'auth.role': 'Função', 'auth.remember': 'Lembrar-me', 'auth.forgot': 'Esqueceu a palavra-passe?', 'auth.createAccount': 'Registar', 'auth.termsPrefix': 'Concordo com os', 'auth.terms': 'Termos de Utilização', 'auth.and': 'e a', 'auth.privacy': 'Política de Privacidade', 'auth.signingIn': 'A entrar...', 'auth.creating': 'A criar conta...', 'auth.demoTitle': 'A possibilitar o processo de cocriação do futuro.', 'auth.demoText': 'Junte-se aos cidadãos dos quatro locais piloto na criação de espaços públicos inclusivos.', 'auth.activeContributors': 'Participantes ativos', 'auth.designs': 'Projetos', 'auth.municipalities': 'Em colaboração com os municípios piloto',
+  'toolkit.title': 'Centro de Cocriação', 'toolkit.subtitle': 'Plataforma de Ferramentas Digitais', 'toolkit.activePilot': 'Piloto ativo', 'toolkit.feedbackOpen': 'Contributos abertos - Fase 3', 'toolkit.overview': 'Visão geral', 'toolkit.setup': 'Configurar o meu processo', 'toolkit.explore': 'Explorar ferramentas', 'toolkit.scenarios': 'Cenários possíveis', 'toolkit.myContributions': 'Os meus contributos', 'toolkit.citivoiceMap': 'Mapa CitiVoice', 'toolkit.sceneEditor': 'Cocriação 3D', 'toolkit.reports': 'Relatórios e Exportação', 'toolkit.toolsOutputs': 'Ferramentas e resultados', 'toolkit.manage': 'Gestão', 'toolkit.help': 'Ajuda', 'toolkit.viewNotifications': 'Ver notificações', 'toolkit.noUnread': 'Não tem notificações por ler.', 'toolkit.unreadCount': 'Tem {{count}} notificações por ler.', 'toolkit.keyboardHelp': 'Ajuda de teclado', 'toolkit.fontSize': 'Tamanho do texto', 'toolkit.highContrast': 'Alto contraste', 'toolkit.reducedMotion': 'Movimento reduzido', 'role.Citizen': 'Cidadão', 'role.Facilitator': 'Facilitador', 'role.MunicipalityStaff': 'Município / Coordenador do piloto', 
+  'auth.backHome': 'Voltar à página inicial', 'auth.welcome': 'Bem-vindo', 'auth.subtitle': 'Introduza as suas credenciais para aceder ao espaço de trabalho', 'auth.signIn': 'Entrar', 'auth.register': 'Registar', 'auth.email': 'Endereço de email', 'auth.password': 'Palavra-passe', 'auth.fullName': 'Nome completo', 'auth.pilotSite': 'Local piloto', 'auth.remember': 'Lembrar-me', 'auth.forgot': 'Esqueceu a palavra-passe?', 'auth.createAccount': 'Registar', 'auth.termsPrefix': 'Concordo com os', 'auth.terms': 'Termos de Utilização', 'auth.and': 'e a', 'auth.privacy': 'Política de Privacidade', 'auth.signingIn': 'A entrar...', 'auth.creating': 'A criar conta...', 'auth.demoTitle': 'A possibilitar o processo de cocriação do futuro.', 'auth.demoText': 'Junte-se aos cidadãos dos quatro locais piloto na criação de espaços públicos inclusivos.', 'auth.activeContributors': 'Participantes ativos', 'auth.designs': 'Projetos', 'auth.municipalities': 'Em colaboração com os municípios piloto',
   'home.heroTitle': 'Cocrie a sua cidade inclusiva', 'home.heroText': 'O SPICE permite que cidadãos e planeadores criem em conjunto espaços públicos resilientes, acessíveis e vibrantes.', 'home.startCreating': 'Registar', 'home.watchDemo': 'Ver demonstração', 'home.pilotSites': 'Locais Piloto', 'home.pillars': 'Os nossos pilares', 'home.tools': 'Ferramentas para todos', 'home.multilingual': 'Suporte multilingue', 'home.multilingualHeading': 'Inclusivo na conceção, multilingue na prática.', 'home.multilingualText': 'O SPICE está disponível em cinco idiomas europeus para que todos possam compreender, contribuir e acompanhar os resultados.', 'home.exploreGlossary': 'Explorar o Glossário', 'home.ready': 'Pronto para moldar o futuro do seu piloto?', 'home.readyText': 'Participe no projeto urbano local e faça ouvir a sua voz.', 'home.createAccount': 'Registar', 'home.explorePilots': 'Explorar Locais Piloto',
   'account.navigation': 'Navegação', 'account.details': 'Dados do utilizador', 'account.security': 'Segurança', 'account.privacy': 'Privacidade', 'account.manageTitle': 'Gerir a sua conta', 'account.manageText': 'Mantenha o perfil, os contactos, o idioma e as preferências de segurança atualizados.', 'account.edit': 'Editar dados', 'account.email': 'Endereço de email', 'account.pilot': 'Piloto', 'account.role': 'Função do utilizador', 'account.phone': 'Telefone', 'account.context': 'O seu contexto piloto', 'account.activeLocation': 'Localização ativa do projeto: {{pilot}}', 'account.saved': 'O seu perfil foi atualizado com sucesso.', 'account.currentPassword': 'Palavra-passe atual', 'account.newPassword': 'Nova palavra-passe', 'account.visibility': 'Visibilidade do perfil', 'account.analytics': 'Análise de utilização', 'account.recommendations': 'Recomendações personalizadas', 'account.export': 'Exportar os seus dados', 'account.download': 'Transferir dados',
   'notifications.title': 'Notificações', 'notifications.subtitle': 'Acompanhe os projetos e contributos cívicos importantes para si.', 'notifications.markAll': 'Marcar tudo como lido', 'notifications.search': 'Pesquisar notificações', 'notifications.all': 'Todas', 'notifications.unread': 'Não lidas', 'notifications.archived': 'Arquivadas', 'notifications.empty': 'Não existem notificações nesta vista.', 'notifications.markRead': 'Marcar como lida', 'notifications.markUnread': 'Marcar como não lida', 'notifications.archive': 'Arquivar',
@@ -7596,7 +7860,7 @@ const pt: Record<TranslationKey, string> = {
   'forum.phaseLabel': 'Fase {{number}} — {{phase}}', 'forum.phaseShort': 'Fase {{number}}', 'forum.voteFor': 'Votar nesta opção', 'forum.linkedEvidence': 'Resultado SPICE associado', 'forum.evolutionHistory': 'Evolução da proposta e historial de decisões',
   'forum.history.created': 'Criada', 'forum.history.status_changed': 'Estado alterado', 'forum.history.official_decision': 'Decisão oficial do Município',
   'forum.title': 'Discutir e decidir', 'forum.subtitle': 'Partilhe ideias, discuta propostas, vote em alternativas e acompanhe como as decisões são tomadas.', 'forum.submit': 'Enviar proposta', 'forum.comments': 'Comentários', 'forum.addComment': 'Adicionar comentário', 'forum.post': 'Publicar comentário', 'forum.signInPrompt': 'Inicie sessão para contribuir, comentar ou votar.', 'forum.noResults': 'Nenhuma proposta corresponde aos filtros.', 'forum.clearFilters': 'Limpar filtros', 'forum.officialResponse': 'Resposta oficial - Município de Tessalónica',
-  'pilots.title': 'Locais Piloto SPICE', 'pilots.subtitle': 'Quatro contextos locais, uma abordagem comum à cocriação inclusiva.', 'pilots.focus': 'Foco do piloto', 'pilots.openToolkit': 'Abrir ferramentas relacionadas', 'demo.title': 'Demonstração e Guia do SPICE', 'demo.subtitle': 'Veja a plataforma em ação e siga o guia para iniciar o seu processo.', 'demo.videoFallback': 'Não foi possível carregar o vídeo. Abra-o diretamente no YouTube.', 'demo.openYoutube': 'Abrir no YouTube', 'demo.guideTitle': 'Guia do utilizador',
+  'pilots.title': 'Locais Piloto SPICE', 'pilots.subtitle': 'Quatro contextos locais, uma abordagem comum à cocriação inclusiva.', 'pilots.focus': 'Foco do piloto', 'pilots.openToolkit': 'Abrir ferramentas relacionadas', 'pilots.viewProposals': 'Ver propostas', 'pilots.viewResults': 'Ver resultados', 'pilots.locationTitle': 'Onde este piloto acontece', 'pilots.locationText': 'Um mapa interativo centrado no local do piloto.', 'pilots.mapFrameTitle': 'Mapa de {{city}}', 'pilots.viewLargerMap': 'Ver mapa maior', 'pilots.galleryTitle': 'Fotografias do local', 'pilots.galleryEmpty': 'As fotografias deste piloto serão adicionadas em breve.', 'demo.title': 'Demonstração e Guia do SPICE', 'demo.subtitle': 'Veja a plataforma em ação e siga o guia para iniciar o seu processo.', 'demo.videoFallback': 'Não foi possível carregar o vídeo. Abra-o diretamente no YouTube.', 'demo.openYoutube': 'Abrir no YouTube', 'demo.guideTitle': 'Guia do utilizador',
   'footer.navigation': 'Navegação', 'footer.other': 'Outros', 'footer.follow': 'Siga-nos', 'footer.funded': 'Financiado pela União Europeia', 'footer.disclaimer': 'Financiado pela União Europeia. As opiniões expressas pertencem aos autores e não refletem necessariamente as posições da UE ou da CINEA.', 'footer.rights': '©2026, Desenvolvido e alojado pela DREVEN. Todos os direitos reservados.', 'cookie.message': 'O SPICE utiliza cookies essenciais para sessões seguras e preferências opcionais para melhorar a experiência.', 'cookie.accept': 'Aceitar tudo', 'cookie.manage': 'Gerir preferências', 'cookie.reject': 'Rejeitar cookies não essenciais', 'cookie.read': 'Ler a Política de Privacidade',
   'cookie.title': 'As suas opções de privacidade', 'cookie.accountNotice': 'Pode controlar a utilização de cookies pelo SPICE a qualquer momento. Os cookies essenciais protegem a sua conta; os opcionais são utilizados apenas com a sua autorização.', 'cookie.viewPolicy': 'Ver a Política de Privacidade', 'cookie.optionsTitle': 'Escolha os cookies opcionais', 'cookie.essential': 'Cookies essenciais', 'cookie.essentialText': 'Necessários para início de sessão seguro, sessões e funcionalidades principais.', 'cookie.alwaysOn': 'Sempre ativos', 'cookie.analytics': 'Análise de utilização', 'cookie.analyticsText': 'Ajuda-nos a compreender a utilização e a melhorar a plataforma.', 'cookie.personalization': 'Personalização', 'cookie.personalizationText': 'Memoriza preferências opcionais e apresenta sugestões relevantes.', 'cookie.save': 'Guardar preferências', 'cookie.accepted': 'Todas as preferências de cookies foram guardadas.', 'cookie.rejected': 'Agora apenas os cookies essenciais estão ativos.', 'cookie.saved': 'As suas preferências de cookies foram guardadas.',
   'auth.signOutTitle': 'Sair do SPICE?', 'auth.signOutMessage': 'Tem a certeza de que pretende terminar sessão? Terá de iniciar sessão novamente para aceder às funcionalidades protegidas.', 'auth.signOutConfirm': 'Sair', 'auth.signingOut': 'A terminar sessão...',
@@ -7614,13 +7878,13 @@ const pt: Record<TranslationKey, string> = {
   'auth.confirmPasswordRequired': 'Confirme a sua palavra-passe.',
   'auth.passwordMismatch': 'As palavras-passe não coincidem.',
   'auth.pilotPlaceholder': 'Selecione um site piloto',
-  'auth.rolePlaceholder': 'Selecione uma função',
+  
   'auth.pilotRequired': 'Selecione um site piloto.',
-  'auth.roleRequired': 'Selecione uma função.',
+  
   'auth.accountCreatedTitle': 'Verifique o seu e-mail',
   'auth.accountCreated': 'Conta criada com sucesso. Verifique o seu e-mail para verificar a sua conta.',
-  'auth.accountPendingApproval': 'Esta função também requer aprovação do administrador antes de as suas permissões serem ativadas. Poderá fazer login assim que o seu e-mail for verificado, com acesso de cidadão até então.',
-  'auth.roleRequiresApproval': 'Esta função requer a aprovação do administrador antes de as suas permissões serem activadas.',
+  
+  
   'hub.pendingApprovalNotice': 'O seu acesso ao {{role}} está pendente de aprovação do administrador. Atualmente tem acesso de cidadão.',
   'auth.previewVerification': 'Abrir visualização da verificação local',
   'auth.goToSignIn': 'Efetuar login',
@@ -7637,13 +7901,13 @@ const pt: Record<TranslationKey, string> = {
   'home.country.poland': 'Polónia',
   'home.country.portugal': 'Portugal',
   'home.pillar.accessibility': 'Acessibilidade',
-  'home.pillar.accessibilityText': 'Interfaces acessíveis e compatíveis com o teclado para utilizadores de todos os níveis de habilidade.',
+  'home.pillar.accessibilityText': 'Cada ferramenta do SPICE, desde os modelos analógicos de workshop até ao Editor de Cena 3D, funciona com teclado e leitor de ecrã em cinco idiomas, para que nenhum residente fique excluído de moldar o seu bairro.',
   'home.pillar.privacy': 'Privacidade em primeiro lugar',
-  'home.pillar.privacyText': 'Tratamento seguro e transparente das contas e contribuições dos cidadãos.',
+  'home.pillar.privacyText': 'As contas de cidadãos, facilitadores e municípios mantêm-se separadas por função, para que as pessoas possam participar abertamente no fórum Discutir e Decidir sem expor mais do que escolhem.',
   'home.pillar.impact': 'Impacto real',
-  'home.pillar.impactText': 'Um canal direto entre os contributos da comunidade e a tomada de decisões municipais.',
+  'home.pillar.impactText': 'Uma ideia apresentada num workshop ou no fórum é acompanhada através do Co-Creation Hub até uma decisão municipal e publicada no Repositório, nunca se perdendo após o fim da sessão.',
   'home.pillar.channel': 'Canal aberto',
-  'home.pillar.channelText': 'Um espaço partilhado para opiniões, propostas, designs e histórias locais.',
+  'home.pillar.channelText': 'Uma única plataforma transporta a conversa entre workshops presenciais, o fórum digital, o Editor de Cena 3D e o Chatbot de IA, para que cada voz chegue ao mesmo registo partilhado.',
   'home.tool.processText': 'Descubra locais piloto, participe em atividades abertas e gerencie a viagem a partir de um hub central.',
   'home.tool.sceneText': 'Edite, visualize e compare cenários de espaço público num ambiente 3D.',
   'home.tool.aiTitle': 'Chatbot de IA',
@@ -7695,28 +7959,28 @@ const pt: Record<TranslationKey, string> = {
   'hub.dashboardIntroCitizen': 'Acompanhe a sua jornada de cocriação local, participe em atividades abertas e explore ferramentas e resultados publicados.',
   'hub.statCoCreationTools': 'Ferramentas de cocriação',
   'hub.statActivePilots': 'Pilotos ativos',
-  'hub.statSelectedTools': 'Ferramentas seleccionadas',
+  
   'hub.statCitizenContributions': 'Contributos dos cidadãos',
   'hub.statAvailableTools': 'Ferramentas disponíveis',
-  'hub.statMyContributions': 'Os meus contributos',
-  'hub.statOpenActivities': 'Atividades abertas',
-  'hub.currentWorkspace': 'Área de trabalho atual do piloto',
-  'hub.workspaceSnapshot': 'Responsabilidades da função e trabalho atual',
-  'hub.workspaceResponsibilityMunicipality': 'O município é responsável pelo processo, aprova atividades públicas, emite decisões oficiais e avança deliberadamente cada fase.',
+  
+  
+  
+  
+  
   'hub.workspaceResponsibilityFacilitator': 'Prepara e realiza atividades de participação, documenta evidências, modera a participação e entrega resultados estruturados ao Município.',
-  'hub.workspaceResponsibilityCitizen': 'Pode participar em atividades publicadas, discutir e votar propostas e acompanhar a resposta do Município e a fase seguinte.',
+  
   'hub.workspaceResponsibilityAdmin': 'Mantém os acessos, atribuições, configuração dos pilotos, moderação, integrações e registo de auditoria.',
-  'hub.roleHandoverExplanation': 'O trabalho permanece rastreável quando passa entre funções. As entregas pendentes indicam a função que deve atuar a seguir.',
-  'hub.statActivitiesReadyReview': 'Atividades para revisão',
-  'hub.statDraftActivities': 'Atividades a preparar',
-  'hub.statParticipationClosed': 'Resumos necessários',
-  'hub.statCompletedActivities': 'Atividades concluídas',
-  'hub.statDecisionsPending': 'Decisões necessárias',
-  'hub.statVotingOpen': 'Votações abertas',
-  'hub.statResultsPublished': 'Resultados publicados',
-  'hub.statActivities': 'Atividades',
-  'hub.statProposals': 'Propostas',
-  'hub.statPendingHandovers': 'Entregas pendentes',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'hub.yourPilot': 'O seu piloto',
   'hub.managePilotSite': 'Gerir site piloto',
   'hub.previewAsCitizen': 'Visualizar como cidadão',
@@ -7878,29 +8142,30 @@ const pt: Record<TranslationKey, string> = {
   'methodology.eyebrow': 'Metodologia SPICE',
   'methodology.title': 'Metodologia de cocriação para espaços públicos inclusivos',
   'methodology.subtitle': 'Um processo estruturado que ajuda os condutores a passar do entendimento partilhado para opções práticas de design, feedback, documentação e apoio à decisão.',
+  'methodology.iterationLoop': 'Ciclo de iteração — cocriação e prototipagem rápidas',
   'methodology.openGuide': 'Guia de cocriação aberta',
-  'methodology.phase1': 'Enquadramento e preparação',
-  'methodology.phase1Text': 'Defina o desafio local, mapeie as partes interessadas, analise a preparação e escolha a configuração de participação correta para o piloto.',
-  'methodology.phase2': 'Entendimento colectivo',
-  'methodology.phase2Text': 'Reúna conhecimento local através de mapas, caminhadas, inquéritos, workshops, comentários e observações partilhadas.',
-  'methodology.phase3': 'Co-design de cenários',
-  'methodology.phase3Text': 'Transforme as contribuições em opções de design, compare alternativas e discuta compensações com os cidadãos e as equipas de planeamento.',
-  'methodology.phase4': 'Apoio à decisão',
-  'methodology.phase4Text': 'Resuma os resultados, partilhe provas, documente decisões e mantenha a comunidade informada após a participação.',
-  'methodology.phase5': 'Consolidação e aprendizagem',
-  'methodology.phase5Text': 'Avalie o processo, formalize responsabilidades, preserve os resultados e leve as lições para decisões futuras.',
-  'methodology.used': 'Como é utilizado o método',
-  'methodology.used1': 'Transforma os objetivos de participação amplos numa sequência clara de fases, ferramentas, atividades, resultados e pontos de decisão.',
-  'methodology.used2': 'Os municípios e os dinamizadores podem planear workshops, escolher ferramentas adequadas, definir expectativas e explicar por que razão cada atividade é importante.',
-  'methodology.used3': 'Os resultados do workshop, o feedback do CitiVoice, os cenários 3D e os documentos do repositório permanecem ligados entre as atividades.',
-  'methodology.used4': 'Os contributos dos cidadãos transformam-se em resultados estruturados através de mapeamento, agrupamento, votação, resumos, relatórios e ações de monitorização.',
-  'methodology.evidence': 'Fontes de evidência',
-  'methodology.toolkitDoc': 'Documento do kit de ferramentas',
-  'methodology.toolkitDocText': 'Guia de métodos SPICE toolkit v2.1',
-  'methodology.diagnostic': 'Diagnóstico piloto',
-  'methodology.diagnosticText': 'Relatório de diagnóstico do piloto de Salónica',
-  'methodology.repository': 'Contexto do repositório',
-  'methodology.repositoryText': 'Notas do workshop, feedback público, mapas, exportações e relatórios ligados',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'account.profileDetails': 'Detalhes do perfil',
   'account.profileText': 'Atualize os detalhes utilizados na sua conta SPICE e no espaço de trabalho piloto.',
   'account.fullName': 'Nome completo',
@@ -7948,6 +8213,12 @@ const pt: Record<TranslationKey, string> = {
   'citivoice.points': 'Pontos',
   'citivoice.clusters': 'Aglomerados',
   'citivoice.topLocations': 'Principais localizações',
+  'citivoice.useCase': 'Caso de uso',
+  'citivoice.useCaseAll': 'Todos os locais (cidade inteira)',
+  'citivoice.centeredOn': 'Centrado em {{location}}',
+  'citivoice.contributionsForLocation': '{{count}} contributos deste local',
+  'citivoice.topKeywords': 'Principais palavras-chave para este local',
+  'citivoice.clearUseCase': 'Limpar e mostrar todos os locais',
   'citivoice.engagement': 'Participação ao longo do tempo',
   'citivoice.sentiment': 'Resumo do sentimento',
   'citivoice.concerns': 'Principais preocupações por categoria',
@@ -8147,66 +8418,72 @@ const pt: Record<TranslationKey, string> = {
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
   'role.Guest': 'Convidado',
   'role.PlatformAdministrator': 'Administrador da plataforma',
-  'journey.eyebrow': 'Espaço de trabalho de função',
-  'journey.permissions': 'As ações seguem as permissões da sua conta',
-  'journey.step': 'Passo {{count}}',
-  'journey.current': 'Etapa atual',
-  'journey.citizen.title': 'A sua jornada de participação',
-  'journey.citizen.description': 'Perceba o que está aberto, contribua num formato acessível e acompanhe como a opinião da comunidade afeta as decisões.',
-  'journey.citizen.1.title': 'Compreender o piloto',
-  'journey.citizen.1.description': 'Analise a fase atual, os limites de participação e o que o município está a pedir à comunidade.',
-  'journey.citizen.1.action': 'Contexto piloto aberto',
-  'journey.citizen.2.title': 'Participe',
-  'journey.citizen.2.description': 'Participe em atividades abertas, discussões, votações e feedback do CitiVoice ligadas ao seu piloto.',
-  'journey.citizen.2.action': 'Ver discussão aberta',
-  'journey.citizen.3.title': 'Analise o que mudou',
-  'journey.citizen.3.description': 'Veja as respostas, os cenários atualizados e as provas produzidas a partir dos contributos dos participantes.',
-  'journey.citizen.3.action': 'Revisar resultados',
-  'journey.citizen.4.title': 'Siga os próximos passos',
-  'journey.citizen.4.description': 'Utilize notificações e saídas de repositório para rastrear compromissos para além de um único evento.',
-  'journey.citizen.4.action': 'Abrir notificações',
-  'journey.facilitator.title': 'A sua jornada de facilitação',
-  'journey.facilitator.description': 'Transforme a estrutura do município em atividades inclusivas, apoie a participação e documente a evidência reutilizável.',
-  'journey.facilitator.1.title': 'Prepare a sessão',
-  'journey.facilitator.1.description': 'Confirme o objetivo, o resultado esperado, as necessidades dos participantes, o suporte de acessibilidade, o cronograma e as responsabilidades.',
-  'journey.facilitator.1.action': 'Explorar métodos',
-  'journey.facilitator.2.title': 'Configurar atividades',
-  'journey.facilitator.2.description': 'Selecione ferramentas adequadas e abra atividades estruturadas para o piloto e fase atribuídos.',
-  'journey.facilitator.2.action': 'Abrir piloto atribuído',
-  'journey.facilitator.3.title': 'Facilite e observe',
-  'journey.facilitator.3.description': 'Proteja a participação equitativa, capte descobertas intencionais e inesperadas e mantenha o grupo ligado ao objetivo.',
-  'journey.facilitator.3.action': 'Abrir espaço de trabalho',
-  'journey.facilitator.4.title': 'Saídas de documentos',
-  'journey.facilitator.4.description': 'Carregar registos do workshop, resultados esperados e lições para revisão do município e fases futuras.',
-  'journey.facilitator.4.action': 'Abrir repositório',
-  'journey.municipality.title': 'A sua jornada piloto de governação',
-  'journey.municipality.description': 'Estabeleça limites de participação fiáveis, possibilite a entrega, analise as provas e ligue os resultados às decisões formais.',
-  'journey.municipality.1.title': 'Enquadrar o processo',
-  'journey.municipality.1.description': 'Defina o âmbito, os itens não negociáveis, a ambição de participação, os laços de decisão, os recursos e as pessoas responsáveis.',
-  'journey.municipality.1.action': 'Configurar o processo',
-  'journey.municipality.2.title': 'Ativar entrega',
-  'journey.municipality.2.description': 'Atribua um facilitador, selecione as ferramentas da fase, configure a participação e publique instruções claras.',
-  'journey.municipality.2.action': 'Gerir o hub',
-  'journey.municipality.3.title': 'Analise e responda',
-  'journey.municipality.3.description': 'Analise os contributos dos participantes e os resultados dos facilitadores, emita respostas oficiais e explique o que mudou.',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'journey.municipality.3.action': 'Revisar propostas',
-  'journey.municipality.4.title': 'Decidir e sustentar',
-  'journey.municipality.4.description': 'Publique decisões, responsabilidades, acordos de governação e aprendizagem transferível.',
-  'journey.municipality.4.action': 'Gerir resultados',
-  'journey.admin.title': 'A sua jornada de governação de plataformas',
-  'journey.admin.description': 'Manter organizações, funções, pilotos, moderação e integrações fiáveis ​​em todo o ecossistema SPICE.',
-  'journey.admin.1.title': 'Aprovar acesso',
-  'journey.admin.1.description': 'Reveja as contas da equipa e garanta que cada utilizador tem a função mínima necessária para o seu trabalho.',
-  'journey.admin.1.action': 'Gerir utilizadores',
-  'journey.admin.2.title': 'Monitorizar pilotos',
-  'journey.admin.2.description': 'Verifique o estado do piloto, as fases paradas e a qualidade dos dados entre organizações sem tomar decisões municipais.',
-  'journey.admin.2.action': 'Revisar pilotos',
-  'journey.admin.3.title': 'Apoie a governação',
-  'journey.admin.3.description': 'Analise a moderação, a publicação do repositório e a atividade de auditoria em toda a plataforma.',
-  'journey.admin.3.action': 'Governação aberta',
-  'journey.admin.4.title': 'Manter serviços',
-  'journey.admin.4.description': 'Monitorize as integrações e as configurações da plataforma preservando a rastreabilidade e o mínimo de privilégios.',
-  'journey.admin.4.action': 'Revisar integrações',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  'phase.1.objective': 'Enquadrar e avaliar a prontidão',
+  'phase.2.objective': 'Compreender com a comunidade',
+  'phase.3.objective': 'Imaginar cenários e soluções',
+  'phase.4.objective': 'Testar através de protótipos',
+  'phase.5.objective': 'Consolidar e aprender',
   'phase.1.question': 'Estamos prontos para co-projectar e em que termos?',
   'phase.1.outcome': 'Uma estrutura de processo acordada que abrange a ambição de participação, os limites de decisão, os atores relevantes e as condições organizacionais.',
   'phase.2.question': 'Como é que os diferentes atores entendem o local e os seus desafios?',
@@ -8217,6 +8494,47 @@ const pt: Record<TranslationKey, string> = {
   'phase.4.outcome': 'Evidências situadas que suportam a revisão, validação, combinação ou rejeição de soluções propostas.',
   'phase.5.question': 'O que fica, quem trata disso e o que aprendemos?',
   'phase.5.outcome': 'Próximas etapas acordadas, arranjos de governação ou administração, aprendizagem documentada e um caminho claro para ações futuras.',
+  'phase.1.fullDescription': 'Estabeleça as condições em que o processo participativo vai operar, em conjunto com o promotor do processo e as principais partes interessadas internas. Isto inclui clarificar o âmbito do projeto, as suas restrições, os recursos disponíveis, a relação com a tomada de decisão formal e o grau de influência que os participantes podem realisticamente exercer.',
+  'phase.1.actionsIntro': 'Confirme o âmbito, as restrições e os elementos não negociáveis.',
+  'phase.1.action1': 'Clarifique o que os participantes podem influenciar, o que permanece fora do processo e como os resultados se ligarão ao planeamento, design e implementação formais.',
+  'phase.1.action2': 'Alinhe as expectativas do promotor do processo, dos atores municipais e de outras partes interessadas chave.',
+  'phase.1.action3': 'Avalie as capacidades, competências e recursos disponíveis, e identifique necessidades de capacitação.',
+  'phase.1.action4': 'Crie ou valide o mapa de partes interessadas, prestando particular atenção a pessoas e grupos que, de outra forma, poderiam permanecer excluídos.',
+  'phase.2.fullDescription': 'Desenvolva uma compreensão partilhada e plural do lugar, dos seus atores e dos desafios a abordar antes de avançar para soluções. Este objetivo combina informação técnica e contextual disponível com conhecimento local, experiências vividas e diferentes interpretações da área.',
+  'phase.2.action1': 'Recolha e organize a informação contextual necessária para compreender a área, incluindo dados espaciais, ambientais, socioeconómicos e culturais.',
+  'phase.2.action2': 'Envolva residentes, utilizadores, autoridades públicas, profissionais e outros atores relevantes na interpretação do lugar a partir de diferentes perspetivas.',
+  'phase.2.action3': 'Recolha conhecimento local e experiencial, incluindo práticas quotidianas, significados, ligações afetivas, necessidades não satisfeitas e pontos de conflito.',
+  'phase.2.action4': 'Identifique impactos ambientais e sociais, dependências e vulnerabilidades que podem não ser imediatamente visíveis.',
+  'phase.2.action5': 'Use os valores do NEB como lentes para compreender e discutir o contexto, em vez de critérios para avaliar prematuramente soluções.',
+  'phase.2.action6': 'Consolide as conclusões num número limitado de desafios claramente formulados e coletivamente reconhecidos.',
+  'phase.3.fullDescription': 'Traduza a compreensão partilhada desenvolvida no objetivo anterior num conjunto de futuros possíveis e desejáveis. Em vez de convergir imediatamente numa única solução final, os participantes exploram cenários, conceitos e direções de design alternativos e tornam explícito o raciocínio por detrás das suas escolhas.',
+  'phase.3.action1': 'Reformule os desafios prioritários como oportunidades de design coletivo e experimentação.',
+  'phase.3.action2': 'Gere múltiplos cenários, ideias e conceitos antes de selecionar ou combinar possíveis direções.',
+  'phase.3.action3': 'Apoie a participação de pessoas com diferentes formas de conhecimento, experiência e especialização no processo criativo.',
+  'phase.3.action4': 'Considere em conjunto a inclusividade, acessibilidade, uso partilhado, qualidade espacial, identidade, experiência e desempenho ambiental.',
+  'phase.3.action5': 'Torne visíveis os pressupostos, valores e compromissos subjacentes às diferentes propostas.',
+  'phase.3.action6': 'Negoceie as relações entre sustentabilidade, beleza e coesão em vez de assumir que se alinharão automaticamente.',
+  'phase.3.action7': 'Documente as razões por detrás das escolhas feitas e identifique que elementos ainda requerem investigação ou teste adicional.',
+  'phase.4.fullDescription': 'Torne as ideias selecionadas suficientemente tangíveis para serem experimentadas, discutidas e testadas em relação ao contexto real. Usos temporários, simulações, maquetas e outras formas de prototipagem permitem que participantes e equipas de projeto verifiquem pressupostos, observem efeitos práticos e melhorem propostas antes de serem tomadas decisões finais.',
+  'phase.4.action1': 'Selecione as ideias, componentes ou pressupostos que mais precisam de ser testados.',
+  'phase.4.action2': 'Formule questões de teste claras relativas ao uso, acessibilidade, experiência, viabilidade, efeitos ambientais ou gestão.',
+  'phase.4.action3': 'Desenvolva protótipos temporários, de baixa fidelidade ou reversíveis, proporcionais às questões a explorar.',
+  'phase.4.action4': 'Permita que utilizadores e outros atores relevantes experimentem as propostas e influenciem diretamente o seu ajuste.',
+  'phase.4.action5': 'Observe usos intencionais e não intencionais, reações e consequências práticas.',
+  'phase.4.action6': 'Recolha evidência qualitativa, como observações, histórias e feedback dos participantes, juntamente com evidência quantitativa ligeira quando apropriado.',
+  'phase.4.action7': 'Registe o que foi aprendido, o que precisa de mudar e como a proposta foi revista.',
+  'phase.4.action8': 'Comunique como o feedback influenciou o desenvolvimento do projeto.',
+  'phase.5.fullDescription': 'Traduza os resultados do processo participativo em responsabilidades, compromissos e formas de ação que possam continuar para além de eventos individuais ou do fim do projeto. Este objetivo liga as propostas desenvolvidas através da cocriação e do teste à governação, gestão, política, planeamento e gestão de longo prazo, criando também espaço para refletir sobre o que foi aprendido.',
+  'phase.5.actionsIntro': 'Proposta de governação ou gestão baseada em:',
+  'phase.5.action1': 'Consolide as principais propostas, decisões e lições geradas ao longo do processo.',
+  'phase.5.action2': 'Clarifique que resultados podem ser implementados, quais requerem desenvolvimento adicional e quais não podem avançar.',
+  'phase.5.action3': 'Identifique os atores responsáveis por decisões, implementação, manutenção, programação e envolvimento contínuo da comunidade.',
+  'phase.5.action4': 'Defina possíveis arranjos de governação ou gestão, incluindo oportunidades de responsabilidade partilhada e autogestão quando apropriado.',
+  'phase.5.action5': 'Identifique as capacidades, recursos, autorizações e condições institucionais necessárias para sustentar os resultados.',
+  'phase.5.action6': 'Ligue os resultados a processos relevantes de política, planeamento, design, financiamento e gestão.',
+  'phase.5.action7': 'Reflita sobre a qualidade do processo participativo, incluindo quem participou, que perspetivas influenciaram as decisões e que grupos permaneceram sub-representados.',
+  'phase.5.action8': 'Documente e comunique decisões, compromissos e próximos passos para que os participantes possam acompanhar a evolução do projeto.',
+  'phase.5.action9': 'Preserve a aprendizagem gerada através do processo e torne-a transferível para futuras iniciativas.',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
   'privacy.languageLabel': 'Linguagem da política',
@@ -8387,28 +8705,31 @@ const pt: Record<TranslationKey, string> = {
   'glossary.expandTerm': 'Mostrar detalhes de {{term}}',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
-  'analogue.eyebrow': 'Métodos participativos SPICE',
-  'analogue.title': 'Ferramentas analógicas',
-  'analogue.description': '{{count}} métodos liderados por facilitadores para a cocriação offline e híbrida, desde o mapeamento das partes interessadas até à prototipagem.',
-  'analogue.searchPlaceholder': 'Pesquise por ferramenta, objetivo ou palavra-chave',
-  'analogue.allModes': 'Todos os modos',
-  'analogue.allStatuses': 'Todos os estados',
-  'analogue.online': 'Em linha',
-  'analogue.offline': 'Off-line',
-  'analogue.hybrid': 'Híbrido',
-  'analogue.formatted': 'Formatado para impressão',
-  'analogue.contentReady': 'Conteúdo pronto',
-  'analogue.gridView': 'Visualização em grelha',
-  'analogue.listView': 'Visualização de lista',
-  'analogue.results': '{{count}} ferramentas encontradas',
-  'analogue.phaseResults': '{{count}} ferramentas',
-  'analogue.moreInformation': 'Mais informação',
-  'analogue.noResults': 'Nenhuma ferramenta corresponde à sua pesquisa.',
-  'analogue.clearFilters': 'Limpar filtros',
+  'resources.eyebrow': 'Métodos participativos SPICE',
+  'resources.title': 'Recursos analógicos',
+  'resources.description': '{{count}} métodos liderados por facilitadores para a cocriação offline e híbrida, organizados pelos cinco objetivos do SPICE, desde o mapeamento das partes interessadas até à prototipagem.',
+  'resources.searchPlaceholder': 'Pesquise por recurso, objetivo ou palavra-chave',
+  'resources.allModes': 'Todos os modos',
+  'resources.allStatuses': 'Todos os estados',
+  'resources.online': 'Em linha',
+  'resources.offline': 'Off-line',
+  'resources.hybrid': 'Híbrido',
+  'resources.targetUsers.internal': 'Equipa interna',
+  'resources.targetUsers.public': 'Participantes públicos',
+  'resources.formatted': 'Formatado para impressão',
+  'resources.contentReady': 'Conteúdo pronto',
+  'resources.gridView': 'Visualização em grelha',
+  'resources.listView': 'Visualização de lista',
+  'resources.results': '{{count}} recursos encontrados',
+  'resources.phaseResults': '{{count}} recursos',
+  'resources.moreInformation': 'Mais informação',
+  'resources.noResults': 'Nenhum recurso corresponde à sua pesquisa.',
+  'resources.objectiveNumber': 'Objetivo {{objective}}',
+  'resources.clearFilters': 'Limpar filtros',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
-  'home.analoguePreviewCount': '{{visible}} métodos de exemplo de {{total}} no kit de ferramentas completo',
-  'toolDetail.back': 'Voltar às ferramentas analógicas',
+  'home.analogResourcesPreviewCount': '{{visible}} recursos de exemplo de {{total}} na plataforma completa',
+  'toolDetail.back': 'Voltar aos recursos analógicos',
   'toolDetail.phase': 'Fase {{phase}} | {{name}}',
   'toolDetail.inProcess': 'No processo do seu piloto',
   'toolDetail.askAi': 'Pergunte ao guia de IA sobre esta ferramenta',
@@ -8431,6 +8752,8 @@ const pt: Record<TranslationKey, string> = {
   'toolDetail.groupSize': 'Tamanho do grupo',
   'toolDetail.facilitatorRatio': 'Proporção de facilitador',
   'toolDetail.supplies': 'Fornecimentos necessários',
+  'toolDetail.targetUsers': 'Utilizadores-alvo',
+  'toolDetail.prerequisites': 'Pré-requisitos',
   'toolDetail.related': 'Ferramentas relacionadas - {{phase}}',
   'toolDetail.defaultHowTo': 'Analise o propósito com os participantes, prepare os materiais, facilite a atividade e documente os resultados partilhados.',
   'toolDetail.defaultRequirements': 'Nenhum requisito de preparação adicional é especificado na sebenta de origem aprovada.',
@@ -8456,27 +8779,27 @@ const pt: Record<TranslationKey, string> = {
   'home.digitalEnablementTitle': 'Capacitação digital',
   'home.digitalEnablementText': 'A tecnologia apoia o envolvimento, a evidência e o acesso.',
   'home.ecosystemCaption': 'As ferramentas analógicas e digitais apoiam a participação inclusiva, desde o desafio local até à decisão partilhada.',
-  'home.pathEyebrow': 'Um caminho claro através do SPICE',
-  'home.pathTitle': 'De um objetivo local a resultados partilhados',
-  'home.pathText': 'Estruture o que é importante, reúna as pessoas e as ferramentas certas e transforme a participação em provas e ações úteis.',
-  'home.step1': 'Passo 1',
-  'home.step1Title': 'Definir o objetivo',
-  'home.step1Text': 'Compreender o desafio, estruturar o piloto, identificar as partes interessadas e estabelecer objetivos de participação.',
-  'home.step1Item1': 'Desafio local',
-  'home.step1Item2': 'Contexto piloto',
-  'home.step1Item3': 'Metas de participação',
-  'home.step2': 'Passo 2',
-  'home.step2Title': 'Co-criar com SPICE',
-  'home.step2Text': 'Siga a metodologia e combine métodos analógicos, serviços digitais, deliberação e conhecimento.',
-  'home.step2Item1': 'Métodos e ferramentas',
-  'home.step2Item2': 'Discussão e votação',
-  'home.step2Item3': 'Recursos partilhados',
-  'home.step3': 'Passo 3',
-  'home.step3Title': 'Criar resultados',
-  'home.step3Text': 'Transforme as contribuições da comunidade em ideias, prioridades, resultados documentados, relatórios e decisões mais bem informadas.',
-  'home.step3Item1': 'Entendimento partilhado',
-  'home.step3Item2': 'Evidências e relatórios',
-  'home.step3Item3': 'Prioridades acionáveis',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'home.pilotSitesText': 'Descubra os quatro contextos-piloto europeus onde as comunidades estão a testar abordagens inclusivas para remodelar o espaço público.',
   'home.pillarsText': 'Os princípios partilhados que mantêm todas as atividades do SPICE acessíveis, responsáveis, participativas e ligadas a decisões reais.',
   'home.digitalToolsText': 'Utilize os serviços digitais SPICE para orientar um processo, recolher informação local, explorar ideias espaciais e receber apoio contextual.',
@@ -8522,16 +8845,13 @@ const pt: Record<TranslationKey, string> = {
   'common.activities.one': '{{count}} atividade',
   'common.activities.other': '{{count}} atividades',
   'setup.step1': 'Configuração do processo participativo',
-  'setup.stepOfFour': 'Passo {{step}} de 4 · Configuração do processo',
+  'setup.stepOfThree': 'Passo {{step}} de 3 · Configuração do processo',
   'setup.progressLabel': 'Progresso da configuração do processo',
   'setup.progress.stage': 'Fase atual',
   'setup.progress.objectives': 'Objetivos',
   'setup.progress.participation': 'Participação',
-  'setup.progress.practical': 'Configuração prática',
   'setup.title': 'Configure o seu processo de cocriação',
   'setup.intro': 'Fale-nos do piloto, dos objetivos de participação e do contexto prático. As suas respostas ajudarão o SPICE a adaptar o percurso de cocriação e a recomendar ferramentas e atividades adequadas.',
-  'setup.practicalTitle': 'Configuração prática',
-  'setup.practicalText': 'Defina as condições práticas para uma participação acessível e realista.',
   'setup.back': 'Voltar',
   'setup.continue': 'Continuar',
   'setup.reviewRecommendations': 'Rever recomendações',
@@ -8590,33 +8910,33 @@ const pt: Record<TranslationKey, string> = {
   'setup.objective.consolidation': 'Consolidação, Governação e Aprendizagem',
   'setup.objective.consolidationDesc': 'Transforme os resultados em responsabilidades, resultados, aprendizagens e passos seguintes.',
   'setup.participationTitle': 'Enquadrar o nível de participação no processo',
-  'setup.participation.inform': 'Informar e explicar',
-  'setup.participation.informDesc': 'Utilize materiais claros para ajudar as pessoas a compreender o projeto e as decisões.',
-  'setup.participation.consult': 'Consulte e recolha feedback',
-  'setup.participation.consultDesc': 'Peça aos cidadãos e às partes interessadas que comentem, votem, mapeiem ou respondam.',
-  'setup.participation.cocreate': 'Cocriar com os participantes',
-  'setup.participation.cocreateDesc': 'Trabalhem em conjunto em ideias, cenários, prioridades e ações futuras.',
+  'setup.participation.consult': 'Consultar',
+  'setup.participation.consultDesc': 'Cidadãos e partes interessadas partilham necessidades, perceções, preferências ou feedback que informam o processo — a decisão final permanece com o promotor do processo.',
+  'setup.participation.codevelop': 'Co-desenvolver',
+  'setup.participation.codevelopDesc': 'Cidadãos, partes interessadas, especialistas e instituições trabalham em conjunto para interpretar desafios, gerar ideias e desenvolver cenários — uma influência mais forte e partilhada dentro de restrições institucionais.',
+  'setup.participation.selfgovern': 'Autogovernar',
+  'setup.participation.selfgovernDesc': 'Comunidades ou atores locais assumem um papel duradouro em iniciar, gerir ou adaptar ações ao longo do tempo — propriedade, gestão partilhada e governação de longo prazo.',
   'setup.goalTitle': 'Estruture o objetivo do processo participativo',
   'setup.goal.physical': 'Intervenção física no site',
   'setup.goal.intangible': 'Resultados intangíveis, eventos ou organização comunitária',
   'setup.goal.undefined': 'Ainda não está definido',
-  'setup.groupSize': 'Tamanho do grupo',
+  
   'setup.duration': 'Duração',
-  'setup.facilitation': 'Facilitação',
+  
   'setup.mode': 'Modo',
-  'setup.group.lt10': 'Menos de 10 pessoas',
-  'setup.group.10to25': '10 a 25 pessoas',
-  'setup.group.25to50': '25 a 50 pessoas',
-  'setup.group.50plus': 'Mais de 50 pessoas',
-  'setup.duration.lt5': 'Menos de 5 minutos',
-  'setup.duration.5to30': '5–30 minutos',
-  'setup.duration.30to120': '30 minutos – 2 horas',
-  'setup.duration.halfDay': 'Meio-dia',
-  'setup.duration.fullDay': 'Dia completo',
-  'setup.duration.multiDay': 'Vários dias',
-  'setup.facilitator.one': '1 pessoa',
-  'setup.facilitator.twoThree': '2–3 pessoas',
-  'setup.facilitator.fourPlus': '4 ou mais pessoas',
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   'setup.additionalFilters': 'Filtros adicionais',
   'setup.selectionsTitle': 'As suas seleções',
   'setup.selectionsEmpty': 'As suas seleções aparecerão aqui.',
@@ -8929,7 +9249,7 @@ const pt: Record<TranslationKey, string> = {
   'hub.phaseNotStarted': 'Este site piloto ainda não iniciou a sua fase atual.',
   'hub.toolsEnabledForPhase': 'Ferramentas activadas para esta fase',
   'hub.preparePhaseActivities': 'Preparar as atividades da fase',
-  'hub.uploadWorkshopOutput': 'Fazer o upload do resultado do workshop para o repositório',
+  'hub.uploadWorkshopOutput': 'Escrever relatório do objetivo',
   'hub.prepareDraftProposal': 'Elaborar um projecto de proposta',
   'hub.loadingPilot': 'A carregar o seu site piloto…',
   'hub.noPilotAssigned': 'Não foi atribuído nenhum site piloto',
@@ -9258,14 +9578,14 @@ const pt: Record<TranslationKey, string> = {
   'glossary.results.few': '{{visible}} de {{total}} termos do glossário',
   'glossary.results.many': '{{visible}} de {{total}} termos do glossário',
   'glossary.results.other': '{{visible}} de {{total}} termos do glossário',
-  'analogue.results.one': '{{count}} ferramenta encontrada',
-  'analogue.results.few': '{{count}} ferramentas encontradas',
-  'analogue.results.many': '{{count}} ferramentas encontradas',
-  'analogue.results.other': '{{count}} ferramentas encontradas',
-  'analogue.phaseResults.one': '{{count}} ferramenta',
-  'analogue.phaseResults.few': '{{count}} ferramentas',
-  'analogue.phaseResults.many': '{{count}} ferramentas',
-  'analogue.phaseResults.other': '{{count}} ferramentas',
+  'resources.results.one': '{{count}} recurso encontrado',
+  'resources.results.few': '{{count}} recursos encontrados',
+  'resources.results.many': '{{count}} recursos encontrados',
+  'resources.results.other': '{{count}} recursos encontrados',
+  'resources.phaseResults.one': '{{count}} recurso',
+  'resources.phaseResults.few': '{{count}} recursos',
+  'resources.phaseResults.many': '{{count}} recursos',
+  'resources.phaseResults.other': '{{count}} recursos',
   'chatbot.collections.one': '{{count}} coleção',
   'chatbot.collections.few': '{{count}} coleções',
   'chatbot.collections.many': '{{count}} coleções',
@@ -9422,6 +9742,16 @@ const pt: Record<TranslationKey, string> = {
   'phaseDetail.supportContact': 'Contacto de apoio',
   'phaseDetail.selectedTools': 'Ferramentas utilizadas na atividade',
   'phaseDetail.publishedInstructionDetails': 'Instruções e detalhes práticos da atividade',
+  'phaseDetail.reportTitle': 'Relatório de encerramento do objetivo',
+  'phaseDetail.reportHelp': 'Após cada evento, registe aqui o que aconteceu: o processo, quem participou, os principais resultados, observações críticas e lições aprendidas. Depois de publicado, torna-se o registo partilhado com os participantes e o município.',
+  'phaseDetail.reportPlaceholder': 'Resuma o processo, a participação, os principais resultados e as lições aprendidas…',
+  'phaseDetail.reportRequiredNote': 'É necessário um relatório com pelo menos 20 caracteres antes que este objetivo final possa ser marcado como concluído.',
+  'phaseDetail.reportOptionalNote': 'Recomendado após cada evento, para que o registo se mantenha claro para quem continuar o processo.',
+  'phaseDetail.uploadMaterials': 'Carregar fotografias e documentos',
+  'phaseDetail.reportSave': 'Guardar relatório',
+  'phaseDetail.reportSaving': 'A guardar…',
+  'phaseDetail.reportSaved': 'Relatório guardado.',
+  'phaseDetail.reportSaveFailed': 'Não foi possível guardar o relatório. Tente novamente.',
 };
 
 export const translations: Record<LanguageCode, Record<TranslationKey, string>> = { en, el, fi, pl, pt };

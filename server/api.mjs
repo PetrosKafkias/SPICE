@@ -22,7 +22,6 @@ import { randomUUID } from 'node:crypto';
 
 const SESSION_COOKIE = 'spice_session';
 const MAX_BODY_SIZE = 1_000_000;
-const REGISTRATION_ROLES = new Set(['Citizen', 'Municipality Staff', 'Facilitator']);
 const LOCALES = new Set(['EN', 'EL', 'FI', 'PL', 'PT']);
 
 function safeReturnTo(value) {
@@ -763,7 +762,7 @@ export async function createApiHandler(options = {}) {
         const fullName = String(body.fullName || '').trim();
         const password = String(body.password || '');
         const confirmPassword = String(body.confirmPassword || '');
-        const role = REGISTRATION_ROLES.has(body.role) ? body.role : 'Citizen';
+        const role = 'Citizen';
         const pilotSite = String(body.pilotSite || 'Thessaloniki').trim();
         const locale = LOCALES.has(body.locale) ? body.locale : 'EN';
         const returnTo = safeReturnTo(body.returnTo);
@@ -775,7 +774,6 @@ export async function createApiHandler(options = {}) {
         if (passwordError) fieldErrors.password = passwordError;
         if (!confirmPassword) fieldErrors.confirmPassword = 'Confirm your password.';
         else if (password !== confirmPassword) fieldErrors.confirmPassword = 'Passwords do not match.';
-        if (!REGISTRATION_ROLES.has(body.role)) fieldErrors.role = 'Select a role.';
         if (!pilotSite) fieldErrors.pilotSite = 'Select a pilot site.';
         if (!body.acceptedTerms) fieldErrors.acceptedTerms = 'You must accept the Terms of Use and Privacy Policy.';
         if (Object.keys(fieldErrors).length > 0) {
@@ -791,7 +789,7 @@ export async function createApiHandler(options = {}) {
         const now = new Date().toISOString();
         const passwordHash = await hashPassword(password);
         const verificationToken = createSessionToken();
-        const accountStatus = (role === 'Municipality Staff' || role === 'Facilitator') ? 'pending_approval' : 'active';
+        const accountStatus = 'active';
         db.exec('BEGIN IMMEDIATE');
         try {
         const result = db.prepare(`
@@ -811,9 +809,7 @@ export async function createApiHandler(options = {}) {
         const delivery = await sendVerificationEmail({ email, fullName, token: verificationToken, locale, returnTo });
         db.exec('COMMIT');
         sendJson(response, 201, {
-          message: accountStatus === 'pending_approval'
-            ? 'Account created successfully. Please check your email to verify your account. This role also requires administrator approval before its permissions activate.'
-            : 'Account created successfully. Please check your email to verify your account.',
+          message: 'Account created successfully. Please check your email to verify your account.',
           email,
           accountStatus,
           delivery: delivery.delivery,
@@ -1176,10 +1172,6 @@ export async function createApiHandler(options = {}) {
           && parseJson(row.setup_objectives_json, []).length > 0
           && row.setup_participation_level
           && row.setup_goal
-          && row.setup_group_size
-          && row.setup_duration
-          && row.setup_facilitator
-          && row.setup_mode
           && parseJson(row.setup_selected_tools_json, []).length > 0
         );
         if (!setupComplete || row.lifecycle_status !== 'ready_to_activate') {
@@ -1234,7 +1226,7 @@ export async function createApiHandler(options = {}) {
           setupFacilitator: body.facilitator == null ? row.setup_facilitator : String(body.facilitator),
           setupMode: body.mode == null ? row.setup_mode : String(body.mode),
         };
-        const setupComplete = Boolean(next.setupStage && next.setupObjectives.length > 0 && next.setupParticipationLevel && next.setupGoal && next.setupGroupSize && next.setupDuration && next.setupFacilitator && next.setupMode);
+        const setupComplete = Boolean(next.setupStage && next.setupObjectives.length > 0 && next.setupParticipationLevel && next.setupGoal);
         const setupToolsComplete = next.setupSelectedTools.length > 0;
         const lifecycleBeforeSetup = nextStatus === 'draft' ? 'setup_required' : row.lifecycle_status;
         const nextLifecycleStatus = lifecycleBeforeSetup === 'setup_required' && setupComplete && setupToolsComplete
@@ -1332,8 +1324,18 @@ export async function createApiHandler(options = {}) {
         const phase = db.prepare('SELECT * FROM hub_phases WHERE initiative_id = ? AND phase_number = ?').get(initiativeId, phaseNumber);
         const body = await readJson(request);
         const mayManageLifecycle = hasPermission(session.user, 'hub:manage-phases');
-        db.prepare('UPDATE hub_phases SET instructions=?, enabled_tools_json=?, results_visible=? WHERE id=?')
-          .run(body.instructions == null ? phase.instructions : String(body.instructions), JSON.stringify(Array.isArray(body.enabledTools) ? body.enabledTools : parseJson(phase.enabled_tools_json, [])), !mayManageLifecycle || body.resultsVisible == null ? phase.results_visible : (body.resultsVisible ? 1 : 0), phase.id);
+        const nextCompletionSummary = body.completionSummary == null ? phase.completion_summary : String(body.completionSummary).trim();
+        db.prepare('UPDATE hub_phases SET instructions=?, enabled_tools_json=?, results_visible=?, completion_summary=? WHERE id=?')
+          .run(
+            body.instructions == null ? phase.instructions : String(body.instructions),
+            JSON.stringify(Array.isArray(body.enabledTools) ? body.enabledTools : parseJson(phase.enabled_tools_json, [])),
+            !mayManageLifecycle || body.resultsVisible == null ? phase.results_visible : (body.resultsVisible ? 1 : 0),
+            nextCompletionSummary,
+            phase.id,
+          );
+        if (body.completionSummary != null) {
+          addAudit(db, { actor: session.user, action: 'hub.phase.report', targetType: 'hub_phase', targetId: phase.id, previousValue: { completionSummary: phase.completion_summary }, newValue: { completionSummary: nextCompletionSummary } });
+        }
         addAudit(db, { actor: session.user, action: 'hub.phase.update', targetType: 'hub_phase', targetId: phase.id, previousValue: { enabledTools: parseJson(phase.enabled_tools_json, []) }, newValue: { enabledTools: Array.isArray(body.enabledTools) ? body.enabledTools : parseJson(phase.enabled_tools_json, []) } });
         sendJson(response, 200, { phase: phaseFromRow(db.prepare('SELECT * FROM hub_phases WHERE id = ?').get(phase.id)) });
         return true;
@@ -2810,16 +2812,6 @@ export async function createApiHandler(options = {}) {
           category: row.category, updatedAt: row.updated_at,
         }));
         const data = Object.fromEntries(db.prepare("SELECT data_key, payload_json FROM dashboard_data WHERE page = 'insights'").all().map((row) => [row.data_key, JSON.parse(row.payload_json)]));
-        sendJson(response, 200, { metrics, data });
-        return true;
-      }
-
-      if (method === 'GET' && pathname === '/api/citivoice') {
-        const metrics = db.prepare('SELECT * FROM citivoice_metrics ORDER BY rowid').all().map((row) => ({
-          key: row.metric_key, value: Number(row.metric_value), label: row.metric_label,
-          periodLabel: row.period_label, updatedAt: row.updated_at,
-        }));
-        const data = Object.fromEntries(db.prepare("SELECT data_key, payload_json FROM dashboard_data WHERE page = 'citivoice'").all().map((row) => [row.data_key, JSON.parse(row.payload_json)]));
         sendJson(response, 200, { metrics, data });
         return true;
       }

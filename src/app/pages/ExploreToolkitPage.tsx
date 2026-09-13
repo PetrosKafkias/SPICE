@@ -17,8 +17,8 @@ const PHASE_COLORS = ['#1e3d5c', '#0f6e6e', '#3a6b3a', '#c8691e', '#5a3f7a'];
 function ToolCard({ tool, onViewDetail }: { tool: Tool; onViewDetail: (id: string) => void }) {
   const { t } = useI18n();
   const mc = MODE_COLORS[tool.mode];
-  const modeLabel = t(`analogue.${tool.mode.toLowerCase()}` as 'analogue.online' | 'analogue.offline' | 'analogue.hybrid');
-  const statusLabel = t(tool.status === 'Content ready' ? 'analogue.contentReady' : 'analogue.formatted');
+  const modeLabel = t(`resources.${tool.mode.toLowerCase()}` as 'resources.online' | 'resources.offline' | 'resources.hybrid');
+  const statusLabel = t(tool.status === 'Content ready' ? 'resources.contentReady' : 'resources.formatted');
 
   return (
     <div className="spice-card overflow-hidden flex flex-col">
@@ -47,7 +47,7 @@ function ToolCard({ tool, onViewDetail }: { tool: Tool; onViewDetail: (id: strin
           className="flex-1 py-3 text-[13px] font-semibold text-[#444] hover:bg-gray-50 transition-colors"
           style={{ fontFamily: 'Montserrat, sans-serif' }}
         >
-          {t('analogue.moreInformation')}
+          {t('resources.moreInformation')}
         </button>
       </div>
     </div>
@@ -79,7 +79,7 @@ export default function ExploreToolkitPage() {
 
   return (
     <SpicePublicShell variant="public">
-      <StandardPageHeader icon={Grid2X2} eyebrow={t('analogue.eyebrow')} title={t('analogue.title')} description={t('analogue.description', { count: formatNumber(tools.length) })} />
+      <StandardPageHeader icon={Grid2X2} eyebrow={t('resources.eyebrow')} title={t('resources.title')} description={t('resources.description', { count: formatNumber(tools.length) })} />
       <div className="spice-page spice-wide-page flex flex-col gap-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
         {/* Search + controls */}
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
@@ -88,7 +88,7 @@ export default function ExploreToolkitPage() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder={t('analogue.searchPlaceholder')}
+              placeholder={t('resources.searchPlaceholder')}
               className="flex-1 bg-transparent text-[14px] text-[#444] outline-none placeholder:text-[#aaa]"
             />
           </div>
@@ -97,8 +97,8 @@ export default function ExploreToolkitPage() {
               <select value={modeFilter} onChange={(e) => setModeFilter(e.target.value)}
                 className="appearance-none border border-[#999] bg-white px-3 py-2.5 pr-8 text-[13px] text-[#444] outline-none cursor-pointer"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                <option value="all">{t('analogue.allModes')}</option>
-                <option value="Online">{t('analogue.online')}</option><option value="Offline">{t('analogue.offline')}</option><option value="Hybrid">{t('analogue.hybrid')}</option>
+                <option value="all">{t('resources.allModes')}</option>
+                <option value="Online">{t('resources.online')}</option><option value="Offline">{t('resources.offline')}</option><option value="Hybrid">{t('resources.hybrid')}</option>
               </select>
               <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
             </div>
@@ -106,22 +106,22 @@ export default function ExploreToolkitPage() {
               <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
                 className="appearance-none border border-[#999] bg-white px-3 py-2.5 pr-8 text-[13px] text-[#444] outline-none cursor-pointer"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                <option value="all">{t('analogue.allStatuses')}</option><option value="Formatted for printing">{t('analogue.formatted')}</option><option value="Content ready">{t('analogue.contentReady')}</option>
+                <option value="all">{t('resources.allStatuses')}</option><option value="Formatted for printing">{t('resources.formatted')}</option><option value="Content ready">{t('resources.contentReady')}</option>
               </select>
               <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
             </div>
             <div className="flex border border-[#999] overflow-hidden">
-              <button onClick={() => setViewGrid(true)} aria-label={t('analogue.gridView')} aria-pressed={viewGrid} className="p-2.5 transition-colors" style={{ backgroundColor: viewGrid ? '#f0f0f0' : 'white' }}>
+              <button onClick={() => setViewGrid(true)} aria-label={t('resources.gridView')} aria-pressed={viewGrid} className="p-2.5 transition-colors" style={{ backgroundColor: viewGrid ? '#f0f0f0' : 'white' }}>
                 <Grid2X2 size={16} className="text-[#444]" />
               </button>
-              <button onClick={() => setViewGrid(false)} aria-label={t('analogue.listView')} aria-pressed={!viewGrid} className="p-2.5 transition-colors border-l border-gray-200" style={{ backgroundColor: !viewGrid ? '#f0f0f0' : 'white' }}>
+              <button onClick={() => setViewGrid(false)} aria-label={t('resources.listView')} aria-pressed={!viewGrid} className="p-2.5 transition-colors border-l border-gray-200" style={{ backgroundColor: !viewGrid ? '#f0f0f0' : 'white' }}>
                 <List size={16} className="text-[#444]" />
               </button>
             </div>
           </div>
         </div>
 
-        <p className="text-[14px] text-[#888]" aria-live="polite">{tp(filtered.length, { one: 'analogue.results.one', few: 'analogue.results.few', many: 'analogue.results.many', other: 'analogue.results.other' })}</p>
+        <p className="text-[14px] text-[#888]" aria-live="polite">{tp(filtered.length, { one: 'resources.results.one', few: 'resources.results.few', many: 'resources.results.many', other: 'resources.results.other' })}</p>
 
         {/* Phase groups */}
         {byPhase.map(({ phase, tools }) => (
@@ -135,7 +135,7 @@ export default function ExploreToolkitPage() {
                 <h2 className="text-[18px] font-bold text-[#444]">{t(processPhase(phase.id).titleKey)}</h2>
                 <p className="text-[12px] text-[#888]">{t(processPhase(phase.id).questionKey)}</p>
               </div>
-              <span className="ml-auto text-[13px] font-medium text-[#888]">{tp(tools.length, { one: 'analogue.phaseResults.one', few: 'analogue.phaseResults.few', many: 'analogue.phaseResults.many', other: 'analogue.phaseResults.other' })}</span>
+              <span className="ml-auto text-[13px] font-medium text-[#888]">{tp(tools.length, { one: 'resources.phaseResults.one', few: 'resources.phaseResults.few', many: 'resources.phaseResults.many', other: 'resources.phaseResults.other' })}</span>
             </div>
 
             <div className={viewGrid ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : 'flex flex-col gap-3'}>
@@ -148,13 +148,13 @@ export default function ExploreToolkitPage() {
                         <p className="text-[15px] font-bold text-[#444]">{tool.name}</p>
                         <p className="text-[13px] text-[#666] mt-0.5">{tool.shortDesc}</p>
                         <div className="flex flex-wrap gap-1.5 mt-2">
-                          <span className="px-2 py-0.5 text-[11px] font-semibold rounded-full" style={{ backgroundColor: MODE_COLORS[tool.mode].bg, color: MODE_COLORS[tool.mode].text }}>{t(`analogue.${tool.mode.toLowerCase()}` as 'analogue.online' | 'analogue.offline' | 'analogue.hybrid')}</span>
+                          <span className="px-2 py-0.5 text-[11px] font-semibold rounded-full" style={{ backgroundColor: MODE_COLORS[tool.mode].bg, color: MODE_COLORS[tool.mode].text }}>{t(`resources.${tool.mode.toLowerCase()}` as 'resources.online' | 'resources.offline' | 'resources.hybrid')}</span>
                           <span className="px-2 py-0.5 text-[11px] bg-gray-100 text-[#444] rounded-full">{tool.duration}</span>
                           <span className="px-2 py-0.5 text-[11px] bg-gray-100 text-[#444] rounded-full">{tool.groupSize}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <button onClick={() => navigate(`/tool-detail/${tool.id}`)} className="px-4 py-2 border border-gray-300 text-[13px] font-medium text-[#444] hover:bg-gray-50 transition-colors">{t('analogue.moreInformation')}</button>
+                        <button onClick={() => navigate(`/tool-detail/${tool.id}`)} className="px-4 py-2 border border-gray-300 text-[13px] font-medium text-[#444] hover:bg-gray-50 transition-colors">{t('resources.moreInformation')}</button>
                       </div>
                     </div>
                   )
@@ -166,8 +166,8 @@ export default function ExploreToolkitPage() {
         {filtered.length === 0 && (
           <div className="text-center py-20 text-[#aaa]">
             <Search size={40} className="mx-auto mb-3 opacity-30" />
-            <p className="text-[16px]">{t('analogue.noResults')}</p>
-            <button onClick={() => { setSearch(''); setModeFilter('all'); setStatusFilter('all'); }} className="mt-3 text-[#ca7428] hover:underline text-[14px]">{t('analogue.clearFilters')}</button>
+            <p className="text-[16px]">{t('resources.noResults')}</p>
+            <button onClick={() => { setSearch(''); setModeFilter('all'); setStatusFilter('all'); }} className="mt-3 text-[#ca7428] hover:underline text-[14px]">{t('resources.clearFilters')}</button>
           </div>
         )}
       </div>

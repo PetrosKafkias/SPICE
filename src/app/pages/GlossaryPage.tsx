@@ -15,7 +15,7 @@ interface GlossaryEntry { id: string; term: string; definition: string | null; d
 const ALL_CATEGORY = '__all__';
 const ENTRIES: Record<LocaleCode, GlossaryEntry[]> = { en: enEntries as GlossaryEntry[], el: elEntries as GlossaryEntry[], fi: fiEntries as GlossaryEntry[], pl: plEntries as GlossaryEntry[], pt: ptEntries as GlossaryEntry[] };
 const CATEGORY_BY_ENTRY_ID = new Map((enEntries as GlossaryEntry[]).map((entry) => [entry.id, entry.category]));
-const RELATED_ROUTES: Record<string, string> = { 'co-creation': '/co-creation-hub', 'co-design': '/methodology', method: '/analogue-tools', technique: '/analogue-tools', tool: '/analogue-tools', placemaking: '/methodology', 'nature-based-solutions': '/methodology', 'hybrid-participation': '/analogue-tools', prototyping: '/methodology' };
+const RELATED_ROUTES: Record<string, string> = { 'co-creation': '/co-creation-hub', 'co-design': '/methodology', method: '/analog-resources', technique: '/analog-resources', tool: '/analog-resources', placemaking: '/methodology', 'nature-based-solutions': '/methodology', 'hybrid-participation': '/analog-resources', prototyping: '/methodology' };
 
 export default function GlossaryPage() {
   const { language, t, tp, formatNumber } = useI18n();
