@@ -167,7 +167,7 @@ export async function seedDatabase(db) {
           setup_selected_tools_json = ?, activated_at = COALESCE(activated_at, ?), updated_at = ?
         WHERE id = ?
       `).run(
-        JSON.stringify(['inclusive_design', 'community_priorities']), NOW,
+        JSON.stringify(['collective', 'codesign']), NOW,
         JSON.stringify(['hopes-and-fears', 'key-informant-interviews', 'scenario-building', 'top-10-design-principles-manifesto']),
         NOW, NOW, initiativeId,
       );
