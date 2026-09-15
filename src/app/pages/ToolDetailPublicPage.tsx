@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { ChevronLeft, Clock, Users, CheckSquare, Bot, Camera, FileText, ChevronRight, Lightbulb, LayoutPanelTop, Link as LinkIcon, Radio, Settings, UserCog, Info, ClipboardCheck, UserCheck } from 'lucide-react';
+import { ChevronLeft, Clock, Users, CheckSquare, Bot, ChevronRight, Lightbulb, LayoutPanelTop, Radio, Settings, UserCog, Info, ClipboardCheck, UserCheck } from 'lucide-react';
 import SpicePublicShell from '../components/SpicePublicShell';
-import { getTools, PHASES } from '../data/tools';
+import { getTools, PHASES, PREREQUISITE_TOOL_IDS } from '../data/tools';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
 import { apiRequest } from '../lib/api';
@@ -13,6 +13,21 @@ const MODE_COLORS: Record<string, { bg: string; text: string }> = {
   Offline: { bg: '#f0eef8', text: '#5a3f7a' },
 };
 
+function PrintableVersionTile({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="spice-interactive-card flex w-full flex-col items-center gap-3 rounded-xl p-4"
+    >
+      <div className="grid h-64 w-full place-items-center rounded-lg bg-[#fff0e1]">
+        <LayoutPanelTop size={40} className="text-[#ca7428]" />
+      </div>
+      <p className="text-[14px] font-semibold text-[#555]">{label}</p>
+    </button>
+  );
+}
+
 export default function ToolDetailPublicPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -22,7 +37,9 @@ export default function ToolDetailPublicPage() {
 
   const tool = tools.find((item) => item.id === id) ?? tools[0];
   const phase = PHASES.find((p) => p.id === tool.phase)!;
-  const relatedTools = tools.filter((item) => item.phase === tool.phase && item.id !== tool.id).slice(0, 3);
+  const relatedTools = (PREREQUISITE_TOOL_IDS[tool.id] || [])
+    .map((relatedId) => tools.find((item) => item.id === relatedId))
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
   const mc = MODE_COLORS[tool.mode];
 
   const [inProcess, setInProcess] = useState(false);
@@ -112,29 +129,18 @@ export default function ToolDetailPublicPage() {
               </div>
             </div>
 
-            {/* Examples & Screenshots */}
+            {/* Resources */}
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
               <div className="px-6 py-4 border-b border-gray-100">
                 <h2 className="text-[18px] font-bold text-[#444]">{t('toolDetail.examples')}</h2>
               </div>
-              <div className="grid gap-4 p-6 sm:grid-cols-3">
-                {[
-                  { icon: Camera, label: t('toolDetail.workshopSession'), onClick: () => navigate(`/repository?phase=${tool.phase}`) },
-                  { icon: FileText, label: t('toolDetail.outputDocumentation'), onClick: () => navigate(`/repository?phase=${tool.phase}`) },
-                  { icon: LayoutPanelTop, label: t('toolDetail.printableVersion'), onClick: () => (tool.printableUrl ? window.open(tool.printableUrl, '_blank', 'noopener,noreferrer') : window.print()) },
-                ].map(({ icon: Icon, label, onClick }) => (
-                  <button type="button" key={label} onClick={onClick} className="spice-interactive-card flex flex-col items-center justify-center gap-3 rounded-xl py-10">
-                    <Icon size={32} className="text-[#ca7428]" />
-                    <p className="text-[14px] font-semibold text-[#555]">{label}</p>
-                  </button>
-                ))}
+              <div className="p-6">
+                <PrintableVersionTile
+                  label={t('toolDetail.printableVersion')}
+                  onClick={() => (tool.printableUrl ? window.open(tool.printableUrl, '_blank', 'noopener,noreferrer') : window.print())}
+                />
               </div>
             </div>
-
-            <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="flex items-center gap-2 text-[18px] font-bold text-[#444]"><LinkIcon size={20} className="text-[#ca7428]" />{t('toolDetail.resources')}</h2>
-              <p className="mt-4 whitespace-pre-line text-[14px] leading-relaxed text-[#666]">{tool.onlineResources || t('toolDetail.defaultResources')}</p>
-            </section>
           </div>
 
           {/* Right sidebar */}
@@ -165,7 +171,7 @@ export default function ToolDetailPublicPage() {
             {/* Related Tools */}
             {relatedTools.length > 0 && (
               <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-                <h3 className="text-[16px] font-bold text-[#444] mb-4">{t('toolDetail.related', { phase: t(phase.nameKey) })}</h3>
+                <h3 className="text-[16px] font-bold text-[#444] mb-4">{t('toolDetail.related')}</h3>
                 <div className="flex flex-col gap-2">
                   {relatedTools.map((t) => (
                     <button

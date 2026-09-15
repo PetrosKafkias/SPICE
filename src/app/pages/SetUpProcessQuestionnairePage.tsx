@@ -16,7 +16,6 @@ interface Initiative {
   setupStage: string | null;
   setupObjectives: string[];
   setupParticipationLevel: string | null;
-  setupGoal: string | null;
   setupGroupSize: string | null;
   setupDuration: string | null;
   setupFacilitator: string | null;
@@ -45,11 +44,13 @@ const PARTICIPATION_LEVELS: { id: string; labelKey: TranslationKey; descKey: Tra
   { id: 'selfgovern', labelKey: 'setup.participation.selfgovern', descKey: 'setup.participation.selfgovernDesc' },
 ];
 
-const GOALS: { id: string; labelKey: TranslationKey }[] = [
-  { id: 'physical', labelKey: 'setup.goal.physical' },
-  { id: 'intangible', labelKey: 'setup.goal.intangible' },
-  { id: 'undefined', labelKey: 'setup.goal.undefined' },
-];
+type StepKey = 'stage' | 'objectives' | 'participation';
+
+const STEP_LABEL_KEYS: Record<StepKey, TranslationKey> = {
+  stage: 'setup.progress.stage',
+  objectives: 'setup.progress.objectives',
+  participation: 'setup.progress.participation',
+};
 
 function FieldError({ show, children }: { show: boolean; children: React.ReactNode }) {
   if (!show) return null;
@@ -111,6 +112,15 @@ export default function SetUpProcessQuestionnairePage() {
   const [step, setStep] = useState(1);
   const [editingActiveProcess, setEditingActiveProcess] = useState(false);
 
+  const skipObjectives = processSetup.stage === 'proposal' || processSetup.stage === 'setup';
+  const activeStepKeys = useMemo<StepKey[]>(
+    () => (skipObjectives ? ['stage', 'participation'] : ['stage', 'objectives', 'participation']),
+    [skipObjectives],
+  );
+  const totalSteps = activeStepKeys.length;
+  const currentStepKey = activeStepKeys[Math.min(step, totalSteps) - 1];
+  const participationStepNumber = activeStepKeys.indexOf('participation') + 1;
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -171,7 +181,6 @@ export default function SetUpProcessQuestionnairePage() {
     processSetup.stage && t('setup.summaryStage', { value: t(STAGES.find((item) => item.id === processSetup.stage)?.labelKey || 'setup.stage.proposal') }),
     processSetup.objectives.length > 0 && t('setup.summaryObjectives', { value: processSetup.objectives.map((id) => t(OBJECTIVES.find((item) => item.id === id)?.labelKey || 'setup.objective.framing')).join(', ') }),
     processSetup.level && t('setup.summaryParticipation', { value: t(PARTICIPATION_LEVELS.find((item) => item.id === processSetup.level)?.labelKey || 'setup.participation.consult') }),
-    processSetup.goal && t('setup.summaryGoal', { value: t(GOALS.find((item) => item.id === processSetup.goal)?.labelKey || 'setup.goal.undefined') }),
   ].filter(Boolean), [processSetup, t]);
 
   const matchingCount = useMemo(() => {
@@ -206,11 +215,11 @@ export default function SetUpProcessQuestionnairePage() {
   const handleContinue = async () => {
     setSubmitted(true);
     setObjectiveError('');
-    const requiredMissing = step === 1
+    const requiredMissing = currentStepKey === 'stage'
       ? !processSetup.stage
-      : step === 2
+      : currentStepKey === 'objectives'
         ? processSetup.objectives.length === 0
-        : !processSetup.level || !processSetup.goal;
+        : !processSetup.level;
 
     if (requiredMissing) {
       toast.error(t('setup.completeRequired'));
@@ -220,7 +229,7 @@ export default function SetUpProcessQuestionnairePage() {
     try {
       await persistSetup();
       setSubmitted(false);
-      if (step < 3) setStep((current) => current + 1);
+      if (step < totalSteps) setStep((current) => current + 1);
       else navigate('/setup-tools');
     } catch {
       toast.error(t('setup.saveFailed'));
@@ -263,7 +272,7 @@ export default function SetUpProcessQuestionnairePage() {
     <SpicePublicShell variant="public">
       <div className="spice-page spice-wide-page" style={{ fontFamily: 'Montserrat, sans-serif' }}>
         <div className="mb-6">
-          <p className="text-[13px] font-bold uppercase tracking-wide text-[#ca7428]">{t('setup.stepOfThree', { step })}</p>
+          <p className="text-[13px] font-bold uppercase tracking-wide text-[#ca7428]">{t('setup.stepOf', { step, total: totalSteps })}</p>
           <h1 className="mt-2 text-[32px] font-bold text-[#444]">{t('setup.title')}</h1>
           <p className="mt-2 max-w-[760px] text-[15px] font-medium leading-relaxed text-[#666]">
             {t('setup.intro')}
@@ -276,8 +285,8 @@ export default function SetUpProcessQuestionnairePage() {
           </div>
         )}
 
-        <ol className="mb-7 grid grid-cols-1 border-2 border-[#dedee1] bg-white md:grid-cols-3" aria-label={t('setup.progressLabel')}>
-          {(['setup.progress.stage', 'setup.progress.objectives', 'setup.progress.participation'] as TranslationKey[]).map((key, index) => {
+        <ol className={`mb-7 grid grid-cols-1 border-2 border-[#dedee1] bg-white ${totalSteps === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`} aria-label={t('setup.progressLabel')}>
+          {activeStepKeys.map((key, index) => {
             const number = index + 1;
             const complete = number < step;
             const current = number === step;
@@ -286,7 +295,7 @@ export default function SetUpProcessQuestionnairePage() {
                 <span className={`grid h-8 w-8 flex-none place-items-center rounded-full border-2 text-[13px] font-bold ${complete ? 'border-[#4d7652] bg-[#e7f2df] text-[#355a3a]' : current ? 'border-[#f68b2c] bg-[#f68b2c] text-white' : 'border-[#c8c9cd] text-[#777]'}`}>
                   {complete ? <Check size={16} aria-hidden="true" /> : number}
                 </span>
-                <span className="text-[12px] font-bold text-[#444]">{t(key)}</span>
+                <span className="text-[12px] font-bold text-[#444]">{t(STEP_LABEL_KEYS[key])}</span>
               </li>
             );
           })}
@@ -294,7 +303,7 @@ export default function SetUpProcessQuestionnairePage() {
 
         <div className="flex flex-col items-start gap-8 lg:flex-row">
           <div className="flex min-w-0 flex-1 flex-col gap-8">
-            {step === 1 && <section className="spice-card p-5 md:p-7">
+            {currentStepKey === 'stage' && <section className="spice-card p-5 md:p-7">
               <div className="flex items-center gap-3">
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-[#f68b2c] text-[15px] font-bold text-white">1</span>
                 <div>
@@ -315,9 +324,14 @@ export default function SetUpProcessQuestionnairePage() {
                 ))}
                 <FieldError show={getError('stage')}>{t('setup.stageRequired')}</FieldError>
               </div>
+              {skipObjectives && (
+                <div className="mt-4 flex items-start gap-3 border-l-4 border-[#4e789b] bg-[#f1f7fb] p-4 text-[13px] font-semibold leading-relaxed text-[#31556f]" role="status">
+                  <CircleAlert size={18} className="mt-0.5 flex-none" />{t('setup.earlyStageSkipNotice')}
+                </div>
+              )}
             </section>}
 
-            {step === 2 && <section className="spice-card p-5 md:p-7">
+            {currentStepKey === 'objectives' && <section className="spice-card p-5 md:p-7">
               <div className="flex items-center gap-3">
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-[#f68b2c] text-[15px] font-bold text-white">2</span>
                 <div>
@@ -342,9 +356,9 @@ export default function SetUpProcessQuestionnairePage() {
               </div>
             </section>}
 
-            {step === 3 && <section className="spice-card p-5 md:p-7">
+            {currentStepKey === 'participation' && <section className="spice-card p-5 md:p-7">
               <div className="flex items-center gap-3">
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-[#f68b2c] text-[15px] font-bold text-white">3</span>
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-[#f68b2c] text-[15px] font-bold text-white">{participationStepNumber}</span>
                 <div>
                   <h2 className="text-[18px] font-bold text-[#444]">{t('setup.participationTitle')}</h2>
                   <SectionHelper>{t('setup.selectionRequired')}</SectionHelper>
@@ -365,28 +379,6 @@ export default function SetUpProcessQuestionnairePage() {
               </div>
             </section>}
 
-            {step === 3 && <section className="spice-card p-5 md:p-7">
-              <div className="flex items-center gap-3">
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-[#f68b2c] text-[15px] font-bold text-white">3</span>
-                <div>
-                  <h2 className="text-[18px] font-bold text-[#444]">{t('setup.goalTitle')}</h2>
-                  <SectionHelper>{t('setup.selectionRequired')}</SectionHelper>
-                </div>
-              </div>
-              <div className="mt-4 grid gap-3 md:grid-cols-3">
-                {GOALS.map((goal) => (
-                  <ChoiceCard
-                    key={goal.id}
-                    label={t(goal.labelKey)}
-                    selected={processSetup.goal === goal.id}
-                    error={getError('goal')}
-                    onClick={() => updateProcessSetup({ goal: goal.id })}
-                  />
-                ))}
-                <FieldError show={getError('goal')}>{t('setup.goalRequired')}</FieldError>
-              </div>
-            </section>}
-
             <div className="flex flex-wrap items-center gap-4 border-t border-gray-100 pt-4">
               <button type="button" onClick={() => void handleBack()} className="flex min-h-11 items-center gap-2 border-2 border-[#444] bg-white px-5 font-bold text-[#444]"><ArrowLeft size={16} />{t('setup.back')}</button>
               <button onClick={() => void handleSaveDraft()} disabled={savingDraft} className="flex min-h-11 items-center gap-2 px-5 font-bold text-[#ca7428] transition-colors hover:bg-[#fff3e8] disabled:opacity-60"><Save size={16} /> {savingDraft ? t('common.saving') : t('setup.saveDraft')}</button>
@@ -394,13 +386,13 @@ export default function SetUpProcessQuestionnairePage() {
               onClick={() => void handleContinue()}
                 className="flex items-center gap-2 bg-[#f68b2c] px-8 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-[#e07a20]"
               >
-                {t(step === 3 ? 'setup.reviewRecommendations' : 'setup.continue')} <ArrowRight size={16} />
+                {t(currentStepKey === 'participation' ? 'setup.reviewRecommendations' : 'setup.continue')} <ArrowRight size={16} />
               </button>
               {draftMessage && <p className="text-[13px] font-semibold text-[#2e6e45]">{draftMessage}</p>}
             </div>
           </div>
 
-          {step === 3 && <aside className="flex w-full flex-shrink-0 flex-col gap-5 lg:w-[320px]">
+          {currentStepKey === 'participation' && <aside className="flex w-full flex-shrink-0 flex-col gap-5 lg:w-[320px]">
             <div className="flex flex-col gap-4 spice-card p-5">
               <p className="text-[15px] font-bold text-[#444]">{t('setup.selectionsTitle')}</p>
               <div className="flex flex-col gap-2">

@@ -26,6 +26,7 @@ const PilotSitesPage = lazy(() => import('./pages/PilotSitesPage'));
 const DemoGuidePage = lazy(() => import('./pages/DemoGuidePage'));
 const SetUpProcessQuestionnairePage = lazy(() => import('./pages/SetUpProcessQuestionnairePage'));
 const ExploreToolkitPage = lazy(() => import('./pages/ExploreToolkitPage'));
+const ToolsOverviewPage = lazy(() => import('./pages/ToolsOverviewPage'));
 const ToolDetailPublicPage = lazy(() => import('./pages/ToolDetailPublicPage'));
 const SetUpProcessToolsPage = lazy(() => import('./pages/SetUpProcessToolsPage'));
 const HubInitiativePage = lazy(() => import('./pages/HubInitiativePage'));
@@ -63,6 +64,7 @@ export const router = createBrowserRouter([
   { path: '/pilot-sites', Component: PilotSitesPage },
   { path: '/pilot-sites/:slug', Component: PilotSitesPage },
   { path: '/demo', Component: DemoGuidePage },
+  { path: '/tools', Component: ToolsOverviewPage },
   { path: '/analog-resources', Component: ExploreToolkitPage },
   { path: '/analogue-tools', element: <Navigate to="/analog-resources" replace /> },
   { path: '/explore-toolkit', element: <Navigate to="/analog-resources" replace /> },

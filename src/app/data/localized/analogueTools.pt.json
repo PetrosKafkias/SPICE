@@ -7,7 +7,6 @@
     "shortDesc": "Os participantes escrevem individualmente as suas esperanças e preocupações em post-its, partilham-nas honestamente com o grupo, colocam-nas no quadro, depois lêem-nas em voz alta e agrupam os temas recorrentes.",
     "purpose": "Queremos reunir a atitude de um grupo em relação a um projeto. As esperanças revelam expectativas sobre o que pode ser feito. Os receios revelam dúvidas sobre o projeto em questão. Uma ótima atividade para fazer com que as pessoas se abram e partilhem os seus sentimentos sobre o lugar para onde vai.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Para consultar"
     ],
@@ -32,7 +31,6 @@
     "shortDesc": "Os municípios percorrem linha a linha para assinalar se cada competência necessária para o piloto está disponível interna ou externamente, preenchem quem é responsável e como as alcançar, identificam as competências em falta como linhas vazias e mantêm o canvas como um documento vivo atualizado nas principais fases do projeto.",
     "purpose": "Queremos identificar quais das competências necessárias temos internamente e reconhecer quais devemos procurar externamente.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Para se autogovernar",
       "Para consultar",
@@ -59,7 +57,6 @@
     "shortDesc": "Queremos mapear os atores de acordo com a sua influência, poder e relevância em relação aos valores do NEB e aos desafios locais",
     "purpose": "Queremos mapear os atores de acordo com a sua influência, poder e relevância em relação aos valores do NEB e aos desafios locais",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Para consultar",
       "Para co-design"
@@ -85,7 +82,6 @@
     "shortDesc": "Para um evento específico, os participantes listam os grupos que desejam envolver e os aliados úteis para alcançar cada um deles e, em seguida, classificam esses aliados nas fases antes, durante e depois para planear como e quando construir as relações necessárias.",
     "purpose": "Queremos identificar aliados-chave para o envolvimento das pessoas e planear a interação com eles nos diferentes eventos.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Para co-design",
       "Para se autogovernar",
@@ -112,7 +108,6 @@
     "shortDesc": "Os participantes mapeiam, para cada nível de participação (autogovernar, co-desenvolver, consultar), as partes interessadas envolvidas e os aspetos ou inputs específicos em que estarão envolvidos, atualizando-os desde a fase de enquadramento até à implementação e manutenção.",
     "purpose": "Queremos definir até que ponto as diferentes partes interessadas devem estar envolvidas na tomada de decisões.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Para co-design"
     ],
@@ -137,7 +132,6 @@
     "shortDesc": "Acordando sobre um perfil das pessoas que desejam envolver, os participantes mapeiam as barreiras à participação e os desejos, necessidades e objetivos desse grupo e, em seguida, discutem formas de ultrapassar as barreiras mais críticas e o que o processo pode oferecer em troca.",
     "purpose": "Queremos reconhecer as barreiras locais à participação e identificar possíveis soluções/incentivos para tornar a participação fácil, sem atritos e atrativa",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Para co-design"
     ],
@@ -162,7 +156,6 @@
     "shortDesc": "Trabalhando individualmente ou em pequenos grupos, os participantes leem um lugar através das três dimensões do NEB (Juntos, Bonitos, Sustentáveis), observando para cada uma o que pode ajudar ou prejudicar a transformação e, em seguida, comparam as linhas para trazer à tona temas recorrentes, tensões e prioridades que orientam o design.",
     "purpose": "Queremos recolher e comparar as dimensões ambientais, sociais e estéticas com a análise estratégica tradicional.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Para co-design"
     ],
@@ -187,7 +180,6 @@
     "shortDesc": "Após as atividades de enquadramento anteriores, o facilitador recapitula os pontos-chave e o grupo revisita o desafio declarado, reescrevendo-o em torno do processo com uma fórmula orientada: o objetivo, para quem a participação é significativa, os aliados e os gatilhos, e os benefícios que os participantes podem obter.",
     "purpose": "Queremos acrescentar detalhes interessantes ao desafio inicial, incluindo o ponto de vista dos participantes.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Para consultar",
       "Para co-design"
@@ -213,7 +205,6 @@
     "shortDesc": "Começando por uma parte interessada relevante, os participantes selecionam até cinco pacotes de perguntas, criam uma entrevista semiestruturada flexível, desde o aquecimento até perguntas orientadas para o futuro, acompanham a conversa à medida que esta se inicia e transferem os principais insights para o repositório das partes interessadas ou NEB SWOT.",
     "purpose": "Queremos recolher conhecimentos especializados e locais para compreender o contexto, as tensões, os intervenientes, as necessidades e as oportunidades antes de envolver grupos mais vastos.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [],
     "mode": "Híbrido",
     "duration": "45-90 m",
@@ -236,7 +227,6 @@
     "shortDesc": "Os participantes partem de um desafio central, mapeiam necessidades, ativos, barreiras, ideias e recursos em torno do mesmo, ligam elementos relacionados, agrupam-nos em áreas de oportunidades e traduzem os mais promissores em manchetes futuras e primeiras ações.",
     "purpose": "Queremos explorar coletivamente um desafio e mapear as necessidades, recursos, ideias e possíveis direções que surgem em torno do mesmo, transformando a informação dispersa numa agenda de ação partilhada.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Para co-design"
     ],
@@ -261,7 +251,6 @@
     "shortDesc": "Os participantes alternam entre pequenas mesas estilo café, discutindo questões específicas em rondas, enquanto os anfitriões das mesas transmitem ideias e o facilitador agrupa os resultados em temas, tensões e oportunidades partilhadas.",
     "purpose": "Queremos criar conversas estruturadas entre grupos de partes interessadas selecionados para construir uma visão partilhada dos desafios, necessidades e prioridades.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Para consultar"
     ],
@@ -286,7 +275,6 @@
     "shortDesc": "Os participantes criam a sua própria agenda de discussão em torno de uma questão ampla, participam ou alternam livremente entre conversas e partilham as principais conclusões que são agrupadas em prioridades coletivas e próximos passos.",
     "purpose": "Queremos permitir que os próprios participantes definam as questões mais relevantes e organizem discussões sobre o que é importante para eles.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Para se autogovernar"
     ],
@@ -311,7 +299,6 @@
     "shortDesc": "Os participantes utilizam cartões de personagens para expressar as necessidades e tensões no local. O facilitador (enquanto presidente da câmara) mapeia pontos comuns e conflitos. A sessão termina identificando mais de 5 sinergias e conflitos a resolver.",
     "purpose": "Queremos ajudar os participantes a experienciar diferentes perspetivas e a revelar necessidades, conflitos e barreiras que não são imediatamente visíveis.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Para co-design"
     ],
@@ -336,7 +323,6 @@
     "shortDesc": "Os participantes percorrem o local, observam e registam perceções, emoções, barreiras e impressões sensoriais em tempo real e, em seguida, traduzem coletivamente as descobertas em insights espaciais e questões de design.",
     "purpose": "Queremos explorar o site coletivamente e captar como as pessoas percecionam, sentem e interpretam diferentes lugares em tempo real.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Para co-design"
     ],
@@ -361,7 +347,6 @@
     "shortDesc": "Os participantes mapeiam os atores humanos, não humanos, institucionais e materiais que moldam um lugar, posicionam-nos por relevância, ligam as suas relações e identificam o que deve ser considerado em decisões futuras.",
     "purpose": "Queremos compreender os atores humanos, não humanos, materiais e institucionais que moldam o lugar e a sua transformação.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Para co-design"
     ],
@@ -386,7 +371,6 @@
     "shortDesc": "Os participantes acompanham a experiência de um utilizador selecionado, não utilizador ou ator não humano num mapa do website, traçando barreiras, emoções, conflitos e oportunidades para os traduzir em insights de design.",
     "purpose": "Queremos compreender como as diferentes pessoas experienciam o lugar ao longo do tempo, através de percursos, pontos de contacto, emoções e barreiras.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Para co-design"
     ],
@@ -411,7 +395,6 @@
     "shortDesc": "Os participantes utilizam a investigação qualitativa para mapear o que um atuante-chave diz, pensa, faz e sente e, em seguida, identificam contradições, padrões e necessidades críticas para informar a fase de co-design.",
     "purpose": "Queremos compreender o que os diferentes utilizadores dizem, pensam, sentem e fazem em relação ao espaço, incluindo as necessidades, medos e motivações.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Para consultar"
     ],
@@ -436,7 +419,6 @@
     "shortDesc": "Os participantes criam perfis baseados em pesquisas de atores humanos e não humanos ligados ao local, utilizando-os como pontos de referência para manter visíveis diversas necessidades, barreiras e perspetivas ao longo do processo.",
     "purpose": "Queremos sintetizar a investigação em perfis claros que representem diferentes necessidades, comportamentos e relações humanas e não humanas com o local.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Para consultar"
     ],
@@ -461,7 +443,6 @@
     "shortDesc": "Trabalhando a partir de uma questão central e de um horizonte temporal, os participantes refinam os cartões de condução e traçam-nos numa grelha de importância/incerteza, escolhem duas incertezas críticas como eixos de uma matriz 2×2, descrevem os quatro futuros resultantes em relação aos valores do NEB em pequenos grupos e comparam-nos para obter insights estratégicos.",
     "purpose": "Queremos explorar diferentes futuros plausíveis para um lugar, utilizando os principais fatores e incertezas para desafiar as suposições, imaginar cenários alternativos e identificar ações que permaneçam úteis em diferentes condições futuras.",
     "phase": 3,
-    "phaseName": "Co-Design & Scenario Building",
     "objectiveTags": [
       "Para co-design"
     ],
@@ -486,7 +467,6 @@
     "shortDesc": "Com base na visão do projeto, nos cenários e nos valores do NEB, os participantes apresentam declarações de valor bruto, testam cada uma em relação a uma solução de compromisso real para ver se resolvem um conflito genuíno, redigem os sobreviventes numa voz ousada de manifesto combinada com um breve \"porquê\", convergem num conjunto coerente em plenário e testam-nos em decisões reais antes de finalizar.",
     "purpose": "Queremos elaborar os 10 princípios orientadores para o co-design: declarações acionáveis ​​e baseadas em valores que orientam a tomada de decisões e garantem a consistência em todo o projeto",
     "phase": 3,
-    "phaseName": "Co-Design & Scenario Building",
     "objectiveTags": [
       "Para se autogovernar"
     ],
@@ -511,7 +491,6 @@
     "shortDesc": "Partindo de uma ou mais ideias promissoras, os participantes definem o que precisam de aprender com o protótipo, escolhem o formato mais simples para tornar a ideia tangível — como esboços, mood boards, modelos de cartão, maquetes de fita adesiva, demonstrações de secretária, roleplay ou protótipos em papel/digitais — e constroem alternativas rápidas que podem ser demonstradas, observadas, ajustadas e comparadas para decidir o próximo passo.",
     "purpose": "Queremos tornar tangíveis as ideias criadas em conjunto através de representações rápidas, de baixo custo e de baixa fidelidade que os participantes possam ver, manipular, experimentar e discutir antes de as testar na vida real.",
     "phase": 4,
-    "phaseName": "Prototyping & Testing",
     "objectiveTags": [
       "Para co-design"
     ],
@@ -536,7 +515,6 @@
     "shortDesc": "A intervenção de urbanismo tático é definida de acordo com as necessidades de teste e a viabilidade. A intervenção mantém-se simples, segura, acessível e proporcional ao tempo, orçamento e autorizações disponíveis. Durante o teste, a observação física e as ferramentas de feedback digital são combinadas para compreender como as pessoas utilizam o espaço e informar o design futuro, a tomada de decisões, os acordos de manutenção ou os papéis de administração.",
     "purpose": "Queremos testar possíveis soluções espaciais diretamente no local através de intervenções temporárias, de baixo custo e reversíveis, para que as comunidades, designers e decisores possam observar como as pessoas as utilizam, recolher feedback e refinar ideias antes de fazerem mudanças permanentes.",
     "phase": 4,
-    "phaseName": "Prototyping & Testing",
     "objectiveTags": [
       "Para se autogovernar"
     ],
@@ -561,7 +539,6 @@
     "shortDesc": "Um registo transparente do que os participantes contribuíram, como o projeto respondeu e o que mudou como resultado, partilhado em cada evento público e online.",
     "purpose": "Queremos apoiar a comunicação transparente e gerir as expectativas, tornando visível a relação entre as contribuições da comunidade e as decisões do projeto.",
     "phase": 5,
-    "phaseName": "Consolidation, Governance & Learning",
     "objectiveTags": [],
     "mode": "Off-line",
     "duration": "Not specified",
@@ -584,7 +561,6 @@
     "shortDesc": "Uma visão geral partilhada do que precisa de cuidado, quem já está envolvido e como outros podem contribuir, acompanhando os compromissos ao longo do tempo.",
     "purpose": "Queremos tornar visíveis as iniciativas de gestão existentes, identificar novas necessidades de cuidados e ligar indivíduos, grupos e organizações dispostos a contribuir para os cuidados de longa duração e para a ativação do local.",
     "phase": 5,
-    "phaseName": "Consolidation, Governance & Learning",
     "objectiveTags": [],
     "mode": "Off-line",
     "duration": "Not specified",

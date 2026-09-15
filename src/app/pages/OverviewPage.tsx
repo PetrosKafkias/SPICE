@@ -13,8 +13,8 @@ const PUBLIC_HUB_OPTIONS: Array<{
   textKey: TranslationKey;
   path: string;
 }> = [
-  { icon: Grid3X3, labelKey: 'hub.publicToolkit', textKey: 'hub.publicToolkitText', path: '/analog-resources' },
   { icon: BookOpenCheck, labelKey: 'hub.publicMethodology', textKey: 'hub.publicMethodologyText', path: '/methodology' },
+  { icon: Grid3X3, labelKey: 'hub.publicToolkit', textKey: 'hub.publicToolkitText', path: '/tools' },
   { icon: MessageSquareText, labelKey: 'hub.publicForum', textKey: 'hub.publicForumText', path: '/forum-voting' },
   { icon: MapPinned, labelKey: 'hub.publicPilots', textKey: 'hub.publicPilotsText', path: '/pilot-sites' },
 ];

@@ -29,7 +29,6 @@ interface Initiative {
   setupStage: string | null;
   setupObjectives: string[];
   setupParticipationLevel: string | null;
-  setupGoal: string | null;
   setupGroupSize: string | null;
   setupDuration: string | null;
   setupFacilitator: string | null;
@@ -79,13 +78,13 @@ function parseDurationBucket(value: string) {
   return 1;
 }
 
-function scoreTool(tool: Tool, selectedPhases: number[], setup: ProcessSetupState, t: (key: TranslationKey, values?: Record<string, string | number>) => string) {
+function scoreTool(tool: Tool, selectedPhases: number[], setup: ProcessSetupState, t: (key: TranslationKey, values?: Record<string, string | number>) => string, phaseName: string) {
   let score = 0;
   const reasons: string[] = [];
 
   if (selectedPhases.includes(tool.phase)) {
     score += 4;
-    reasons.push(t('setup.reasonPhase', { phase: tool.phaseName }));
+    reasons.push(t('setup.reasonPhase', { phase: phaseName }));
   }
 
   if (setup.mode && (tool.mode === setup.mode || tool.mode === 'Hybrid' || setup.mode === 'Hybrid')) {
@@ -139,8 +138,9 @@ function SelectFilter({ label, value, options, onChange }: {
   );
 }
 
-function ToolCard({ tool, reasons, inProcess, onToggle, onMore, t }: {
+function ToolCard({ tool, phaseName, reasons, inProcess, onToggle, onMore, t }: {
   tool: Tool;
+  phaseName: string;
   reasons: string[];
   inProcess: boolean;
   onToggle: () => void;
@@ -172,7 +172,7 @@ function ToolCard({ tool, reasons, inProcess, onToggle, onMore, t }: {
       <div className="flex flex-1 flex-col gap-2">
         <div>
           <p className="text-[18px] font-bold leading-tight text-[#444]">{tool.name}</p>
-          <p className="mt-1 text-[12px] font-semibold text-[#ca7428]">{tool.phaseName}</p>
+          <p className="mt-1 text-[12px] font-semibold text-[#ca7428]">{phaseName}</p>
         </div>
         <p className="text-[13px] font-medium leading-relaxed text-[#666]">{tool.shortDesc}</p>
         {reasons.length > 0 && (
@@ -260,15 +260,17 @@ export default function SetUpProcessToolsPage() {
     return phases.length ? Array.from(new Set(phases)) : [1, 2, 3, 4, 5];
   }, [processSetup.objectives]);
 
+  const phaseNameById = useMemo(() => new Map(PHASES.map((phase) => [phase.id, t(phase.nameKey)])), [t]);
+
   const scoredTools = useMemo(() => {
     return tools.map((tool) => {
-      const result = scoreTool(tool, selectedPhases, processSetup, t);
+      const result = scoreTool(tool, selectedPhases, processSetup, t, phaseNameById.get(tool.phase) || '');
       return { tool, ...result };
     }).sort((a, b) => b.score - a.score || a.tool.phase - b.tool.phase || a.tool.name.localeCompare(b.tool.name));
-  }, [processSetup, selectedPhases, t, tools]);
+  }, [phaseNameById, processSetup, selectedPhases, t, tools]);
 
   const filteredTools = scoredTools.filter(({ tool, score }) => {
-    const matchSearch = `${tool.name} ${tool.shortDesc} ${tool.phaseName} ${tool.objectiveTags.join(' ')}`.toLowerCase().includes(query.toLowerCase());
+    const matchSearch = `${tool.name} ${tool.shortDesc} ${phaseNameById.get(tool.phase) || ''} ${tool.objectiveTags.join(' ')}`.toLowerCase().includes(query.toLowerCase());
     const matchMode = modeFilter === 'all' || tool.mode === modeFilter || tool.mode === 'Hybrid';
     const matchPhase = phaseFilter === 'recommended' ? selectedPhases.includes(tool.phase) : tool.phase === Number(phaseFilter);
     return matchSearch && matchMode && matchPhase && score > 0;
@@ -421,6 +423,7 @@ export default function SetUpProcessToolsPage() {
                   <ToolCard
                     key={tool.id}
                     tool={tool}
+                    phaseName={phaseNameById.get(tool.phase) || ''}
                     reasons={reasons}
                     inProcess={myProcessTools.includes(tool.id)}
                     onToggle={() => toggleTool(tool)}

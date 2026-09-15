@@ -1,10 +1,16 @@
 import { useState } from 'react';
-import { ArrowRight, Check, RefreshCw, Target, UsersRound } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { ArrowRight, Bot, Box, Check, MapPinned, RefreshCw, Target, UsersRound } from 'lucide-react';
+import { useNavigate, Link } from 'react-router';
 import SpicePublicShell from '../components/SpicePublicShell';
 import StandardPageHeader from '../components/StandardPageHeader';
 import { useI18n } from '../context/I18nContext';
-import { PROCESS_PHASES } from '../data/processFramework';
+import { PROCESS_PHASES, type DigitalToolId } from '../data/processFramework';
+
+const DIGITAL_TOOL_ICONS: Record<DigitalToolId, typeof MapPinned> = {
+  citivoice: MapPinned,
+  chatbot: Bot,
+  scene: Box,
+};
 
 export default function MethodologyPage() {
   const navigate = useNavigate();
@@ -88,6 +94,31 @@ export default function MethodologyPage() {
                   </li>
                 ))}
               </ul>
+
+              {selectedPhase.digitalTools && selectedPhase.digitalTools.length > 0 && (
+                <div className="mt-8 border-t-2 border-[#eee] pt-6">
+                  <h3 className="text-[16px] font-bold text-[#444]">{t('methodology.digitalToolsTitle')}</h3>
+                  <p className="mt-1 max-w-3xl text-[13px] leading-relaxed text-[#777]">{t('methodology.digitalToolsSubtitle')}</p>
+                  <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    {selectedPhase.digitalTools.map((tool) => {
+                      const Icon = DIGITAL_TOOL_ICONS[tool.toolId];
+                      return (
+                        <div key={tool.toolId} className="flex flex-col gap-2 border-2 border-[#e4e4e4] bg-[#fafafa] p-4">
+                          <div className="flex items-center gap-2.5">
+                            <span className="grid h-9 w-9 flex-none place-items-center rounded-full bg-[#fff0e1] text-[#ca7428]" aria-hidden="true"><Icon size={17} /></span>
+                            <h4 className="text-[14px] font-bold leading-tight text-[#444]">{t(tool.nameKey)}</h4>
+                          </div>
+                          {tool.scopeKey && <p className="text-[11px] font-bold uppercase tracking-wide text-[#a85f20]">{t(tool.scopeKey)}</p>}
+                          <p className="text-[13px] leading-relaxed text-[#666]">{t(tool.useKey)}</p>
+                          <Link to={tool.route} className="mt-auto inline-flex items-center gap-1.5 pt-1 text-[12px] font-bold text-[#ca7428] hover:underline">
+                            {t('methodology.openTool')} <ArrowRight size={13} aria-hidden="true" />
+                          </Link>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </article>
         </section>

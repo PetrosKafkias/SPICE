@@ -80,7 +80,7 @@ export default function HubInitiativePage() {
     : null;
   const pilotFinalized = Boolean(initiative?.pilotFinalizedAt);
 
-  if (!loading && initiative && role === 'citizen' && !previewingAsCitizen) {
+  if (!loading && initiative && !previewingAsCitizen && (role === 'citizen' || role === 'municipality' || role === 'facilitator')) {
     return <Navigate to={`/co-creation-hub?phase=${initiative.currentPhaseNumber || 1}`} replace />;
   }
 

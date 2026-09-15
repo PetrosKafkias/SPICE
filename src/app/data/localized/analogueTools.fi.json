@@ -7,7 +7,6 @@
     "shortDesc": "Osallistujat kirjoittavat yksilöllisesti toiveensa ja huolensa tarralapuille, jakavat ne rehellisesti ryhmän kanssa, asettavat ne taululle, lukevat ne sitten ääneen ja ryhmittelevät toistuvat teemat.",
     "purpose": "Haluamme kerätä ryhmän asenteen projektia kohtaan. Toivo paljastaa odotuksia siitä, mitä voidaan tehdä. Pelot paljastavat epäilyjä käsillä olevasta hankkeesta. Loistava toiminta saada ihmiset avautumaan ja jakamaan tunteitaan siitä, minne olet menossa.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Ota yhteyttä"
     ],
@@ -32,7 +31,6 @@
     "shortDesc": "Kunnat merkitsevät rivi riviltä, ​​onko kukin pilottiin tarvittava osaaminen saatavilla sisäisesti vai ulkoisesti, täytä vastuuhenkilöt ja miten heidät tavoittaa, huomaa puuttuvat kompetenssit tyhjinä riveinä ja pitävät kankaan elävänä dokumenttina ajan tasalla projektin avainvaiheissa.",
     "purpose": "Haluamme tunnistaa, mitä tarvittavia kompetensseja meillä on sisäisesti, ja tunnistaa, mitä meidän tulisi etsiä ulkopuolelta.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "itsehallinnolle",
       "Ota yhteyttä",
@@ -59,7 +57,6 @@
     "shortDesc": "Haluamme kartoittaa toimijat niiden vaikutuksen, voiman ja merkityksen mukaan suhteessa kansallisten toimielinten arvoihin ja paikallisiin haasteisiin",
     "purpose": "Haluamme kartoittaa toimijat niiden vaikutuksen, voiman ja merkityksen mukaan suhteessa kansallisten toimielinten arvoihin ja paikallisiin haasteisiin",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Ota yhteyttä",
       "Yhteissuunnitteluun"
@@ -85,7 +82,6 @@
     "shortDesc": "Osallistujat luettelevat tiettyä tapahtumaa varten ryhmät, joihin he haluavat osallistua, ja liittolaiset, jotka ovat hyödyllisiä heidän saavuttamisessa, ja lajittelevat sitten liittolaiset ennen-, aikana- ja jälkeen-vaiheissa suunnitellakseen, miten ja milloin rakentavat tarvitsemansa suhteet.",
     "purpose": "Haluamme tunnistaa tärkeimmät liittolaiset ihmisten sitoutumiselle ja suunnitella vuorovaikutusta heidän kanssaan erilaisissa tapahtumissa.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Yhteissuunnitteluun",
       "itsehallinnolle",
@@ -112,7 +108,6 @@
     "shortDesc": "Osallistujat kartoittavat kullekin osallistumistasolle (itsehallinto, yhteiskehittäminen, konsultointi), mukana olevat sidosryhmät ja erityiset näkökohdat tai panokset, joihin he osallistuvat.",
     "purpose": "Haluamme määritellä, missä määrin eri sidosryhmien tulisi olla mukana päätöksenteossa.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Yhteissuunnitteluun"
     ],
@@ -137,7 +132,6 @@
     "shortDesc": "Sopiessaan yhdestä profiilista ihmisistä, joita he haluavat ottaa mukaan, osallistujat kartoittavat osallistumisen esteet ja kyseisen ryhmän toiveet, tarpeet ja tavoitteet ja pohtivat sitten tapoja voittaa kriittisimmät esteet ja mitä prosessi voi tarjota vastineeksi.",
     "purpose": "Haluamme tunnistaa paikalliset osallistumisen esteet ja tunnistaa mahdollisia ratkaisuja/kannustimia, jotka tekevät osallistumisesta helppoa, kitkatonta ja houkuttelevaa",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Yhteissuunnitteluun"
     ],
@@ -162,7 +156,6 @@
     "shortDesc": "Osallistujat työskentelevät yksin tai pienissä ryhmissä, ja he lukevat paikan kolmen NEB-ulottuvuuden (Yhdessä, Kaunis, Kestävä) kautta ja panevat jokaiselle merkille, mikä saattaa auttaa tai vahingoittaa muutosta, ja vertaamalla rivejä pintaan toistuviin teemoihin, jännitteisiin ja prioriteetteihin, jotka ohjaavat suunnittelua.",
     "purpose": "Haluamme kerätä ja verrata ympäristöllisiä, sosiaalisia ja esteettisiä ulottuvuuksia perinteisellä strategisella analyysillä.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Yhteissuunnitteluun"
     ],
@@ -187,7 +180,6 @@
     "shortDesc": "Aiempien kehystystoimintojen jälkeen ohjaaja tiivistää tärkeimmät kohdat ja ryhmä palaa esitettyyn haasteeseen ja kirjoittaa sen uudelleen prosessin ympärille ohjatulla kaavalla: tavoite, kenelle osallistuminen tehdään mielekkääksi, liittolaiset ja käynnistäjät sekä hyödyt, joita osallistujat voivat saada.",
     "purpose": "Haluamme lisätä oivaltavia yksityiskohtia alkuperäiseen haasteeseen, mukaan lukien osallistujien näkökulma.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Ota yhteyttä",
       "Yhteissuunnitteluun"
@@ -213,7 +205,6 @@
     "shortDesc": "Osallistujat valitsevat asiaankuuluvasta sidosryhmästä alkaen jopa viisi kysymyspakettia, rakentavat joustavan puolistrukturoidun haastattelun lämmittelyistä tulevaisuuteen suuntautuneisiin kysymyksiin, seuraavat keskustelua sen avautuessa ja siirtävät keskeiset näkemykset sidosryhmien tietovarastoon tai NEB SWOT:iin.",
     "purpose": "Haluamme kerätä asiantuntevaa ja paikallista tietoa ymmärtääksemme kontekstia, jännitteitä, toimijoita, tarpeita ja mahdollisuuksia, ennen kuin ryhdymme mukaan laajempiin ryhmiin.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [],
     "mode": "Hybridi",
     "duration": "45-90 m",
@@ -236,7 +227,6 @@
     "shortDesc": "Osallistujat aloittavat keskeisestä haasteesta, kartoittavat tarpeet, resurssit, esteet, ideat ja resurssit sen ympärille, yhdistävät toisiinsa liittyvät elementit, ryhmittelevät ne mahdollisuuksiksi ja kääntävät lupaavimmat tulevaisuuden otsikoiksi ja ensimmäisiksi toimiksi.",
     "purpose": "Haluamme yhdessä tutkia haastetta ja kartoittaa sen ympärillä esiin nousevat tarpeet, resurssit, ideat ja mahdolliset suunnat ja muuttaa hajallaan olevat panokset yhteiseksi toimintasuunnitelmaksi.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Yhteissuunnitteluun"
     ],
@@ -261,7 +251,6 @@
     "shortDesc": "Osallistujat pyörivät pienten kahvilatyylisten pöytien välillä ja keskustelevat kohdistetuista kysymyksistä kierroksittain, kun taas pöytäisännät vievät oivalluksia eteenpäin ja ohjaaja ryhmittelee tulokset yhteisiksi teemoiksi, jännitteiksi ja mahdollisuuksiksi.",
     "purpose": "Haluamme luoda jäsenneltyjä keskusteluja valittujen sidosryhmien kesken luodaksemme yhteisen näkemyksen haasteista, tarpeista ja prioriteeteista.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Ota yhteyttä"
     ],
@@ -286,7 +275,6 @@
     "shortDesc": "Osallistujat luovat oman keskusteluohjelmansa laajan kehyskysymyksen ympärille, liittyvät keskusteluun tai liikkuvat vapaasti keskustelujen välillä ja jakavat keskeisiä huomioita, jotka sitten ryhmitellään yhteisiin prioriteetteihin ja seuraaviin vaiheisiin.",
     "purpose": "Haluamme antaa osallistujien määritellä itse tärkeimmät asiat ja järjestää itse keskusteluja heille tärkeistä asioista.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "itsehallinnolle"
     ],
@@ -311,7 +299,6 @@
     "shortDesc": "Osallistujat käyttävät hahmokortteja kertoakseen tarpeista ja jännitteistä paikan ympärillä. Fasilitaattori (pormestarina) kartoittaa yhteisiä perusteita ja konflikteja. Istunto päättyy ja tunnistetaan yli viisi synergiaa ja ratkaistava ristiriita.",
     "purpose": "Haluamme auttaa osallistujia kokemaan erilaisia ​​näkökulmia ja paljastamaan tarpeita, konflikteja ja esteitä, jotka eivät heti näy.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Yhteissuunnitteluun"
     ],
@@ -336,7 +323,6 @@
     "shortDesc": "Osallistujat kävelevät sivuston läpi, tarkkailevat ja tallentavat havaintoja, tunteita, esteitä ja aistivaikutelmia reaaliajassa ja muuttavat sitten yhdessä havainnot tilatietoiksi ja suunnittelukysymyksiksi.",
     "purpose": "Haluamme tutkia sivustoa yhdessä ja vangita, kuinka ihmiset näkevät, tuntevat ja tulkitsevat eri paikkoja reaaliajassa.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Yhteissuunnitteluun"
     ],
@@ -361,7 +347,6 @@
     "shortDesc": "Osallistujat kartoittavat paikkaa muovaavat inhimilliset, ei-inhimilliset, institutionaaliset ja aineelliset toimijat, sijoittavat heidät merkityksellisyyden mukaan, yhdistävät heidän suhteensa ja tunnistavat, mitä tulee ottaa huomioon tulevissa päätöksissä.",
     "purpose": "Haluamme ymmärtää inhimillisiä, ei-inhimillisiä, aineellisia ja institutionaalisia toimijoita, jotka muokkaavat paikkaa ja sen muutosta.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Yhteissuunnitteluun"
     ],
@@ -386,7 +371,6 @@
     "shortDesc": "Osallistujat seuraavat valitun käyttäjän, ei-käyttäjän tai ei-ihmistoimijan kokemuksia sivuston kartalla, jäljittäen esteitä, tunteita, konflikteja ja mahdollisuuksia muuntaa ne suunnittelun oivalluksiksi.",
     "purpose": "Haluamme ymmärtää, miten eri ihmiset kokevat paikan ajan mittaan, eri reiteillä, kosketuspisteissä, tunteissa ja esteissä.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Yhteissuunnitteluun"
     ],
@@ -411,7 +395,6 @@
     "shortDesc": "Osallistujat kartoittaakseen laadullisen tutkimuksen avulla, mitä avaintekijä sanoo, ajattelee, tekee ja tuntee, ja tunnistavat sitten ristiriidat, mallit ja kriittiset tarpeet, jotka kertovat yhteissuunnitteluvaiheesta.",
     "purpose": "Haluamme ymmärtää, mitä eri käyttäjät sanovat, ajattelevat, tuntevat ja tekevät suhteessa tilaan, mukaan lukien tarpeet, pelot ja motivaatiot.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Ota yhteyttä"
     ],
@@ -436,7 +419,6 @@
     "shortDesc": "Osallistujat luovat tutkimukseen perustuvia profiileja paikkaan liittyvistä ihmisistä ja ei-inhimillisistä toimijoista käyttämällä niitä viitepisteinä, jotta erilaiset tarpeet, esteet ja näkökulmat pysyvät näkyvissä koko prosessin ajan.",
     "purpose": "Haluamme syntetisoida tutkimuksen selkeiksi profiileiksi, jotka edustavat erilaisia ​​ihmisten ja ei-inhimillisiä tarpeita, käyttäytymistä ja suhteita paikkaan.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Ota yhteyttä"
     ],
@@ -461,7 +443,6 @@
     "shortDesc": "Keskeisestä kysymyksestä ja aikahorisontista työskennelleet osallistujat tarkentavat kuljettajakortteja ja piirtävät ne tärkeys-/epävarmuustaulukkoon, valitsevat kaksi kriittistä epävarmuutta 2×2-matriisin akseleiksi, kuvaavat neljää tuloksena olevaa futuuria NEB-arvoja vastaan ​​pienissä ryhmissä ja vertaavat niitä saadakseen strategisia näkemyksiä.",
     "purpose": "Haluamme tutkia paikan erilaisia ​​uskottavia tulevaisuuksia käyttämällä keskeisiä tekijöitä ja epävarmuustekijöitä haastaaksemme olettamuksia, kuvitellaksemme vaihtoehtoisia skenaarioita ja tunnistaaksemme toimia, jotka ovat hyödyllisiä erilaisissa tulevaisuuden olosuhteissa.",
     "phase": 3,
-    "phaseName": "Co-Design & Scenario Building",
     "objectiveTags": [
       "Yhteissuunnitteluun"
     ],
@@ -486,7 +467,6 @@
     "shortDesc": "Projektin visioon, skenaarioihin ja NEB-arvoihin perustuen osallistujat tuovat esiin raaka-arvolausuntoja, testaavat kutakin todellista kompromissia vastaan ​​nähdäkseen, ratkaiseeko se aidon konfliktin, laativat selviytyjät rohkeaksi manifestin ääneen yhdistettynä lyhyeen \"miksi\", muodostavat yhtenäisen kokonaisuuden täysistunnossa ja pilotoivat ennen lopullista päätöstä.",
     "purpose": "Haluamme laatia 10 yhteissuunnittelun ohjaavaa periaatetta: toimivia, arvoon perustuvia lausuntoja, jotka ohjaavat päätöksentekoa ja varmistavat johdonmukaisuuden koko projektin aikana",
     "phase": 3,
-    "phaseName": "Co-Design & Scenario Building",
     "objectiveTags": [
       "itsehallinnolle"
     ],
@@ -511,7 +491,6 @@
     "shortDesc": "Lähtien liikkeelle yhdestä tai useammasta lupaavasta ideasta, osallistujat määrittelevät, mitä heidän täytyy oppia prototyypistä, valitsevat yksinkertaisimman muodon tehdäkseen idean konkreettiseksi — kuten luonnokset, tunnelmataulut, pahvimallit, teippimallit, työpöytäesittelyt, roolileikit tai paperi-/digitaaliset prototyypit — ja rakentavat nopeita vaihtoehtoja, joita voidaan esitellä, tarkkailla, muokata ja vertailla seuraavan askeleen päättämiseksi.",
     "purpose": "Haluamme tehdä yhdessä suunnitelluista ideoista konkreettisia nopeilla, edullisilla ja tarkoilla esityksillä, joita osallistujat voivat nähdä, käsitellä, kokea ja keskustella ennen niiden testaamista tosielämässä.",
     "phase": 4,
-    "phaseName": "Prototyping & Testing",
     "objectiveTags": [
       "Yhteissuunnitteluun"
     ],
@@ -536,7 +515,6 @@
     "shortDesc": "Taktisen urbanismin interventio määritellään testaustarpeiden ja toteutettavuuden mukaan. Interventio pidetään yksinkertaisena, turvallisena, esteettömänä ja käytettävissä olevaan aikaan, budjettiin ja lupiin suhteutettuna. Testauksen aikana fyysinen havainnointi ja digitaaliset palautetyökalut yhdistetään, jotta ymmärretään, miten ihmiset käyttävät tilaa, ja jotta voidaan ohjata tulevaa suunnittelua, päätöksentekoa, ylläpitosopimuksia tai huoltajuusrooleja.",
     "purpose": "Haluamme testata mahdollisia tilaratkaisuja suoraan paikan päällä tilapäisillä, edullisilla ja palautuvilla interventioilla, jotta yhteisöt, suunnittelijat ja päättäjät voivat seurata ihmisten käyttöä, kerätä palautetta ja tarkentaa ideoita ennen pysyvien muutosten tekemistä.",
     "phase": 4,
-    "phaseName": "Prototyping & Testing",
     "objectiveTags": [
       "itsehallinnolle"
     ],
@@ -561,7 +539,6 @@
     "shortDesc": "Läpinäkyvä tallenne siitä, mitä osallistujat ovat antaneet, miten hanke on vastannut siihen ja mikä on muuttunut sen seurauksena, jaettuna jokaisessa julkisessa tilaisuudessa ja verkossa.",
     "purpose": "Haluamme tukea läpinäkyvää viestintää ja hallita odotuksia tekemällä yhteisön panoksen ja projektipäätösten välistä suhdetta näkyväksi.",
     "phase": 5,
-    "phaseName": "Consolidation, Governance & Learning",
     "objectiveTags": [],
     "mode": "Offline",
     "duration": "Not specified",
@@ -584,7 +561,6 @@
     "shortDesc": "Yhteinen yleiskatsaus siitä, mikä tarvitsee hoitoa, ketkä ovat jo mukana ja miten muut voivat osallistua, seuraten sitoumuksia ajan mittaan.",
     "purpose": "Haluamme tehdä olemassa olevista taloudenhoitoaloitteista näkyviä, tunnistaa uusia hoitotarpeita ja yhdistää yksilöitä, ryhmiä ja organisaatioita, jotka haluavat osallistua pitkäaikaiseen hoitoon ja paikan aktivointiin.",
     "phase": 5,
-    "phaseName": "Consolidation, Governance & Learning",
     "objectiveTags": [],
     "mode": "Offline",
     "duration": "Not specified",

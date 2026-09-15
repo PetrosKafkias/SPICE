@@ -7,7 +7,6 @@
     "shortDesc": "Participants individually write their hopes and concerns on sticky notes, share them honestly with the group, place them on the board, then read them aloud and cluster the recurring themes.",
     "purpose": "We want to gather a group's attitude towards a project. Hopes uncover expectations about what can be done. Fears uncover doubts about the project at hand. A great activity for getting people to open up and share their feelings about where you're going.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "To consult"
     ],
@@ -32,7 +31,6 @@
     "shortDesc": "Municipalities go row by row to mark whether each competence needed for the pilot is available internally or externally, fill in who is responsible and how to reach them, spot missing competences as empty rows, and keep the canvas as a living document updated at key project phases.",
     "purpose": "We want to identify which of the necessary competencies we have internally and acknowledge which ones we should look for externally.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "To self-govern",
       "To consult",
@@ -59,7 +57,6 @@
     "shortDesc": "We want to map actors according to their influence, power, and relevance in relation to NEB values and local challenges",
     "purpose": "We want to map actors according to their influence, power, and relevance in relation to NEB values and local challenges",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "To consult",
       "To co-design"
@@ -85,7 +82,6 @@
     "shortDesc": "For a specific event, participants list the groups they want to engage and the allies useful for reaching each one, then sort those allies across the before, during and after phases to plan how and when to build the relationships they need.",
     "purpose": "We want to identify key allies for people's engagement and plan the interaction with them in the different events.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "To co-design",
       "To self-govern",
@@ -112,7 +108,6 @@
     "shortDesc": "Participants map, for each level of participation (to self-govern, to co-develop, to consult), the stakeholders involved and the specific aspects or inputs they will be engaged in, updating it from the framing phase through implementation and maintenance.",
     "purpose": "We want to define the extent to which different stakeholders should be involved in decision-making.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "To co-design"
     ],
@@ -137,7 +132,6 @@
     "shortDesc": "Agreeing on one profile of the people they want to engage, participants map the barriers to participation and that group's desires, needs and goals, then brainstorm ways to overcome the most critical barriers and what the process can offer in return.",
     "purpose": "We want to aknowledge local barriers to participation and identify possible solutions/incentives to make participation easy, frictionless and appealing",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "To co-design"
     ],
@@ -162,7 +156,6 @@
     "shortDesc": "Working individually or in small groups, participants read a place through the three NEB dimensions (Together, Beautiful, Sustainable), noting for each what might help or harm the transformation, then compare the rows to surface recurring themes, tensions and priorities that guide design.",
     "purpose": "We want to collect and compare environmental, social, and aesthetic dimensions with traditional strategic analysis.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "To co-design"
     ],
@@ -187,7 +180,6 @@
     "shortDesc": "After earlier framing activities, the facilitator recaps key points and the group revisits the stated challenge, rewriting it around the process with a guided formula: the objective, who participation is made meaningful for, the allies and triggers, and the benefits participants might gain.",
     "purpose": "We want to add insightful details to the initial challenge, including the point of view of the participants.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "To consult",
       "To co-design"
@@ -213,7 +205,6 @@
     "shortDesc": "Starting from a relevant stakeholder, participants select up to five question packs, build a flexible semi-structured interview from warm-up to future-oriented questions, follow the conversation as it opens up, and transfer the key insights into the stakeholder repository or NEB SWOT.",
     "purpose": "We want to collect expert and local knowledge to understand the context, tensions, actors, needs and opportunities before engaging wider groups.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [],
     "mode": "Hybrid",
     "duration": "45-90 m",
@@ -236,7 +227,6 @@
     "shortDesc": "Participants start from a central challenge, map needs, assets, barriers, ideas and resources around it, connect related elements, cluster them into opportunity areas, and translate the most promising ones into future headlines and first actions.",
     "purpose": "We want to collectively explore a challenge and map the needs, resources, ideas and possible directions that emerge around it, turning scattered inputs into a shared agenda for action.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "To co-design"
     ],
@@ -261,7 +251,6 @@
     "shortDesc": "Participants rotate across small café-style tables, discussing focused questions in rounds, while table hosts carry insights forward and the facilitator clusters the results into shared themes, tensions and opportunities.",
     "purpose": "We want to create structured conversations among selected stakeholder groups to build a shared view of challenges, needs and priorities.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "To consult"
     ],
@@ -286,7 +275,6 @@
     "shortDesc": "Participants create their own discussion agenda around a broad framing question, join or move between conversations freely, and share key takeaways that are then clustered into collective priorities and next steps.",
     "purpose": "We want to let participants define the most relevant issues themselves and self-organise discussions around what matters to them.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "To self-govern"
     ],
@@ -311,7 +299,6 @@
     "shortDesc": "Participants use character cards to voice needs and tensions around the place. The facilitator (as mayor) maps common ground and conflicts. Session closes identifying 5+ synergies and conflicts to resolve.",
     "purpose": "We want to help participants experience different perspectives and reveal needs, conflicts and barriers that are not immediately visible.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "To co-design"
     ],
@@ -336,7 +323,6 @@
     "shortDesc": "Participants walk through the site, observe and record perceptions, emotions, barriers and sensory impressions in real time, then collectively translate the findings into spatial insights and design questions.",
     "purpose": "We want to explore the site collectively and capture how people perceive, feel and interpret different places in real time.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "To co-design"
     ],
@@ -361,7 +347,6 @@
     "shortDesc": "Participants map the human, non-human, institutional and material actors shaping a place, position them by relevance, connect their relationships, and identify what must be considered in future decisions.",
     "purpose": "We want to understand the human, non-human, material and institutional actors that shape the place and its transformation.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "To co-design"
     ],
@@ -386,7 +371,6 @@
     "shortDesc": "Participants follow the experience of a selected user, non-user or non-human actor across a map of the site, tracing barriers, emotions, conflicts and opportunities to translate them into design insights.",
     "purpose": "We want to understand how different people experience the place over time, across routes, touchpoints, emotions and barriers.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "To co-design"
     ],
@@ -411,7 +395,6 @@
     "shortDesc": "Participants use qualitative research to map what a key actant says, thinks, does and feels, then identify contradictions, patterns and critical needs to inform the co-design phase.",
     "purpose": "We want to understand what different users say, think, feel and do in relation to the space, including needs, fears and motivations.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "To consult"
     ],
@@ -436,7 +419,6 @@
     "shortDesc": "Participants create research-based profiles of human and non-human actors connected to the place, using them as reference points to keep diverse needs, barriers and perspectives visible throughout the process.",
     "purpose": "We want to synthesise research into clear profiles that represent different human and non-human needs, behaviours and relationships with the place.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "To consult"
     ],
@@ -461,7 +443,6 @@
     "shortDesc": "Working from a central question and time horizon, participants refine driver cards and plot them on an importance/uncertainty grid, pick two critical uncertainties as the axes of a 2×2 matrix, describe the four resulting futures against the NEB values in small groups, and compare them to draw strategic insights.",
     "purpose": "We want to explore different plausible futures for a place, using key drivers and uncertainties to challenge assumptions, imagine alternative scenarios and identify actions that remain useful across different future conditions.",
     "phase": 3,
-    "phaseName": "Co-Design & Scenario Building",
     "objectiveTags": [
       "To co-design"
     ],
@@ -486,7 +467,6 @@
     "shortDesc": "Grounded in the project vision, scenarios and NEB values, participants surface raw value statements, test each against a real trade-off to see if it resolves a genuine conflict, draft the survivors in a bold manifesto voice paired with a short \"why\", converge into a coherent set in plenary, and pilot-test them on real decisions before finalising.",
     "purpose": "We want to draw up the 10 guiding principles for co-design: actionable, value-based statements that guide decision-making and ensure consistency across the project",
     "phase": 3,
-    "phaseName": "Co-Design & Scenario Building",
     "objectiveTags": [
       "To self-govern"
     ],
@@ -511,7 +491,6 @@
     "shortDesc": "Starting from one or more promising ideas, participants define what they need to learn from the prototype, choose the simplest format to make the idea tangible — such as sketches, mood boards, cardboard models, tape mock-ups, desktop walkthroughs, roleplay or paper/digital prototypes — and build quick alternatives that can be demonstrated, observed, adjusted and compared to decide the next step.",
     "purpose": "We want to make co-designed ideas tangible through quick, low-cost and low-fidelity representations that participants can see, handle, experience and discuss before testing them on real life.",
     "phase": 4,
-    "phaseName": "Prototyping & Testing",
     "objectiveTags": [
       "To co-design"
     ],
@@ -536,7 +515,6 @@
     "shortDesc": "The tactical urbanism intervention is defined according to testing needs and feasibility. The intervention is kept simple, safe, accessible and proportionate to available time, budget and permissions. During the test, physical observation and digital feedback tools are combined to understand how people use the space and inform future design, decision-making, maintenance agreements or stewardship roles.",
     "purpose": "We want to test possible spatial solutions directly on site through temporary, low-cost and reversible interventions, so that communities, designers and decision-makers can observe how people use them, collect feedback and refine ideas before making permanent changes.",
     "phase": 4,
-    "phaseName": "Prototyping & Testing",
     "objectiveTags": [
       "To self-govern"
     ],
@@ -561,7 +539,6 @@
     "shortDesc": "A transparent record of what participants contributed, how the project responded, and what changed as a result, shared at each public event and online.",
     "purpose": "We want to support transparent communication and manage expectations by making the relationship between community input and project decisions visible.",
     "phase": 5,
-    "phaseName": "Consolidation, Governance & Learning",
     "objectiveTags": [
       "To co-design"
     ],
@@ -586,7 +563,6 @@
     "shortDesc": "A shared overview of what needs care, who is already involved, and how others can contribute, tracking commitments over time.",
     "purpose": "We want to make existing stewardship initiatives visible, identify new care needs, and connect individuals, groups and organisations willing to contribute to the long-term care and activation of the place.",
     "phase": 5,
-    "phaseName": "Consolidation, Governance & Learning",
     "objectiveTags": [
       "To self-govern"
     ],
@@ -689,7 +665,7 @@
     "duration": "Not specified",
     "groupSize": "Not specified",
     "facilitatorRatio": "Without a facilitator",
-    "suppliesRequired": "NO",
+    "suppliesRequired": "",
     "usageTip": "Start the log before the first governance question actually comes up — retrofitting it after several undocumented decisions is far harder than keeping it live from the process's first week.",
     "developmentTime": "Not specified",
     "howTo": "This is an internal tool, a baseline to share decions about governance and care with citizens. \n1) At the beginning of the process, list the main decisions or governance issues that are likely to arise.\n2) For each issue, identify the formal decision holder, clarify what is open to influence and record any fixed constraints.\n3) Indicate which actors should be involved, paying particular attention to groups that may otherwise be excluded from the decision.\n4) Update the remaining fields as the process develops, recording who can propose, who contributes, who decides and who is responsible for implementation.\n5) Specify the decision method so that participants understand how contributions will be considered and how the final decision will be made.\n6) Record the outcome or agreement reached, together with its current status and any planned review date.\n6) Update the log whenever responsibilities, constraints, decisions or implementation arrangements change.\n7) Transfer the relevant information to any public-facing platform you have, using clear and accessible language to explain what is being discussed, what has been decided and what happens next.\n8) Keep previous entries and updates accessible so that the evolution of decisions can be followed over time.",
@@ -740,7 +716,7 @@
     "duration": "Not specified",
     "groupSize": "Not specified",
     "facilitatorRatio": "1/+10",
-    "suppliesRequired": "NO",
+    "suppliesRequired": "",
     "usageTip": "- Consensus does not mean that everyone considers the option ideal; it means that everyone can sufficiently support or accept it.\n- Majority voting is efficient but may leave important minority concerns unresolved.\n- Formal authority should be exercised transparently, with a clear explanation of how community evidence was considered.\n- Do not use the language of co-decision when authority remains entirely with another actor.\n- Use experimental decisions when evidence is incomplete and the option can be tested safely and reversibly.\n- Document disagreement rather than forcing artificial agreement.",
     "developmentTime": "Not specified",
     "howTo": "1) Formulate the decision question clearly and present the available options.\n2) Clarify the decision methods, if needed, identify the decision owner and what participants can and cannot influence.\n3) Give participants equal opportunities to express views and concerns.\n4) Apply the selected method.\n5) Check whether the result creates significant risks, exclusions or unresolved objections.\n6) Record the decision, rationale, conditions and responsibilities.\n7) Communicate the outcome and explain how participant input influenced it.\n\nDecision methods: \nFormal authority decision: The authorised municipality, landowner, department or organisation makes the decision and records its rationale.\nDecision after consultation: The decision owner considers participant input but retains responsibility for the final decision.\nConsensus: The group seeks an option that everyone can accept or support sufficiently to move forward.\nConsent decision: A proposal moves forward when no participant has a reasoned and substantial objection. This can be useful when full consensus is unrealistic but collective acceptance is important.\nMajority vote: The option receiving the agreed proportion of votes is selected.\nDelegated decision: A person, working group or committee is authorised to decide within a defined scope.\nJoint approval: Two or more actors must approve the decision, such as a municipality and a community group.\nExperimental decision during testing: The group agrees to test an option temporarily, collect evidence and revisit the decision before permanent implementation.",
@@ -762,7 +738,7 @@
     "duration": "20-45 m",
     "groupSize": "Not specified",
     "facilitatorRatio": "Without a facilitator",
-    "suppliesRequired": "NO",
+    "suppliesRequired": "",
     "usageTip": "Use the canvas as the first structured step toward policy uptake, not as a substitute for the legal, financial and political work formal adoption still requires.",
     "developmentTime": "20-45 m",
     "howTo": "1) Use the canvas as the starting point for a policy-development process, not as a substitute for the technical, legal, financial and political work required for formal adoption.\n2) Select one co-designed idea and briefly describe its key elements: what is being proposed, why it matters, what must be preserved ans what can still be adapted.\n3) List the conditions required for uptake, considering policy alignment, regulations, ownership, authorisations, feasibility, resources and organisational capacity.\n4) Identify the key stakeholders and assign the roles of decision owner, process owner, technical contributors, resource holders, community representatives and critical actors.\n5) Select the relevant policy activation strategies that can help move the proposal forward, add different ones if needed.\n6) Complete the roadmap by defining, for each step, what needs to be done, who is responsible and by when.\n7) Use the completed canvas as a shared reference for internal coordination, formal commitments and public reporting.",

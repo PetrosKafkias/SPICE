@@ -514,12 +514,12 @@ function repositoryFromRow(row) {
 
 function assignedFacilitatorFor(db, initiativeId) {
   const row = db.prepare(`
-    SELECT u.id, u.full_name, u.email FROM hub_participants p
+    SELECT u.id, u.full_name, u.email, p.facilitator_note FROM hub_participants p
     JOIN users u ON u.id = p.user_id
     WHERE p.initiative_id = ? AND p.assignment_role = 'facilitator'
     LIMIT 1
   `).get(initiativeId);
-  return row ? { id: Number(row.id), fullName: row.full_name, email: row.email } : null;
+  return row ? { id: Number(row.id), fullName: row.full_name, email: row.email, note: row.facilitator_note || null } : null;
 }
 
 function isAssignedFacilitator(db, user, initiativeId) {
@@ -1150,11 +1150,12 @@ export async function createApiHandler(options = {}) {
           sendError(response, 400, 'Enter the email of an approved Facilitator account.', { email: 'No approved Facilitator was found with this email.' });
           return true;
         }
+        const note = typeof body.note === 'string' ? body.note.trim().slice(0, 1000) || null : null;
         db.prepare(`DELETE FROM hub_participants WHERE initiative_id = ? AND assignment_role = 'facilitator'`).run(initiativeId);
         db.prepare(`
-          INSERT INTO hub_participants (initiative_id, user_id, invited_at, assignment_role) VALUES (?, ?, ?, 'facilitator')
-          ON CONFLICT(initiative_id, user_id) DO UPDATE SET assignment_role = 'facilitator', invited_at = excluded.invited_at
-        `).run(initiativeId, facilitatorUser.id, now);
+          INSERT INTO hub_participants (initiative_id, user_id, invited_at, assignment_role, facilitator_note) VALUES (?, ?, ?, 'facilitator', ?)
+          ON CONFLICT(initiative_id, user_id) DO UPDATE SET assignment_role = 'facilitator', invited_at = excluded.invited_at, facilitator_note = excluded.facilitator_note
+        `).run(initiativeId, facilitatorUser.id, now, note);
         addAudit(db, { actor: session.user, action: 'hub.facilitator.assign', targetType: 'hub_initiative', targetId: initiativeId, newValue: { facilitatorUserId: Number(facilitatorUser.id) } });
         sendJson(response, 200, { initiative: initiativeFromRow(row, [], assignedFacilitatorFor(db, initiativeId)) });
         return true;

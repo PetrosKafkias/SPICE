@@ -7,7 +7,6 @@
     "shortDesc": "Uczestnicy indywidualnie zapisują swoje nadzieje i obawy na samoprzylepnych karteczkach, dzielą się nimi uczciwie z grupą, umieszczają je na tablicy, a następnie czytają je na głos i grupują powtarzające się tematy.",
     "purpose": "Chcemy zebrać nastawienie grupy do projektu. Nadzieje odkrywają oczekiwania dotyczące tego, co można zrobić. Strach odkrywa wątpliwości co do realizowanego projektu. Świetne ćwiczenie, które pozwala ludziom się otworzyć i podzielić się swoimi uczuciami na temat tego, dokąd się wybierasz.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Aby się skonsultować"
     ],
@@ -32,7 +31,6 @@
     "shortDesc": "Władze samorządowe wiersz po rzędzie sprawdzają, czy każda kompetencja potrzebna w ramach pilotażu jest dostępna wewnętrznie czy zewnętrznie, określają, kto jest za to odpowiedzialny i jak do nich dotrzeć, wykrywają brakujące kompetencje w postaci pustych wierszy i aktualizują kanwę jako żywy dokument na kluczowych etapach projektu.",
     "purpose": "Chcemy określić, które z niezbędnych kompetencji posiadamy wewnętrznie i określić, jakich powinniśmy szukać na zewnątrz.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Aby samorządzić",
       "Aby się skonsultować",
@@ -59,7 +57,6 @@
     "shortDesc": "Chcemy zmapować aktorów według ich wpływu, władzy i znaczenia w odniesieniu do wartości KOW i lokalnych wyzwań",
     "purpose": "Chcemy zmapować aktorów według ich wpływu, władzy i znaczenia w odniesieniu do wartości KOW i lokalnych wyzwań",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Aby się skonsultować",
       "Do współprojektowania"
@@ -85,7 +82,6 @@
     "shortDesc": "W przypadku konkretnego wydarzenia uczestnicy wymieniają grupy, z którymi chcą się zaangażować, oraz sojuszników przydatnych w dotarciu do każdej z nich, a następnie sortują tych sojuszników według faz przed, w trakcie i po, aby zaplanować, jak i kiedy budować potrzebne relacje.",
     "purpose": "Chcemy zidentyfikować kluczowych sojuszników w zakresie zaangażowania ludzi i zaplanować interakcję z nimi podczas różnych wydarzeń.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Do współprojektowania",
       "Aby samorządzić",
@@ -112,7 +108,6 @@
     "shortDesc": "Uczestnicy mapują, dla każdego poziomu uczestnictwa (samorządność, współrozwój, konsultacje), zaangażowanych interesariuszy oraz konkretne aspekty lub wkład, w który będą zaangażowani, aktualizując je od fazy tworzenia ram poprzez wdrażanie i utrzymanie.",
     "purpose": "Chcemy określić, w jakim stopniu różni interesariusze powinni być zaangażowani w podejmowanie decyzji.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Do współprojektowania"
     ],
@@ -137,7 +132,6 @@
     "shortDesc": "Uzgadniając jeden profil osób, które chcą zaangażować, uczestnicy mapują bariery utrudniające uczestnictwo oraz pragnienia, potrzeby i cele tej grupy, a następnie przeprowadzają burzę mózgów, w jaki sposób pokonać najważniejsze bariery i co proces może zaoferować w zamian.",
     "purpose": "Chcemy poznać lokalne bariery utrudniające uczestnictwo i zidentyfikować możliwe rozwiązania/zachęty, dzięki którym uczestnictwo będzie łatwe, bezproblemowe i atrakcyjne",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Do współprojektowania"
     ],
@@ -162,7 +156,6 @@
     "shortDesc": "Pracując indywidualnie lub w małych grupach, uczestnicy zapoznają się z miejscem w trzech wymiarach KOW (Razem, Piękny, Zrównoważony), odnotowując w każdym przypadku, co może pomóc lub zaszkodzić transformacji, a następnie porównać wiersze, aby wydobyć powtarzające się motywy, napięcia i priorytety, którymi kierują się projekty.",
     "purpose": "Chcemy zebrać i porównać wymiary środowiskowe, społeczne i estetyczne z tradycyjną analizą strategiczną.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Do współprojektowania"
     ],
@@ -187,7 +180,6 @@
     "shortDesc": "Po wcześniejszym ustaleniu ram działań facylitator podsumowuje kluczowe punkty, a grupa ponownie analizuje określone wyzwanie, przepisując je wokół procesu za pomocą kierowanej formuły: cel, dla kogo uczestnictwo ma znaczenie, sojusznicy i czynniki wyzwalające oraz korzyści, jakie mogą zyskać uczestnicy.",
     "purpose": "Chcemy dodać do początkowego wyzwania wnikliwe szczegóły, w tym punkt widzenia uczestników.",
     "phase": 1,
-    "phaseName": "Framing & Readiness",
     "objectiveTags": [
       "Aby się skonsultować",
       "Do współprojektowania"
@@ -213,7 +205,6 @@
     "shortDesc": "Zaczynając od odpowiedniego interesariusza, uczestnicy wybierają maksymalnie pięć pakietów pytań, tworzą elastyczny, częściowo ustrukturyzowany wywiad, od rozgrzewki do pytań zorientowanych na przyszłość, śledzą rozmowę w jej początkowej fazie i przekazują kluczowe spostrzeżenia do repozytorium interesariuszy lub NEB SWOT.",
     "purpose": "Chcemy gromadzić wiedzę ekspercką i lokalną, aby zrozumieć kontekst, napięcia, aktorów, potrzeby i możliwości, zanim zaangażujemy szersze grupy.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [],
     "mode": "Hybryda",
     "duration": "45-90 m",
@@ -236,7 +227,6 @@
     "shortDesc": "Uczestnicy zaczynają od centralnego wyzwania, mapują wokół niego potrzeby, aktywa, bariery, pomysły i zasoby, łączą powiązane elementy, grupują je w obszary możliwości i przekładają najbardziej obiecujące na przyszłe nagłówki gazet i pierwsze działania.",
     "purpose": "Chcemy wspólnie zbadać wyzwanie i określić potrzeby, zasoby, pomysły i możliwe kierunki, które się wokół niego wyłaniają, przekształcając rozproszone dane wejściowe we wspólny plan działania.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Do współprojektowania"
     ],
@@ -261,7 +251,6 @@
     "shortDesc": "Uczestnicy obracają się przy małych kawiarnianych stolikach, omawiając konkretne pytania w rundach, podczas gdy gospodarze stołów przekazują swoje spostrzeżenia, a moderator grupuje wyniki we wspólne tematy, napięcia i możliwości.",
     "purpose": "Chcemy stworzyć ustrukturyzowane rozmowy pomiędzy wybranymi grupami interesariuszy, aby zbudować wspólny pogląd na wyzwania, potrzeby i priorytety.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Aby się skonsultować"
     ],
@@ -286,7 +275,6 @@
     "shortDesc": "Uczestnicy tworzą własny program dyskusji wokół ogólnego pytania, swobodnie przyłączają się do rozmów lub poruszają się między nimi oraz dzielą się najważniejszymi wnioskami, które następnie grupują we wspólne priorytety i kolejne kroki.",
     "purpose": "Chcemy pozwolić uczestnikom samodzielnie definiować najważniejsze kwestie i samodzielnie organizować dyskusje na temat tego, co jest dla nich ważne.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Aby samorządzić"
     ],
@@ -311,7 +299,6 @@
     "shortDesc": "Uczestnicy używają kart postaci, aby wyrazić potrzeby i napięcia wokół miejsca. Facylitator (jako burmistrz) wyznacza wspólne płaszczyzny i konflikty. Sesja kończy się identyfikacją ponad 5 synergii i konfliktów do rozwiązania.",
     "purpose": "Chcemy pomóc uczestnikom poznać różne perspektywy i odkryć potrzeby, konflikty i bariery, które nie są od razu widoczne.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Do współprojektowania"
     ],
@@ -336,7 +323,6 @@
     "shortDesc": "Uczestnicy przeglądają witrynę, obserwują i rejestrują w czasie rzeczywistym spostrzeżenia, emocje, bariery i wrażenia zmysłowe, a następnie wspólnie przekładają ustalenia na spostrzeżenia przestrzenne i pytania projektowe.",
     "purpose": "Chcemy wspólnie eksplorować witrynę i uchwycić w czasie rzeczywistym, jak ludzie postrzegają, czują i interpretują różne miejsca.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Do współprojektowania"
     ],
@@ -361,7 +347,6 @@
     "shortDesc": "Uczestnicy tworzą mapę ludzkich, nieludzkich, instytucjonalnych i materialnych aktorów kształtujących dane miejsce, umieszczają ich według istotności, łączą ich relacje i identyfikują, co należy wziąć pod uwagę przy podejmowaniu przyszłych decyzji.",
     "purpose": "Chcemy zrozumieć aktorów ludzkich, nieludzkich, materialnych i instytucjonalnych, którzy kształtują to miejsce i jego transformację.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Do współprojektowania"
     ],
@@ -386,7 +371,6 @@
     "shortDesc": "Uczestnicy śledzą doświadczenia wybranego użytkownika, osoby niebędącej użytkownikiem lub aktora niebędącego człowiekiem na mapie witryny, śledząc bariery, emocje, konflikty i możliwości przełożenia ich na spostrzeżenia projektowe.",
     "purpose": "Chcemy zrozumieć, jak różni ludzie doświadczają danego miejsca na przestrzeni czasu, niezależnie od tras, punktów styku, emocji i barier.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Do współprojektowania"
     ],
@@ -411,7 +395,6 @@
     "shortDesc": "Uczestnicy korzystają z badań jakościowych, aby określić, co mówi, myśli, robi i czuje kluczowy aktor, a następnie identyfikują sprzeczności, wzorce i krytyczne potrzeby, aby wykorzystać je na etapie wspólnego projektowania.",
     "purpose": "Chcemy zrozumieć, co mówią, myślą, czują i robią różni użytkownicy w odniesieniu do przestrzeni, w tym potrzeby, obawy i motywacje.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Aby się skonsultować"
     ],
@@ -436,7 +419,6 @@
     "shortDesc": "Uczestnicy tworzą oparte na badaniach profile aktorów ludzkich i nieludzkich związanych z danym miejscem, wykorzystując je jako punkty odniesienia, aby w całym procesie widoczne były różnorodne potrzeby, bariery i perspektywy.",
     "purpose": "Chcemy zsyntetyzować badania w przejrzyste profile, które reprezentują różne ludzkie i nieludzkie potrzeby, zachowania i relacje z miejscem.",
     "phase": 2,
-    "phaseName": "Collective Understanding",
     "objectiveTags": [
       "Aby się skonsultować"
     ],
@@ -461,7 +443,6 @@
     "shortDesc": "Opierając się na centralnym pytaniu i horyzoncie czasowym, uczestnicy udoskonalają karty czynników i nanoszą je na siatkę ważności/niepewności, wybierają dwie krytyczne niepewności jako osie macierzy 2×2, opisują cztery powstałe przyszłości w porównaniu z wartościami KOW w małych grupach i porównują je, aby wyciągnąć strategiczne wnioski.",
     "purpose": "Chcemy zbadać różne prawdopodobne przyszłości dla danego miejsca, wykorzystując kluczowe czynniki i niepewności, aby podważyć założenia, wyobrazić sobie alternatywne scenariusze i określić działania, które pozostaną przydatne w różnych przyszłych warunkach.",
     "phase": 3,
-    "phaseName": "Co-Design & Scenario Building",
     "objectiveTags": [
       "Do współprojektowania"
     ],
@@ -486,7 +467,6 @@
     "shortDesc": "Opierając się na wizji projektu, scenariuszach i wartościach KOW, uczestnicy formułują surowe stwierdzenia dotyczące wartości, testują każde z nich w porównaniu z rzeczywistym kompromisem, aby sprawdzić, czy rozwiązuje to prawdziwy konflikt, wybierają ocalałych odważnym manifestem z krótkim „dlaczego”, łączą się w spójny zestaw na posiedzeniu plenarnym i przed sfinalizowaniem testują je pilotażowo na rzeczywistych decyzjach.",
     "purpose": "Chcemy opracować 10 zasad przewodnich wspólnego projektowania: praktyczne stwierdzenia oparte na wartościach, które kierują podejmowaniem decyzji i zapewniają spójność w całym projekcie",
     "phase": 3,
-    "phaseName": "Co-Design & Scenario Building",
     "objectiveTags": [
       "Aby samorządzić"
     ],
@@ -511,7 +491,6 @@
     "shortDesc": "Zaczynając od jednego lub więcej obiecujących pomysłów, uczestnicy określają, czego muszą się nauczyć z prototypu, wybierają najprostszą formę, aby uczynić pomysł namacalnym — na przykład szkice, tablice nastroju, modele z kartonu, makiety z taśmy, prezentacje na biurku, odgrywanie ról lub prototypy papierowe/cyfrowe — i budują szybkie warianty, które można zaprezentować, zaobserwować, dostosować i porównać, aby zdecydować o kolejnym kroku.",
     "purpose": "Chcemy, aby wspólnie zaprojektowane pomysły stały się namacalne dzięki szybkim, tanim i mało wiernym reprezentacjom, które uczestnicy mogą zobaczyć, obsłużyć, doświadczyć i omówić przed przetestowaniem ich w prawdziwym życiu.",
     "phase": 4,
-    "phaseName": "Prototyping & Testing",
     "objectiveTags": [
       "Do współprojektowania"
     ],
@@ -536,7 +515,6 @@
     "shortDesc": "Interwencja urbanistyki taktycznej jest definiowana zgodnie z potrzebami testowymi i wykonalnością. Interwencja pozostaje prosta, bezpieczna, dostępna i proporcjonalna do dostępnego czasu, budżetu i pozwoleń. Podczas testu łączy się obserwację fizyczną i cyfrowe narzędzia informacji zwrotnej, aby zrozumieć, jak ludzie korzystają z przestrzeni, i wesprzeć przyszłe projektowanie, podejmowanie decyzji, umowy dotyczące utrzymania lub role zarządcze.",
     "purpose": "Chcemy przetestować możliwe rozwiązania przestrzenne bezpośrednio na miejscu poprzez tymczasowe, tanie i odwracalne interwencje, aby społeczności, projektanci i decydenci mogli obserwować, jak ludzie z nich korzystają, zbierać opinie i udoskonalać pomysły przed wprowadzeniem trwałych zmian.",
     "phase": 4,
-    "phaseName": "Prototyping & Testing",
     "objectiveTags": [
       "Aby samorządzić"
     ],
@@ -561,7 +539,6 @@
     "shortDesc": "Przejrzysty zapis tego, co wnieśli uczestnicy, jak zareagował projekt i co się zmieniło w rezultacie, udostępniany na każdym publicznym wydarzeniu i online.",
     "purpose": "Chcemy wspierać przejrzystą komunikację i zarządzać oczekiwaniami, uwidaczniając związek między wkładem społeczności a decyzjami dotyczącymi projektu.",
     "phase": 5,
-    "phaseName": "Consolidation, Governance & Learning",
     "objectiveTags": [],
     "mode": "Offline",
     "duration": "Not specified",
@@ -584,7 +561,6 @@
     "shortDesc": "Wspólny przegląd tego, co wymaga opieki, kto jest już zaangażowany i jak inni mogą się przyczynić, śledzący zobowiązania w czasie.",
     "purpose": "Chcemy uwidocznić istniejące inicjatywy w zakresie zarządzania, zidentyfikować nowe potrzeby w zakresie opieki oraz połączyć osoby, grupy i organizacje chcące przyczynić się do opieki długoterminowej i aktywizacji miejsca.",
     "phase": 5,
-    "phaseName": "Consolidation, Governance & Learning",
     "objectiveTags": [],
     "mode": "Offline",
     "duration": "Not specified",

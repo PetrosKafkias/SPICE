@@ -113,7 +113,7 @@ interface InitiativeDetail {
   setupUpdatedAt: string | null;
   currentPhaseNumber: number | null;
   pilotFinalizedAt: string | null;
-  facilitator: { id: number; fullName: string; email: string } | null;
+  facilitator: { id: number; fullName: string; email: string; note: string | null } | null;
 }
 
 interface FacilitatorInitiative extends Initiative {
@@ -249,6 +249,7 @@ export default function RoleHubDashboard() {
   const [savingPhaseChange, setSavingPhaseChange] = useState(false);
   const [savingTool, setSavingTool] = useState(false);
   const [facilitatorEmail, setFacilitatorEmail] = useState('');
+  const [facilitatorNote, setFacilitatorNote] = useState('');
   const [savingFacilitator, setSavingFacilitator] = useState(false);
   const [facilitatorInitiatives, setFacilitatorInitiatives] = useState<FacilitatorInitiative[]>([]);
   const [facilitatorLoading, setFacilitatorLoading] = useState(false);
@@ -303,6 +304,10 @@ export default function RoleHubDashboard() {
   useEffect(() => {
     if (activeInitiative) void loadDetail(activeInitiative.id);
   }, [activeInitiative, loadDetail]);
+
+  useEffect(() => {
+    setFacilitatorNote(detail?.facilitator?.note || '');
+  }, [detail?.facilitator]);
 
   useEffect(() => {
     if (role !== 'facilitator') return;
@@ -401,7 +406,7 @@ export default function RoleHubDashboard() {
     setSavingFacilitator(true);
     try {
       const result = await apiRequest<{ initiative: InitiativeDetail }>(`/api/hub/initiatives/${detail.id}/facilitator`, {
-        method: 'PATCH', body: jsonBody({ email: facilitatorEmail.trim() }),
+        method: 'PATCH', body: jsonBody({ email: facilitatorEmail.trim(), note: facilitatorNote.trim() || null }),
       });
       setDetail({ ...detail, facilitator: result.initiative.facilitator });
       void loadDetail(detail.id);
@@ -409,6 +414,22 @@ export default function RoleHubDashboard() {
       toast.success(t('hub.facilitatorAssignedSuccess', { name: result.initiative.facilitator?.fullName || t(roleKey('facilitator')) }));
     } catch {
       setError(t('hub.errorAssignFacilitator'));
+    } finally {
+      setSavingFacilitator(false);
+    }
+  };
+
+  const saveFacilitatorNote = async () => {
+    if (!detail || !detail.facilitator) return;
+    setSavingFacilitator(true);
+    try {
+      const result = await apiRequest<{ initiative: InitiativeDetail }>(`/api/hub/initiatives/${detail.id}/facilitator`, {
+        method: 'PATCH', body: jsonBody({ email: detail.facilitator.email, note: facilitatorNote.trim() || null }),
+      });
+      setDetail({ ...detail, facilitator: result.initiative.facilitator });
+      toast.success(t('hub.facilitatorNoteSavedSuccess'));
+    } catch {
+      setError(t('hub.errorSaveFacilitatorNote'));
     } finally {
       setSavingFacilitator(false);
     }
@@ -555,7 +576,7 @@ export default function RoleHubDashboard() {
   );
 
   const renderMunicipalityLifecycle = () => {
-    if (!detail || detail.lifecycleStatus === 'active' || detail.lifecycleStatus === 'completed') return null;
+    if (!detail) return null;
     const questionnaireComplete = Boolean(detail.setupCompletedAt);
     const toolsSelected = detail.setupSelectedTools.length > 0;
 
@@ -582,30 +603,69 @@ export default function RoleHubDashboard() {
       );
     }
 
-    return (
-      <section className="spice-card border-l-4 border-l-[#4e789b] p-6 md:p-8" aria-labelledby="ready-activate-title">
-        <p className="text-[12px] font-bold uppercase tracking-wide text-[#254f72]">{t('hub.lifecycle.ready_to_activate')}</p>
-        <h2 id="ready-activate-title" className="mt-2 text-[24px] font-bold text-[#444]">{t('hub.lifecycle.readyTitle')}</h2>
-        <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-[#666]">{t('hub.lifecycle.readyText')}</p>
-        <div className="mt-6 grid gap-3 sm:grid-cols-3">
-          {[t('hub.lifecycle.questionnaireComplete'), t('hub.lifecycle.toolsReviewed'), t('hub.lifecycle.historyProtected')].map((label) => (
-            <div key={label} className="flex items-center gap-3 border-2 border-[#dce5ec] bg-[#f7fbfd] p-4"><CheckCircle2 size={20} className="flex-none text-[#3f7046]" /><span className="text-[13px] font-semibold text-[#444]">{label}</span></div>
-          ))}
-        </div>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link to="/setup-questionnaire" className="inline-flex min-h-12 items-center border-2 border-[#444] bg-white px-5 font-bold text-[#444]">{t('hub.lifecycle.reviewSetup')}</Link>
-          {!activationConfirming && <button type="button" onClick={() => setActivationConfirming(true)} className="inline-flex min-h-12 cursor-pointer items-center gap-2 bg-[#f68b2c] px-6 font-bold text-white hover:bg-[#df771d]">{t('hub.lifecycle.activate')} <ArrowRight size={17} /></button>}
-        </div>
-        {activationConfirming && (
-          <div className="mt-6 border-2 border-[#f68b2c] bg-[#fff8f2] p-5" role="alertdialog" aria-labelledby="activation-confirm-title">
-            <h3 id="activation-confirm-title" className="text-[18px] font-bold text-[#444]">{t('hub.lifecycle.confirmTitle')}</h3>
-            <p className="mt-2 max-w-3xl text-[14px] leading-relaxed text-[#666]">{t('hub.lifecycle.confirmText')}</p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <button type="button" onClick={() => setActivationConfirming(false)} disabled={activating} className="min-h-11 cursor-pointer border-2 border-[#444] bg-white px-5 font-bold text-[#444]">{t('common.cancel')}</button>
-              <button type="button" onClick={() => void activatePilot()} disabled={activating} className="min-h-11 cursor-pointer bg-[#f68b2c] px-5 font-bold text-white disabled:cursor-wait disabled:opacity-60">{activating ? t('hub.lifecycle.activating') : t('hub.lifecycle.confirmActivate')}</button>
-            </div>
+    if (detail.lifecycleStatus === 'ready_to_activate') {
+      return (
+        <section className="spice-card border-l-4 border-l-[#4e789b] p-6 md:p-8" aria-labelledby="ready-activate-title">
+          <p className="text-[12px] font-bold uppercase tracking-wide text-[#254f72]">{t('hub.lifecycle.ready_to_activate')}</p>
+          <h2 id="ready-activate-title" className="mt-2 text-[24px] font-bold text-[#444]">{t('hub.lifecycle.readyTitle')}</h2>
+          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-[#666]">{t('hub.lifecycle.readyText')}</p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            {[t('hub.lifecycle.questionnaireComplete'), t('hub.lifecycle.toolsReviewed'), t('hub.lifecycle.historyProtected')].map((label) => (
+              <div key={label} className="flex items-center gap-3 border-2 border-[#dce5ec] bg-[#f7fbfd] p-4"><CheckCircle2 size={20} className="flex-none text-[#3f7046]" /><span className="text-[13px] font-semibold text-[#444]">{label}</span></div>
+            ))}
           </div>
-        )}
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link to="/setup-questionnaire" className="inline-flex min-h-12 items-center border-2 border-[#444] bg-white px-5 font-bold text-[#444]">{t('hub.lifecycle.reviewSetup')}</Link>
+            {!activationConfirming && <button type="button" onClick={() => setActivationConfirming(true)} className="inline-flex min-h-12 cursor-pointer items-center gap-2 bg-[#f68b2c] px-6 font-bold text-white hover:bg-[#df771d]">{t('hub.lifecycle.activate')} <ArrowRight size={17} /></button>}
+          </div>
+          {activationConfirming && (
+            <div className="mt-6 border-2 border-[#f68b2c] bg-[#fff8f2] p-5" role="alertdialog" aria-labelledby="activation-confirm-title">
+              <h3 id="activation-confirm-title" className="text-[18px] font-bold text-[#444]">{t('hub.lifecycle.confirmTitle')}</h3>
+              <p className="mt-2 max-w-3xl text-[14px] leading-relaxed text-[#666]">{t('hub.lifecycle.confirmText')}</p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button type="button" onClick={() => setActivationConfirming(false)} disabled={activating} className="min-h-11 cursor-pointer border-2 border-[#444] bg-white px-5 font-bold text-[#444]">{t('common.cancel')}</button>
+                <button type="button" onClick={() => void activatePilot()} disabled={activating} className="min-h-11 cursor-pointer bg-[#f68b2c] px-5 font-bold text-white disabled:cursor-wait disabled:opacity-60">{activating ? t('hub.lifecycle.activating') : t('hub.lifecycle.confirmActivate')}</button>
+              </div>
+            </div>
+          )}
+        </section>
+      );
+    }
+
+    const selectedToolNames = detail.setupSelectedTools
+      .map((toolId) => tools.find((tool) => tool.id === toolId)?.name)
+      .filter((name): name is string => Boolean(name));
+
+    return (
+      <section className="spice-card border-l-4 border-l-[#4e789b] p-6 md:p-8" aria-labelledby="setup-summary-title">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-[12px] font-bold uppercase tracking-wide text-[#254f72]">{t(`hub.lifecycle.${detail.lifecycleStatus}` as TranslationKey)}</p>
+            <h2 id="setup-summary-title" className="mt-2 text-[20px] font-bold text-[#444]">{t('hub.lifecycle.setupSummaryTitle')}</h2>
+            <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-[#666]">{t('hub.lifecycle.setupSummaryText')}</p>
+          </div>
+          <Wrench size={26} className="flex-none text-[#4e789b]" aria-hidden="true" />
+        </div>
+
+        <div className="mt-5">
+          {selectedToolNames.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {selectedToolNames.map((name) => (
+                <span key={name} className="flex items-center gap-1.5 border-2 border-[#dce5ec] bg-[#f7fbfd] px-3 py-1.5 text-[12px] font-semibold text-[#444]"><ListChecks size={13} className="text-[#4e789b]" />{name}</span>
+              ))}
+            </div>
+          ) : (
+            <p className="text-[13px] text-[#888]">{t('hub.lifecycle.setupNoToolsSelected')}</p>
+          )}
+          {detail.setupUpdatedAt && (
+            <p className="mt-3 flex items-center gap-2 text-[12px] text-[#888]"><CalendarDays size={14} />{t('hub.lifecycle.setupLastUpdated', { date: formatDate(detail.setupUpdatedAt, { dateStyle: 'medium' }) })}</p>
+          )}
+        </div>
+
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link to="/setup-questionnaire" className="inline-flex min-h-11 items-center gap-2 border-2 border-[#444] bg-white px-5 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]">{t('hub.lifecycle.reviewSetup')}</Link>
+          <Link to="/setup-tools" className="inline-flex min-h-11 items-center gap-2 border-2 border-[#444] bg-white px-5 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]">{t('hub.lifecycle.editSelectedTools')}</Link>
+        </div>
       </section>
     );
   };
@@ -1218,7 +1278,8 @@ export default function RoleHubDashboard() {
               </div>
             ) : (
               <>
-                {detail && detail.lifecycleStatus !== 'active' && detail.lifecycleStatus !== 'completed' ? renderMunicipalityLifecycle() : <>
+                {detail && renderMunicipalityLifecycle()}
+                {detail && (detail.lifecycleStatus === 'active' || detail.lifecycleStatus === 'completed') && <>
                 {renderRoadmap()}
                 {detail && (
                   <section aria-labelledby="facilitator-assignment-title" className="spice-card p-6">
@@ -1231,16 +1292,39 @@ export default function RoleHubDashboard() {
                             <p className="mt-1 text-[14px] text-[#666]">
                               {t('hub.facilitatorAssigned', { name: detail.facilitator.fullName, email: detail.facilitator.email })}
                             </p>
-                            <button type="button" onClick={() => void unassignFacilitator()} disabled={savingFacilitator} className="mt-3 min-h-10 cursor-pointer border-2 border-[#a86622] px-4 text-[13px] font-bold text-[#a86622] hover:bg-[#fff3e8] disabled:cursor-wait disabled:opacity-60">
+                            <div className="mt-4 max-w-xl">
+                              <label htmlFor="facilitator-note" className="text-[11px] font-bold uppercase tracking-wide text-[#888]">{t('hub.facilitatorNoteLabel')}</label>
+                              <textarea
+                                id="facilitator-note"
+                                value={facilitatorNote}
+                                onChange={(event) => setFacilitatorNote(event.target.value)}
+                                placeholder={t('hub.facilitatorNotePlaceholder')}
+                                className="mt-2 min-h-[88px] w-full border-2 border-[#bfc0c5] px-3 py-2 text-[13px] text-[#444] focus:border-[#ca7428] focus:outline-none"
+                              />
+                              <button type="button" onClick={() => void saveFacilitatorNote()} disabled={savingFacilitator} className="mt-2 min-h-10 cursor-pointer border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428] disabled:cursor-wait disabled:opacity-60">
+                                {savingFacilitator ? t('common.saving') : t('hub.saveFacilitatorNote')}
+                              </button>
+                            </div>
+                            <button type="button" onClick={() => void unassignFacilitator()} disabled={savingFacilitator} className="mt-4 min-h-10 cursor-pointer border-2 border-[#a86622] px-4 text-[13px] font-bold text-[#a86622] hover:bg-[#fff3e8] disabled:cursor-wait disabled:opacity-60">
                               {savingFacilitator ? t('hub.unassigningFacilitator') : t('hub.unassignFacilitator')}
                             </button>
                           </>
                         ) : (
                           <>
                             <p className="mt-1 text-[14px] text-[#666]">{t('hub.noFacilitatorAssigned')}</p>
-                            <form onSubmit={assignFacilitator} className="mt-3 flex flex-wrap items-center gap-3">
-                              <input type="email" required value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} placeholder="facilitator@example.org" className="min-h-11 min-w-0 flex-1 border-2 border-[#bfc0c5] px-3 text-[14px] focus:border-[#ca7428] focus:outline-none" />
-                              <button type="submit" disabled={savingFacilitator || !facilitatorEmail.trim()} className="min-h-11 cursor-pointer bg-[#f68b2c] px-4 text-[13px] font-bold text-white hover:bg-[#e07a20] disabled:cursor-wait disabled:opacity-60">
+                            <form onSubmit={assignFacilitator} className="mt-3 flex max-w-xl flex-col gap-3">
+                              <input type="email" required value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} placeholder="facilitator@example.org" className="min-h-11 min-w-0 border-2 border-[#bfc0c5] px-3 text-[14px] focus:border-[#ca7428] focus:outline-none" />
+                              <div>
+                                <label htmlFor="facilitator-note" className="text-[11px] font-bold uppercase tracking-wide text-[#888]">{t('hub.facilitatorNoteLabel')}</label>
+                                <textarea
+                                  id="facilitator-note"
+                                  value={facilitatorNote}
+                                  onChange={(event) => setFacilitatorNote(event.target.value)}
+                                  placeholder={t('hub.facilitatorNotePlaceholder')}
+                                  className="mt-2 min-h-[72px] w-full border-2 border-[#bfc0c5] px-3 py-2 text-[13px] text-[#444] focus:border-[#ca7428] focus:outline-none"
+                                />
+                              </div>
+                              <button type="submit" disabled={savingFacilitator || !facilitatorEmail.trim()} className="self-start min-h-11 cursor-pointer bg-[#f68b2c] px-4 text-[13px] font-bold text-white hover:bg-[#e07a20] disabled:cursor-wait disabled:opacity-60">
                                 {savingFacilitator ? t('hub.assigningFacilitator') : t('hub.assignFacilitator')}
                               </button>
                             </form>
