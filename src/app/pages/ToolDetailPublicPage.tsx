@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { ChevronLeft, Clock, Users, CheckSquare, Bot, Camera, FileText, ChevronRight, Lightbulb, LayoutPanelTop, ListOrdered, Link as LinkIcon, Radio, Settings, UserCog, Info, ClipboardCheck, UserCheck } from 'lucide-react';
+import { ChevronLeft, Clock, Users, CheckSquare, Bot, Camera, FileText, ChevronRight, Lightbulb, LayoutPanelTop, Link as LinkIcon, Radio, Settings, UserCog, Info, ClipboardCheck, UserCheck } from 'lucide-react';
 import SpicePublicShell from '../components/SpicePublicShell';
 import { getTools, PHASES } from '../data/tools';
 import { useAuth } from '../context/AuthContext';
@@ -51,7 +51,7 @@ export default function ToolDetailPublicPage() {
               {/* Tags */}
               <div className="flex flex-wrap gap-2">
                 <span className="px-3 py-1.5 text-[13px] font-semibold rounded-full bg-[#f5f5f5] text-[#444] flex items-center gap-1.5"><Clock size={13} />{tool.duration}</span>
-                <span className="px-3 py-1.5 text-[13px] font-semibold rounded-full bg-[#f5f5f5] text-[#444] flex items-center gap-1.5"><Users size={13} />{tool.groupSize}</span>
+                <span className="px-3 py-1.5 text-[13px] font-semibold rounded-full bg-[#f5f5f5] text-[#444] flex items-center gap-1.5"><Users size={13} />{t(tool.targetUsers === 'Internal team' ? 'resources.targetUsers.internal' : 'resources.targetUsers.public')}</span>
                 <span className="px-3 py-1.5 text-[13px] font-semibold rounded-full" style={{ backgroundColor: mc.bg, color: mc.text }}>{t(`resources.${tool.mode.toLowerCase()}` as 'resources.online' | 'resources.offline' | 'resources.hybrid')}</span>
               </div>
 
@@ -103,54 +103,12 @@ export default function ToolDetailPublicPage() {
             </div>
 
             {/* Guidance */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-              <div className="px-6 py-4 border-b border-gray-100">
-                <h2 className="text-[18px] font-bold text-[#444]">{t('toolDetail.guidance')}</h2>
-              </div>
-              <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="rounded-xl p-4 flex flex-col gap-2" style={{ backgroundColor: '#fdf4ea', border: '1px solid #f5d5a0' }}>
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-[#f68b2c] rounded flex items-center justify-center flex-shrink-0">
-                      <Lightbulb size={13} className="text-white" />
-                    </div>
-                    <p className="text-[13px] font-semibold text-[#ca7428]">{t('toolDetail.usageTip')}</p>
-                  </div>
-                  <p className="text-[13px] text-[#444] leading-relaxed">{tool.usageTip}</p>
-                </div>
-                <div className="rounded-xl p-4 flex flex-col gap-2" style={{ backgroundColor: '#e8f5ef', border: '1px solid #b6ddc6' }}>
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-[#2e6e45] rounded flex items-center justify-center flex-shrink-0">
-                      <Lightbulb size={13} className="text-white" />
-                    </div>
-                    <p className="text-[13px] font-semibold text-[#2e6e45]">{t('toolDetail.proTip')}</p>
-                  </div>
-                  <p className="text-[13px] text-[#444] leading-relaxed">{tool.proTip}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Expected Outputs */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-              <div className="px-6 py-4 border-b border-gray-100">
-                <h2 className="text-[18px] font-bold text-[#444]">{t('toolDetail.outputs')}</h2>
-              </div>
-              <div className="p-6 flex flex-wrap gap-3">
-                {tool.expectedOutputs.map((output) => (
-                  <div key={output} className="flex items-center gap-2 px-3 py-2 bg-[#f0f8f4] rounded-lg border border-[#c8e0d0]">
-                    <CheckSquare size={14} className="text-[#2e6e45] flex-shrink-0" />
-                    <span className="text-[13px] font-medium text-[#2e6e45]">{output}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Accessibility Notes */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-              <div className="px-6 py-4 border-b border-gray-100">
-                <h2 className="text-[18px] font-bold text-[#444]">{t('toolDetail.accessibility')}</h2>
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+              <div className="border-b border-gray-100 px-6 py-4">
+                <h2 className="flex items-center gap-2 text-[18px] font-bold text-[#444]"><Lightbulb size={20} className="text-[#ca7428]" />{t('toolDetail.guidance')}</h2>
               </div>
               <div className="p-6">
-                <p className="text-[14px] text-[#666] leading-relaxed">{tool.accessibilityNotes}</p>
+                <p className="whitespace-pre-line text-[14px] leading-relaxed text-[#555]">{tool.usageTip}</p>
               </div>
             </div>
 
@@ -173,16 +131,10 @@ export default function ToolDetailPublicPage() {
               </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="flex items-center gap-2 text-[18px] font-bold text-[#444]"><ListOrdered size={20} className="text-[#ca7428]" />{t('toolDetail.requirements')}</h2>
-                <p className="mt-4 whitespace-pre-line text-[14px] leading-relaxed text-[#666]">{(tool.requirements || tool.suppliesRequired || t('toolDetail.defaultRequirements')).replace(/^\d+_\s*/, '')}</p>
-              </section>
-              <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="flex items-center gap-2 text-[18px] font-bold text-[#444]"><LinkIcon size={20} className="text-[#ca7428]" />{t('toolDetail.resources')}</h2>
-                <p className="mt-4 whitespace-pre-line text-[14px] leading-relaxed text-[#666]">{tool.examples || tool.onlineResources || tool.reference || t('toolDetail.defaultResources')}</p>
-              </section>
-            </div>
+            <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <h2 className="flex items-center gap-2 text-[18px] font-bold text-[#444]"><LinkIcon size={20} className="text-[#ca7428]" />{t('toolDetail.resources')}</h2>
+              <p className="mt-4 whitespace-pre-line text-[14px] leading-relaxed text-[#666]">{tool.onlineResources || t('toolDetail.defaultResources')}</p>
+            </section>
           </div>
 
           {/* Right sidebar */}
@@ -195,7 +147,6 @@ export default function ToolDetailPublicPage() {
                   { label: t('toolDetail.mode'), value: t(`resources.${tool.mode.toLowerCase()}` as 'resources.online' | 'resources.offline' | 'resources.hybrid'), icon: Radio },
                   { label: t('toolDetail.duration'), value: tool.duration, icon: Clock },
                   { label: t('toolDetail.developmentTime'), value: tool.developmentTime, icon: Settings },
-                  { label: t('toolDetail.groupSize'), value: tool.groupSize, icon: Users },
                   { label: t('toolDetail.facilitatorRatio'), value: tool.facilitatorRatio, icon: UserCog },
                   { label: t('toolDetail.targetUsers'), value: t(tool.targetUsers === 'Internal team' ? 'resources.targetUsers.internal' : 'resources.targetUsers.public'), icon: UserCheck },
                   { label: t('toolDetail.supplies'), value: tool.suppliesRequired, icon: Info },

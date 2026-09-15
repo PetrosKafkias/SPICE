@@ -8,8 +8,8 @@ import {
   ChevronDown,
   Cookie,
   Facebook,
-  Instagram,
   Languages,
+  Linkedin,
   LogOut,
   Menu,
   MessageSquare,
@@ -430,7 +430,8 @@ export function SpiceFooter() {
       <div className="mx-auto grid max-w-[1440px] gap-x-8 gap-y-9 px-6 py-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[minmax(280px,1.4fr)_170px_170px_170px_210px] md:px-12">
         <div className="sm:col-span-2 lg:col-span-3 xl:col-span-1">
           <img src={euFunded} alt={t('footer.funded')} className="mb-7 h-[60px] w-auto object-contain" />
-          <p className="max-w-[560px] text-[13px] leading-relaxed text-black">{t('footer.disclaimer')}</p>
+          <p className="max-w-[560px] text-[13px] leading-relaxed text-black">{t('footer.grant')}</p>
+          <p className="mt-3 max-w-[560px] text-[13px] italic leading-relaxed text-black">{t('footer.disclaimer')}</p>
           <p className="mt-7 text-[14px] font-bold text-black">{t('footer.rights')}</p>
         </div>
 
@@ -470,9 +471,9 @@ export function SpiceFooter() {
           <button type="button" onClick={() => setFeedbackOpen(true)} className="flex w-fit cursor-pointer items-center gap-2 border-2 border-[#777] bg-white px-4 py-2 text-[13px] font-semibold text-[#444] transition-colors hover:border-[#444] hover:bg-[#f2f2f2] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]"><MessageSquare size={17} aria-hidden="true" />{t('feedback.open')}</button>
           <p className="mt-3 text-[15px] font-bold text-black">{t('footer.follow')}</p>
           <div className="flex items-center gap-6">
-            <a href="https://www.youtube.com/results?search_query=SPICE+Sustainable+Public+Spaces+Inclusive+Community+Engagement" target="_blank" rel="noreferrer" className="grid h-8 w-8 cursor-pointer place-items-center text-black transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]" aria-label={t('social.youtube')}><Youtube size={24} strokeWidth={1.8} /></a>
-            <a href="https://www.instagram.com/explore/tags/spiceprojecteu/" target="_blank" rel="noreferrer" className="grid h-8 w-8 cursor-pointer place-items-center text-black transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]" aria-label={t('social.instagram')}><Instagram size={24} strokeWidth={1.8} /></a>
-            <a href="https://www.facebook.com/search/top?q=SPICE%20EU%20Project" target="_blank" rel="noreferrer" className="grid h-8 w-8 cursor-pointer place-items-center text-black transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]" aria-label={t('social.facebook')}><Facebook size={24} strokeWidth={1.8} /></a>
+            <a href="https://www.youtube.com/@spice_project_eu" target="_blank" rel="noreferrer" className="grid h-8 w-8 cursor-pointer place-items-center text-black transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]" aria-label={t('social.youtube')}><Youtube size={24} strokeWidth={1.8} /></a>
+            <a href="https://www.linkedin.com/company/spice-project-eu/" target="_blank" rel="noreferrer" className="grid h-8 w-8 cursor-pointer place-items-center text-black transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]" aria-label={t('social.linkedin')}><Linkedin size={24} strokeWidth={1.8} /></a>
+            <a href="https://www.facebook.com/spiceproject.eu/" target="_blank" rel="noreferrer" className="grid h-8 w-8 cursor-pointer place-items-center text-black transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428]" aria-label={t('social.facebook')}><Facebook size={24} strokeWidth={1.8} /></a>
           </div>
         </div>
       </div>

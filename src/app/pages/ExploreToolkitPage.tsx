@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
-import { Search, Grid2X2, List, Clock, Users, ChevronDown } from 'lucide-react';
+import { Search, Grid2X2, List, Clock, Users, UserCog, ChevronDown } from 'lucide-react';
 import SpicePublicShell from '../components/SpicePublicShell';
 import StandardPageHeader from '../components/StandardPageHeader';
 import { getTools, PHASES, Tool } from '../data/tools';
@@ -18,7 +18,7 @@ function ToolCard({ tool, onViewDetail }: { tool: Tool; onViewDetail: (id: strin
   const { t } = useI18n();
   const mc = MODE_COLORS[tool.mode];
   const modeLabel = t(`resources.${tool.mode.toLowerCase()}` as 'resources.online' | 'resources.offline' | 'resources.hybrid');
-  const statusLabel = t(tool.status === 'Content ready' ? 'resources.contentReady' : 'resources.formatted');
+  const targetUsersLabel = t(tool.targetUsers === 'Internal team' ? 'resources.targetUsers.internal' : 'resources.targetUsers.public');
 
   return (
     <div className="spice-card overflow-hidden flex flex-col">
@@ -35,9 +35,11 @@ function ToolCard({ tool, onViewDetail }: { tool: Tool; onViewDetail: (id: strin
             <Clock size={10} />{tool.duration}
           </span>
           <span className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium bg-gray-100 text-[#444] rounded-full">
-            <Users size={10} />{tool.groupSize}
+            <Users size={10} />{targetUsersLabel}
           </span>
-          <span className="px-2.5 py-1 text-[11px] font-semibold rounded-full bg-[#fff0e1] text-[#a85f20]">{statusLabel}</span>
+          <span className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-full bg-[#fff0e1] text-[#a85f20]">
+            <UserCog size={10} />{tool.facilitatorRatio}
+          </span>
         </div>
       </div>
 
@@ -150,7 +152,7 @@ export default function ExploreToolkitPage() {
                         <div className="flex flex-wrap gap-1.5 mt-2">
                           <span className="px-2 py-0.5 text-[11px] font-semibold rounded-full" style={{ backgroundColor: MODE_COLORS[tool.mode].bg, color: MODE_COLORS[tool.mode].text }}>{t(`resources.${tool.mode.toLowerCase()}` as 'resources.online' | 'resources.offline' | 'resources.hybrid')}</span>
                           <span className="px-2 py-0.5 text-[11px] bg-gray-100 text-[#444] rounded-full">{tool.duration}</span>
-                          <span className="px-2 py-0.5 text-[11px] bg-gray-100 text-[#444] rounded-full">{tool.groupSize}</span>
+                          <span className="px-2 py-0.5 text-[11px] bg-gray-100 text-[#444] rounded-full">{t(tool.targetUsers === 'Internal team' ? 'resources.targetUsers.internal' : 'resources.targetUsers.public')}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">

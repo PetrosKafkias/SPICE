@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from 'react';
-import { Outlet, useLocation, useNavigation } from 'react-router';
+import { Outlet, ScrollRestoration, useLocation, useNavigation } from 'react-router';
 import { useI18n } from '../context/I18nContext';
 import PageLoadingSkeleton from './PageLoadingSkeleton';
 
@@ -27,6 +27,7 @@ export default function RouteExperience() {
           <Outlet />
         </Suspense>
       </div>
+      <ScrollRestoration />
     </>
   );
 }

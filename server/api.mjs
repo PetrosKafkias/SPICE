@@ -23,6 +23,12 @@ import { randomUUID } from 'node:crypto';
 const SESSION_COOKIE = 'spice_session';
 const MAX_BODY_SIZE = 1_000_000;
 const LOCALES = new Set(['EN', 'EL', 'FI', 'PL', 'PT']);
+const COMMUNITY_NEEDS = new Set([
+  'elderly-retired', 'elderly-isolated', 'disability-mobility', 'disability-literacy',
+  'migrant-newcomer', 'disability-sensory', 'school-youth', 'youth-job', 'youth-studies',
+  'youth-nowhere', 'migrant-language', 'roma-minority', 'homeless', 'low-income',
+  'digitally-excluded', 'caregiver', 'lgbtq', 'rural-isolated',
+]);
 
 function safeReturnTo(value) {
   if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//')) return '/';
@@ -108,6 +114,7 @@ function serializeUser(row) {
     organisationId: row.organisation_id ? Number(row.organisation_id) : null,
     accountStatus: row.account_status || 'active',
     pilotSite: row.pilot_site,
+    communityNeeds: parseJson(row.community_needs_json, []),
     phone: row.phone,
     locale: row.locale,
     preferences: {
@@ -764,6 +771,9 @@ export async function createApiHandler(options = {}) {
         const confirmPassword = String(body.confirmPassword || '');
         const role = 'Citizen';
         const pilotSite = String(body.pilotSite || 'Thessaloniki').trim();
+        const communityNeeds = Array.isArray(body.communityNeeds)
+          ? [...new Set(body.communityNeeds.filter((value) => COMMUNITY_NEEDS.has(value)))]
+          : [];
         const locale = LOCALES.has(body.locale) ? body.locale : 'EN';
         const returnTo = safeReturnTo(body.returnTo);
         const fieldErrors = {};
@@ -794,9 +804,9 @@ export async function createApiHandler(options = {}) {
         try {
         const result = db.prepare(`
           INSERT INTO users (
-            full_name, email, password_hash, role, pilot_site, phone, locale, account_status, created_at, updated_at, email_verified_at
-          ) VALUES (?, ?, ?, ?, ?, '', ?, ?, ?, ?, NULL)
-        `).run(fullName, email, passwordHash, role, pilotSite, locale, accountStatus, now, now);
+            full_name, email, password_hash, role, pilot_site, phone, locale, account_status, community_needs_json, created_at, updated_at, email_verified_at
+          ) VALUES (?, ?, ?, ?, ?, '', ?, ?, ?, ?, ?, NULL)
+        `).run(fullName, email, passwordHash, role, pilotSite, locale, accountStatus, JSON.stringify(communityNeeds), now, now);
         const userId = Number(result.lastInsertRowid);
         createNotification(db, {
           userId, type: 'system', eventType: 'notification_onboarding',

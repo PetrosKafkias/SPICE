@@ -203,7 +203,7 @@ function ToolTile({ tool, enabled, canManage, canParticipate, onAdd, onRemove }:
       <div className="flex flex-wrap gap-1.5">
         <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ backgroundColor: mc.bg, color: mc.text }}>{t(`resources.${tool.mode.toLowerCase()}` as TranslationKey)}</span>
         <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-[#444]"><Clock size={10} />{tool.duration}</span>
-        <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-[#444]"><Users size={10} />{tool.groupSize}</span>
+        <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-[#444]"><Users size={10} />{t(tool.targetUsers === 'Internal team' ? 'resources.targetUsers.internal' : 'resources.targetUsers.public')}</span>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <Link to={`/tool-detail/${tool.id}`} className="cursor-pointer border border-[#bfc0c5] px-3 py-1.5 text-[12px] font-semibold text-[#444] hover:bg-[#f7f7f7]">{t('common.moreInformation')}</Link>

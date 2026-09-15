@@ -556,7 +556,7 @@ function HubPhaseManagementPage() {
                         <div className="mt-1 flex flex-wrap gap-1.5">
                           <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ backgroundColor: mc.bg, color: mc.text }}>{t(`resources.${tool.mode.toLowerCase()}` as 'resources.online' | 'resources.offline' | 'resources.hybrid')}</span>
                           <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-[#444]"><Clock size={10} />{tool.duration}</span>
-                          <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-[#444]"><Users size={10} />{tool.groupSize}</span>
+                          <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-[#444]"><Users size={10} />{t(tool.targetUsers === 'Internal team' ? 'resources.targetUsers.internal' : 'resources.targetUsers.public')}</span>
                         </div>
                       </Link>
                     );

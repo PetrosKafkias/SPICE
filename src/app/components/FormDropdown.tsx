@@ -3,9 +3,9 @@ import { Check, ChevronDown } from 'lucide-react';
 
 interface Option { value: string; label: string }
 
-export default function FormDropdown({ id, value, options, placeholder, icon, invalid, required, onChange }: {
+export default function FormDropdown({ id, value, options, placeholder, icon, invalid, required, labelledBy, onChange }: {
   id: string; value: string; options: Option[]; placeholder: string; icon: ReactNode;
-  invalid?: boolean; required?: boolean; onChange: (value: string) => void;
+  invalid?: boolean; required?: boolean; labelledBy?: string; onChange: (value: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -21,7 +21,7 @@ export default function FormDropdown({ id, value, options, placeholder, icon, in
   return <div ref={ref} className={`relative ${open ? 'z-[80]' : 'z-0'}`}>
     <button id={id} type="button" onClick={() => setOpen((current) => !current)}
       className={`flex min-h-[52px] w-full cursor-pointer items-center gap-3 border-2 px-4 text-left text-[15px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428] ${invalid ? 'border-red-600' : open ? 'border-[#ca7428]' : 'border-[#bfc0c5] hover:border-[#ca7428]'}`}
-      aria-haspopup="menu" aria-expanded={open} aria-invalid={invalid} aria-required={required}>
+      aria-haspopup="menu" aria-expanded={open} aria-invalid={invalid} aria-required={required} aria-labelledby={labelledBy}>
       <span className="text-[#444]">{icon}</span><span className={`min-w-0 flex-1 truncate ${selected ? 'text-black' : 'text-[#777]'}`}>{selected?.label || placeholder}</span>
       <ChevronDown size={20} className={`transition-transform ${open ? 'rotate-180 text-[#ca7428]' : ''}`} />
     </button>

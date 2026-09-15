@@ -4,6 +4,7 @@ import { Area, AreaChart, Bar, BarChart, Cell, Pie, PieChart, ResponsiveContaine
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import SpicePublicShell from '../components/SpicePublicShell';
+import StandardPageHeader from '../components/StandardPageHeader';
 import { useI18n } from '../context/I18nContext';
 import type { TranslationKey } from '../i18n/translations';
 import { apiRequest } from '../lib/api';
@@ -169,15 +170,19 @@ export default function CitiVoiceAppPage() {
 
   return (
     <SpicePublicShell>
-      <div className="spice-page spice-wide-page flex flex-col gap-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div><h1 className="text-[32px] font-bold text-[#444]">{t('nav.citivoice')}</h1><p className="mt-1 text-[15px] font-medium text-[#888]">{t('citivoice.subtitle')}</p></div>
-          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-            <button type="button" onClick={handleDownload} className="flex min-h-11 cursor-pointer items-center justify-center gap-2 border-2 border-[#444] px-5 py-3 text-[14px] font-semibold text-[#444] transition-colors hover:border-[#ca7428] hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]"><Download size={17} />{t('citivoice.downloadSummary')}</button>
+      <StandardPageHeader
+        icon={MapPin}
+        eyebrow={t('citivoice.eyebrow')}
+        title={t('nav.citivoice')}
+        description={t('citivoice.subtitle')}
+        actions={(
+          <>
+            <button type="button" onClick={handleDownload} className="flex min-h-11 cursor-pointer items-center justify-center gap-2 border-2 border-[#444] bg-white px-5 py-3 text-[14px] font-semibold text-[#444] transition-colors hover:border-[#ca7428] hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]"><Download size={17} />{t('citivoice.downloadSummary')}</button>
             <button type="button" onClick={() => navigate('/app/citivoice')} className="flex min-h-11 cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#e07a20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#444]">{t('citivoice.openWorkspace')}<ArrowRight size={17} /></button>
-          </div>
-        </div>
-
+          </>
+        )}
+      />
+      <div className="spice-page spice-wide-page flex flex-col gap-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
         <div className="flex flex-col gap-2 border-2 border-[#bfc0c5] bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
           <label htmlFor="citivoice-use-case" className="text-[13px] font-bold text-[#444]">{t('citivoice.useCase')}</label>
           <div className="relative sm:w-[320px]">

@@ -10,6 +10,7 @@ export interface AuthUser {
   organisationId: number | null;
   accountStatus: 'active' | 'suspended' | 'pending_approval';
   pilotSite: string;
+  communityNeeds: string[];
   phone: string;
   locale: 'EN' | 'EL' | 'FI' | 'PL' | 'PT';
   preferences: {
@@ -28,6 +29,7 @@ export interface RegisterInput {
   password: string;
   confirmPassword: string;
   pilotSite: string;
+  communityNeeds: string[];
   locale: string;
   acceptedTerms: boolean;
   returnTo?: string;

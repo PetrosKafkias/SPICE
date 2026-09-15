@@ -1,20 +1,43 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { ArrowRight, CircleAlert, Lock, Mail, MailCheck, MapPin, UserCircle2 } from 'lucide-react';
+import { ArrowRight, CircleAlert, HeartHandshake, Lock, Mail, MailCheck, MapPin, UserCircle2 } from 'lucide-react';
 import AuthLayout from '../components/AuthLayout';
 import FormDropdown from '../components/FormDropdown';
+import FormMultiSelect from '../components/FormMultiSelect';
 import { FieldGroup, FieldMessage, FormField, FormGrid } from '../components/FormLayout';
 import { useAuth, type RegistrationResult } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
 import { localizedApiError, localizedFieldErrors } from '../lib/localizedApiError';
 import { authRoute, safeReturnTo } from '../lib/authRedirect';
+import type { TranslationKey } from '../i18n/translations';
 
 const PILOT_SITES = ['Thessaloniki', 'Rovaniemi', 'Bielsko-Biala', 'Cuba'];
 
+const COMMUNITY_NEEDS: Array<{ value: string; labelKey: TranslationKey }> = [
+  { value: 'elderly-retired', labelKey: 'auth.communityNeed.elderlyRetired' },
+  { value: 'elderly-isolated', labelKey: 'auth.communityNeed.elderlyIsolated' },
+  { value: 'disability-mobility', labelKey: 'auth.communityNeed.disabilityMobility' },
+  { value: 'disability-literacy', labelKey: 'auth.communityNeed.disabilityLiteracy' },
+  { value: 'migrant-newcomer', labelKey: 'auth.communityNeed.migrantNewcomer' },
+  { value: 'disability-sensory', labelKey: 'auth.communityNeed.disabilitySensory' },
+  { value: 'school-youth', labelKey: 'auth.communityNeed.schoolYouth' },
+  { value: 'youth-job', labelKey: 'auth.communityNeed.youthJob' },
+  { value: 'youth-studies', labelKey: 'auth.communityNeed.youthStudies' },
+  { value: 'youth-nowhere', labelKey: 'auth.communityNeed.youthNowhere' },
+  { value: 'migrant-language', labelKey: 'auth.communityNeed.migrantLanguage' },
+  { value: 'roma-minority', labelKey: 'auth.communityNeed.romaMinority' },
+  { value: 'homeless', labelKey: 'auth.communityNeed.homeless' },
+  { value: 'low-income', labelKey: 'auth.communityNeed.lowIncome' },
+  { value: 'digitally-excluded', labelKey: 'auth.communityNeed.digitallyExcluded' },
+  { value: 'caregiver', labelKey: 'auth.communityNeed.caregiver' },
+  { value: 'lgbtq', labelKey: 'auth.communityNeed.lgbtq' },
+  { value: 'rural-isolated', labelKey: 'auth.communityNeed.ruralIsolated' },
+];
+
 export default function RegisterPage() {
   const navigate = useNavigate(); const [searchParams] = useSearchParams();
-  const { user, register } = useAuth(); const { language, t } = useI18n();
-  const [form, setForm] = useState({ fullName: '', email: '', password: '', confirmPassword: '', pilotSite: '' });
+  const { user, register } = useAuth(); const { language, t, tp } = useI18n();
+  const [form, setForm] = useState({ fullName: '', email: '', password: '', confirmPassword: '', pilotSite: '', communityNeeds: [] as string[] });
   const [agreed, setAgreed] = useState(false); const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(''); const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [validationAttempted, setValidationAttempted] = useState(false); const [shake, setShake] = useState(false);
@@ -22,8 +45,9 @@ export default function RegisterPage() {
   const formRef = useRef<HTMLFormElement>(null);
   const returnTo = safeReturnTo(searchParams.get('returnTo'));
   useEffect(() => { if (user) navigate(returnTo, { replace: true }); }, [navigate, returnTo, user]);
-  const setValue = (field: keyof typeof form, value: string) => { setForm((current) => ({ ...current, [field]: value })); setFieldErrors((current) => ({ ...current, [field]: '' })); setError(''); };
-  const update = (field: keyof typeof form) => (event: React.ChangeEvent<HTMLInputElement>) => setValue(field, event.target.value);
+  const setValue = (field: Exclude<keyof typeof form, 'communityNeeds'>, value: string) => { setForm((current) => ({ ...current, [field]: value })); setFieldErrors((current) => ({ ...current, [field]: '' })); setError(''); };
+  const update = (field: Exclude<keyof typeof form, 'communityNeeds'>) => (event: React.ChangeEvent<HTMLInputElement>) => setValue(field, event.target.value);
+  const setCommunityNeeds = (values: string[]) => setForm((current) => ({ ...current, communityNeeds: values }));
   const fieldClass = (field: string) => `flex min-h-[52px] items-center gap-3 border-2 px-4 ${fieldErrors[field] ? 'border-red-600 bg-red-50/40' : 'border-[#bfc0c5] focus-within:border-[#ca7428]'}`;
   const errorText = (field: string) => fieldErrors[field] && <FieldMessage id={`${field}-error`} tone="error">{fieldErrors[field]}</FieldMessage>;
   const requiredLabel = (label: string) => <span>{label} <span className="text-[#b42318]" aria-hidden="true">*</span><span className="sr-only"> ({t('common.required')})</span></span>;
@@ -73,11 +97,12 @@ export default function RegisterPage() {
     <form ref={formRef} onSubmit={handleSubmit} className="mt-6 grid gap-4" noValidate aria-describedby={validationAttempted ? 'register-form-error' : undefined}>
       <FormField className="gap-2 text-[16px] font-semibold">{requiredLabel(t('auth.fullName'))}<span data-field-control className={fieldClass('fullName')}><UserCircle2 size={20}/><input required className="min-w-0 flex-1 bg-transparent text-[15px] font-medium outline-none" type="text" autoComplete="name" placeholder={t('auth.fullNamePlaceholder')} value={form.fullName} onChange={update('fullName')} aria-invalid={!!fieldErrors.fullName} aria-describedby={fieldErrors.fullName ? 'fullName-error' : undefined}/></span>{errorText('fullName')}</FormField>
       <FormField className="gap-2 text-[16px] font-semibold">{requiredLabel(t('auth.email'))}<span data-field-control className={fieldClass('email')}><Mail size={20}/><input required className="min-w-0 flex-1 bg-transparent text-[15px] font-medium outline-none" type="email" autoComplete="email" placeholder={t('auth.emailPlaceholder')} value={form.email} onChange={update('email')} aria-invalid={!!fieldErrors.email} aria-describedby={fieldErrors.email ? 'email-error' : undefined}/></span>{errorText('email')}</FormField>
+      <FieldGroup className="gap-2 text-[16px] font-semibold"><span id="pilot-site-label">{requiredLabel(t('auth.pilotSite'))}</span><FormDropdown required id="pilot-site" labelledBy="pilot-site-label pilot-site" value={form.pilotSite} placeholder={t('auth.pilotPlaceholder')} options={PILOT_SITES.map((value) => ({value,label:value}))} icon={<MapPin size={20}/>} invalid={!!fieldErrors.pilotSite} onChange={(value) => setValue('pilotSite', value)}/>{errorText('pilotSite')}</FieldGroup>
+      <FieldGroup className="gap-2 text-[16px] font-semibold"><span id="community-needs-label">{t('auth.communityNeeds')}</span><FormMultiSelect id="community-needs" labelledBy="community-needs-label community-needs" values={form.communityNeeds} placeholder={t('auth.communityNeedsPlaceholder')} summary={tp(form.communityNeeds.length, { one: 'auth.communityNeedsSelected.one', few: 'auth.communityNeedsSelected.few', many: 'auth.communityNeedsSelected.many', other: 'auth.communityNeedsSelected.other' }, { count: form.communityNeeds.length })} options={COMMUNITY_NEEDS.map(({ value, labelKey }) => ({ value, label: t(labelKey) }))} icon={<HeartHandshake size={20}/>} onChange={setCommunityNeeds}/></FieldGroup>
       <FormGrid className="gap-4 sm:grid-cols-2">
         <FormField className="gap-2 text-[16px] font-semibold">{requiredLabel(t('auth.password'))}<span data-field-control className={fieldClass('password')}><Lock size={20}/><input required className="min-w-0 flex-1 bg-transparent text-[15px] font-medium outline-none" type="password" autoComplete="new-password" placeholder={t('auth.passwordPlaceholder')} value={form.password} onChange={update('password')} aria-invalid={!!fieldErrors.password} aria-describedby={fieldErrors.password ? 'password-error' : undefined}/></span>{errorText('password')}</FormField>
         <FormField className="gap-2 text-[16px] font-semibold">{requiredLabel(t('auth.confirmPassword'))}<span data-field-control className={fieldClass('confirmPassword')}><Lock size={20}/><input required className="min-w-0 flex-1 bg-transparent text-[15px] font-medium outline-none" type="password" autoComplete="new-password" placeholder={t('auth.confirmPasswordPlaceholder')} value={form.confirmPassword} onChange={update('confirmPassword')} aria-invalid={!!fieldErrors.confirmPassword} aria-describedby={fieldErrors.confirmPassword ? 'confirmPassword-error' : undefined}/></span>{errorText('confirmPassword')}</FormField>
       </FormGrid>
-      <FormField className="gap-2 text-[16px] font-semibold">{requiredLabel(t('auth.pilotSite'))}<FormDropdown required id="pilot-site" value={form.pilotSite} placeholder={t('auth.pilotPlaceholder')} options={PILOT_SITES.map((value) => ({value,label:value}))} icon={<MapPin size={20}/>} invalid={!!fieldErrors.pilotSite} onChange={(value) => setValue('pilotSite', value)}/>{errorText('pilotSite')}</FormField>
       <FieldGroup className="mt-1 gap-2"><label className="flex cursor-pointer items-start gap-3 text-[14px] font-semibold"><input required type="checkbox" checked={agreed} onChange={(event) => { setAgreed(event.target.checked); setFieldErrors((current) => ({ ...current, acceptedTerms: '' })); }} className="mt-0.5 h-5 w-5 flex-none cursor-pointer accent-[#ca7428]" aria-invalid={!!fieldErrors.acceptedTerms} aria-describedby={fieldErrors.acceptedTerms ? 'acceptedTerms-error' : undefined}/><span>{t('auth.termsPrefix')} <Link to="/privacy-policy" className="text-[#ca7428] underline">{t('auth.privacy')}</Link> <span className="text-[#b42318]" aria-hidden="true">*</span><span className="sr-only"> ({t('common.required')})</span></span></label>{errorText('acceptedTerms')}</FieldGroup>
       <button type="submit" disabled={submitting} className={`mt-1 flex w-full cursor-pointer items-center justify-center gap-3 py-4 text-[19px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#444] ${formComplete ? 'bg-[#f68b2c] text-white hover:bg-[#e07a20]' : 'bg-[#d5d5d5] text-[#737373] hover:bg-[#c9c9c9]'} ${shake ? 'spice-form-shake' : ''} disabled:cursor-wait disabled:opacity-70`}>{submitting ? t('auth.creating') : t('auth.createAccount')}{!submitting && <ArrowRight size={22}/>}</button>
     </form>

@@ -22,22 +22,13 @@ export interface Tool {
   mode: Mode;
   duration: string;
   groupSize: string;
-  budget: 'Flexible';
   facilitatorRatio: string;
   targetUsers: 'Internal team' | 'Public participants';
   prerequisites: string;
   suppliesRequired: string;
-  expectedOutputs: string[];
-  accessibilityNotes: string;
   usageTip: string;
-  proTip: string;
-  implementationTime: string;
   developmentTime: string;
   howTo: string;
-  budgetAdaptation: string;
-  examples: string;
-  requirements: string;
-  reference: string;
   printableUrl: string;
   onlineResources: string;
 }
@@ -57,7 +48,6 @@ export const TOOLS: Tool[] = sourceTools.map((tool) => ({
   phase: tool.phase as Phase,
   phaseName: phaseNames.get(tool.phase as Phase) || PHASES[0].name,
   mode: tool.mode as Mode,
-  budget: 'Flexible',
   status: tool.status as Tool['status'],
   targetUsers: tool.targetUsers as Tool['targetUsers'],
 }));
@@ -80,7 +70,6 @@ export function getTools(language: LocaleCode): Tool[] {
       phase: source.phase as Phase,
       phaseName: phaseNames.get(source.phase as Phase) || PHASES[0].name,
       mode: source.mode as Mode,
-      budget: 'Flexible',
       status: source.status as Tool['status'],
       targetUsers: source.targetUsers as Tool['targetUsers'],
     };
