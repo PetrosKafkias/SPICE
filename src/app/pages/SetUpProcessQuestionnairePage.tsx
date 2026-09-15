@@ -170,7 +170,12 @@ export default function SetUpProcessQuestionnairePage() {
         }
         setInitiativeId(initiative.id);
         setVersion(initiative.version);
-        setProcessSetup(processSetupFromInitiative(initiative));
+        const loadedSetup = processSetupFromInitiative(initiative);
+        const knownObjectiveIds = new Set(OBJECTIVES.map((item) => item.id));
+        setProcessSetup({
+          ...loadedSetup,
+          objectives: loadedSetup.objectives.filter((id) => knownObjectiveIds.has(id)),
+        });
         setEditingActiveProcess(initiative.lifecycleStatus === 'active');
       } catch {
         if (!cancelled) setLoadError(t('setup.loadFailed'));
