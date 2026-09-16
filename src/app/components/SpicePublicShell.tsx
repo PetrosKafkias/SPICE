@@ -317,11 +317,10 @@ function SpiceNav() {
               <button
                 type="button"
                 onClick={requestSignOut}
-                className="grid h-10 w-10 flex-shrink-0 cursor-pointer place-items-center text-[#444] transition-colors hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]"
-                title={t('nav.signOut')}
-                aria-label={t('nav.signOut')}
+                className="flex flex-shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap border border-[#bfc0c5] px-3 py-2 text-[14px] font-semibold text-[#444] transition-colors hover:border-[#ca7428] hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]"
               >
-                <LogOut size={21} />
+                <LogOut size={18} className="flex-shrink-0" />
+                {t('nav.signOut')}
               </button>
             </>
           ) : (

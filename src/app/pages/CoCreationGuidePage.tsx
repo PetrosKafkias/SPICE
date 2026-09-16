@@ -43,9 +43,12 @@ export default function CoCreationGuidePage() {
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const endRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages, isTyping]);
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+  }, [messages, isTyping]);
 
   const sendMessage = (text: string) => {
     if (!text.trim()) return;
@@ -103,7 +106,7 @@ export default function CoCreationGuidePage() {
           {/* Chat panel */}
           <div className="spice-card flex flex-col overflow-hidden" style={{ minHeight: '560px' }}>
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-8 flex flex-col gap-6">
+            <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-8 flex flex-col gap-6">
               {messages.map((msg) => (
                 <div key={msg.id} className={`flex gap-4 ${msg.from === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                   {msg.from === 'bot' && (
@@ -141,7 +144,6 @@ export default function CoCreationGuidePage() {
                   </div>
                 </div>
               )}
-              <div ref={endRef} />
             </div>
 
             {/* Quick prompts */}

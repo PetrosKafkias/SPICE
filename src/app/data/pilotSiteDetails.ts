@@ -41,8 +41,8 @@ export const PILOT_SITE_DETAILS: Record<string, PilotSiteDetail> = {
     task: 'T5.2',
     theme: 'Urban renewal of public space',
     lead: 'KEPA',
-    participants: ['ESS', 'IRID', 'CERTH'],
-    deliverable: 'D5.2, SPICE Masterplan for the Municipality of Thessaloniki, due at M34',
+    participants: ['THESS', 'IRID', 'CERTH'],
+    deliverable: 'D5.2, SPICE Masterplan for the Municipality of Thessaloniki, due in M34',
     expectedResult: 'A detailed master plan for the requalification of a green public space, transforming it into a model associated with a dedicated sports park.',
     sections: [
       {
@@ -97,7 +97,7 @@ export const PILOT_SITE_DETAILS: Record<string, PilotSiteDetail> = {
     theme: 'Sustainable business opportunities',
     lead: 'ARRSA',
     participants: ['IRID'],
-    deliverable: 'D5.3, SPICE Masterplan for ARRSA, due at M34',
+    deliverable: 'D5.3, SPICE Masterplan for ARRSA, due in M34',
     expectedResult: 'A detailed master plan for the street and its surrounding urban context.',
     sections: [
       {
@@ -161,7 +161,7 @@ export const PILOT_SITE_DETAILS: Record<string, PilotSiteDetail> = {
     theme: 'Water scarcity and cultural value',
     lead: 'miB',
     participants: ['CMC', 'IRID'],
-    deliverable: 'D5.4, SPICE Masterplan for the Municipality of Cuba, due at M34',
+    deliverable: 'D5.4, SPICE Masterplan for the Municipality of Cuba, due in M34',
     expectedResult: 'A detailed master plan for the requalification and reactivation of the site.',
     sections: [
       {
@@ -220,7 +220,7 @@ export const PILOT_SITE_DETAILS: Record<string, PilotSiteDetail> = {
     theme: 'Green tourism',
     lead: 'AF',
     participants: ['RoMa', 'IRID'],
-    deliverable: 'D5.5, SPICE Masterplan for RoMa, due at M34',
+    deliverable: 'D5.5, SPICE Masterplan for RoMa, due in M34',
     expectedResult: 'A detailed master plan for the adaptive reuse and wider integration of the bus-station site.',
     sections: [
       {
