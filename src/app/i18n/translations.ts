@@ -1518,11 +1518,6 @@ export const en = {
   'glossary.results.other': '{{visible}} of {{total}} glossary terms',
   'glossary.empty': 'No glossary terms match these filters.',
   'glossary.definitionMissing': 'No approved definition is currently available for this term.',
-  'glossary.definitionContribution': 'Definition contribution: {{owner}}',
-  'glossary.sourceClassification': 'Source classification: {{classification}}',
-  'glossary.relatedTerms': 'Related terms:',
-  'glossary.openRelated': 'Open related SPICE page',
-  'glossary.expandTerm': 'Show details for {{term}}',
   'resources.eyebrow': 'SPICE participatory methods',
   'resources.title': 'Analog Resources',
   'resources.description': '{{count}} facilitator-led methods for offline and hybrid co-creation, organised by the five SPICE objectives, from stakeholder mapping to prototyping.',
@@ -3018,11 +3013,6 @@ const el: Record<TranslationKey, string> = {
   'glossary.results': '{{visible}} από {{total}} όρους γλωσσαρίου',
   'glossary.empty': 'Δεν υπάρχουν όροι γλωσσαρίου που να αντιστοιχούν σε αυτά τα φίλτρα.',
   'glossary.definitionMissing': 'Δεν υπάρχει εγκεκριμένος ορισμός προς το παρόν διαθέσιμος για αυτόν τον όρο.',
-  'glossary.definitionContribution': 'Συμβολή ορισμού: {{owner}}',
-  'glossary.sourceClassification': 'Ταξινόμηση πηγών: {{classification}}',
-  'glossary.relatedTerms': 'Σχετικοί όροι:',
-  'glossary.openRelated': 'Ανοίξτε τη σχετική σελίδα SPICE',
-  'glossary.expandTerm': 'Εμφάνιση λεπτομερειών για {{term}}',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
   'resources.eyebrow': 'Συμμετοχικές μέθοδοι SPICE',
@@ -4989,11 +4979,6 @@ const fi: Record<TranslationKey, string> = {
   'glossary.results': '{{visible}}/{{total}} sanaston termiä',
   'glossary.empty': 'Mikään sanaston termi ei vastaa näitä suodattimia.',
   'glossary.definitionMissing': 'Tälle termille ei ole tällä hetkellä saatavilla hyväksyttyä määritelmää.',
-  'glossary.definitionContribution': 'Määritelmäpanos: {{owner}}',
-  'glossary.sourceClassification': 'Lähdeluokitus: {{classification}}',
-  'glossary.relatedTerms': 'Aiheeseen liittyvät termit:',
-  'glossary.openRelated': 'Avaa aiheeseen liittyvä SPICE-sivu',
-  'glossary.expandTerm': 'Näytä tiedot kohteelle {{term}}',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
   'resources.eyebrow': 'SPICE-osallistumismenetelmät',
@@ -6960,11 +6945,6 @@ const pl: Record<TranslationKey, string> = {
   'glossary.results': '{{visible}} z {{total}} terminów ze słownika',
   'glossary.empty': 'Żadne terminy ze słownika nie pasują do tych filtrów.',
   'glossary.definitionMissing': 'Obecnie nie jest dostępna żadna zatwierdzona definicja tego terminu.',
-  'glossary.definitionContribution': 'Wkład definicji: {{owner}}',
-  'glossary.sourceClassification': 'Klasyfikacja źródła: {{classification}}',
-  'glossary.relatedTerms': 'Powiązane terminy:',
-  'glossary.openRelated': 'Otwórz powiązaną stronę SPICE',
-  'glossary.expandTerm': 'Pokaż szczegóły dla {{term}}',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
   'resources.eyebrow': 'Metody partycypacyjne SPICE',
@@ -8931,11 +8911,6 @@ const pt: Record<TranslationKey, string> = {
   'glossary.results': '{{visible}} de {{total}} termos do glossário',
   'glossary.empty': 'Nenhum termo do glossário corresponde a estes filtros.',
   'glossary.definitionMissing': 'Não está atualmente disponível nenhuma definição aprovada para este termo.',
-  'glossary.definitionContribution': 'Contributo de definição: {{owner}}',
-  'glossary.sourceClassification': 'Classificação de origem: {{classification}}',
-  'glossary.relatedTerms': 'Termos relacionados:',
-  'glossary.openRelated': 'Abrir página relacionada do SPICE',
-  'glossary.expandTerm': 'Mostrar detalhes de {{term}}',
 
   // Generated baseline; canonical SPICE terminology is reviewed below through explicit overrides.
   'resources.eyebrow': 'Métodos participativos SPICE',
