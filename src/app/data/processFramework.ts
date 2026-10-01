@@ -6,8 +6,7 @@ export interface DigitalToolUsage {
   toolId: DigitalToolId;
   nameKey: TranslationKey;
   route: string;
-  scopeKey?: TranslationKey;
-  useKey: TranslationKey;
+  descriptionKey: TranslationKey;
 }
 
 export interface ProcessPhaseDefinition {
@@ -37,9 +36,9 @@ export const PROCESS_PHASES: ProcessPhaseDefinition[] = [
     expectedOutcomeKey: 'phase.1.outcome',
     eventTypeKeys: ['phase.event.ev1', 'phase.event.ev2'],
     digitalTools: [
-      { toolId: 'citivoice', nameKey: 'nav.citivoice', route: '/citivoice-app', scopeKey: 'phase.1.tool.citivoice.scope', useKey: 'phase.1.tool.citivoice.use' },
-      { toolId: 'chatbot', nameKey: 'nav.aiChatbot', route: '/co-creation-guide', useKey: 'phase.1.tool.chatbot.use' },
-      { toolId: 'scene', nameKey: 'nav.sceneEditor', route: '/3d-scene-editor', scopeKey: 'phase.1.tool.scene.scope', useKey: 'phase.1.tool.scene.use' },
+      { toolId: 'citivoice', nameKey: 'nav.citivoice', route: '/citivoice-app', descriptionKey: 'phase.1.tool.citivoice.scope' },
+      { toolId: 'chatbot', nameKey: 'nav.aiChatbot', route: '/co-creation-guide', descriptionKey: 'tools.aiChatbotText' },
+      { toolId: 'scene', nameKey: 'nav.sceneEditor', route: '/3d-scene-editor', descriptionKey: 'phase.1.tool.scene.scope' },
     ],
   },
   {
@@ -53,9 +52,9 @@ export const PROCESS_PHASES: ProcessPhaseDefinition[] = [
     expectedOutcomeKey: 'phase.2.outcome',
     eventTypeKeys: ['phase.event.ev3'],
     digitalTools: [
-      { toolId: 'citivoice', nameKey: 'nav.citivoice', route: '/citivoice-app', scopeKey: 'phase.2.tool.citivoice.scope', useKey: 'phase.2.tool.citivoice.use' },
-      { toolId: 'chatbot', nameKey: 'nav.aiChatbot', route: '/co-creation-guide', useKey: 'phase.2.tool.chatbot.use' },
-      { toolId: 'scene', nameKey: 'nav.sceneEditor', route: '/3d-scene-editor', scopeKey: 'phase.2.tool.scene.scope', useKey: 'phase.2.tool.scene.use' },
+      { toolId: 'citivoice', nameKey: 'nav.citivoice', route: '/citivoice-app', descriptionKey: 'phase.2.tool.citivoice.scope' },
+      { toolId: 'chatbot', nameKey: 'nav.aiChatbot', route: '/co-creation-guide', descriptionKey: 'tools.aiChatbotText' },
+      { toolId: 'scene', nameKey: 'nav.sceneEditor', route: '/3d-scene-editor', descriptionKey: 'phase.2.tool.scene.scope' },
     ],
   },
   {
@@ -69,8 +68,8 @@ export const PROCESS_PHASES: ProcessPhaseDefinition[] = [
     expectedOutcomeKey: 'phase.3.outcome',
     eventTypeKeys: ['phase.event.ev4'],
     digitalTools: [
-      { toolId: 'citivoice', nameKey: 'nav.citivoice', route: '/citivoice-app', scopeKey: 'phase.3.tool.citivoice.scope', useKey: 'phase.3.tool.citivoice.use' },
-      { toolId: 'scene', nameKey: 'nav.sceneEditor', route: '/3d-scene-editor', scopeKey: 'phase.3.tool.scene.scope', useKey: 'phase.3.tool.scene.use' },
+      { toolId: 'citivoice', nameKey: 'nav.citivoice', route: '/citivoice-app', descriptionKey: 'phase.3.tool.citivoice.scope' },
+      { toolId: 'scene', nameKey: 'nav.sceneEditor', route: '/3d-scene-editor', descriptionKey: 'phase.3.tool.scene.scope' },
     ],
   },
   {
@@ -84,7 +83,7 @@ export const PROCESS_PHASES: ProcessPhaseDefinition[] = [
     expectedOutcomeKey: 'phase.4.outcome',
     eventTypeKeys: ['phase.event.ev5'],
     digitalTools: [
-      { toolId: 'citivoice', nameKey: 'nav.citivoice', route: '/citivoice-app', scopeKey: 'phase.4.tool.citivoice.scope', useKey: 'phase.4.tool.citivoice.use' },
+      { toolId: 'citivoice', nameKey: 'nav.citivoice', route: '/citivoice-app', descriptionKey: 'phase.4.tool.citivoice.scope' },
     ],
   },
   {

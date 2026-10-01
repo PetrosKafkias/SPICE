@@ -167,7 +167,7 @@ export default function SignInPage() {
         </button>
       </form>
 
-      {import.meta.env.DEV && import.meta.env.VITE_ENABLE_DEMO_LOGIN !== 'false' && (
+      {(import.meta.env.DEV ? import.meta.env.VITE_ENABLE_DEMO_LOGIN !== 'false' : import.meta.env.VITE_ENABLE_DEMO_LOGIN === 'true') && (
         <section className="mt-7 border-t-2 border-[#e4e4e4] pt-6" aria-labelledby="demo-access-title">
           <h2 id="demo-access-title" className="text-[16px] font-bold text-[#444]">{t('auth.devAccess')}</h2>
           <p className="mt-1 text-[13px] font-semibold text-[#555]">{t('auth.devControls')}</p>

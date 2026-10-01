@@ -45,6 +45,8 @@ interface Props {
 interface NavItem {
   labelKey?: TranslationKey;
   label?: string;
+  // A direct item renders its single link in the header instead of a dropdown.
+  direct?: boolean;
   links: { labelKey?: TranslationKey; label?: string; to: string; permission?: Permission }[];
 }
 
@@ -67,16 +69,21 @@ const NAV_ITEMS: NavItem[] = [
     ],
   },
   {
-    labelKey: 'nav.resources',
+    labelKey: 'nav.knowledgeBase',
     links: [
       { labelKey: 'nav.methodology', to: '/methodology' },
       { labelKey: 'nav.glossary', to: '/glossary' },
       { labelKey: 'nav.demoGuide', to: '/demo' },
-      { labelKey: 'nav.pilotSites', to: '/pilot-sites' },
     ],
   },
   {
+    labelKey: 'nav.pilotSites',
+    direct: true,
+    links: [{ labelKey: 'nav.pilotSites', to: '/pilot-sites' }],
+  },
+  {
     labelKey: 'nav.administration',
+    direct: true,
     links: [
       { labelKey: 'nav.adminDashboard', to: '/admin', permission: 'admin:access' },
     ],
@@ -94,6 +101,24 @@ function Logo() {
       <span className="spice-logo-window">
         <img src={spiceLogo} alt="SPICE" />
       </span>
+    </Link>
+  );
+}
+
+function NavDirectLink({ item }: { item: NavItem }) {
+  const location = useLocation();
+  const { t } = useI18n();
+  const link = item.links[0];
+  const isActive = routeIsActive(location.pathname, link.to);
+  return (
+    <Link
+      to={link.to}
+      className={`flex h-full flex-shrink-0 cursor-pointer items-center whitespace-nowrap border-b-[3px] px-2.5 py-1.5 text-[15px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#ca7428] xl:px-2 ${
+        isActive ? 'border-[#f68b2c] text-[#ca7428]' : 'border-transparent text-[#444] hover:text-[#ca7428]'
+      }`}
+      aria-current={isActive ? 'page' : undefined}
+    >
+      {item.labelKey ? t(item.labelKey) : item.label}
     </Link>
   );
 }
@@ -125,7 +150,7 @@ function NavDropdown({ item }: { item: NavItem }) {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className={`flex h-full cursor-pointer items-center gap-2 whitespace-nowrap border-b-[3px] px-2.5 py-1.5 text-[15px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#ca7428] xl:gap-3 xl:px-3 xl:text-[16px] ${
+        className={`flex h-full cursor-pointer items-center gap-2 whitespace-nowrap border-b-[3px] px-2.5 py-1.5 text-[15px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#ca7428] xl:gap-1.5 xl:px-2 ${
           isActive || open ? 'border-[#f68b2c] text-[#ca7428]' : 'border-transparent text-[#444] hover:text-[#ca7428]'
         }`}
         aria-expanded={open}
@@ -133,7 +158,7 @@ function NavDropdown({ item }: { item: NavItem }) {
         aria-current={isActive ? 'page' : undefined}
       >
         {item.labelKey ? t(item.labelKey) : item.label}
-        <ChevronDown size={20} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown size={16} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
         <div className="spice-nav-dropdown" role="menu">
@@ -184,7 +209,7 @@ export function LanguageDropdown({ compact = false }: { compact?: boolean }) {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className={`flex cursor-pointer items-center gap-2 whitespace-nowrap border-b-[3px] px-2.5 py-2 text-[15px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#ca7428] xl:gap-3 xl:px-3 xl:text-[16px] ${compact ? 'min-h-12 border border-[#bfc0c5] bg-white' : 'h-full'} ${
+        className={`flex cursor-pointer items-center gap-2 whitespace-nowrap border-b-[3px] px-2.5 py-2 text-[15px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#ca7428] xl:gap-1.5 xl:px-2 ${compact ? 'min-h-12 border border-[#bfc0c5] bg-white' : 'h-full'} ${
           open ? 'border-[#f68b2c] text-[#ca7428]' : 'border-transparent text-[#444] hover:text-[#ca7428]'
         }`}
         aria-expanded={open}
@@ -192,7 +217,7 @@ export function LanguageDropdown({ compact = false }: { compact?: boolean }) {
         aria-label={t('language.label')}
       >
         <Languages size={22} className="flex-shrink-0" />
-        {selected.nativeName} ({selected.shortLabel})
+        {compact ? `${selected.nativeName} (${selected.shortLabel})` : selected.shortLabel}
         <ChevronDown size={20} className={`flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
@@ -273,15 +298,17 @@ function SpiceNav() {
 
   return (
     <header className="spice-public-header">
-      <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between gap-2 px-6 md:px-12 xl:gap-4">
-        <div className="flex h-full min-w-0 flex-shrink-0 items-center gap-4 xl:gap-6">
+      <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between gap-2 px-6 md:px-12 xl:gap-4 xl:px-8 2xl:px-12">
+        <div className="flex h-full min-w-0 flex-shrink-0 items-center gap-4">
           <Logo />
-          <nav className="spice-desktop-nav hidden h-full items-center gap-1 xl:flex xl:gap-2" aria-label={t('nav.main')}>
-            {visibleNavItems.map((item) => <NavDropdown key={item.labelKey || item.label} item={item} />)}
+          <nav className="spice-desktop-nav hidden h-full items-center gap-1 xl:flex" aria-label={t('nav.main')}>
+            {visibleNavItems.map((item) => (item.direct
+              ? <NavDirectLink key={item.labelKey || item.label} item={item} />
+              : <NavDropdown key={item.labelKey || item.label} item={item} />))}
           </nav>
         </div>
 
-        <div className="spice-desktop-actions hidden h-full flex-shrink-0 items-center gap-2 md:flex xl:gap-3">
+        <div className="spice-desktop-actions hidden h-full flex-shrink-0 items-center gap-2 md:flex">
           <LanguageDropdown />
           <div className="h-[30px] w-px flex-shrink-0 bg-[#bbb]" />
 
@@ -293,7 +320,7 @@ function SpiceNav() {
                 aria-current={routeIsActive(location.pathname, '/account/notifications') ? 'page' : undefined}
               >
                 <Bell size={21} className="flex-shrink-0" />
-                <span className="hidden xl:inline">{t('nav.notifications')}</span>
+                <span className="sr-only">{t('nav.notifications')}</span>
                 {notificationCounts.unread > 0 && (
                   <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#f68b2c] px-1 text-[10px] font-bold text-white" aria-label={`${notificationCounts.unread} unread notifications`}>
                     {notificationCounts.unread > 99 ? '99+' : notificationCounts.unread}
@@ -307,8 +334,8 @@ function SpiceNav() {
                 aria-current={routeIsActive(location.pathname, '/account') ? 'page' : undefined}
               >
                 <span className="hidden text-right 2xl:block">
-                  <span className="block max-w-[150px] truncate text-[15px] font-semibold leading-tight">{user.fullName}</span>
-                  <span className="block text-[13px] leading-tight text-[#777]">{t(roleKey(normalizeRole(user.role)))}</span>
+                  <span className="block max-w-[130px] truncate text-[15px] font-semibold leading-tight" title={user.fullName}>{user.fullName}</span>
+                  <span className="block max-w-[130px] truncate text-[13px] leading-tight text-[#777]" title={t(roleKey(normalizeRole(user.role)))}>{t(roleKey(normalizeRole(user.role)))}</span>
                 </span>
                 <span className="grid h-[42px] w-[42px] flex-shrink-0 place-items-center overflow-hidden rounded-full border border-[#444] bg-[#e6e6e6]/50">
                   {user.avatarData ? <img src={user.avatarData} alt="" className="h-full w-full object-cover" /> : <UserCircle size={27} />}
@@ -454,7 +481,7 @@ export function SpiceFooter() {
         </div>
 
         <div className="flex flex-col gap-5">
-          <p className="text-[15px] font-bold text-black">{t('nav.resources')}</p>
+          <p className="text-[15px] font-bold text-black">{t('nav.knowledgeBase')}</p>
           <div className="flex flex-col gap-3 text-[14px] text-black">
             <Link to="/methodology" className="cursor-pointer transition-colors hover:text-[#ca7428]">{t('nav.methodology')}</Link>
             <Link to="/glossary" className="cursor-pointer transition-colors hover:text-[#ca7428]">{t('nav.glossary')}</Link>

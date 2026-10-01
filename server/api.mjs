@@ -13,12 +13,23 @@ import { hasPermission, normalizeRole } from './permissions.mjs';
 import {
   ACTIVITY_WORKFLOW_STATUSES,
   activityTransitionsFor,
+  activityTransitionLabel,
+  allowedObjectiveTransitions,
   phaseReadiness,
   proposalTransitionsFor,
   publicActivityStatus,
   workflowSummary,
 } from './workflow.mjs';
 import { randomUUID } from 'node:crypto';
+import { createRequire } from 'node:module';
+
+const analogResources = createRequire(import.meta.url)('../src/app/data/localized/analogueTools.en.json');
+const DIGITAL_TOOL_NAMES = Object.freeze({ citivoice: 'CitiVoice App', chatbot: 'AI Chatbot', scene: '3D Scene Editor' });
+// Every selectable SPICE resource: the analog catalogue plus the three digital tools.
+const SPICE_RESOURCE_NAMES = new Map([
+  ...analogResources.map((resource) => [resource.id, resource.name]),
+  ...Object.entries(DIGITAL_TOOL_NAMES),
+]);
 
 const SESSION_COOKIE = 'spice_session';
 const MAX_BODY_SIZE = 1_000_000;
@@ -512,14 +523,13 @@ function repositoryFromRow(row) {
   };
 }
 
-function assignedFacilitatorFor(db, initiativeId) {
-  const row = db.prepare(`
-    SELECT u.id, u.full_name, u.email, p.facilitator_note FROM hub_participants p
+function assignedFacilitatorsFor(db, initiativeId) {
+  return db.prepare(`
+    SELECT u.id, u.full_name, u.email, u.avatar_data FROM hub_participants p
     JOIN users u ON u.id = p.user_id
     WHERE p.initiative_id = ? AND p.assignment_role = 'facilitator'
-    LIMIT 1
-  `).get(initiativeId);
-  return row ? { id: Number(row.id), fullName: row.full_name, email: row.email, note: row.facilitator_note || null } : null;
+    ORDER BY p.invited_at, u.full_name
+  `).all(initiativeId).map((row) => ({ id: Number(row.id), fullName: row.full_name, email: row.email, avatarData: row.avatar_data || null }));
 }
 
 function isAssignedFacilitator(db, user, initiativeId) {
@@ -534,7 +544,62 @@ function canOperateInitiative(db, user, initiative) {
   return initiativeIsInScope(user, initiative) || isAssignedFacilitator(db, user, initiative.id);
 }
 
-function initiativeFromRow(row, phases = [], facilitator = null) {
+function operableInitiativeFor(db, user) {
+  const initiative = (user.organisation_id
+    ? db.prepare('SELECT id, organisation_id FROM hub_initiatives WHERE organisation_id = ?').get(user.organisation_id)
+    : null)
+    || db.prepare(`
+      SELECT h.id, h.organisation_id FROM hub_initiatives h
+      JOIN hub_participants p ON p.initiative_id = h.id
+      WHERE p.user_id = ? AND p.assignment_role = 'facilitator' LIMIT 1
+    `).get(user.id);
+  return initiative && canOperateInitiative(db, user, initiative) ? initiative : null;
+}
+
+const RESOURCE_PHOTO_DATA_PATTERN = /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/;
+const RESOURCE_PHOTO_MAX_LENGTH = 950_000;
+
+function canManagePilotPhotos(user, organisationId) {
+  return hasPermission(user, 'repository:manage') && initiativeIsInScope(user, { organisation_id: organisationId });
+}
+
+function resourcePhotoAccess(user, row) {
+  const canManage = canManagePilotPhotos(user, row.organisation_id);
+  const isUploader = Number(row.uploaded_by_user_id || 0) === Number(user.id);
+  return {
+    canView: row.status === 'published' || canManage || isUploader,
+    canPublish: row.status === 'pending' && canManage,
+    canDelete: canManage || (isUploader && row.status === 'pending'),
+  };
+}
+
+function resourcePhotoFromRow(user, row) {
+  const access = resourcePhotoAccess(user, row);
+  return {
+    id: Number(row.id),
+    toolId: row.tool_id,
+    caption: row.caption,
+    status: row.status,
+    pilot: row.municipality || null,
+    uploadedByName: row.uploaded_by_name || null,
+    createdAt: row.created_at,
+    publishedAt: row.published_at || null,
+    imageUrl: `/api/resources/photos/${row.id}/image`,
+    canPublish: access.canPublish,
+    canDelete: access.canDelete,
+  };
+}
+
+const RESOURCE_PHOTO_SELECT = `
+  SELECT rp.id, rp.tool_id, rp.initiative_id, rp.uploaded_by_user_id, rp.caption, rp.status,
+    rp.published_at, rp.created_at, h.organisation_id, o.municipality, uploader.full_name AS uploaded_by_name
+  FROM resource_photos rp
+  JOIN hub_initiatives h ON h.id = rp.initiative_id
+  LEFT JOIN organisations o ON o.id = h.organisation_id
+  LEFT JOIN users uploader ON uploader.id = rp.uploaded_by_user_id
+`;
+
+function initiativeFromRow(row, phases = [], facilitators = []) {
   return {
     id: Number(row.id), organisationId: Number(row.organisation_id), pilotSlug: row.pilot_slug,
     title: row.title, description: row.description, objectives: row.objectives, location: row.location,
@@ -552,7 +617,7 @@ function initiativeFromRow(row, phases = [], facilitator = null) {
     setupUpdatedAt: row.setup_updated_at || null,
     currentPhaseNumber: row.current_phase_number == null ? null : Number(row.current_phase_number),
     pilotFinalizedAt: row.pilot_finalized_at,
-    facilitator,
+    facilitators,
   };
 }
 
@@ -570,6 +635,15 @@ function phaseFromRow(row) {
     activities: row.activities || [],
     results: row.results || [],
     myContributions: row.myContributions || [],
+  };
+}
+
+// Municipality instructions are internal guidance for staff; never send them to citizens or guests.
+function staffPhaseFromRow(row) {
+  return {
+    ...phaseFromRow(row),
+    municipalityNotes: row.municipality_notes || '',
+    municipalityToolNotes: parseJson(row.municipality_tool_notes_json, {}),
   };
 }
 
@@ -599,6 +673,8 @@ function activityFromRow(row) {
     publishedByUserId: row.published_by_user_id ? Number(row.published_by_user_id) : null,
     assignedToUserId: row.assigned_to_user_id ? Number(row.assigned_to_user_id) : null,
     reviewNotes: row.review_notes || null,
+    facilitatorNotes: row.facilitator_notes || null,
+    expectedParticipants: row.expected_participants || null,
     contributionTypes: parseJson(row.contribution_types_json, ['text']),
     votingEnabled: Boolean(row.voting_enabled), forumEnabled: Boolean(row.forum_enabled),
     resultsVisible: Boolean(row.results_visible), createdAt: row.created_at, updatedAt: row.updated_at,
@@ -898,7 +974,10 @@ export async function createApiHandler(options = {}) {
       }
 
       if (method === 'POST' && pathname === '/api/auth/demo-login') {
-        const enabled = process.env.NODE_ENV !== 'production' && process.env.VITE_ENABLE_DEMO_LOGIN !== 'false';
+        // On by default in development; production deployments must opt in explicitly.
+        const enabled = process.env.NODE_ENV === 'production'
+          ? process.env.VITE_ENABLE_DEMO_LOGIN === 'true'
+          : process.env.VITE_ENABLE_DEMO_LOGIN !== 'false';
         if (!enabled) { sendError(response, 404, 'Development access is not enabled.'); return true; }
         const body = await readJson(request);
         const emails = {
@@ -1024,7 +1103,8 @@ export async function createApiHandler(options = {}) {
         const activitiesByPhase = new Map();
         activityRows.forEach((activityRow) => {
           const items = activitiesByPhase.get(Number(activityRow.phase_id)) || [];
-          items.push(activityFromRow(activityRow));
+          // Facilitator implementation notes are internal to staff.
+          items.push(activityFromRow(staffView ? activityRow : { ...activityRow, facilitator_notes: null }));
           activitiesByPhase.set(Number(activityRow.phase_id), items);
         });
         const repositoryRows = staffView
@@ -1088,17 +1168,17 @@ export async function createApiHandler(options = {}) {
                 end_date: null,
               }
             : phaseRow;
-          return phaseFromRow({
+          return (staffView ? staffPhaseFromRow : phaseFromRow)({
             ...visiblePhaseRow,
             activities: isUpcomingPublicPhase ? [] : activitiesByPhase.get(Number(phaseRow.id)) || [],
             results: isUpcomingPublicPhase ? [] : resultsByPhase.get(Number(phaseRow.id)) || [],
             myContributions: isUpcomingPublicPhase ? [] : contributionsByPhase.get(Number(phaseRow.id)) || [],
           });
         });
-        const facilitator = staffView ? assignedFacilitatorFor(db, initiativeId) : null;
+        const facilitators = staffView ? assignedFacilitatorsFor(db, initiativeId) : [];
         const workflow = workflowSummary(db, row, user);
         sendJson(response, 200, {
-          initiative: initiativeFromRow(row, phases, facilitator),
+          initiative: initiativeFromRow(row, phases, facilitators),
           workflow,
           access: {
             canManage: Boolean(elevated && !citizenPreview),
@@ -1121,28 +1201,29 @@ export async function createApiHandler(options = {}) {
         `).all(session.user.id);
         const initiatives = rows.map((row) => {
           const phaseRows = db.prepare('SELECT * FROM hub_phases WHERE initiative_id = ? ORDER BY phase_number').all(row.id);
-          return initiativeFromRow(row, phaseRows.map(phaseFromRow));
+          return initiativeFromRow(row, phaseRows.map((phaseRow) => staffPhaseFromRow(phaseRow)), assignedFacilitatorsFor(db, row.id));
         });
         sendJson(response, 200, { initiatives });
         return true;
       }
 
-      const hubFacilitatorMatch = pathname.match(/^\/api\/hub\/initiatives\/(\d+)\/facilitator$/);
-      if (hubFacilitatorMatch && (method === 'PATCH' || method === 'DELETE')) {
+      const hubFacilitatorsMatch = pathname.match(/^\/api\/hub\/initiatives\/(\d+)\/facilitators(?:\/(\d+))?$/);
+      if (hubFacilitatorsMatch && ((method === 'POST' && !hubFacilitatorsMatch[2]) || (method === 'DELETE' && hubFacilitatorsMatch[2]))) {
         const session = requirePermission(db, request, response, 'hub:configure-participation');
         if (!session) return true;
-        const initiativeId = Number(hubFacilitatorMatch[1]);
+        const initiativeId = Number(hubFacilitatorsMatch[1]);
         const row = db.prepare('SELECT * FROM hub_initiatives WHERE id = ?').get(initiativeId);
         if (!row) { sendError(response, 404, 'Pilot site not found.'); return true; }
         if (!initiativeIsInScope(session.user, row)) { sendError(response, 403, 'You can manage facilitators only for your own organisation.'); return true; }
-        if (method === 'PATCH' && row.lifecycle_status !== 'active') { sendError(response, 409, 'Activate the pilot before assigning a Facilitator.', null, 'PILOT_NOT_ACTIVE'); return true; }
-        const now = new Date().toISOString();
         if (method === 'DELETE') {
-          db.prepare(`DELETE FROM hub_participants WHERE initiative_id = ? AND assignment_role = 'facilitator'`).run(initiativeId);
-          addAudit(db, { actor: session.user, action: 'hub.facilitator.unassign', targetType: 'hub_initiative', targetId: initiativeId });
-          sendJson(response, 200, { initiative: initiativeFromRow(row, [], null) });
+          const facilitatorUserId = Number(hubFacilitatorsMatch[2]);
+          const removed = db.prepare(`DELETE FROM hub_participants WHERE initiative_id = ? AND user_id = ? AND assignment_role = 'facilitator'`).run(initiativeId, facilitatorUserId);
+          if (!removed.changes) { sendError(response, 404, 'This Facilitator is not assigned to the pilot site.'); return true; }
+          addAudit(db, { actor: session.user, action: 'hub.facilitator.unassign', targetType: 'hub_initiative', targetId: initiativeId, previousValue: { facilitatorUserId } });
+          sendJson(response, 200, { facilitators: assignedFacilitatorsFor(db, initiativeId) });
           return true;
         }
+        if (row.lifecycle_status !== 'active') { sendError(response, 409, 'Activate the pilot before assigning a Facilitator.', null, 'PILOT_NOT_ACTIVE'); return true; }
         const body = await readJson(request);
         const email = normalizeEmail(body.email || '');
         const facilitatorUser = email ? db.prepare('SELECT * FROM users WHERE email = ?').get(email) : null;
@@ -1150,14 +1231,16 @@ export async function createApiHandler(options = {}) {
           sendError(response, 400, 'Enter the email of an approved Facilitator account.', { email: 'No approved Facilitator was found with this email.' });
           return true;
         }
-        const note = typeof body.note === 'string' ? body.note.trim().slice(0, 1000) || null : null;
-        db.prepare(`DELETE FROM hub_participants WHERE initiative_id = ? AND assignment_role = 'facilitator'`).run(initiativeId);
+        if (db.prepare(`SELECT 1 FROM hub_participants WHERE initiative_id = ? AND user_id = ? AND assignment_role = 'facilitator'`).get(initiativeId, facilitatorUser.id)) {
+          sendError(response, 409, 'This Facilitator is already assigned to the pilot site.', { email: 'Already assigned.' });
+          return true;
+        }
         db.prepare(`
-          INSERT INTO hub_participants (initiative_id, user_id, invited_at, assignment_role, facilitator_note) VALUES (?, ?, ?, 'facilitator', ?)
-          ON CONFLICT(initiative_id, user_id) DO UPDATE SET assignment_role = 'facilitator', invited_at = excluded.invited_at, facilitator_note = excluded.facilitator_note
-        `).run(initiativeId, facilitatorUser.id, now, note);
+          INSERT INTO hub_participants (initiative_id, user_id, invited_at, assignment_role) VALUES (?, ?, ?, 'facilitator')
+          ON CONFLICT(initiative_id, user_id) DO UPDATE SET assignment_role = 'facilitator', invited_at = excluded.invited_at
+        `).run(initiativeId, facilitatorUser.id, new Date().toISOString());
         addAudit(db, { actor: session.user, action: 'hub.facilitator.assign', targetType: 'hub_initiative', targetId: initiativeId, newValue: { facilitatorUserId: Number(facilitatorUser.id) } });
-        sendJson(response, 200, { initiative: initiativeFromRow(row, [], assignedFacilitatorFor(db, initiativeId)) });
+        sendJson(response, 201, { facilitators: assignedFacilitatorsFor(db, initiativeId) });
         return true;
       }
 
@@ -1269,12 +1352,8 @@ export async function createApiHandler(options = {}) {
         const previousPhaseNumber = Number(row.current_phase_number || 1);
         const actorRole = normalizeRole(session.user.role);
         const movingBackward = currentPhaseNumber < previousPhaseNumber;
-        if (actorRole !== 'admin' && currentPhaseNumber !== previousPhaseNumber + 1) {
-          sendError(response, 409, 'Municipality users can only advance to the next phase.', null, 'INVALID_PHASE_TRANSITION');
-          return true;
-        }
-        if (actorRole === 'admin' && movingBackward && String(body.reason || '').trim().length < 10) {
-          sendError(response, 400, 'Explain why the pilot is returning to an earlier phase.', { reason: 'Enter at least 10 characters.' }, 'PHASE_REASON_REQUIRED');
+        if (!allowedObjectiveTransitions(previousPhaseNumber).includes(currentPhaseNumber)) {
+          sendError(response, 409, `Objective ${previousPhaseNumber} can only move to Objective ${allowedObjectiveTransitions(previousPhaseNumber).join(' or ') || 'no other objective'}.`, null, 'INVALID_PHASE_TRANSITION');
           return true;
         }
         if (!movingBackward) {
@@ -1319,36 +1398,57 @@ export async function createApiHandler(options = {}) {
         }
         const updated = db.prepare('SELECT * FROM hub_initiatives WHERE id = ?').get(initiativeId);
         const phaseRows = db.prepare('SELECT * FROM hub_phases WHERE initiative_id = ? ORDER BY phase_number').all(initiativeId);
-        sendJson(response, 200, { initiative: initiativeFromRow(updated, phaseRows.map(phaseFromRow)), workflow: workflowSummary(db, updated, session.user) });
+        sendJson(response, 200, { initiative: initiativeFromRow(updated, phaseRows.map((phaseRow) => staffPhaseFromRow(phaseRow)), assignedFacilitatorsFor(db, updated.id)), workflow: workflowSummary(db, updated, session.user) });
         return true;
       }
 
       const phaseMatch = pathname.match(/^\/api\/hub\/initiatives\/(\d+)\/phases\/(\d+)$/);
       if (phaseMatch && method === 'PATCH') {
-        const session = requirePermission(db, request, response, 'hub:configure-tools');
+        // Choosing an Objective's tools and briefing facilitators is a Municipality decision.
+        const session = requirePermission(db, request, response, 'hub:edit');
         if (!session) return true;
         const initiativeId = Number(phaseMatch[1]);
         const phaseNumber = Number(phaseMatch[2]);
         const initiative = db.prepare('SELECT * FROM hub_initiatives WHERE id = ?').get(initiativeId);
         if (!initiative) { sendError(response, 404, 'Pilot site not found.'); return true; }
-        if (!canOperateInitiative(db, session.user, initiative)) { sendError(response, 403, 'You cannot configure this pilot site.'); return true; }
+        if (!initiativeIsInScope(session.user, initiative)) { sendError(response, 403, 'Only the Municipality can configure this Objective.'); return true; }
         const phase = db.prepare('SELECT * FROM hub_phases WHERE initiative_id = ? AND phase_number = ?').get(initiativeId, phaseNumber);
+        if (!phase) { sendError(response, 404, 'Objective not found.'); return true; }
         const body = await readJson(request);
+        let enabledTools = parseJson(phase.enabled_tools_json, []);
+        if (Array.isArray(body.enabledTools)) {
+          const requested = [...new Set(body.enabledTools.map(String))];
+          const unknown = requested.filter((toolId) => !SPICE_RESOURCE_NAMES.has(toolId));
+          if (unknown.length) { sendError(response, 400, 'Choose tools from the SPICE catalogue.', { enabledTools: `Unknown tools: ${unknown.join(', ')}` }); return true; }
+          enabledTools = requested;
+        }
+        const municipalityNotes = body.municipalityNotes == null
+          ? phase.municipality_notes
+          : String(body.municipalityNotes).trim().slice(0, 4000) || null;
+        const previousToolNotes = parseJson(phase.municipality_tool_notes_json, {});
+        const requestedToolNotes = body.municipalityToolNotes && typeof body.municipalityToolNotes === 'object' ? body.municipalityToolNotes : previousToolNotes;
+        // Keep instructions only for tools that remain selected.
+        const municipalityToolNotes = Object.fromEntries(enabledTools
+          .map((toolId) => [toolId, String(requestedToolNotes[toolId] ?? '').trim().slice(0, 4000)])
+          .filter(([, note]) => note));
         const mayManageLifecycle = hasPermission(session.user, 'hub:manage-phases');
         const nextCompletionSummary = body.completionSummary == null ? phase.completion_summary : String(body.completionSummary).trim();
-        db.prepare('UPDATE hub_phases SET instructions=?, enabled_tools_json=?, results_visible=?, completion_summary=? WHERE id=?')
+        db.prepare('UPDATE hub_phases SET instructions=?, enabled_tools_json=?, results_visible=?, completion_summary=?, municipality_notes=?, municipality_tool_notes_json=? WHERE id=?')
           .run(
             body.instructions == null ? phase.instructions : String(body.instructions),
-            JSON.stringify(Array.isArray(body.enabledTools) ? body.enabledTools : parseJson(phase.enabled_tools_json, [])),
+            JSON.stringify(enabledTools),
             !mayManageLifecycle || body.resultsVisible == null ? phase.results_visible : (body.resultsVisible ? 1 : 0),
             nextCompletionSummary,
+            municipalityNotes,
+            JSON.stringify(municipalityToolNotes),
             phase.id,
           );
-        if (body.completionSummary != null) {
-          addAudit(db, { actor: session.user, action: 'hub.phase.report', targetType: 'hub_phase', targetId: phase.id, previousValue: { completionSummary: phase.completion_summary }, newValue: { completionSummary: nextCompletionSummary } });
-        }
-        addAudit(db, { actor: session.user, action: 'hub.phase.update', targetType: 'hub_phase', targetId: phase.id, previousValue: { enabledTools: parseJson(phase.enabled_tools_json, []) }, newValue: { enabledTools: Array.isArray(body.enabledTools) ? body.enabledTools : parseJson(phase.enabled_tools_json, []) } });
-        sendJson(response, 200, { phase: phaseFromRow(db.prepare('SELECT * FROM hub_phases WHERE id = ?').get(phase.id)) });
+        addAudit(db, {
+          actor: session.user, action: 'hub.phase.update', targetType: 'hub_phase', targetId: phase.id,
+          previousValue: { enabledTools: parseJson(phase.enabled_tools_json, []), municipalityNotes: phase.municipality_notes, municipalityToolNotes: previousToolNotes },
+          newValue: { enabledTools, municipalityNotes, municipalityToolNotes },
+        });
+        sendJson(response, 200, { phase: staffPhaseFromRow(db.prepare('SELECT * FROM hub_phases WHERE id = ?').get(phase.id)) });
         return true;
       }
 
@@ -1364,8 +1464,18 @@ export async function createApiHandler(options = {}) {
         const body = await readJson(request);
         const phaseNumber = Number(body.phaseNumber);
         const phase = db.prepare('SELECT * FROM hub_phases WHERE initiative_id = ? AND phase_number = ?').get(initiativeId, phaseNumber);
-        const title = String(body.title || '').trim();
-        if (!phase || title.length < 3) { sendError(response, 400, 'Choose a valid phase and enter an activity title.'); return true; }
+        if (!phase) { sendError(response, 400, 'Choose a valid Objective.'); return true; }
+        // An implementation always belongs to a tool the Municipality selected; its title comes from that tool.
+        const toolKey = String(body.toolKey || '').trim();
+        if (!parseJson(phase.enabled_tools_json, []).includes(toolKey)) {
+          sendError(response, 400, 'Configure a tool that the Municipality selected for this Objective.', { toolKey: 'This tool is not selected for the Objective.' }, 'TOOL_NOT_SELECTED');
+          return true;
+        }
+        if (db.prepare("SELECT 1 FROM hub_activities WHERE phase_id = ? AND tool_key = ? AND workflow_status != 'cancelled'").get(phase.id, toolKey)) {
+          sendError(response, 409, 'This tool already has an implementation for the Objective.', null, 'TOOL_ALREADY_CONFIGURED');
+          return true;
+        }
+        const title = SPICE_RESOURCE_NAMES.get(toolKey);
         const actorRole = normalizeRole(session.user.role);
         const requestedWorkflowStatus = String(body.workflowStatus || 'draft');
         const workflowStatus = ACTIVITY_WORKFLOW_STATUSES.includes(requestedWorkflowStatus) ? requestedWorkflowStatus : 'draft';
@@ -1379,9 +1489,7 @@ export async function createApiHandler(options = {}) {
           return true;
         }
         const now = new Date().toISOString();
-        const selectedToolIds = Array.isArray(body.selectedToolIds)
-          ? body.selectedToolIds.map(String).map((value) => value.trim()).filter(Boolean)
-          : body.toolKey ? [String(body.toolKey)] : [];
+        const selectedToolIds = [toolKey];
         const publishedByUserId = ['published','scheduled','open'].includes(workflowStatus) ? session.user.id : null;
         const result = db.prepare(`
           INSERT INTO hub_activities (
@@ -1391,11 +1499,11 @@ export async function createApiHandler(options = {}) {
             required_materials, eligibility, submission_type, submission_deadline, visibility,
             allow_anonymous_participation, allow_editing, accessibility_notes, language_support,
             support_contact, published_by_user_id, contribution_types_json, voting_enabled,
-            forum_enabled, results_visible, created_at, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            forum_enabled, results_visible, facilitator_notes, expected_participants, created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `).run(
           initiativeId, phase.id, title, String(body.description || ''), publicActivityStatus(workflowStatus), workflowStatus,
-          session.user.id, body.toolKey || selectedToolIds[0] || null, JSON.stringify(selectedToolIds), String(body.activityType || 'participation'), instructions,
+          session.user.id, toolKey, JSON.stringify(selectedToolIds), String(body.activityType || 'participation'), instructions,
           body.startDate || null, body.endDate || null, String(body.location || '').trim() || null,
           ['online','offline','hybrid'].includes(body.participationMode) ? body.participationMode : 'offline',
           String(body.estimatedDuration || '').trim() || null, String(body.requiredMaterials || '').trim() || null,
@@ -1405,7 +1513,9 @@ export async function createApiHandler(options = {}) {
           String(body.accessibilityNotes || '').trim() || null, String(body.languageSupport || '').trim() || null,
           String(body.supportContact || '').trim() || null, publishedByUserId,
           JSON.stringify(Array.isArray(body.contributionTypes) && body.contributionTypes.length ? body.contributionTypes : ['text']),
-          body.votingEnabled ? 1 : 0, body.forumEnabled ? 1 : 0, body.resultsVisible ? 1 : 0, now, now,
+          body.votingEnabled ? 1 : 0, body.forumEnabled ? 1 : 0, body.resultsVisible ? 1 : 0,
+          String(body.facilitatorNotes || '').trim().slice(0, 4000) || null, String(body.expectedParticipants || '').trim().slice(0, 120) || null,
+          now, now,
         );
         addAudit(db, { actor: session.user, action: 'hub.activity.create', targetType: 'hub_activity', targetId: result.lastInsertRowid, newValue: { initiativeId, phaseNumber, title, workflowStatus } });
         sendJson(response, 201, { activity: activityFromRow(db.prepare('SELECT * FROM hub_activities WHERE id = ?').get(result.lastInsertRowid)) });
@@ -1447,13 +1557,16 @@ export async function createApiHandler(options = {}) {
         const now = new Date().toISOString();
         const submittedAt = requestedWorkflowStatus === 'ready_for_review' ? now : activity.submitted_at;
         const publishedAt = ['published','scheduled','open'].includes(requestedWorkflowStatus) ? (activity.published_at || now) : activity.published_at;
-        const closedAt = requestedWorkflowStatus === 'closed' ? now : activity.closed_at;
-        const completedAt = requestedWorkflowStatus === 'completed' ? now : activity.completed_at;
+        // Reopening clears the close time and reverting clears the completion time, so the timestamps match the status.
+        const statusChanged = requestedWorkflowStatus !== currentWorkflowStatus;
+        const closedAt = requestedWorkflowStatus === 'open' ? null
+          : statusChanged && requestedWorkflowStatus === 'closed' && currentWorkflowStatus !== 'completed' ? now
+            : activity.closed_at;
+        const completedAt = statusChanged && requestedWorkflowStatus === 'completed' ? now : requestedWorkflowStatus === 'completed' ? activity.completed_at : null;
         const cancelledAt = requestedWorkflowStatus === 'cancelled' ? now : activity.cancelled_at;
         const reviewNotes = body.reviewNotes === undefined ? activity.review_notes : String(body.reviewNotes || '').trim() || null;
-        const selectedToolIds = Array.isArray(body.selectedToolIds)
-          ? body.selectedToolIds.map(String).map((value) => value.trim()).filter(Boolean)
-          : parseJson(activity.selected_tool_ids_json, activity.tool_key ? [activity.tool_key] : []);
+        // The tool (and the title derived from it) is fixed by the Municipality's selection.
+        const selectedToolIds = parseJson(activity.selected_tool_ids_json, activity.tool_key ? [activity.tool_key] : []);
         const publishedByUserId = ['published','scheduled','open'].includes(requestedWorkflowStatus)
           ? (activity.published_by_user_id || session.user.id)
           : activity.published_by_user_id;
@@ -1466,12 +1579,12 @@ export async function createApiHandler(options = {}) {
             submission_type=?, submission_deadline=?, visibility=?, allow_anonymous_participation=?,
             allow_editing=?, accessibility_notes=?, language_support=?, support_contact=?,
             published_by_user_id=?, contribution_types_json=?, voting_enabled=?, forum_enabled=?,
-            results_visible=?, updated_at=? WHERE id=?
+            results_visible=?, facilitator_notes=?, expected_participants=?, updated_at=? WHERE id=?
         `).run(
-          body.title == null ? activity.title : String(body.title).trim(),
+          activity.title,
           body.description == null ? activity.description : String(body.description), status,
           requestedWorkflowStatus, reviewNotes, submittedAt, publishedAt, closedAt, completedAt,
-          cancelledAt, body.toolKey === undefined ? activity.tool_key : body.toolKey,
+          cancelledAt, activity.tool_key,
           JSON.stringify(selectedToolIds), body.activityType === undefined ? activity.activity_type : String(body.activityType || 'participation'),
           instructions, body.startDate === undefined ? activity.start_date : body.startDate || null,
           body.endDate === undefined ? activity.end_date : body.endDate || null,
@@ -1493,6 +1606,8 @@ export async function createApiHandler(options = {}) {
           body.votingEnabled == null ? activity.voting_enabled : (body.votingEnabled ? 1 : 0),
           body.forumEnabled == null ? activity.forum_enabled : (body.forumEnabled ? 1 : 0),
           body.resultsVisible == null ? activity.results_visible : (body.resultsVisible ? 1 : 0),
+          body.facilitatorNotes === undefined ? activity.facilitator_notes : String(body.facilitatorNotes || '').trim().slice(0, 4000) || null,
+          body.expectedParticipants === undefined ? activity.expected_participants : String(body.expectedParticipants || '').trim().slice(0, 120) || null,
           now, activityId,
         );
         if (requestedWorkflowStatus !== currentWorkflowStatus) {
@@ -1500,7 +1615,9 @@ export async function createApiHandler(options = {}) {
           const toRole = requestedWorkflowStatus === 'ready_for_review' ? 'municipality'
             : requestedWorkflowStatus === 'needs_revision' ? 'facilitator'
               : ['published','scheduled','open'].includes(requestedWorkflowStatus) ? 'citizen'
-                : actorRole;
+                // Keep the Municipality informed when a facilitator closes, completes or reverts an activity.
+                : ['closed','completed'].includes(requestedWorkflowStatus) && actorRole === 'facilitator' ? 'municipality'
+                  : actorRole;
           createWorkflowHandoff(db, {
             initiativeId: initiative.id,
             phaseNumber: Number(db.prepare('SELECT phase_number FROM hub_phases WHERE id = ?').get(activity.phase_id)?.phase_number || initiative.current_phase_number || 1),
@@ -1524,7 +1641,7 @@ export async function createApiHandler(options = {}) {
             createdAt: now,
           });
         }
-        addAudit(db, { actor: session.user, action: 'hub.activity.update', targetType: 'hub_activity', targetId: activityId, previousValue: { status: activity.status, workflowStatus: currentWorkflowStatus }, newValue: { status, workflowStatus: requestedWorkflowStatus }, reason: body.reason || null });
+        addAudit(db, { actor: session.user, action: 'hub.activity.update', targetType: 'hub_activity', targetId: activityId, previousValue: { status: activity.status, workflowStatus: currentWorkflowStatus }, newValue: { status, workflowStatus: requestedWorkflowStatus, ...(statusChanged ? { transition: activityTransitionLabel(currentWorkflowStatus, requestedWorkflowStatus) } : {}) }, reason: body.reason || null });
         sendJson(response, 200, { activity: activityFromRow(db.prepare('SELECT * FROM hub_activities WHERE id = ?').get(activityId)) });
         return true;
       }
@@ -1817,7 +1934,110 @@ export async function createApiHandler(options = {}) {
           ${where}
           ORDER BY COALESCE(rd.published_at, rd.updated_at) DESC
         `).all(...params).map(repositoryFromRow);
-        sendJson(response, 200, { documents, total: documents.length });
+        const contextPilot = initiativeId > 0
+          ? db.prepare('SELECT o.municipality FROM hub_initiatives h LEFT JOIN organisations o ON o.id = h.organisation_id WHERE h.id = ?').get(initiativeId)?.municipality || null
+          : null;
+        sendJson(response, 200, { documents, total: documents.length, contextPilot });
+        return true;
+      }
+
+      const resourcePhotosMatch = pathname.match(/^\/api\/resources\/([a-z0-9-]{2,80})\/photos$/);
+      if (resourcePhotosMatch && method === 'GET') {
+        const session = requirePermission(db, request, response, 'tools:view');
+        if (!session) return true;
+        const rows = db.prepare(`${RESOURCE_PHOTO_SELECT} WHERE rp.tool_id = ? ORDER BY COALESCE(rp.published_at, rp.created_at) DESC, rp.id DESC`).all(resourcePhotosMatch[1]);
+        const uploadInitiative = hasPermission(session.user, 'repository:upload') ? operableInitiativeFor(db, session.user) : null;
+        sendJson(response, 200, {
+          photos: rows.filter((row) => resourcePhotoAccess(session.user, row).canView).map((row) => resourcePhotoFromRow(session.user, row)),
+          access: {
+            canUpload: Boolean(uploadInitiative),
+            publishesDirectly: Boolean(uploadInitiative && canManagePilotPhotos(session.user, uploadInitiative.organisation_id)),
+          },
+        });
+        return true;
+      }
+
+      if (resourcePhotosMatch && method === 'POST') {
+        const session = requirePermission(db, request, response, 'repository:upload');
+        if (!session) return true;
+        const initiative = operableInitiativeFor(db, session.user);
+        if (!initiative) { sendError(response, 403, 'Only staff assigned to a pilot site can share photos.'); return true; }
+        const body = await readJson(request);
+        const imageData = String(body.imageData || '');
+        const caption = String(body.caption || '').trim();
+        const fieldErrors = {};
+        if (!RESOURCE_PHOTO_DATA_PATTERN.test(imageData)) fieldErrors.imageData = 'Choose a PNG, JPEG, or WebP image.';
+        else if (imageData.length > RESOURCE_PHOTO_MAX_LENGTH) fieldErrors.imageData = 'The image is too large.';
+        if (caption.length > 200) fieldErrors.caption = 'Use up to 200 characters.';
+        if (Object.keys(fieldErrors).length) { sendError(response, 400, 'Please check the photo details.', fieldErrors); return true; }
+        const publishesDirectly = canManagePilotPhotos(session.user, initiative.organisation_id);
+        const now = new Date().toISOString();
+        const result = db.prepare(`
+          INSERT INTO resource_photos (tool_id, initiative_id, uploaded_by_user_id, image_data, caption, status, published_by_user_id, published_at, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).run(
+          resourcePhotosMatch[1], initiative.id, session.user.id, imageData, caption,
+          publishesDirectly ? 'published' : 'pending', publishesDirectly ? session.user.id : null, publishesDirectly ? now : null, now,
+        );
+        const photoId = Number(result.lastInsertRowid);
+        addAudit(db, {
+          actor: session.user, action: 'resource.photo.upload', targetType: 'resource_photo', targetId: photoId,
+          newValue: { toolId: resourcePhotosMatch[1], status: publishesDirectly ? 'published' : 'pending' },
+        });
+        const row = db.prepare(`${RESOURCE_PHOTO_SELECT} WHERE rp.id = ?`).get(photoId);
+        sendJson(response, 201, { photo: resourcePhotoFromRow(session.user, row) });
+        return true;
+      }
+
+      const resourcePhotoImageMatch = pathname.match(/^\/api\/resources\/photos\/(\d+)\/image$/);
+      if (resourcePhotoImageMatch && method === 'GET') {
+        const session = requirePermission(db, request, response, 'tools:view');
+        if (!session) return true;
+        const row = db.prepare(`${RESOURCE_PHOTO_SELECT} WHERE rp.id = ?`).get(Number(resourcePhotoImageMatch[1]));
+        if (!row || !resourcePhotoAccess(session.user, row).canView) { sendError(response, 404, 'Photo not found.'); return true; }
+        // Photos are never edited in place, so the id is a stable validator; no-cache makes the
+        // browser revalidate here (re-running the access check) instead of serving a stale copy.
+        const cacheHeaders = { 'Cache-Control': 'private, no-cache', ETag: `"resource-photo-${row.id}"` };
+        if (request.headers['if-none-match'] === cacheHeaders.ETag) {
+          response.writeHead(304, cacheHeaders);
+          response.end();
+          return true;
+        }
+        const { image_data: imageData } = db.prepare('SELECT image_data FROM resource_photos WHERE id = ?').get(row.id);
+        const [, mimeType, encoded] = imageData.match(/^data:(image\/(?:png|jpeg|webp));base64,(.+)$/);
+        response.writeHead(200, { 'Content-Type': mimeType, 'X-Content-Type-Options': 'nosniff', ...cacheHeaders });
+        response.end(Buffer.from(encoded, 'base64'));
+        return true;
+      }
+
+      const resourcePhotoMatch = pathname.match(/^\/api\/resources\/photos\/(\d+)$/);
+      if (resourcePhotoMatch && (method === 'PATCH' || method === 'DELETE')) {
+        const session = requireUser(db, request, response);
+        if (!session) return true;
+        const row = db.prepare(`${RESOURCE_PHOTO_SELECT} WHERE rp.id = ?`).get(Number(resourcePhotoMatch[1]));
+        const access = row ? resourcePhotoAccess(session.user, row) : null;
+        if (!row || !access.canView) { sendError(response, 404, 'Photo not found.'); return true; }
+        if (method === 'DELETE') {
+          if (!access.canDelete) { sendError(response, 403, 'You cannot delete this photo.'); return true; }
+          db.prepare('DELETE FROM resource_photos WHERE id = ?').run(row.id);
+          addAudit(db, {
+            actor: session.user, action: 'resource.photo.delete', targetType: 'resource_photo', targetId: row.id,
+            previousValue: { toolId: row.tool_id, status: row.status },
+          });
+          sendJson(response, 200, { ok: true });
+          return true;
+        }
+        const body = await readJson(request);
+        if (body.status !== 'published') { sendError(response, 400, 'Only publishing a photo is supported.', { status: 'Use "published".' }); return true; }
+        if (!access.canPublish) { sendError(response, 403, 'Only the municipality can publish this photo.'); return true; }
+        const now = new Date().toISOString();
+        db.prepare(`UPDATE resource_photos SET status = 'published', published_by_user_id = ?, published_at = ? WHERE id = ?`).run(session.user.id, now, row.id);
+        addAudit(db, {
+          actor: session.user, action: 'resource.photo.publish', targetType: 'resource_photo', targetId: row.id,
+          previousValue: { status: 'pending' }, newValue: { status: 'published' },
+        });
+        const updated = db.prepare(`${RESOURCE_PHOTO_SELECT} WHERE rp.id = ?`).get(row.id);
+        sendJson(response, 200, { photo: resourcePhotoFromRow(session.user, updated) });
         return true;
       }
 

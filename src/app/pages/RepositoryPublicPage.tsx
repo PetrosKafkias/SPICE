@@ -112,6 +112,7 @@ export default function RepositoryPublicPage() {
   const [pilotFilter, setPilotFilter] = useState('all');
   const [phaseFilter, setPhaseFilter] = useState(initialPhase);
   const [typeFilter, setTypeFilter] = useState('all');
+  const [contextPilot, setContextPilot] = useState<string | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
   const load = useCallback(async () => {
@@ -122,8 +123,9 @@ export default function RepositoryPublicPage() {
       if (requestedPhaseId) requestParams.set('phaseId', requestedPhaseId);
       if (requestedPhase) requestParams.set('phase', requestedPhase);
       if (requestedContentType) requestParams.set('contentType', requestedContentType);
-      const result = await apiRequest<{ documents: RepositoryDocument[] }>(`/api/repository?${requestParams.toString()}`);
+      const result = await apiRequest<{ documents: RepositoryDocument[]; contextPilot: string | null }>(`/api/repository?${requestParams.toString()}`);
       setDocuments(result.documents);
+      setContextPilot(result.contextPilot);
       setStatus('ready');
     } catch { setStatus('error'); }
   }, [requestedContentType, requestedPhase, requestedPhaseId, requestedPilotId]);
@@ -217,9 +219,9 @@ export default function RepositoryPublicPage() {
 
   const selectClass = 'min-h-11 w-full cursor-pointer appearance-none border border-gray-300 bg-white py-3 pl-4 pr-10 text-[14px] text-[#444] outline-none transition-colors hover:border-[#ca7428] focus:border-[#ca7428]';
   const contextualPhase = initialPhase !== 'all' ? Number(initialPhase) : null;
-  const contextualTitle = contextualPhase
-    ? t('repository.phaseResultsTitle', { phase: contextualPhase, title: t(`hub.phase${contextualPhase}` as TranslationKey) })
-    : t('nav.repository');
+  const pilotLocked = Boolean(requestedPilotId);
+  const phaseLocked = Boolean(requestedPhaseId);
+  const pilotOptions = contextPilot && !pilots.includes(contextPilot) ? [contextPilot, ...pilots] : pilots;
   const activityOptions = hubContext?.phases.find((phase) => phase.phaseNumber === Number(form.phase))?.activities || [];
   const toolOptions = getTools(language).filter((tool) => tool.phase === Number(form.phase));
 
@@ -228,7 +230,7 @@ export default function RepositoryPublicPage() {
       <StandardPageHeader
         icon={FileText}
         eyebrow={t('repository.eyebrow')}
-        title={contextualTitle}
+        title={t('nav.repository')}
         description={t('repository.subtitle')}
         actions={canUpload ? (
           <button type="button" onClick={() => setUploadOpen(true)} className="inline-flex min-h-12 cursor-pointer items-center gap-2 whitespace-nowrap bg-[#f68b2c] px-5 py-3 text-[14px] font-bold text-white transition-colors hover:bg-[#e07a20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#444]">
@@ -242,7 +244,7 @@ export default function RepositoryPublicPage() {
           <nav aria-label={t('common.breadcrumb')} className="flex flex-wrap items-center gap-2 text-[13px] text-[#666]">
             <Link to={`/co-creation-hub?phase=${returnPhase}`} className="font-bold text-[#a85f20] underline underline-offset-4">{t('nav.coCreationHub')}</Link>
             <span aria-hidden="true">/</span>
-            <span aria-current="page">{contextualTitle}</span>
+            <span aria-current="page">{t('nav.repository')}</span>
             <Link to={`/co-creation-hub?phase=${returnPhase}`} className="ml-auto inline-flex min-h-11 items-center border-2 border-[#444] px-4 font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]">{t('repository.backToPhase')}</Link>
           </nav>
         )}
@@ -250,8 +252,8 @@ export default function RepositoryPublicPage() {
         <div className="flex flex-col items-start gap-3 lg:flex-row">
           <label className="flex min-h-11 w-full flex-1 items-center gap-3 border border-gray-300 bg-white px-4 py-3 focus-within:border-[#ca7428]"><Search size={18} className="flex-shrink-0 text-[#888]" /><span className="sr-only">{t('repository.search')}</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t('repository.search')} className="min-w-0 flex-1 bg-transparent text-[14px] text-[#444] outline-none placeholder:text-[#aaa]" /></label>
           <div className="spice-form-grid w-full gap-3 sm:grid-cols-3 sm:[&>label]:min-w-[185px] lg:w-auto">
-            <label className="relative"><span className="sr-only">{t('repository.allPilots')}</span><select value={pilotFilter} onChange={(event) => setPilotFilter(event.target.value)} disabled={Boolean(requestedPilotId)} className={`${selectClass} disabled:cursor-not-allowed disabled:bg-[#f2f2f2] disabled:text-[#666]`}><option value="all">{requestedPilotId ? t('repository.selectedPilot') : t('repository.allPilots')}</option>{pilots.map((pilot) => <option key={pilot}>{pilot}</option>)}</select><ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#444]" /></label>
-            <label className="relative"><span className="sr-only">{t('repository.allPhases')}</span><select value={phaseFilter} onChange={(event) => updatePhaseFilter(event.target.value)} disabled={Boolean(requestedPhaseId)} className={`${selectClass} disabled:cursor-not-allowed disabled:bg-[#f2f2f2] disabled:text-[#666]`}><option value="all">{t('repository.allPhases')}</option>{[1, 2, 3, 4, 5].map((phase) => <option key={phase} value={phase}>{t('repository.phase', { phase })}</option>)}</select><ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#444]" /></label>
+            <label className="relative"><span className="sr-only">{t('repository.allPilots')}</span><select value={pilotLocked && contextPilot ? contextPilot : pilotFilter} onChange={(event) => setPilotFilter(event.target.value)} disabled={pilotLocked} className={`${selectClass} disabled:cursor-not-allowed disabled:bg-[#f2f2f2] disabled:text-[#666]`}><option value="all">{pilotLocked ? t('repository.selectedPilot') : t('repository.allPilots')}</option>{pilotOptions.map((pilot) => <option key={pilot}>{pilot}</option>)}</select>{!pilotLocked && <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#444]" />}</label>
+            <label className="relative"><span className="sr-only">{t('repository.allPhases')}</span><select value={phaseFilter} onChange={(event) => updatePhaseFilter(event.target.value)} disabled={phaseLocked} className={`${selectClass} disabled:cursor-not-allowed disabled:bg-[#f2f2f2] disabled:text-[#666]`}><option value="all">{t('repository.allPhases')}</option>{[1, 2, 3, 4, 5].map((phase) => <option key={phase} value={phase}>{t('repository.phase', { phase })}</option>)}</select>{!phaseLocked && <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#444]" />}</label>
             <label className="relative"><span className="sr-only">{t('repository.allTypes')}</span><select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)} className={selectClass}><option value="all">{t('repository.allTypes')}</option>{types.map((type) => <option key={type}>{type}</option>)}</select><ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#444]" /></label>
           </div>
         </div>

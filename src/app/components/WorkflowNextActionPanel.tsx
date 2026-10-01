@@ -25,6 +25,7 @@ export interface WorkflowHandoff {
 
 export interface WorkflowSummary {
   currentPhaseNumber: number;
+  allowedPhaseTransitions: number[];
   readiness: {
     phaseNumber: number;
     ready: boolean;

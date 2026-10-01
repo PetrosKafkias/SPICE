@@ -368,9 +368,25 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     assert.equal(citizenPublishedView.status, 200);
     assert.equal(citizenPublishedView.payload.access.canManage, false);
 
+    const toolSelection = { enabledTools: ['hopes-and-fears', 'stakeholder-mapping', 'citivoice'], municipalityNotes: 'Focus on the park entrance.', municipalityToolNotes: { 'hopes-and-fears': 'Run it during the first workshop.' } };
+    const facilitatorToolSelection = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/phases/1`, { method: 'PATCH', cookie: facilitatorLogin.cookie, body: toolSelection });
+    assert.equal(facilitatorToolSelection.status, 403);
+    const unknownToolSelection = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/phases/1`, { method: 'PATCH', cookie: municipalityLogin.cookie, body: { enabledTools: ['not-a-spice-tool'] } });
+    assert.equal(unknownToolSelection.status, 400);
+    const municipalityToolSelection = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/phases/1`, { method: 'PATCH', cookie: municipalityLogin.cookie, body: toolSelection });
+    assert.equal(municipalityToolSelection.status, 200);
+    assert.deepEqual(municipalityToolSelection.payload.phase.enabledTools, toolSelection.enabledTools);
+
+    const facilitatorBrief = (await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: facilitatorLogin.cookie })).payload.initiative.phases[0];
+    assert.equal(facilitatorBrief.municipalityNotes, 'Focus on the park entrance.');
+    assert.equal(facilitatorBrief.municipalityToolNotes['hopes-and-fears'], 'Run it during the first workshop.');
+    const citizenBrief = (await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: citizenLogin.cookie })).payload.initiative.phases[0];
+    assert.equal(citizenBrief.municipalityNotes, undefined);
+    assert.equal(citizenBrief.municipalityToolNotes, undefined);
+
     const citizenActivityCreate = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/activities`, {
       method: 'POST', cookie: citizenLogin.cookie,
-      body: { phaseNumber: 1, title: 'Unauthorised activity', status: 'open' },
+      body: { phaseNumber: 1, toolKey: 'hopes-and-fears', status: 'open' },
     });
     assert.equal(citizenActivityCreate.status, 403);
 
@@ -378,26 +394,42 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
       method: 'POST', cookie: municipalityLogin.cookie,
       body: {
         phaseNumber: 1,
-        title: 'Neighbourhood priorities',
+        toolKey: 'hopes-and-fears',
+        title: 'Ignored free-form title',
         description: 'Share the public-space priority that matters most to your neighbourhood.',
         workflowStatus: 'draft',
         contributionTypes: ['text'],
       },
     });
     assert.equal(activityCreate.status, 201);
+    assert.equal(activityCreate.payload.activity.title, 'Hopes and fears');
+    assert.equal(activityCreate.payload.activity.toolKey, 'hopes-and-fears');
     const activityId = activityCreate.payload.activity.id;
+
+    const duplicateImplementation = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/activities`, {
+      method: 'POST', cookie: facilitatorLogin.cookie, body: { phaseNumber: 1, toolKey: 'hopes-and-fears', workflowStatus: 'draft' },
+    });
+    assert.equal(duplicateImplementation.status, 409);
+    const unselectedToolImplementation = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/activities`, {
+      method: 'POST', cookie: facilitatorLogin.cookie, body: { phaseNumber: 1, toolKey: 'world-cafe', workflowStatus: 'draft' },
+    });
+    assert.equal(unselectedToolImplementation.status, 400);
 
     const facilitatorActivity = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/activities`, {
       method: 'POST', cookie: facilitatorLogin.cookie,
       body: {
         phaseNumber: 1,
-        title: 'Facilitated hopes and fears session',
+        toolKey: 'stakeholder-mapping',
         description: 'Assigned facilitators can prepare and run participation activities.',
         workflowStatus: 'draft',
         contributionTypes: ['text'],
+        facilitatorNotes: 'Bring large printed maps.',
+        expectedParticipants: '15-20',
       },
     });
     assert.equal(facilitatorActivity.status, 201);
+    assert.equal(facilitatorActivity.payload.activity.facilitatorNotes, 'Bring large printed maps.');
+    assert.equal(facilitatorActivity.payload.activity.expectedParticipants, '15-20');
     const citizenBeforeInstructionPublication = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: citizenLogin.cookie });
     assert.equal(citizenBeforeInstructionPublication.status, 200);
     assert.ok(citizenBeforeInstructionPublication.payload.initiative.phases.every((phase) => (
@@ -521,6 +553,37 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     });
     assert.equal(closedContribution.status, 409);
 
+    // The facilitator runs the activity lifecycle, including reversible operational steps.
+    const activityStep = (workflowStatus, cookie = facilitatorLogin.cookie) => request(baseUrl, `/api/hub/activities/${activityId}`, {
+      method: 'PATCH', cookie, body: { workflowStatus },
+    });
+    const citizenContribute = () => request(baseUrl, `/api/hub/activities/${activityId}/contributions`, {
+      method: 'POST', cookie: citizenLogin.cookie, body: { contributionType: 'text', content: 'Lifecycle contribution check.' },
+    });
+    const reopened = await activityStep('open');
+    assert.equal(reopened.status, 200);
+    assert.equal(reopened.payload.activity.status, 'open');
+    assert.equal((await citizenContribute()).status, 201);
+    assert.equal((await activityStep('scheduled')).payload.code, 'INVALID_ACTIVITY_TRANSITION');
+    assert.equal((await activityStep('closed')).status, 200);
+    const completedByFacilitator = await activityStep('completed');
+    assert.equal(completedByFacilitator.status, 200);
+    assert.equal(completedByFacilitator.payload.activity.status, 'completed');
+    assert.equal((await citizenContribute()).status, 409);
+    assert.equal((await activityStep('open')).payload.code, 'INVALID_ACTIVITY_TRANSITION');
+    assert.equal((await activityStep('open', adminLogin.cookie)).payload.code, 'INVALID_ACTIVITY_TRANSITION');
+    const revertedCompletion = await activityStep('closed');
+    assert.equal(revertedCompletion.status, 200);
+    assert.equal(revertedCompletion.payload.activity.workflowStatus, 'closed');
+    assert.equal((await citizenContribute()).status, 409);
+    assert.equal((await activityStep('draft')).payload.code, 'INVALID_ACTIVITY_TRANSITION');
+    const lifecycleAudit = api.db.prepare("SELECT actor_user_id, timestamp, previous_value, new_value FROM audit_log WHERE action = 'hub.activity.update' AND target_id = ? ORDER BY timestamp, rowid").all(String(activityId))
+      .map((row) => ({ actor: row.actor_user_id, timestamp: row.timestamp, from: JSON.parse(row.previous_value).workflowStatus, ...JSON.parse(row.new_value) }));
+    assert.deepEqual(lifecycleAudit.slice(-4).map((entry) => [entry.from, entry.workflowStatus, entry.transition]), [
+      ['closed', 'open', 'reopened'], ['open', 'closed', 'closed'], ['closed', 'completed', 'completed'], ['completed', 'closed', 'reverted_from_completed'],
+    ]);
+    assert.ok(lifecycleAudit.every((entry) => entry.actor && entry.timestamp));
+
     const municipalityAdmin = await request(baseUrl, '/api/admin/overview', { cookie: municipalityLogin.cookie });
     assert.equal(municipalityAdmin.status, 403);
     const adminOverview = await request(baseUrl, '/api/admin/overview', { cookie: adminLogin.cookie });
@@ -619,24 +682,15 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     assert.ok(completedPhaseCitizenView.payload.initiative.phases[0].results.some((result) => result.id === workshopOutput.payload.document.id));
     assert.ok(completedPhaseCitizenView.payload.initiative.phases[0].myContributions.some((item) => item.id === contribution.payload.contribution.id));
 
-    const adminBackwardWithoutReason = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/current-phase`, {
-      method: 'PATCH', cookie: adminLogin.cookie,
-      body: { currentPhaseNumber: 1, version: advancePhase.payload.initiative.version, confirmed: true },
-    });
-    assert.equal(adminBackwardWithoutReason.status, 400);
-    assert.equal(adminBackwardWithoutReason.payload.code, 'PHASE_REASON_REQUIRED');
-
-    const adminBackward = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/current-phase`, {
-      method: 'PATCH', cookie: adminLogin.cookie,
-      body: {
-        currentPhaseNumber: 1,
-        version: advancePhase.payload.initiative.version,
-        confirmed: true,
-        reason: 'Reopen Phase 1 to correct the published readiness record.',
-      },
-    });
-    assert.equal(adminBackward.status, 200);
-    assert.equal(adminBackward.payload.initiative.currentPhaseNumber, 1);
+    // Only the 3 <-> 4 iteration loop may go backwards, and no role may skip ahead.
+    for (const [cookie, target] of [[municipalityLogin.cookie, 1], [municipalityLogin.cookie, 4], [adminLogin.cookie, 1], [adminLogin.cookie, 5]]) {
+      const invalidTransition = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/current-phase`, {
+        method: 'PATCH', cookie,
+        body: { currentPhaseNumber: target, version: advancePhase.payload.initiative.version, confirmed: true, reason: 'Attempt an objective transition outside the SPICE sequence.' },
+      });
+      assert.equal(invalidTransition.status, 409);
+      assert.equal(invalidTransition.payload.code, 'INVALID_PHASE_TRANSITION');
+    }
 
     const report = await request(baseUrl, `/api/forum/proposals/${proposal.payload.proposal.id}/report`, {
       method: 'POST', cookie: citizenLogin.cookie,
@@ -663,6 +717,173 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
       body: { moderationStatus: 'visible', reason: 'Review completed and public discussion restored.' },
     });
     assert.equal(restoreProposal.status, 200);
+  });
+
+  await t.test('resource photos follow the facilitator-uploads, municipality-publishes workflow', async () => {
+    const pixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    const citizen = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'citizen' } });
+    const facilitator = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'facilitator' } });
+    const municipality = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'municipality' } });
+    const photosPath = '/api/resources/governance-log/photos';
+
+    assert.equal((await request(baseUrl, photosPath)).status, 401);
+    const citizenUpload = await request(baseUrl, photosPath, { method: 'POST', cookie: citizen.cookie, body: { imageData: pixel } });
+    assert.equal(citizenUpload.status, 403);
+    const invalidUpload = await request(baseUrl, photosPath, { method: 'POST', cookie: facilitator.cookie, body: { imageData: 'data:text/html;base64,PGgxPg==' } });
+    assert.equal(invalidUpload.status, 400);
+    assert.ok(invalidUpload.payload.fieldErrors.imageData);
+
+    const facilitatorView = await request(baseUrl, photosPath, { cookie: facilitator.cookie });
+    assert.deepEqual(facilitatorView.payload.access, { canUpload: true, publishesDirectly: false });
+    const uploaded = await request(baseUrl, photosPath, { method: 'POST', cookie: facilitator.cookie, body: { imageData: pixel, caption: 'Workshop wall' } });
+    assert.equal(uploaded.status, 201);
+    assert.equal(uploaded.payload.photo.status, 'pending');
+    assert.equal(uploaded.payload.photo.pilot, 'Thessaloniki');
+    const photoId = uploaded.payload.photo.id;
+
+    const citizenBeforePublish = await request(baseUrl, photosPath, { cookie: citizen.cookie });
+    assert.equal(citizenBeforePublish.payload.photos.length, 0);
+    assert.equal(citizenBeforePublish.payload.access.canUpload, false);
+    const hiddenImage = await fetch(`${baseUrl}/api/resources/photos/${photoId}/image`, { headers: { Cookie: citizen.cookie } });
+    assert.equal(hiddenImage.status, 404);
+    await hiddenImage.body?.cancel();
+    const facilitatorPublish = await request(baseUrl, `/api/resources/photos/${photoId}`, { method: 'PATCH', cookie: facilitator.cookie, body: { status: 'published' } });
+    assert.equal(facilitatorPublish.status, 403);
+
+    const municipalityView = await request(baseUrl, photosPath, { cookie: municipality.cookie });
+    assert.deepEqual(municipalityView.payload.access, { canUpload: true, publishesDirectly: true });
+    assert.equal(municipalityView.payload.photos[0].canPublish, true);
+    const published = await request(baseUrl, `/api/resources/photos/${photoId}`, { method: 'PATCH', cookie: municipality.cookie, body: { status: 'published' } });
+    assert.equal(published.status, 200);
+    assert.equal(published.payload.photo.status, 'published');
+
+    const citizenAfterPublish = await request(baseUrl, photosPath, { cookie: citizen.cookie });
+    assert.equal(citizenAfterPublish.payload.photos.length, 1);
+    assert.equal(citizenAfterPublish.payload.photos[0].caption, 'Workshop wall');
+    assert.equal(citizenAfterPublish.payload.photos[0].canDelete, false);
+    const visibleImage = await fetch(`${baseUrl}/api/resources/photos/${photoId}/image`, { headers: { Cookie: citizen.cookie } });
+    assert.equal(visibleImage.status, 200);
+    assert.equal(visibleImage.headers.get('content-type'), 'image/png');
+    assert.equal(visibleImage.headers.get('cache-control'), 'private, no-cache');
+    await visibleImage.arrayBuffer();
+    const etag = visibleImage.headers.get('etag');
+    const revalidated = await fetch(`${baseUrl}/api/resources/photos/${photoId}/image`, { headers: { Cookie: citizen.cookie, 'If-None-Match': etag } });
+    assert.equal(revalidated.status, 304);
+    const guestRevalidate = await fetch(`${baseUrl}/api/resources/photos/${photoId}/image`, { headers: { 'If-None-Match': etag } });
+    assert.equal(guestRevalidate.status, 401);
+    await guestRevalidate.body?.cancel();
+
+    const citizenDelete = await request(baseUrl, `/api/resources/photos/${photoId}`, { method: 'DELETE', cookie: citizen.cookie });
+    assert.equal(citizenDelete.status, 403);
+    const facilitatorDeletePublished = await request(baseUrl, `/api/resources/photos/${photoId}`, { method: 'DELETE', cookie: facilitator.cookie });
+    assert.equal(facilitatorDeletePublished.status, 403);
+    const municipalityDelete = await request(baseUrl, `/api/resources/photos/${photoId}`, { method: 'DELETE', cookie: municipality.cookie });
+    assert.equal(municipalityDelete.status, 200);
+    assert.equal((await request(baseUrl, photosPath, { cookie: citizen.cookie })).payload.photos.length, 0);
+  });
+
+  await t.test('objective transitions follow the SPICE sequence with a 3-4 iteration loop', async () => {
+    const { allowedObjectiveTransitions } = await import('../server/workflow.mjs');
+    assert.deepEqual([1, 2, 3, 4, 5].map(allowedObjectiveTransitions), [[2], [3], [4], [3, 5], []]);
+
+    const municipality = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'municipality' } });
+    const facilitator = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'facilitator' } });
+    const initiative = (await request(baseUrl, '/api/hub/initiatives', { cookie: municipality.cookie })).payload.initiatives[0];
+    api.db.prepare('UPDATE hub_initiatives SET current_phase_number = 4 WHERE id = ?').run(initiative.id);
+    const version = () => Number(api.db.prepare('SELECT version FROM hub_initiatives WHERE id = ?').get(initiative.id).version);
+    const move = (cookie, target) => request(baseUrl, `/api/hub/initiatives/${initiative.id}/current-phase`, {
+      method: 'PATCH', cookie, body: { currentPhaseNumber: target, version: version(), confirmed: true },
+    });
+
+    assert.equal((await move(facilitator.cookie, 3)).status, 403);
+    const workflowAtFour = (await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: municipality.cookie })).payload.workflow;
+    assert.deepEqual(workflowAtFour.allowedPhaseTransitions, [3, 5]);
+    const iterate = await move(municipality.cookie, 3);
+    assert.equal(iterate.status, 200);
+    assert.equal(iterate.payload.initiative.currentPhaseNumber, 3);
+    assert.deepEqual(iterate.payload.workflow.allowedPhaseTransitions, [4]);
+    assert.equal((await move(municipality.cookie, 5)).payload.code, 'INVALID_PHASE_TRANSITION');
+    assert.equal((await move(municipality.cookie, 2)).payload.code, 'INVALID_PHASE_TRANSITION');
+    // Moving forward is allowed by the sequence; it may still wait for the Objective's readiness checks.
+    assert.notEqual((await move(municipality.cookie, 4)).payload.code, 'INVALID_PHASE_TRANSITION');
+  });
+
+  await t.test('an initiative can have several facilitators, managed only by the municipality', async () => {
+    const { hashPassword } = await import('../server/security.mjs');
+    const now = new Date().toISOString();
+    api.db.prepare(`
+      INSERT INTO users (full_name, email, password_hash, role, roles_json, pilot_site, phone, locale, account_status, created_at, updated_at, email_verified_at)
+      VALUES ('Second Facilitator', 'second.facilitator@spice.local', ?, 'Facilitator', '["Facilitator"]', 'Thessaloniki', '', 'EN', 'active', ?, ?, ?)
+    `).run(await hashPassword('SpiceDemo2026!'), now, now, now);
+    const municipality = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'municipality' } });
+    const firstFacilitator = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'facilitator' } });
+    const initiative = (await request(baseUrl, '/api/hub/initiatives', { cookie: municipality.cookie })).payload.initiatives[0];
+    const facilitatorsPath = `/api/hub/initiatives/${initiative.id}/facilitators`;
+
+    assert.equal((await request(baseUrl, facilitatorsPath, { method: 'POST', cookie: firstFacilitator.cookie, body: { email: 'second.facilitator@spice.local' } })).status, 403);
+    const added = await request(baseUrl, facilitatorsPath, { method: 'POST', cookie: municipality.cookie, body: { email: 'second.facilitator@spice.local' } });
+    assert.equal(added.status, 201);
+    assert.deepEqual(added.payload.facilitators.map((item) => item.email).sort(), ['facilitator.demo@spice.local', 'second.facilitator@spice.local']);
+    assert.equal((await request(baseUrl, facilitatorsPath, { method: 'POST', cookie: municipality.cookie, body: { email: 'second.facilitator@spice.local' } })).status, 409);
+
+    const brief = { municipalityNotes: 'Every facilitator should see this briefing.' };
+    assert.equal((await request(baseUrl, `/api/hub/initiatives/${initiative.id}/phases/2`, { method: 'PATCH', cookie: municipality.cookie, body: brief })).status, 200);
+    const secondSignIn = await request(baseUrl, '/api/auth/signin', { method: 'POST', body: { email: 'second.facilitator@spice.local', password: 'SpiceDemo2026!', rememberMe: false } });
+    assert.equal(secondSignIn.status, 200);
+    for (const cookie of [firstFacilitator.cookie, secondSignIn.cookie]) {
+      const view = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie });
+      assert.equal(view.status, 200);
+      assert.equal(view.payload.initiative.phases[1].municipalityNotes, brief.municipalityNotes);
+      assert.equal(view.payload.initiative.facilitators.length, 2);
+    }
+
+    const secondId = added.payload.facilitators.find((item) => item.email === 'second.facilitator@spice.local').id;
+    assert.equal((await request(baseUrl, `${facilitatorsPath}/${secondId}`, { method: 'DELETE', cookie: firstFacilitator.cookie })).status, 403);
+    const removed = await request(baseUrl, `${facilitatorsPath}/${secondId}`, { method: 'DELETE', cookie: municipality.cookie });
+    assert.equal(removed.status, 200);
+    assert.deepEqual(removed.payload.facilitators.map((item) => item.email), ['facilitator.demo@spice.local']);
+    assert.equal((await request(baseUrl, `${facilitatorsPath}/${secondId}`, { method: 'DELETE', cookie: municipality.cookie })).status, 404);
+    assert.equal((await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: secondSignIn.cookie })).payload.initiative.phases[1].municipalityNotes, undefined);
+  });
+
+  await t.test('objective completion counts Discuss and Decide posts and needs no wrap-up report', async () => {
+    const { phaseReadiness } = await import('../server/workflow.mjs');
+    const initiative = api.db.prepare('SELECT * FROM hub_initiatives ORDER BY id LIMIT 1').get();
+    assert.ok(!phaseReadiness(api.db, initiative, 5).requirements.some((item) => item.code === 'completion_summary'));
+
+    const discussionPosts = () => Number(api.db.prepare(`
+      SELECT (SELECT COUNT(*) FROM forum_proposals p WHERE p.initiative_id = ? AND p.phase_number = 2 AND COALESCE(p.moderation_status, 'visible') != 'hidden')
+        + (SELECT COUNT(*) FROM forum_comments c JOIN forum_proposals p ON p.id = c.proposal_id
+           WHERE p.initiative_id = ? AND p.phase_number = 2 AND COALESCE(p.moderation_status, 'visible') != 'hidden') AS count
+    `).get(initiative.id, initiative.id).count);
+    const objective2 = () => phaseReadiness(api.db, initiative, 2).requirements.find((item) => item.code === 'contributions_documented');
+    assert.equal(objective2().detail, discussionPosts());
+
+    const before = objective2().detail;
+    const user = api.db.prepare('SELECT id FROM users ORDER BY id LIMIT 1').get();
+    const now = new Date().toISOString();
+    const proposalId = Number(api.db.prepare('INSERT INTO forum_proposals (user_id, title, description, initiative_id, phase_number, created_at, updated_at) VALUES (?, ?, ?, ?, 2, ?, ?)')
+      .run(user.id, 'Readiness test proposal', 'Posted in Discuss and Decide for Objective 2.', initiative.id, now, now).lastInsertRowid);
+    api.db.prepare('INSERT INTO forum_comments (proposal_id, user_id, body, created_at) VALUES (?, ?, ?, ?)').run(proposalId, user.id, 'Readiness test comment.', now);
+    assert.equal(objective2().detail, before + 2);
+    assert.equal(objective2().met, true);
+    api.db.prepare('DELETE FROM forum_proposals WHERE id = ?').run(proposalId);
+  });
+
+  await t.test('demo sign-in is opt-in for production deployments', async () => {
+    const original = { nodeEnv: process.env.NODE_ENV, flag: process.env.VITE_ENABLE_DEMO_LOGIN };
+    try {
+      process.env.NODE_ENV = 'production';
+      delete process.env.VITE_ENABLE_DEMO_LOGIN;
+      assert.equal((await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'admin' } })).status, 404);
+      process.env.VITE_ENABLE_DEMO_LOGIN = 'true';
+      const enabled = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'admin' } });
+      assert.equal(enabled.status, 200);
+      assert.equal(enabled.payload.user.role, 'Admin');
+    } finally {
+      if (original.nodeEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = original.nodeEnv;
+      if (original.flag === undefined) delete process.env.VITE_ENABLE_DEMO_LOGIN; else process.env.VITE_ENABLE_DEMO_LOGIN = original.flag;
+    }
   });
 
   await t.test('sign-out invalidates the server session', async () => {

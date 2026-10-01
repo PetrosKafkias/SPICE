@@ -1,11 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { ChevronLeft, Clock, Users, CheckSquare, Bot, ChevronRight, Lightbulb, LayoutPanelTop, Radio, Settings, UserCog, Info, ClipboardCheck, UserCheck } from 'lucide-react';
+import { ChevronLeft, Clock, Users, CheckCircle2, CircleMinus, Bot, ChevronRight, Lightbulb, LayoutPanelTop, Radio, Settings, UserCog, Info, ClipboardCheck, UserCheck } from 'lucide-react';
+import { toast } from 'sonner';
 import SpicePublicShell from '../components/SpicePublicShell';
+import ResourcePhotos from '../components/ResourcePhotos';
 import { getTools, PHASES, PREREQUISITE_TOOL_IDS } from '../data/tools';
+import { usePermissions } from '../auth/usePermissions';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
-import { apiRequest } from '../lib/api';
+import { apiRequest, jsonBody } from '../lib/api';
+
+interface ProcessInitiative {
+  id: number;
+  version: number;
+  setupSelectedTools: string[];
+}
 
 const MODE_COLORS: Record<string, { bg: string; text: string }> = {
   Hybrid: { bg: '#e8f0f7', text: '#1b3a5c' },
@@ -32,6 +41,7 @@ export default function ToolDetailPublicPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { can } = usePermissions();
   const { language, t } = useI18n();
   const tools = useMemo(() => getTools(language), [language]);
 
@@ -42,13 +52,37 @@ export default function ToolDetailPublicPage() {
     .filter((item): item is NonNullable<typeof item> => Boolean(item));
   const mc = MODE_COLORS[tool.mode];
 
-  const [inProcess, setInProcess] = useState(false);
+  const [processInitiative, setProcessInitiative] = useState<ProcessInitiative | null>(null);
+  const [removingFromProcess, setRemovingFromProcess] = useState(false);
   useEffect(() => {
-    if (!user) { setInProcess(false); return; }
-    apiRequest<{ initiatives: { setupSelectedTools: string[] }[] }>('/api/hub/initiatives')
-      .then((result) => setInProcess(result.initiatives.some((initiative) => initiative.setupSelectedTools?.includes(tool.id))))
-      .catch(() => setInProcess(false));
+    if (!user) { setProcessInitiative(null); return; }
+    apiRequest<{ initiatives: ProcessInitiative[] }>('/api/hub/initiatives')
+      .then((result) => setProcessInitiative(result.initiatives.find((initiative) => initiative.setupSelectedTools?.includes(tool.id)) ?? null))
+      .catch(() => setProcessInitiative(null));
   }, [user, tool.id]);
+  const inProcess = Boolean(processInitiative);
+  // Changing a pilot's selected tools is a municipality decision; the server enforces the same rule.
+  const canRemoveFromProcess = inProcess && can('hub:edit');
+
+  const removeFromProcess = async () => {
+    if (!processInitiative || !window.confirm(t('toolDetail.removeFromProcessConfirm'))) return;
+    setRemovingFromProcess(true);
+    try {
+      await apiRequest(`/api/hub/initiatives/${processInitiative.id}`, {
+        method: 'PATCH',
+        body: jsonBody({
+          setupSelectedTools: processInitiative.setupSelectedTools.filter((toolId) => toolId !== tool.id),
+          version: processInitiative.version,
+        }),
+      });
+      setProcessInitiative(null);
+      toast.success(t('toolDetail.removedFromProcess'));
+    } catch {
+      toast.error(t('common.error'));
+    } finally {
+      setRemovingFromProcess(false);
+    }
+  };
 
   return (
     <SpicePublicShell variant="public">
@@ -67,6 +101,11 @@ export default function ToolDetailPublicPage() {
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2">
+                {inProcess && (
+                  <span className="flex items-center gap-1.5 rounded-full bg-[#e7f2df] px-3 py-1.5 text-[13px] font-semibold text-[#47662f]">
+                    <CheckCircle2 size={13} aria-hidden="true" />{t('toolDetail.inProcess')}
+                  </span>
+                )}
                 <span className="px-3 py-1.5 text-[13px] font-semibold rounded-full bg-[#f5f5f5] text-[#444] flex items-center gap-1.5"><Clock size={13} />{tool.duration}</span>
                 <span className="px-3 py-1.5 text-[13px] font-semibold rounded-full bg-[#f5f5f5] text-[#444] flex items-center gap-1.5"><Users size={13} />{t(tool.targetUsers === 'Internal team' ? 'resources.targetUsers.internal' : 'resources.targetUsers.public')}</span>
                 <span className="px-3 py-1.5 text-[13px] font-semibold rounded-full" style={{ backgroundColor: mc.bg, color: mc.text }}>{t(`resources.${tool.mode.toLowerCase()}` as 'resources.online' | 'resources.offline' | 'resources.hybrid')}</span>
@@ -80,10 +119,15 @@ export default function ToolDetailPublicPage() {
 
               {/* Action buttons */}
               <div className="flex flex-wrap items-stretch gap-3">
-                {inProcess && (
-                  <span className="flex items-center gap-2 rounded bg-[#f68b2c] px-6 py-3 text-[14px] font-semibold text-white">
-                    <CheckSquare size={16} /> {t('toolDetail.inProcess')}
-                  </span>
+                {canRemoveFromProcess && (
+                  <button
+                    type="button"
+                    onClick={removeFromProcess}
+                    disabled={removingFromProcess}
+                    className="flex cursor-pointer items-center gap-2 rounded border-2 border-[#bfc0c5] px-6 py-3 text-[14px] font-semibold text-[#444] transition-colors hover:border-[#c0392b] hover:text-[#c0392b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c0392b] disabled:cursor-wait disabled:opacity-60"
+                  >
+                    <CircleMinus size={16} aria-hidden="true" /> {t('toolDetail.removeFromProcess')}
+                  </button>
                 )}
                 <button
                   onClick={() => navigate('/co-creation-guide')}
@@ -141,6 +185,8 @@ export default function ToolDetailPublicPage() {
                 />
               </div>
             </div>
+
+            <ResourcePhotos toolId={tool.id} />
           </div>
 
           {/* Right sidebar */}

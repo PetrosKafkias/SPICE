@@ -5,11 +5,21 @@ export const ACTIVITY_WORKFLOW_STATUSES = Object.freeze([
   'open', 'closed', 'completed', 'cancelled',
 ]);
 
+// SPICE progression is sequential; Objectives 3 and 4 form the only iteration loop.
+export const OBJECTIVE_TRANSITIONS = Object.freeze({ 1: [2], 2: [3], 3: [4], 4: [3, 5], 5: [] });
+
+export function allowedObjectiveTransitions(currentPhaseNumber) {
+  return OBJECTIVE_TRANSITIONS[Number(currentPhaseNumber)] || [];
+}
+
 export const PROPOSAL_WORKFLOW_STATUSES = Object.freeze([
   'draft', 'municipality_review', 'needs_revision', 'published', 'discussion_open',
   'voting_open', 'participation_closed', 'decision_pending', 'approved', 'declined', 'archived',
 ]);
 
+// Running an activity is operational, so Open ↔ Closed ↔ Completed can be reversed
+// (reopen contributions, undo an accidental completion). Completed always returns to
+// Closed, never straight to Open, so contributions only reopen on an explicit action.
 const ACTIVITY_TRANSITIONS = Object.freeze({
   facilitator: {
     draft: ['ready_for_review', 'cancelled'],
@@ -17,7 +27,8 @@ const ACTIVITY_TRANSITIONS = Object.freeze({
     published: ['scheduled'],
     scheduled: ['open'],
     open: ['closed'],
-    closed: ['completed'],
+    closed: ['open', 'completed'],
+    completed: ['closed'],
   },
   municipality: {
     draft: ['ready_for_review', 'cancelled'],
@@ -26,10 +37,18 @@ const ACTIVITY_TRANSITIONS = Object.freeze({
     published: ['scheduled', 'open', 'cancelled'],
     scheduled: ['open', 'cancelled'],
     open: ['closed', 'cancelled'],
-    closed: ['completed', 'open'],
-    completed: [],
+    closed: ['open', 'completed'],
+    completed: ['closed'],
   },
 });
+
+// Audit label for an operational status change, so reopen/revert are distinguishable from first-time moves.
+export function activityTransitionLabel(fromStatus, toStatus) {
+  if (toStatus === 'open') return fromStatus === 'closed' ? 'reopened' : 'opened';
+  if (toStatus === 'closed') return fromStatus === 'completed' ? 'reverted_from_completed' : 'closed';
+  if (toStatus === 'completed') return 'completed';
+  return toStatus;
+}
 
 const PROPOSAL_TRANSITIONS = Object.freeze({
   facilitator: {
@@ -52,8 +71,8 @@ const PROPOSAL_TRANSITIONS = Object.freeze({
 
 export function activityTransitionsFor(roleValue, currentStatus) {
   const role = normalizeRole(roleValue);
-  if (role === 'admin') return ACTIVITY_WORKFLOW_STATUSES.filter((status) => status !== currentStatus);
-  return ACTIVITY_TRANSITIONS[role]?.[currentStatus] || [];
+  // Admins act with Municipality authority but cannot skip the activity lifecycle.
+  return ACTIVITY_TRANSITIONS[role === 'admin' ? 'municipality' : role]?.[currentStatus] || [];
 }
 
 export function proposalTransitionsFor(roleValue, currentStatus) {
@@ -93,6 +112,12 @@ export function phaseReadiness(db, initiative, phaseNumber = Number(initiative.c
   const completedActivities = Number(activityCounts.completed || 0);
   const contributions = count(db, 'SELECT COUNT(*) AS count FROM hub_contributions WHERE initiative_id = ? AND phase_id = ? AND status != ?', initiative.id, phase.id, 'hidden');
   const proposals = count(db, 'SELECT COUNT(*) AS count FROM forum_proposals WHERE initiative_id = ? AND phase_number = ? AND COALESCE(moderation_status, ?) != ?', initiative.id, phaseNumber, 'visible', 'hidden');
+  // Citizen input is collected in Discuss & Decide: proposals plus comments on them for this objective.
+  const discussionPosts = proposals + count(db, `
+    SELECT COUNT(*) AS count FROM forum_comments c
+    JOIN forum_proposals p ON p.id = c.proposal_id
+    WHERE p.initiative_id = ? AND p.phase_number = ? AND COALESCE(p.moderation_status, ?) != ?
+  `, initiative.id, phaseNumber, 'visible', 'hidden');
   const finalDecisions = count(db, `SELECT COUNT(*) AS count FROM forum_proposals WHERE initiative_id = ? AND phase_number = ? AND workflow_status IN ('approved','declined')`, initiative.id, phaseNumber);
   const outputs = count(db, `SELECT COUNT(*) AS count FROM repository_documents WHERE initiative_id = ? AND phase = ? AND publication_status = 'published'`, initiative.id, phaseNumber);
   const facilitatorAssigned = count(db, `SELECT COUNT(*) AS count FROM hub_participants WHERE initiative_id = ? AND assignment_role = 'facilitator'`, initiative.id) > 0;
@@ -110,7 +135,7 @@ export function phaseReadiness(db, initiative, phaseNumber = Number(initiative.c
     requirements = [
       requirement('tools_selected', toolsSelected > 0, toolsSelected),
       requirement('activity_completed', completedActivities > 0, completedActivities),
-      requirement('contributions_documented', contributions > 0, contributions),
+      requirement('contributions_documented', discussionPosts > 0, discussionPosts),
     ];
   } else if (phaseNumber === 3) {
     requirements = [
@@ -125,7 +150,6 @@ export function phaseReadiness(db, initiative, phaseNumber = Number(initiative.c
   } else {
     requirements = [
       requirement('published_results', outputs > 0 && Boolean(phase.results_visible), outputs),
-      requirement('completion_summary', String(phase.completion_summary || '').trim().length >= 20),
     ];
   }
 
@@ -220,6 +244,7 @@ export function workflowSummary(db, initiative, user) {
 
   return {
     currentPhaseNumber: phaseNumber,
+    allowedPhaseTransitions: allowedObjectiveTransitions(phaseNumber),
     readiness,
     metrics,
     nextAction: nextActionFor(role, initiative, readiness, metrics),

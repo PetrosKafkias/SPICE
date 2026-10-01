@@ -1,22 +1,72 @@
-import { useState } from 'react';
-import { ArrowRight, Bot, Box, Check, MapPinned, RefreshCw, Target, UsersRound } from 'lucide-react';
+import { useId, useMemo, useState } from 'react';
+import { ArrowRight, Check, Grid3X3, MonitorSmartphone, RefreshCw, Target, UsersRound } from 'lucide-react';
 import { useNavigate, Link } from 'react-router';
 import SpicePublicShell from '../components/SpicePublicShell';
 import StandardPageHeader from '../components/StandardPageHeader';
 import { useI18n } from '../context/I18nContext';
-import { PROCESS_PHASES, type DigitalToolId } from '../data/processFramework';
+import { PROCESS_PHASES } from '../data/processFramework';
+import { getTools } from '../data/tools';
 
-const DIGITAL_TOOL_ICONS: Record<DigitalToolId, typeof MapPinned> = {
-  citivoice: MapPinned,
-  chatbot: Bot,
-  scene: Box,
-};
+interface ResourceListItem {
+  key: string;
+  to: string;
+  title: string;
+  description: string;
+}
+
+function firstSentence(text: string) {
+  const match = text.trim().match(/^.*?[.!?](?=\s|$)/s);
+  return match ? match[0] : text.trim();
+}
+
+function ResourceList({ icon: Icon, title, items }: { icon: typeof Grid3X3; title: string; items: ResourceListItem[] }) {
+  const headingId = useId();
+  return (
+    <section aria-labelledby={headingId}>
+      <div className="flex items-center gap-3 border-b-2 border-[#f68b2c] pb-3">
+        <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-[#fff0e1] text-[#ca7428]" aria-hidden="true">
+          <Icon size={20} />
+        </span>
+        <h3 id={headingId} className="text-[20px] font-bold leading-tight text-[#444]">{title}</h3>
+        <span className="rounded-full bg-[#fff0e1] px-2.5 py-0.5 text-[12px] font-bold tabular-nums text-[#a85f20]">{items.length}</span>
+      </div>
+      <ul className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {items.map((item) => (
+          <li key={item.key} className="flex">
+            <Link to={item.to} className="group flex w-full items-start gap-3 border-2 border-[#e6e6e6] bg-white p-4 transition-colors duration-300 hover:border-[#f68b2c] hover:bg-[#fffaf4] focus-visible:border-[#f68b2c] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428] motion-reduce:transition-none">
+              <span className="min-w-0 flex-1">
+                <span className="block text-[14px] font-bold leading-snug text-[#444] transition-colors group-hover:text-[#ca7428]">{item.title}</span>
+                <span className="mt-1 block text-[13px] leading-relaxed text-[#666]">{item.description}</span>
+              </span>
+              <ArrowRight size={18} className="mt-0.5 flex-none text-[#ca7428] transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 export default function MethodologyPage() {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [selectedPhaseNumber, setSelectedPhaseNumber] = useState(PROCESS_PHASES[0].number);
   const selectedPhase = PROCESS_PHASES.find((phase) => phase.number === selectedPhaseNumber) || PROCESS_PHASES[0];
+  const tools = useMemo(() => getTools(language), [language]);
+  const digitalToolItems: ResourceListItem[] = (selectedPhase.digitalTools || []).map((tool) => ({
+    key: tool.toolId,
+    to: tool.route,
+    title: t(tool.nameKey),
+    description: t(tool.descriptionKey),
+  }));
+  const analogResourceItems: ResourceListItem[] = tools
+    .filter((tool) => tool.phase === selectedPhase.number)
+    .map((tool) => ({
+      key: tool.id,
+      to: `/tool-detail/${tool.id}`,
+      title: tool.name,
+      description: firstSentence(tool.purpose),
+    }));
 
   return (
     <SpicePublicShell variant="public">
@@ -95,28 +145,10 @@ export default function MethodologyPage() {
                 ))}
               </ul>
 
-              {selectedPhase.digitalTools && selectedPhase.digitalTools.length > 0 && (
-                <div className="mt-8 border-t-2 border-[#eee] pt-6">
-                  <h3 className="text-[16px] font-bold text-[#444]">{t('methodology.digitalToolsTitle')}</h3>
-                  <p className="mt-1 max-w-3xl text-[13px] leading-relaxed text-[#777]">{t('methodology.digitalToolsSubtitle')}</p>
-                  <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    {selectedPhase.digitalTools.map((tool) => {
-                      const Icon = DIGITAL_TOOL_ICONS[tool.toolId];
-                      return (
-                        <div key={tool.toolId} className="flex flex-col gap-2 border-2 border-[#e4e4e4] bg-[#fafafa] p-4">
-                          <div className="flex items-center gap-2.5">
-                            <span className="grid h-9 w-9 flex-none place-items-center rounded-full bg-[#fff0e1] text-[#ca7428]" aria-hidden="true"><Icon size={17} /></span>
-                            <h4 className="text-[14px] font-bold leading-tight text-[#444]">{t(tool.nameKey)}</h4>
-                          </div>
-                          {tool.scopeKey && <p className="text-[11px] font-bold uppercase tracking-wide text-[#a85f20]">{t(tool.scopeKey)}</p>}
-                          <p className="text-[13px] leading-relaxed text-[#666]">{t(tool.useKey)}</p>
-                          <Link to={tool.route} className="mt-auto inline-flex items-center gap-1.5 pt-1 text-[12px] font-bold text-[#ca7428] hover:underline">
-                            {t('methodology.openTool')} <ArrowRight size={13} aria-hidden="true" />
-                          </Link>
-                        </div>
-                      );
-                    })}
-                  </div>
+              {(digitalToolItems.length > 0 || analogResourceItems.length > 0) && (
+                <div className="mt-10 grid gap-10">
+                  {digitalToolItems.length > 0 && <ResourceList icon={MonitorSmartphone} title={t('methodology.digitalToolsTitle')} items={digitalToolItems} />}
+                  {analogResourceItems.length > 0 && <ResourceList icon={Grid3X3} title={t('methodology.analogResourcesTitle')} items={analogResourceItems} />}
                 </div>
               )}
             </div>

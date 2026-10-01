@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import {
-  Accessibility, Activity, ArrowRight, BookOpenText, Building2, CalendarDays, CheckCircle2,
+  Activity, ArrowRight, BookOpenText, Building2, CalendarDays, CheckCircle2,
   Circle, CircleAlert, CircleDot, Clock, FileDown, FilePlus2, FileText, GitCompareArrows,
-  Layers3, ListChecks, LockKeyhole, MapPin, MapPinned, MessageSquareText, Minus,
-  PencilLine, Plus, Send, Users, Vote, Wrench,
+  Layers3, ListChecks, LockKeyhole, MapPin, MapPinned, MessageSquareText,
+  PencilLine, Plus, Users, Vote, Wrench,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePermissions } from '../auth/usePermissions';
@@ -15,7 +15,8 @@ import { apiRequest, jsonBody } from '../lib/api';
 import { pilotSlug } from '../lib/pilot';
 import { statusKey } from '../lib/statusLabel';
 import { phaseState } from '../lib/phaseState';
-import { getTools, type Tool } from '../data/tools';
+import { getTools } from '../data/tools';
+import { resolveSpiceResource, type SpiceResource } from '../data/spiceResources';
 import PhaseChangeDialog from './PhaseChangeDialog';
 import type { WorkflowSummary } from './WorkflowNextActionPanel';
 import type { TranslationKey } from '../i18n/translations';
@@ -57,6 +58,7 @@ interface HubActivity {
   status: 'scheduled' | 'open' | 'closed' | 'completed';
   workflowStatus: 'draft' | 'ready_for_review' | 'needs_revision' | 'published' | 'scheduled' | 'open' | 'closed' | 'completed' | 'cancelled';
   activityType: string;
+  toolKey: string | null;
   selectedToolIds: string[];
   instructions: string;
   startDate: string | null;
@@ -113,7 +115,7 @@ interface InitiativeDetail {
   setupUpdatedAt: string | null;
   currentPhaseNumber: number | null;
   pilotFinalizedAt: string | null;
-  facilitator: { id: number; fullName: string; email: string; note: string | null } | null;
+  facilitators: Array<{ id: number; fullName: string; email: string; avatarData: string | null }>;
 }
 
 interface FacilitatorInitiative extends Initiative {
@@ -121,11 +123,6 @@ interface FacilitatorInitiative extends Initiative {
   currentPhaseNumber: number | null;
 }
 
-const MODE_COLORS: Record<string, { bg: string; text: string }> = {
-  Hybrid: { bg: '#e8f0f7', text: '#1b3a5c' },
-  Online: { bg: '#e8f5ef', text: '#2e6e45' },
-  Offline: { bg: '#f0eef8', text: '#5a3f7a' },
-};
 
 const STATUS_STYLES: Record<Initiative['status'], string> = {
   draft: 'bg-[#eee] text-[#555]',
@@ -186,50 +183,15 @@ function completeRoadmapPhases(phases: Phase[]): Phase[] {
   });
 }
 
-function ToolTile({ tool, enabled, canManage, canParticipate, onAdd, onRemove }: {
-  tool: Tool;
-  enabled: boolean;
-  canManage: boolean;
-  canParticipate: boolean;
-  onAdd?: () => void;
-  onRemove?: () => void;
-}) {
-  const { t } = useI18n();
-  const mc = MODE_COLORS[tool.mode];
-  return (
-    <div className="flex flex-col gap-3 border-2 bg-white p-4" style={{ borderColor: enabled ? '#f68b2c' : '#d7d8dc' }}>
-      <p className="text-[14px] font-bold text-[#444]">{tool.name}</p>
-      <p className="flex-1 text-[12px] leading-relaxed text-[#666]">{tool.shortDesc}</p>
-      <div className="flex flex-wrap gap-1.5">
-        <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ backgroundColor: mc.bg, color: mc.text }}>{t(`resources.${tool.mode.toLowerCase()}` as TranslationKey)}</span>
-        <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-[#444]"><Clock size={10} />{tool.duration}</span>
-        <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-[#444]"><Users size={10} />{t(tool.targetUsers === 'Internal team' ? 'resources.targetUsers.internal' : 'resources.targetUsers.public')}</span>
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <Link to={`/tool-detail/${tool.id}`} className="cursor-pointer border border-[#bfc0c5] px-3 py-1.5 text-[12px] font-semibold text-[#444] hover:bg-[#f7f7f7]">{t('common.moreInformation')}</Link>
-        {canManage && (
-          enabled
-            ? <button type="button" onClick={onRemove} className="flex cursor-pointer items-center gap-1 border-2 border-[#a86622] px-3 py-1.5 text-[12px] font-bold text-[#a86622] hover:bg-[#fff3e8]"><Minus size={12} /> {t('hub.removeFromPhase')}</button>
-            : <button type="button" onClick={onAdd} className="flex cursor-pointer items-center gap-1 bg-[#f68b2c] px-3 py-1.5 text-[12px] font-bold text-white hover:bg-[#e07a20]"><Plus size={12} /> {t('hub.addToPhase')}</button>
-        )}
-        {!canManage && enabled && canParticipate && (
-          <Link to="/forum-voting" className="cursor-pointer bg-[#f68b2c] px-3 py-1.5 text-[12px] font-bold text-white hover:bg-[#e07a20]">{t('hub.participate')}</Link>
-        )}
-      </div>
-    </div>
-  );
-}
-
 export default function RoleHubDashboard() {
   const { role, can } = usePermissions();
   const { user } = useAuth();
   const { formatDate, language, t } = useI18n();
   const tools = useMemo(() => getTools(language), [language]);
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const previewingAsCitizen = searchParams.get('preview') === 'citizen' && role !== 'citizen';
   const citizenView = role === 'citizen' || previewingAsCitizen;
-  const canManageInitiative = can('hub:configure-tools');
   const canManageLifecycle = can('hub:manage-phases');
 
   const [initiatives, setInitiatives] = useState<Initiative[]>([]);
@@ -247,16 +209,12 @@ export default function RoleHubDashboard() {
   const [selectedPhaseNumber, setSelectedPhaseNumber] = useState<number | null>(null);
   const [pendingPhaseNumber, setPendingPhaseNumber] = useState<number | null>(null);
   const [savingPhaseChange, setSavingPhaseChange] = useState(false);
-  const [savingTool, setSavingTool] = useState(false);
   const [facilitatorEmail, setFacilitatorEmail] = useState('');
-  const [facilitatorNote, setFacilitatorNote] = useState('');
   const [savingFacilitator, setSavingFacilitator] = useState(false);
   const [facilitatorInitiatives, setFacilitatorInitiatives] = useState<FacilitatorInitiative[]>([]);
   const [facilitatorLoading, setFacilitatorLoading] = useState(false);
   const [activationConfirming, setActivationConfirming] = useState(false);
   const [activating, setActivating] = useState(false);
-  const [contributionDrafts, setContributionDrafts] = useState<Record<number, string>>({});
-  const [submittingActivityId, setSubmittingActivityId] = useState<number | null>(null);
 
   const citizenPilotSlug = role === 'citizen' && user ? pilotSlug(user.pilotSite) : null;
 
@@ -306,10 +264,6 @@ export default function RoleHubDashboard() {
   }, [activeInitiative, loadDetail]);
 
   useEffect(() => {
-    setFacilitatorNote(detail?.facilitator?.note || '');
-  }, [detail?.facilitator]);
-
-  useEffect(() => {
     if (role !== 'facilitator') return;
     setFacilitatorLoading(true);
     apiRequest<{ initiatives: FacilitatorInitiative[] }>('/api/hub/facilitator-assignments')
@@ -331,33 +285,16 @@ export default function RoleHubDashboard() {
   const selectPhase = (phaseNumber: number) => {
     setSelectedPhaseNumber(phaseNumber);
     if (citizenView) {
-      const next = new URLSearchParams(searchParams);
-      next.set('phase', String(phaseNumber));
-      setSearchParams(next, { replace: true });
-      window.requestAnimationFrame(() => document.getElementById('citizen-phase-content')?.focus({ preventScroll: true }));
-    }
-  };
-
-  const submitCitizenContribution = async (activity: HubActivity) => {
-    const content = String(contributionDrafts[activity.id] || '').trim();
-    if (!content || !detail) return;
-    setSubmittingActivityId(activity.id);
-    try {
-      const result = await apiRequest<{ contribution: CitizenContribution }>(`/api/hub/activities/${activity.id}/contributions`, {
-        method: 'POST', body: jsonBody({ contributionType: 'text', content }),
+      // Deliberately not written to the URL: any location change remounts the route view (RouteExperience
+      // keys on location.key), which reloads the hub and jumps back to the top.
+      // The objective's content sits below the roadmap, so bring it into view as feedback for the click.
+      window.requestAnimationFrame(() => {
+        const content = document.getElementById('citizen-phase-content');
+        if (!content) return;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        content.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+        content.focus({ preventScroll: true });
       });
-      setDetail((current) => current ? {
-        ...current,
-        phases: current.phases.map((phase) => phase.id === selectedPhase?.id
-          ? { ...phase, myContributions: [result.contribution, ...phase.myContributions] }
-          : phase),
-      } : current);
-      setContributionDrafts((current) => ({ ...current, [activity.id]: '' }));
-      toast.success(t('hub.citizen.contributionSubmitted'));
-    } catch {
-      toast.error(t('common.error'));
-    } finally {
-      setSubmittingActivityId(null);
     }
   };
 
@@ -380,38 +317,19 @@ export default function RoleHubDashboard() {
     }
   };
 
-  const toggleToolOnSelectedPhase = async (toolId: string, add: boolean) => {
-    if (!detail || !selectedPhase) return;
-    const nextTools = add
-      ? [...selectedPhase.enabledTools, toolId]
-      : selectedPhase.enabledTools.filter((id) => id !== toolId);
-    setSavingTool(true);
-    try {
-      const result = await apiRequest<{ phase: Phase }>(`/api/hub/initiatives/${detail.id}/phases/${selectedPhase.phaseNumber}`, {
-        method: 'PATCH', body: jsonBody({ enabledTools: nextTools }),
-      });
-      setDetail({ ...detail, phases: detail.phases.map((phase) => phase.id === result.phase.id ? result.phase : phase) });
-      void loadDetail(detail.id);
-      toast.success(t(add ? 'hub.toolAddedSuccess' : 'hub.toolRemovedSuccess'));
-    } catch {
-      setError(t('hub.errorUpdateTools'));
-    } finally {
-      setSavingTool(false);
-    }
-  };
-
   const assignFacilitator = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!detail || !facilitatorEmail.trim()) return;
     setSavingFacilitator(true);
     try {
-      const result = await apiRequest<{ initiative: InitiativeDetail }>(`/api/hub/initiatives/${detail.id}/facilitator`, {
-        method: 'PATCH', body: jsonBody({ email: facilitatorEmail.trim(), note: facilitatorNote.trim() || null }),
+      const email = facilitatorEmail.trim();
+      const result = await apiRequest<{ facilitators: InitiativeDetail['facilitators'] }>(`/api/hub/initiatives/${detail.id}/facilitators`, {
+        method: 'POST', body: jsonBody({ email }),
       });
-      setDetail({ ...detail, facilitator: result.initiative.facilitator });
-      void loadDetail(detail.id);
+      setDetail({ ...detail, facilitators: result.facilitators });
       setFacilitatorEmail('');
-      toast.success(t('hub.facilitatorAssignedSuccess', { name: result.initiative.facilitator?.fullName || t(roleKey('facilitator')) }));
+      const added = result.facilitators.find((item) => item.email.toLowerCase() === email.toLowerCase());
+      toast.success(t('hub.facilitatorAssignedSuccess', { name: added?.fullName || t(roleKey('facilitator')) }));
     } catch {
       setError(t('hub.errorAssignFacilitator'));
     } finally {
@@ -419,29 +337,12 @@ export default function RoleHubDashboard() {
     }
   };
 
-  const saveFacilitatorNote = async () => {
-    if (!detail || !detail.facilitator) return;
-    setSavingFacilitator(true);
-    try {
-      const result = await apiRequest<{ initiative: InitiativeDetail }>(`/api/hub/initiatives/${detail.id}/facilitator`, {
-        method: 'PATCH', body: jsonBody({ email: detail.facilitator.email, note: facilitatorNote.trim() || null }),
-      });
-      setDetail({ ...detail, facilitator: result.initiative.facilitator });
-      toast.success(t('hub.facilitatorNoteSavedSuccess'));
-    } catch {
-      setError(t('hub.errorSaveFacilitatorNote'));
-    } finally {
-      setSavingFacilitator(false);
-    }
-  };
-
-  const unassignFacilitator = async () => {
+  const unassignFacilitator = async (facilitatorId: number) => {
     if (!detail) return;
     setSavingFacilitator(true);
     try {
-      await apiRequest(`/api/hub/initiatives/${detail.id}/facilitator`, { method: 'DELETE' });
-      setDetail({ ...detail, facilitator: null });
-      void loadDetail(detail.id);
+      const result = await apiRequest<{ facilitators: InitiativeDetail['facilitators'] }>(`/api/hub/initiatives/${detail.id}/facilitators/${facilitatorId}`, { method: 'DELETE' });
+      setDetail({ ...detail, facilitators: result.facilitators });
       toast.success(t('hub.facilitatorUnassignedSuccess'));
     } catch {
       setError(t('hub.errorUnassignFacilitator'));
@@ -681,7 +582,7 @@ export default function RoleHubDashboard() {
             const isSelected = selectedPhaseNumber === phase.phaseNumber;
             const stateLabelKey: TranslationKey = state === 'completed' ? 'hub.phaseCompleted'
               : state === 'current' ? 'hub.phaseCurrent'
-              : !citizenView && (role === 'municipality' || role === 'admin') ? 'hub.phaseIncomplete' : 'hub.phaseUpcoming';
+              : 'hub.phaseUpcoming';
             return (
               <div key={phase.id} className="relative flex flex-col items-center text-center">
                 {index > 0 && <span className="absolute right-1/2 top-5 -z-10 hidden h-0.5 w-full bg-[#e0e0e0] lg:block" aria-hidden="true" />}
@@ -690,21 +591,23 @@ export default function RoleHubDashboard() {
                   aria-label={`${t('hub.phaseNumber', { phase: phase.phaseNumber })} - ${t(`hub.phase${phase.phaseNumber}` as TranslationKey)} - ${t(stateLabelKey)}`}
                   aria-pressed={isSelected}
                   onClick={() => selectPhase(phase.phaseNumber)}
-                  className={`grid h-11 w-11 flex-shrink-0 cursor-pointer place-items-center rounded-full border-2 font-bold transition-colors hover:border-[#f68b2c] hover:bg-[#fff8f2] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428] ${
-                    isSelected ? 'border-[#f68b2c] bg-[#fff0e1]' : 'border-[#d5d6da] bg-white'
-                  }`}
+                  className="group flex cursor-pointer flex-col items-center px-2 pb-2 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]"
                 >
-                  {state === 'completed'
-                    ? <CheckCircle2 size={20} className="text-[#2e6e45]" />
-                    : state === 'current'
-                      ? <CircleDot size={20} className="text-[#ca7428]" />
-                      : <Circle size={20} className="text-[#aaa]" />}
+                  <span className={`grid h-11 w-11 flex-shrink-0 place-items-center rounded-full border-2 font-bold transition-colors group-hover:border-[#f68b2c] group-hover:bg-[#fff8f2] ${
+                    isSelected ? 'border-[#f68b2c] bg-[#fff0e1]' : 'border-[#d5d6da] bg-white'
+                  }`}>
+                    {state === 'completed'
+                      ? <CheckCircle2 size={20} className="text-[#2e6e45]" />
+                      : state === 'current'
+                        ? <CircleDot size={20} className="text-[#ca7428]" />
+                        : <Circle size={20} className="text-[#aaa]" />}
+                  </span>
+                  <span className="mt-3 text-[11px] font-bold uppercase text-[#a85f20]">
+                    {t('hub.phaseNumber', { phase: phase.phaseNumber })} <span aria-hidden="true">·</span> {t(stateLabelKey)}
+                  </span>
+                  <span className="mt-1 block max-w-[140px] text-[13px] font-bold leading-tight text-[#444] transition-colors group-hover:text-[#ca7428]">{t(`hub.phase${phase.phaseNumber}` as TranslationKey)}</span>
+                  <span className="mt-1 block text-[11px] text-[#888]">{t('hub.phaseToolCount', { count: phase.enabledTools.length })}</span>
                 </button>
-                <span className="mt-3 text-[11px] font-bold uppercase text-[#a85f20]">
-                  {t('hub.phaseNumber', { phase: phase.phaseNumber })} <span aria-hidden="true">·</span> {t(stateLabelKey)}
-                </span>
-                <p className="mt-1 max-w-[140px] text-[13px] font-bold leading-tight text-[#444]">{t(`hub.phase${phase.phaseNumber}` as TranslationKey)}</p>
-                <p className="mt-1 text-[11px] text-[#888]">{t('hub.phaseToolCount', { count: phase.enabledTools.length })}</p>
               </div>
             );
           })}
@@ -733,14 +636,29 @@ export default function RoleHubDashboard() {
                 {t('hub.viewPhaseDetails')} <ArrowRight size={15} aria-hidden="true" />
               </Link>
             )}
-            {!previewingAsCitizen && canManageLifecycle && workflow?.readiness.ready && workflow.currentPhaseNumber < 5 && (
-              <button
-                type="button"
-                onClick={() => setPendingPhaseNumber(workflow.currentPhaseNumber + 1)}
-                className="inline-flex min-h-11 cursor-pointer items-center gap-2 bg-[#f68b2c] px-4 py-2 text-[13px] font-bold text-white transition-colors hover:bg-[#df7720] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#444]"
-              >
-                {t('workflow.button.advancePhase', { phase: workflow.currentPhaseNumber + 1 })} <ArrowRight size={15} aria-hidden="true" />
-              </button>
+            {!previewingAsCitizen && canManageLifecycle && workflow && workflow.allowedPhaseTransitions.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Only the transitions the SPICE sequence allows from the current Objective; the server enforces the same rule. */}
+                {workflow.allowedPhaseTransitions.map((target) => {
+                  const forward = target > workflow.currentPhaseNumber;
+                  const blocked = forward && !workflow.readiness.ready;
+                  return (
+                    <button
+                      key={target}
+                      type="button"
+                      onClick={() => setPendingPhaseNumber(target)}
+                      disabled={blocked}
+                      aria-describedby={blocked ? 'objective-transition-blocked' : undefined}
+                      className={`inline-flex min-h-11 cursor-pointer items-center gap-2 px-4 py-2 text-[13px] font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#444] disabled:cursor-not-allowed disabled:opacity-50 ${forward ? 'bg-[#f68b2c] text-white hover:bg-[#df7720]' : 'border-2 border-[#ca7428] bg-white text-[#a85f20] hover:bg-[#fff4e9]'}`}
+                    >
+                      {forward ? t('workflow.button.advancePhase', { phase: target }) : t('hub.returnToObjective', { phase: target })} <ArrowRight size={15} aria-hidden="true" className={forward ? '' : 'rotate-180'} />
+                    </button>
+                  );
+                })}
+                {!workflow.readiness.ready && workflow.allowedPhaseTransitions.some((target) => target > workflow.currentPhaseNumber) && (
+                  <p id="objective-transition-blocked" className="basis-full text-[12px] font-semibold text-[#8f4d18]">{t('hub.transitionBlocked', { phase: workflow.currentPhaseNumber })}</p>
+                )}
+              </div>
             )}
           </div>
         )}
@@ -754,12 +672,19 @@ export default function RoleHubDashboard() {
     const phaseTitle = t(`hub.phase${selectedPhaseNumber}` as TranslationKey);
     const stateKey: TranslationKey = state === 'completed' ? 'hub.phaseCompleted' : state === 'current' ? 'hub.phaseCurrent' : 'hub.phaseUpcoming';
     const phaseResultsPath = `/repository?pilotId=${detail.id}&phase=${selectedPhaseNumber}&phaseId=${selectedPhase.id}&contentType=result&returnPhase=${selectedPhaseNumber}`;
+    // A single published item may have no result type, so its link must not add the results-only filter.
+    const phaseItemPath = (title: string) => `/repository?pilotId=${detail.id}&phase=${selectedPhaseNumber}&phaseId=${selectedPhase.id}&returnPhase=${selectedPhaseNumber}&q=${encodeURIComponent(title)}`;
     const period = selectedPhase.startDate && selectedPhase.endDate
       ? t('hub.citizen.phasePeriod', { start: formatDate(selectedPhase.startDate, { dateStyle: 'medium' }), end: formatDate(selectedPhase.endDate, { dateStyle: 'medium' }) })
       : selectedPhase.completedAt
         ? t('hub.citizen.completedOn', { date: formatDate(selectedPhase.completedAt, { dateStyle: 'medium' }) })
         : null;
-    const visibleTools = tools.filter((tool) => selectedPhase.enabledTools.includes(tool.id));
+    // Selected resources include digital tools, which have no catalogue entry of their own.
+    const visibleTools = selectedPhase.enabledTools
+      .map((id) => ({ resource: resolveSpiceResource(id, tools, t), tool: tools.find((item) => item.id === id) }))
+      .filter((item): item is { resource: SpiceResource; tool: (typeof tools)[number] | undefined } => Boolean(item.resource));
+    const activityTitle = (activity: HubActivity) => (activity.toolKey && resolveSpiceResource(activity.toolKey, tools, t)?.name) || activity.title;
+    const activityForResource = (resourceId: string) => selectedPhase.activities.find((item) => item.toolKey === resourceId || item.selectedToolIds.includes(resourceId));
     const publishedResults = selectedPhase.results.filter((result) => result.resultType);
     const publishedResources = selectedPhase.results.filter((result) => !result.resultType);
     const openActivities = selectedPhase.activities.filter((activity) => activity.workflowStatus === 'open');
@@ -782,7 +707,7 @@ export default function RoleHubDashboard() {
           {result.publishedByName && <div><dt className="inline font-bold">{t('hub.citizen.publishedBy')}: </dt><dd className="inline">{result.publishedByName}</dd></div>}
           {result.publishedAt && <div><dt className="inline font-bold">{t('hub.citizen.publishedOn')}: </dt><dd className="inline"><time dateTime={result.publishedAt}>{formatDate(result.publishedAt, { dateStyle: 'medium' })}</time></dd></div>}
         </dl>
-        <Link to={`${phaseResultsPath}&q=${encodeURIComponent(result.title)}`} className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 border-2 border-[#444] px-4 text-[12px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]">
+        <Link to={phaseItemPath(result.title)} className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 border-2 border-[#444] px-4 text-[12px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]">
           {t('hub.citizen.viewPublishedResult')} <ArrowRight size={14} aria-hidden="true" />
         </Link>
       </article>
@@ -816,7 +741,7 @@ export default function RoleHubDashboard() {
     );
 
     return (
-      <section id="citizen-phase-content" tabIndex={-1} className="mt-5 border-2 border-[#cfd0d4] bg-white p-5 outline-none md:p-7" aria-labelledby="selected-phase-heading" aria-live="polite">
+      <section id="citizen-phase-content" tabIndex={-1} className="mt-5 scroll-mt-24 border-2 border-[#cfd0d4] bg-white p-5 outline-none md:p-7" aria-labelledby="selected-phase-heading" aria-live="polite">
         <header className="flex flex-col gap-4 border-b-2 border-[#eee] pb-5 md:flex-row md:items-start md:justify-between">
           <div className="min-w-0">
             <p className="text-[11px] font-bold uppercase text-[#a85f20]">{t('hub.phaseNumber', { phase: selectedPhaseNumber })} <span aria-hidden="true">·</span> {t(stateKey)}</p>
@@ -860,18 +785,18 @@ export default function RoleHubDashboard() {
               <h3 id="completed-tools-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.toolsUsed')}</h3>
               {visibleTools.length ? (
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  {visibleTools.map((tool) => {
-                    const relatedActivity = selectedPhase.activities.find((activity) => activity.selectedToolIds.includes(tool.id));
-                    const output = publishedResults.find((result) => result.toolKey === tool.id);
+                  {visibleTools.map(({ resource, tool }) => {
+                    const relatedActivity = activityForResource(resource.id);
+                    const output = publishedResults.find((result) => result.toolKey === resource.id);
                     return (
-                      <article key={tool.id} className="border-2 border-[#dedfe2] p-4">
-                        <h4 className="text-[15px] font-bold text-[#444]">{tool.name}</h4>
-                        <p className="mt-2 text-[12px] leading-relaxed text-[#666]">{tool.shortDesc}</p>
-                        <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-semibold text-[#555]"><span className="bg-[#f2f2f2] px-2 py-1">{tool.mode}</span><span className="bg-[#f2f2f2] px-2 py-1">{tool.duration}</span></div>
-                        {relatedActivity && <p className="mt-3 text-[12px] text-[#666]"><strong>{t('hub.citizen.relatedActivity')}:</strong> {relatedActivity.title}</p>}
+                      <article key={resource.id} className="border-2 border-[#dedfe2] p-4">
+                        <h4 className="text-[15px] font-bold text-[#444]">{resource.name}</h4>
+                        <p className="mt-2 text-[12px] leading-relaxed text-[#666]">{resource.description}</p>
+                        {tool && <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-semibold text-[#555]"><span className="bg-[#f2f2f2] px-2 py-1">{tool.mode}</span><span className="bg-[#f2f2f2] px-2 py-1">{tool.duration}</span></div>}
+                        {relatedActivity && <p className="mt-3 text-[12px] text-[#666]"><strong>{t('hub.citizen.relatedActivity')}:</strong> {activityTitle(relatedActivity)}</p>}
                         <div className="mt-4 flex flex-wrap gap-2">
-                          <Link to={`/tool-detail/${tool.id}`} className="inline-flex min-h-10 items-center border-2 border-[#444] px-3 text-[12px] font-bold text-[#444]">{t('hub.citizen.viewToolDetails')}</Link>
-                          {output && <Link to={`${phaseResultsPath}&q=${encodeURIComponent(output.title)}`} className="inline-flex min-h-10 items-center bg-[#f68b2c] px-3 text-[12px] font-bold text-white">{t('hub.citizen.viewOutput')}</Link>}
+                          <Link to={resource.route} className="inline-flex min-h-10 items-center border-2 border-[#444] px-3 text-[12px] font-bold text-[#444]">{t(resource.kind === 'digital' ? 'hub.citizen.openDigitalTool' : 'hub.citizen.viewToolDetails')}</Link>
+                          {output && <Link to={phaseItemPath(output.title)} className="inline-flex min-h-10 items-center bg-[#f68b2c] px-3 text-[12px] font-bold text-white">{t('hub.citizen.viewOutput')}</Link>}
                         </div>
                       </article>
                     );
@@ -914,7 +839,7 @@ export default function RoleHubDashboard() {
                     return (
                       <article key={activity.id} className="border-2 border-[#dedfe2] bg-white p-5">
                         <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div><p className="text-[11px] font-bold uppercase text-[#a85f20]">{t(ACTIVITY_TYPE_KEYS[activity.activityType] || ACTIVITY_TYPE_KEYS.participation)}</p><h4 className="mt-1 text-[17px] font-bold text-[#444]">{activity.title}</h4></div>
+                          <div><p className="text-[11px] font-bold uppercase text-[#a85f20]">{t(ACTIVITY_TYPE_KEYS[activity.activityType] || ACTIVITY_TYPE_KEYS.participation)}</p><h4 className="mt-1 text-[17px] font-bold text-[#444]">{activityTitle(activity)}</h4></div>
                           <span className={`px-2.5 py-1 text-[11px] font-bold uppercase ${isOpen ? 'bg-[#e7f2df] text-[#47662f]' : 'bg-[#f2f2f2] text-[#666]'}`}>{t(statusKey(activity.status))}</span>
                         </div>
                         <p className="mt-3 text-[13px] leading-relaxed text-[#666]">{activity.description}</p>
@@ -928,18 +853,12 @@ export default function RoleHubDashboard() {
                           <h5 className="flex items-center gap-2 text-[13px] font-bold text-[#444]"><BookOpenText size={16} aria-hidden="true" />{t('hub.citizen.participationInstructions')}</h5>
                           <p className="mt-2 text-[13px] leading-relaxed text-[#555]">{activity.instructions}</p>
                           {activity.requiredMaterials && <p className="mt-2 text-[12px] text-[#666]"><strong>{t('hub.citizen.requiredMaterials')}:</strong> {activity.requiredMaterials}</p>}
-                          {activity.accessibilityNotes && <p className="mt-2 flex items-start gap-2 text-[12px] text-[#555]"><Accessibility size={15} className="mt-0.5 flex-none" aria-hidden="true" /><span><strong>{t('hub.citizen.accessibility')}:</strong> {activity.accessibilityNotes}</span></p>}
                         </div>
-                        {isOpen && canParticipate && (
-                          <form onSubmit={(event) => { event.preventDefault(); void submitCitizenContribution(activity); }} className="mt-5">
-                            <label htmlFor={`contribution-${activity.id}`} className="text-[13px] font-bold text-[#444]">{t('hub.citizen.yourContribution')}</label>
-                            <textarea id={`contribution-${activity.id}`} value={contributionDrafts[activity.id] || ''} onChange={(event) => setContributionDrafts((current) => ({ ...current, [activity.id]: event.target.value }))} rows={3} required className="mt-2 w-full resize-y border-2 border-[#bfc0c5] p-3 text-[13px] outline-none focus:border-[#ca7428]" placeholder={t('hub.citizen.contributionPlaceholder')} />
-                            <div className="mt-3 flex flex-wrap gap-2">
-                              <button type="submit" disabled={submittingActivityId === activity.id || !String(contributionDrafts[activity.id] || '').trim()} className="inline-flex min-h-11 items-center gap-2 bg-[#f68b2c] px-4 text-[13px] font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"><Send size={15} />{submittingActivityId === activity.id ? t('common.saving') : t('hub.citizen.submitContribution')}</button>
-                              {activity.forumEnabled && <Link to={`/forum-voting?initiative=${initiative.id}&phase=${selectedPhaseNumber}`} className="inline-flex min-h-11 items-center gap-2 border-2 border-[#444] px-4 text-[13px] font-bold text-[#444]"><MessageSquareText size={15} />{t('hub.citizen.joinDiscussion')}</Link>}
-                              {activity.votingEnabled && <Link to={`/forum-voting?initiative=${initiative.id}&phase=${selectedPhaseNumber}`} className="inline-flex min-h-11 items-center gap-2 border-2 border-[#444] px-4 text-[13px] font-bold text-[#444]"><Vote size={15} />{t('hub.citizen.vote')}</Link>}
-                            </div>
-                          </form>
+                        {isOpen && canParticipate && (activity.forumEnabled || activity.votingEnabled) && (
+                          <div className="mt-5 flex flex-wrap gap-2">
+                            {activity.forumEnabled && <Link to={`/forum-voting?initiative=${initiative.id}&phase=${selectedPhaseNumber}`} className="inline-flex min-h-11 items-center gap-2 border-2 border-[#444] px-4 text-[13px] font-bold text-[#444]"><MessageSquareText size={15} />{t('hub.citizen.joinDiscussion')}</Link>}
+                            {activity.votingEnabled && <Link to={`/forum-voting?initiative=${initiative.id}&phase=${selectedPhaseNumber}`} className="inline-flex min-h-11 items-center gap-2 border-2 border-[#444] px-4 text-[13px] font-bold text-[#444]"><Vote size={15} />{t('hub.citizen.vote')}</Link>}
+                          </div>
                         )}
                       </article>
                     );
@@ -952,15 +871,15 @@ export default function RoleHubDashboard() {
               <h3 id="available-tools-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.toolsAvailable')}</h3>
               {visibleTools.length ? (
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  {visibleTools.map((tool) => {
-                    const activity = selectedPhase.activities.find((item) => item.selectedToolIds.includes(tool.id));
+                  {visibleTools.map(({ resource, tool }) => {
+                    const activity = activityForResource(resource.id);
                     return (
-                      <article key={tool.id} className="border-2 border-[#dedfe2] p-4">
-                        <div className="flex flex-wrap items-start justify-between gap-3"><h4 className="text-[15px] font-bold text-[#444]">{tool.name}</h4><span className="bg-[#e7f2df] px-2 py-1 text-[11px] font-bold text-[#47662f]">{t('status.available')}</span></div>
-                        <p className="mt-2 text-[12px] leading-relaxed text-[#666]">{tool.purpose || tool.shortDesc}</p>
-                        {activity && <p className="mt-3 text-[12px] text-[#555]"><strong>{t('hub.citizen.usedFor')}:</strong> {activity.title}</p>}
+                      <article key={resource.id} className="border-2 border-[#dedfe2] p-4">
+                        <div className="flex flex-wrap items-start justify-between gap-3"><h4 className="text-[15px] font-bold text-[#444]">{resource.name}</h4><span className="bg-[#e7f2df] px-2 py-1 text-[11px] font-bold text-[#47662f]">{t('status.available')}</span></div>
+                        <p className="mt-2 text-[12px] leading-relaxed text-[#666]">{tool ? tool.purpose || tool.shortDesc : resource.description}</p>
+                        {activity && <p className="mt-3 text-[12px] text-[#555]"><strong>{t('hub.citizen.usedFor')}:</strong> {activityTitle(activity)}</p>}
                         <p className="mt-2 text-[12px] text-[#555]"><strong>{t('hub.citizen.whatYouCanDo')}:</strong> {t('hub.citizen.toolCitizenAction')}</p>
-                        <Link to={`/tool-detail/${tool.id}`} className="mt-4 inline-flex min-h-11 items-center gap-2 border-2 border-[#444] px-4 text-[12px] font-bold text-[#444]">{t('hub.citizen.openToolDetails')} <ArrowRight size={14} /></Link>
+                        <Link to={resource.route} className="mt-4 inline-flex min-h-11 items-center gap-2 border-2 border-[#444] px-4 text-[12px] font-bold text-[#444]">{t(resource.kind === 'digital' ? 'hub.citizen.openDigitalTool' : 'hub.citizen.openToolDetails')} <ArrowRight size={14} /></Link>
                       </article>
                     );
                   })}
@@ -970,65 +889,6 @@ export default function RoleHubDashboard() {
 
             {publishedResources.length > 0 && <section aria-labelledby="phase-resources-heading"><h3 id="phase-resources-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.publishedResources')}</h3><div className="mt-4 grid gap-4 md:grid-cols-2">{publishedResources.map(renderResultCard)}</div></section>}
             {renderContributionList()}
-          </div>
-        )}
-      </section>
-    );
-  };
-
-  const renderToolsSection = () => {
-    if (!detail || !selectedPhaseNumber || !selectedPhase) return null;
-    const state = phaseState(selectedPhaseNumber, detail.currentPhaseNumber, pilotFinalized);
-    const isManaging = canManageInitiative;
-
-    const headingKey: TranslationKey = isManaging
-      ? 'hub.toolsHeadingManage'
-      : state === 'current' ? 'hub.toolsHeadingCurrent'
-      : state === 'completed' ? 'hub.toolsHeadingCompleted'
-      : 'hub.toolsHeadingUpcoming';
-
-    const visibleTools = isManaging
-      ? tools.filter((tool) => tool.phase === selectedPhaseNumber && detail.setupSelectedTools.includes(tool.id))
-      : tools.filter((tool) => selectedPhase.enabledTools.includes(tool.id));
-
-    const emptyKey: TranslationKey | null = visibleTools.length > 0 ? null
-      : isManaging ? 'hub.toolsEmptyManage'
-      : state === 'completed' ? 'hub.toolsEmptyCompleted'
-      : state === 'current' ? 'hub.toolsEmptyCurrent'
-      : 'hub.toolsEmptyUpcoming';
-
-    return (
-      <section className="mt-8 spice-card p-6 md:p-8" aria-labelledby="tools-heading">
-        <h2 id="tools-heading" className="text-[20px] font-bold text-[#444]">{t(headingKey, { phase: selectedPhaseNumber })}</h2>
-        {!isManaging && (
-          <p className="mt-2 text-[14px] leading-relaxed text-[#666]">{t(PHASE_TEXT_KEYS[selectedPhaseNumber] || 'hub.phase1Text')}</p>
-        )}
-        {state === 'completed' && !isManaging && (
-          <div className="mt-4 border-l-4 border-[#59713d] bg-[#f0f8ea] p-4">
-            <p className="text-[13px] font-bold text-[#3d5c26]">{t('hub.phaseCompleted')}</p>
-            <p className="mt-1 text-[13px] leading-relaxed text-[#3d5c26]">
-              {t(selectedPhase.resultsVisible ? 'hub.resultsAvailable' : 'hub.resultsUnavailable')}
-            </p>
-          </div>
-        )}
-        {emptyKey ? (
-          <div className="mt-6 spice-card-dashed p-6 text-center">
-            <p className="text-[14px] text-[#666]">{t(emptyKey)}</p>
-            {isManaging && <Link to="/setup-questionnaire" className="mt-3 inline-block text-[13px] font-bold text-[#a85f20] underline underline-offset-4">{t('hub.goToQuestionnaire')}</Link>}
-          </div>
-        ) : (
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {visibleTools.map((tool) => (
-              <ToolTile
-                key={tool.id}
-                tool={tool}
-                enabled={selectedPhase.enabledTools.includes(tool.id)}
-                canManage={isManaging}
-                canParticipate={canParticipate && state === 'current'}
-                onAdd={() => !savingTool && void toggleToolOnSelectedPhase(tool.id, true)}
-                onRemove={() => !savingTool && void toggleToolOnSelectedPhase(tool.id, false)}
-              />
-            ))}
           </div>
         )}
       </section>
@@ -1118,7 +978,6 @@ export default function RoleHubDashboard() {
     return (
       <div className="space-y-8">
         {facilitatorInitiatives.map((initiative) => {
-          const phase = initiative.currentPhaseNumber ? initiative.phases.find((item) => item.phaseNumber === initiative.currentPhaseNumber) : null;
           return (
             <section key={initiative.id} className="spice-card p-6 md:p-8" aria-labelledby={`facilitator-initiative-${initiative.id}`}>
               <p className="text-[11px] font-bold uppercase tracking-wide text-[#888]">{t('hub.assignedPilot')}</p>
@@ -1132,25 +991,12 @@ export default function RoleHubDashboard() {
               ) : (
                 <p className="mt-4 text-[14px] text-[#666]">{t('hub.phaseNotStarted')}</p>
               )}
-              {phase && phase.enabledTools.length > 0 && (
-                <div className="mt-5">
-                  <h3 className="text-[15px] font-bold text-[#444]">{t('hub.toolsEnabledForPhase')}</h3>
-                  <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {phase.enabledTools.map((toolId) => {
-                      const tool = tools.find((item) => item.id === toolId);
-                      if (!tool) return null;
-                      return <Link key={toolId} to={`/tool-detail/${tool.id}`} className="spice-card p-3 text-[13px] font-semibold text-[#444] hover:border-[#f68b2c]">{tool.name}</Link>;
-                    })}
-                  </div>
-                </div>
-              )}
               <div className="mt-6 border-t-2 border-[#eee] pt-5">
                 <h3 className="text-[14px] font-bold text-[#444]">{t('hub.relatedWorkspaceLinks')}</h3>
                 <div className="mt-3 flex flex-wrap gap-3">
                 {initiative.currentPhaseNumber && (
                   <>
                     <Link to={`/hub/${initiative.id}/phase/${initiative.currentPhaseNumber}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><ListChecks size={16} /> {t('hub.preparePhaseActivities')}</Link>
-                    <Link to={`/hub/${initiative.id}/phase/${initiative.currentPhaseNumber}#phase-report-title`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><Wrench size={16} /> {t('hub.uploadWorkshopOutput')}</Link>
                   </>
                 )}
                 <Link to="/repository" className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><BookOpenText size={16} /> {t('phaseDetail.uploadMaterials')}</Link>
@@ -1163,7 +1009,6 @@ export default function RoleHubDashboard() {
         {detail && facilitatorInitiative?.id === detail.id && (
           <>
             {renderRoadmap()}
-            {renderToolsSection()}
           </>
         )}
       </div>
@@ -1286,55 +1131,39 @@ export default function RoleHubDashboard() {
                     <div className="flex items-start gap-3">
                       <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-[#fff0e1] text-[#ca7428]"><Users size={18} /></span>
                       <div className="min-w-0 flex-1">
-                        <h3 id="facilitator-assignment-title" className="text-[18px] font-bold text-[#444]">{t(roleKey('facilitator'))}</h3>
-                        {detail.facilitator ? (
-                          <>
-                            <p className="mt-1 text-[14px] text-[#666]">
-                              {t('hub.facilitatorAssigned', { name: detail.facilitator.fullName, email: detail.facilitator.email })}
-                            </p>
-                            <div className="mt-4 max-w-xl">
-                              <label htmlFor="facilitator-note" className="text-[11px] font-bold uppercase tracking-wide text-[#888]">{t('hub.facilitatorNoteLabel')}</label>
-                              <textarea
-                                id="facilitator-note"
-                                value={facilitatorNote}
-                                onChange={(event) => setFacilitatorNote(event.target.value)}
-                                placeholder={t('hub.facilitatorNotePlaceholder')}
-                                className="mt-2 min-h-[88px] w-full border-2 border-[#bfc0c5] px-3 py-2 text-[13px] text-[#444] focus:border-[#ca7428] focus:outline-none"
-                              />
-                              <button type="button" onClick={() => void saveFacilitatorNote()} disabled={savingFacilitator} className="mt-2 min-h-10 cursor-pointer border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428] disabled:cursor-wait disabled:opacity-60">
-                                {savingFacilitator ? t('common.saving') : t('hub.saveFacilitatorNote')}
-                              </button>
-                            </div>
-                            <button type="button" onClick={() => void unassignFacilitator()} disabled={savingFacilitator} className="mt-4 min-h-10 cursor-pointer border-2 border-[#a86622] px-4 text-[13px] font-bold text-[#a86622] hover:bg-[#fff3e8] disabled:cursor-wait disabled:opacity-60">
-                              {savingFacilitator ? t('hub.unassigningFacilitator') : t('hub.unassignFacilitator')}
-                            </button>
-                          </>
+                        <h3 id="facilitator-assignment-title" className="text-[18px] font-bold text-[#444]">{t('hub.assignedFacilitatorsTitle')}</h3>
+                        {detail.facilitators.length === 0 ? (
+                          <p className="mt-1 text-[14px] text-[#666]">{t('hub.noFacilitatorAssigned')}</p>
                         ) : (
-                          <>
-                            <p className="mt-1 text-[14px] text-[#666]">{t('hub.noFacilitatorAssigned')}</p>
-                            <form onSubmit={assignFacilitator} className="mt-3 flex max-w-xl flex-col gap-3">
-                              <input type="email" required value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} placeholder="facilitator@example.org" className="min-h-11 min-w-0 border-2 border-[#bfc0c5] px-3 text-[14px] focus:border-[#ca7428] focus:outline-none" />
-                              <div>
-                                <label htmlFor="facilitator-note" className="text-[11px] font-bold uppercase tracking-wide text-[#888]">{t('hub.facilitatorNoteLabel')}</label>
-                                <textarea
-                                  id="facilitator-note"
-                                  value={facilitatorNote}
-                                  onChange={(event) => setFacilitatorNote(event.target.value)}
-                                  placeholder={t('hub.facilitatorNotePlaceholder')}
-                                  className="mt-2 min-h-[72px] w-full border-2 border-[#bfc0c5] px-3 py-2 text-[13px] text-[#444] focus:border-[#ca7428] focus:outline-none"
-                                />
-                              </div>
-                              <button type="submit" disabled={savingFacilitator || !facilitatorEmail.trim()} className="self-start min-h-11 cursor-pointer bg-[#f68b2c] px-4 text-[13px] font-bold text-white hover:bg-[#e07a20] disabled:cursor-wait disabled:opacity-60">
-                                {savingFacilitator ? t('hub.assigningFacilitator') : t('hub.assignFacilitator')}
-                              </button>
-                            </form>
-                          </>
+                          <ul className="mt-3 grid max-w-xl gap-2">
+                            {detail.facilitators.map((facilitator) => (
+                              <li key={facilitator.id} className="flex items-center gap-3 border-2 border-[#e4e4e4] bg-white p-3">
+                                <span className="grid h-10 w-10 flex-none place-items-center overflow-hidden rounded-full border border-[#bfc0c5] bg-[#f3f3f4] text-[#666]" aria-hidden="true">
+                                  {facilitator.avatarData ? <img src={facilitator.avatarData} alt="" className="h-full w-full object-cover" /> : <Users size={18} />}
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                  <span className="block truncate text-[14px] font-bold text-[#444]">{facilitator.fullName}</span>
+                                  <span className="block truncate text-[12px] text-[#777]">{facilitator.email}</span>
+                                </span>
+                                <button type="button" onClick={() => void unassignFacilitator(facilitator.id)} disabled={savingFacilitator} aria-label={t('hub.unassignFacilitatorNamed', { name: facilitator.fullName })} className="min-h-10 flex-none cursor-pointer border-2 border-[#a86622] px-3 text-[12px] font-bold text-[#a86622] hover:bg-[#fff3e8] disabled:cursor-wait disabled:opacity-60">
+                                  {t('hub.unassignFacilitator')}
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
                         )}
+                        <form onSubmit={assignFacilitator} className="mt-4 flex max-w-xl flex-col gap-2 sm:flex-row">
+                          <label htmlFor="facilitator-email" className="sr-only">{t('hub.facilitatorEmailLabel')}</label>
+                          <input id="facilitator-email" type="email" required value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} placeholder="facilitator@example.org" className="min-h-11 min-w-0 flex-1 border-2 border-[#bfc0c5] px-3 text-[14px] focus:border-[#ca7428] focus:outline-none" />
+                          <button type="submit" disabled={savingFacilitator || !facilitatorEmail.trim()} className="inline-flex min-h-11 flex-none cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] px-4 text-[13px] font-bold text-white hover:bg-[#e07a20] disabled:cursor-wait disabled:opacity-60">
+                            <Plus size={15} aria-hidden="true" />{savingFacilitator ? t('hub.assigningFacilitator') : t('hub.assignFacilitator')}
+                          </button>
+                        </form>
+                        <p className="mt-2 max-w-xl text-[12px] leading-relaxed text-[#777]">{t('hub.facilitatorsShareBrief')}</p>
                       </div>
                     </div>
                   </section>
                 )}
-                {renderToolsSection()}
                 </>}
               </>
             )}
