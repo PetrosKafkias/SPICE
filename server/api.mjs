@@ -699,6 +699,13 @@ function addAudit(db, { actor, action, targetType, targetId, previousValue = nul
     .run(randomUUID(), new Date().toISOString(), actor?.id || null, actor?.role || 'guest', actor?.organisation_id || null, action, targetType, String(targetId), previousValue == null ? null : JSON.stringify(previousValue), newValue == null ? null : JSON.stringify(newValue), reason);
 }
 
+// On by default in development and on the Vercel demo (its database is a reseeded fixture);
+// other production deployments must opt in explicitly. 'false' always turns it off.
+function demoLoginEnabled() {
+  const flag = process.env.VITE_ENABLE_DEMO_LOGIN;
+  return flag === 'true' || (flag !== 'false' && (process.env.NODE_ENV !== 'production' || Boolean(process.env.VERCEL)));
+}
+
 function initiativeIsInScope(user, initiative) {
   const role = normalizeRole(user.role);
   return role === 'admin' || (role === 'municipality' && Number(user.organisation_id) === Number(initiative.organisation_id));
@@ -973,13 +980,14 @@ export async function createApiHandler(options = {}) {
         return true;
       }
 
+      if (method === 'GET' && pathname === '/api/auth/demo-login') {
+        // The sign-in page asks at runtime, so the buttons follow the server rule rather than build-time env.
+        sendJson(response, 200, { enabled: demoLoginEnabled() });
+        return true;
+      }
+
       if (method === 'POST' && pathname === '/api/auth/demo-login') {
-        // On by default in development and on the Vercel demo (its database is a reseeded fixture);
-        // other production deployments must opt in explicitly. 'false' always turns it off.
-        const demoFlag = process.env.VITE_ENABLE_DEMO_LOGIN;
-        const enabled = demoFlag === 'true'
-          || (demoFlag !== 'false' && (process.env.NODE_ENV !== 'production' || Boolean(process.env.VERCEL)));
-        if (!enabled) { sendError(response, 404, 'Development access is not enabled.'); return true; }
+        if (!demoLoginEnabled()) { sendError(response, 404, 'Development access is not enabled.'); return true; }
         const body = await readJson(request);
         const emails = {
           citizen: 'citizen.demo@spice.local',

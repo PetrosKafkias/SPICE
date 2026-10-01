@@ -15,14 +15,7 @@ function figmaAssetResolver(): Plugin {
   }
 }
 
-// The Vercel deployment is a public demo, so its build shows the demo sign-in buttons
-// unless VITE_ENABLE_DEMO_LOGIN is set explicitly. Mirrors the server rule in server/api.mjs.
-const vercelDemoLogin = process.env.VERCEL && process.env.VITE_ENABLE_DEMO_LOGIN === undefined
-  ? { 'import.meta.env.VITE_ENABLE_DEMO_LOGIN': JSON.stringify('true') }
-  : {}
-
 export default defineConfig({
-  define: vercelDemoLogin,
   server: {
     proxy: { '/api': 'http://127.0.0.1:5174' },
     watch: {

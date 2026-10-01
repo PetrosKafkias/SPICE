@@ -8,6 +8,7 @@ import { useI18n } from '../context/I18nContext';
 import { localizedApiError, localizedFieldErrors } from '../lib/localizedApiError';
 import { authRoute, safeReturnTo } from '../lib/authRedirect';
 import { roleKey, type Role } from '../auth/permissions';
+import { apiRequest } from '../lib/api';
 
 export default function SignInPage() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function SignInPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [validationAttempted, setValidationAttempted] = useState(false);
   const [shake, setShake] = useState(false);
+  const [demoEnabled, setDemoEnabled] = useState(false);
   const returnTo = safeReturnTo(searchParams.get('returnTo'));
   const requiresAuthentication = searchParams.get('reason') === 'auth';
   const authNoticeRef = useRef<HTMLDivElement>(null);
@@ -33,6 +35,15 @@ export default function SignInPage() {
   useEffect(() => {
     if (user) navigate(returnTo, { replace: true });
   }, [navigate, returnTo, user]);
+
+  // The server decides whether demo sign-in is available on this deployment.
+  useEffect(() => {
+    let active = true;
+    apiRequest<{ enabled: boolean }>('/api/auth/demo-login')
+      .then((result) => { if (active) setDemoEnabled(result.enabled); })
+      .catch(() => { if (active) setDemoEnabled(false); });
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     if (requiresAuthentication) authNoticeRef.current?.focus();
@@ -167,7 +178,7 @@ export default function SignInPage() {
         </button>
       </form>
 
-      {(import.meta.env.DEV ? import.meta.env.VITE_ENABLE_DEMO_LOGIN !== 'false' : import.meta.env.VITE_ENABLE_DEMO_LOGIN === 'true') && (
+      {demoEnabled && (
         <section className="mt-7 border-t-2 border-[#e4e4e4] pt-6" aria-labelledby="demo-access-title">
           <h2 id="demo-access-title" className="text-[16px] font-bold text-[#444]">{t('auth.devAccess')}</h2>
           <p className="mt-1 text-[13px] font-semibold text-[#555]">{t('auth.devControls')}</p>

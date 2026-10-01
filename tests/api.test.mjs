@@ -878,7 +878,9 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
       delete process.env.VITE_ENABLE_DEMO_LOGIN;
       delete process.env.VERCEL;
       assert.equal((await demoLogin()).status, 404);
+      assert.equal((await request(baseUrl, '/api/auth/demo-login')).payload.enabled, false);
       process.env.VITE_ENABLE_DEMO_LOGIN = 'true';
+      assert.equal((await request(baseUrl, '/api/auth/demo-login')).payload.enabled, true);
       const enabled = await demoLogin();
       assert.equal(enabled.status, 200);
       assert.equal(enabled.payload.user.role, 'Admin');
