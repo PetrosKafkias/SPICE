@@ -871,18 +871,27 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
   });
 
   await t.test('demo sign-in is opt-in for production deployments', async () => {
-    const original = { nodeEnv: process.env.NODE_ENV, flag: process.env.VITE_ENABLE_DEMO_LOGIN };
+    const original = { nodeEnv: process.env.NODE_ENV, flag: process.env.VITE_ENABLE_DEMO_LOGIN, vercel: process.env.VERCEL };
+    const demoLogin = () => request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'admin' } });
     try {
       process.env.NODE_ENV = 'production';
       delete process.env.VITE_ENABLE_DEMO_LOGIN;
-      assert.equal((await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'admin' } })).status, 404);
+      delete process.env.VERCEL;
+      assert.equal((await demoLogin()).status, 404);
       process.env.VITE_ENABLE_DEMO_LOGIN = 'true';
-      const enabled = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'admin' } });
+      const enabled = await demoLogin();
       assert.equal(enabled.status, 200);
       assert.equal(enabled.payload.user.role, 'Admin');
+      // The Vercel demo deployment enables it by default, but an explicit 'false' still wins.
+      delete process.env.VITE_ENABLE_DEMO_LOGIN;
+      process.env.VERCEL = '1';
+      assert.equal((await demoLogin()).status, 200);
+      process.env.VITE_ENABLE_DEMO_LOGIN = 'false';
+      assert.equal((await demoLogin()).status, 404);
     } finally {
       if (original.nodeEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = original.nodeEnv;
       if (original.flag === undefined) delete process.env.VITE_ENABLE_DEMO_LOGIN; else process.env.VITE_ENABLE_DEMO_LOGIN = original.flag;
+      if (original.vercel === undefined) delete process.env.VERCEL; else process.env.VERCEL = original.vercel;
     }
   });
 

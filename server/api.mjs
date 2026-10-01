@@ -974,10 +974,11 @@ export async function createApiHandler(options = {}) {
       }
 
       if (method === 'POST' && pathname === '/api/auth/demo-login') {
-        // On by default in development; production deployments must opt in explicitly.
-        const enabled = process.env.NODE_ENV === 'production'
-          ? process.env.VITE_ENABLE_DEMO_LOGIN === 'true'
-          : process.env.VITE_ENABLE_DEMO_LOGIN !== 'false';
+        // On by default in development and on the Vercel demo (its database is a reseeded fixture);
+        // other production deployments must opt in explicitly. 'false' always turns it off.
+        const demoFlag = process.env.VITE_ENABLE_DEMO_LOGIN;
+        const enabled = demoFlag === 'true'
+          || (demoFlag !== 'false' && (process.env.NODE_ENV !== 'production' || Boolean(process.env.VERCEL)));
         if (!enabled) { sendError(response, 404, 'Development access is not enabled.'); return true; }
         const body = await readJson(request);
         const emails = {
