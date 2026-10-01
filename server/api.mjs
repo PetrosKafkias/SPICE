@@ -21,9 +21,9 @@ import {
   workflowSummary,
 } from './workflow.mjs';
 import { randomUUID } from 'node:crypto';
-import { createRequire } from 'node:module';
+// A static import keeps the catalogue visible to the Vercel function file tracer.
+import analogResources from '../src/app/data/localized/analogueTools.en.json' with { type: 'json' };
 
-const analogResources = createRequire(import.meta.url)('../src/app/data/localized/analogueTools.en.json');
 const DIGITAL_TOOL_NAMES = Object.freeze({ citivoice: 'CitiVoice App', chatbot: 'AI Chatbot', scene: '3D Scene Editor' });
 // Every selectable SPICE resource: the analog catalogue plus the three digital tools.
 const SPICE_RESOURCE_NAMES = new Map([
