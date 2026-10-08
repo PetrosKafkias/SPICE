@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import {
   Activity, ArrowRight, BookOpenText, Building2, CalendarDays, CheckCircle2,
-  Circle, CircleAlert, CircleDot, Clock, FileDown, FilePlus2, FileText, GitCompareArrows,
+  Circle, CircleAlert, CircleDot, Clock, FilePlus2, FileText, GitCompareArrows,
   Layers3, ListChecks, LockKeyhole, MapPin, MapPinned, MessageSquareText,
   PencilLine, Plus, Users, Vote, Wrench,
 } from 'lucide-react';
@@ -18,6 +18,9 @@ import { phaseState } from '../lib/phaseState';
 import { getTools } from '../data/tools';
 import { resolveSpiceResource, type SpiceResource } from '../data/spiceResources';
 import PhaseChangeDialog from './PhaseChangeDialog';
+import PilotSelector from './PilotSelector';
+import ObjectiveWorkspace from './ObjectiveWorkspace';
+import { readStoredPilot, storeActivePilot } from '../lib/activePilot';
 import type { WorkflowSummary } from './WorkflowNextActionPanel';
 import type { TranslationKey } from '../i18n/translations';
 
@@ -189,7 +192,7 @@ export default function RoleHubDashboard() {
   const { formatDate, language, t } = useI18n();
   const tools = useMemo(() => getTools(language), [language]);
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const previewingAsCitizen = searchParams.get('preview') === 'citizen' && role !== 'citizen';
   const citizenView = role === 'citizen' || previewingAsCitizen;
   const canManageLifecycle = can('hub:manage-phases');
@@ -239,7 +242,25 @@ export default function RoleHubDashboard() {
 
   const municipalityInitiative = role === 'municipality' ? initiatives[0] || null : null;
   const citizenInitiative = citizenView && displayedInitiatives.length === 1 ? displayedInitiatives[0] : null;
-  const facilitatorInitiative = role === 'facilitator' ? facilitatorInitiatives[0] || null : null;
+  // Facilitators can be assigned to several pilots; the hub follows the selected (or remembered) one.
+  const requestedPilot = searchParams.get('pilot');
+  const requestedInitiativeId = Number(searchParams.get('initiative') || 0);
+  const facilitatorInitiative = role === 'facilitator'
+    ? facilitatorInitiatives.find((item) => item.id === requestedInitiativeId)
+      || facilitatorInitiatives.find((item) => item.pilotSlug === requestedPilot)
+      || facilitatorInitiatives.find((item) => item.pilotSlug === readStoredPilot())
+      || facilitatorInitiatives[0]
+      || null
+    : null;
+  const switchFacilitatorPilot = (slug: string) => {
+    storeActivePilot(slug);
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current);
+      next.set('pilot', slug);
+      next.delete('phase');
+      return next;
+    }, { replace: true });
+  };
   const activeInitiative = municipalityInitiative || citizenInitiative || facilitatorInitiative;
 
   const loadDetail = useCallback(async (initiativeId: number) => {
@@ -251,13 +272,16 @@ export default function RoleHubDashboard() {
       setWorkflow(result.workflow);
       setCanParticipate(result.access.canParticipate);
       const requestedPhase = Number(searchParams.get('phase') || 0);
-      setSelectedPhaseNumber((current) => current ?? (requestedPhase >= 1 && requestedPhase <= 5 ? requestedPhase : result.initiative.currentPhaseNumber ?? 1));
+      const currentPhase = result.initiative.currentPhaseNumber ?? 1;
+      // Citizens cannot open objectives the Municipality has not reached yet, even through a link.
+      const maxPhase = citizenView && !result.initiative.pilotFinalizedAt ? currentPhase : 5;
+      setSelectedPhaseNumber((current) => current ?? (requestedPhase >= 1 && requestedPhase <= maxPhase ? requestedPhase : currentPhase));
     } catch {
       setError(t('hub.errorLoadRoadmap'));
     } finally {
       setDetailLoading(false);
     }
-  }, [previewingAsCitizen, searchParams, t]);
+  }, [citizenView, previewingAsCitizen, searchParams, t]);
 
   useEffect(() => {
     if (activeInitiative) void loadDetail(activeInitiative.id);
@@ -284,19 +308,25 @@ export default function RoleHubDashboard() {
 
   const selectPhase = (phaseNumber: number) => {
     setSelectedPhaseNumber(phaseNumber);
-    if (citizenView) {
-      // Deliberately not written to the URL: any location change remounts the route view (RouteExperience
-      // keys on location.key), which reloads the hub and jumps back to the top.
-      // The objective's content sits below the roadmap, so bring it into view as feedback for the click.
-      window.requestAnimationFrame(() => {
-        const content = document.getElementById('citizen-phase-content');
-        if (!content) return;
-        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        content.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-        content.focus({ preventScroll: true });
-      });
-    }
+    // Deliberately not written to the URL: any location change remounts the route view (RouteExperience
+    // keys on location.key), which reloads the hub and jumps back to the top.
+    // The objective's content sits below the roadmap, so bring it into view as feedback for the click.
+    window.requestAnimationFrame(() => {
+      const content = document.getElementById(citizenView ? 'citizen-phase-content' : 'objective-workspace');
+      if (!content) return;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      content.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      if (citizenView) content.focus({ preventScroll: true });
+    });
   };
+
+  // Links to an objective (e.g. from notifications) land on its workspace inside the hub.
+  const objectiveLinkPending = !citizenView && window.location.hash === '#objective-workspace';
+  useEffect(() => {
+    if (!objectiveLinkPending || !detail || selectedPhaseNumber == null) return;
+    const timer = window.setTimeout(() => document.getElementById('objective-workspace')?.scrollIntoView({ block: 'start' }), 300);
+    return () => window.clearTimeout(timer);
+  }, [detail, objectiveLinkPending, selectedPhaseNumber]);
 
   const confirmPhaseChange = async () => {
     if (!detail || pendingPhaseNumber == null) return;
@@ -574,12 +604,15 @@ export default function RoleHubDashboard() {
   const renderRoadmap = () => {
     if (!detail) return null;
     return (
+      <>
       <section className="mt-8 spice-card p-6 md:p-8" aria-labelledby="roadmap-title">
         <h2 id="roadmap-title" className="text-[20px] font-bold text-[#444]">{t('hub.roadmapTitle')}</h2>
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {roadmapPhases.map((phase, index) => {
             const state = phaseState(phase.phaseNumber, detail.currentPhaseNumber, pilotFinalized);
             const isSelected = selectedPhaseNumber === phase.phaseNumber;
+            // Citizens follow the Municipality's progression: completed and current objectives only.
+            const locked = citizenView && state === 'incomplete';
             const stateLabelKey: TranslationKey = state === 'completed' ? 'hub.phaseCompleted'
               : state === 'current' ? 'hub.phaseCurrent'
               : 'hub.phaseUpcoming';
@@ -590,10 +623,11 @@ export default function RoleHubDashboard() {
                   type="button"
                   aria-label={`${t('hub.phaseNumber', { phase: phase.phaseNumber })} - ${t(`hub.phase${phase.phaseNumber}` as TranslationKey)} - ${t(stateLabelKey)}`}
                   aria-pressed={isSelected}
+                  disabled={locked}
                   onClick={() => selectPhase(phase.phaseNumber)}
-                  className="group flex cursor-pointer flex-col items-center px-2 pb-2 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]"
+                  className="group flex cursor-pointer flex-col disabled:cursor-not-allowed disabled:opacity-60 items-center px-2 pb-2 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]"
                 >
-                  <span className={`grid h-11 w-11 flex-shrink-0 place-items-center rounded-full border-2 font-bold transition-colors group-hover:border-[#f68b2c] group-hover:bg-[#fff8f2] ${
+                  <span className={`grid h-11 w-11 flex-shrink-0 place-items-center rounded-full border-2 font-bold transition-colors ${locked ? '' : 'group-hover:border-[#f68b2c] group-hover:bg-[#fff8f2]'} ${
                     isSelected ? 'border-[#f68b2c] bg-[#fff0e1]' : 'border-[#d5d6da] bg-white'
                   }`}>
                     {state === 'completed'
@@ -605,7 +639,7 @@ export default function RoleHubDashboard() {
                   <span className="mt-3 text-[11px] font-bold uppercase text-[#a85f20]">
                     {t('hub.phaseNumber', { phase: phase.phaseNumber })} <span aria-hidden="true">·</span> {t(stateLabelKey)}
                   </span>
-                  <span className="mt-1 block max-w-[140px] text-[13px] font-bold leading-tight text-[#444] transition-colors group-hover:text-[#ca7428]">{t(`hub.phase${phase.phaseNumber}` as TranslationKey)}</span>
+                  <span className={`mt-1 block max-w-[140px] text-[13px] font-bold leading-tight text-[#444] transition-colors ${locked ? '' : 'group-hover:text-[#ca7428]'}`}>{t(`hub.phase${phase.phaseNumber}` as TranslationKey)}</span>
                   <span className="mt-1 block text-[11px] text-[#888]">{t('hub.phaseToolCount', { count: phase.enabledTools.length })}</span>
                 </button>
               </div>
@@ -613,32 +647,13 @@ export default function RoleHubDashboard() {
           })}
         </div>
 
-        {selectedPhaseNumber != null && selectedPhase && (
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t-2 border-[#eee] pt-6">
-            <p className="text-[14px] text-[#666]">
-              {t(selectedPhaseNumber === detail.currentPhaseNumber ? 'hub.currentPhaseDetailsNotice' : 'hub.notCurrentPhaseNotice', { phase: selectedPhaseNumber })}
-            </p>
-            {citizenView ? (
-              phaseState(selectedPhaseNumber, detail.currentPhaseNumber, pilotFinalized) === 'completed' ? (
-                <Link
-                  to={`/repository?pilotId=${detail.id}&phase=${selectedPhaseNumber}&phaseId=${selectedPhase.id}&contentType=result&returnPhase=${selectedPhaseNumber}`}
-                  className="inline-flex min-h-11 cursor-pointer items-center gap-2 bg-[#f68b2c] px-4 py-2 text-[13px] font-bold text-white hover:bg-[#df7720]"
-                >
-                  {t('hub.citizen.viewResults')} <ArrowRight size={15} aria-hidden="true" />
-                </Link>
-              ) : (
-                <a href="#citizen-phase-content" className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] px-4 py-2 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]">
-                  {t(selectedPhaseNumber === detail.currentPhaseNumber ? 'hub.citizen.viewCurrentPhase' : 'hub.citizen.viewOverview')} <ArrowRight size={15} aria-hidden="true" />
-                </a>
-              )
-            ) : (
-              <Link to={`/hub/${detail.id}/phase/${selectedPhaseNumber}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] px-4 py-2 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]">
-                {t('hub.viewPhaseDetails')} <ArrowRight size={15} aria-hidden="true" />
-              </Link>
-            )}
-            {!previewingAsCitizen && canManageLifecycle && workflow && workflow.allowedPhaseTransitions.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2">
+        {/* Objective transitions for the Municipality; the selected objective's workspace opens below the roadmap. */}
+        {!citizenView && canManageLifecycle && workflow && workflow.allowedPhaseTransitions.length > 0 && (
+          <div className="mt-6 flex flex-wrap items-center justify-end gap-3 border-t-2 border-[#eee] pt-6">
+            {(
+              <div className="ml-auto flex flex-col items-end gap-2">
                 {/* Only the transitions the SPICE sequence allows from the current Objective; the server enforces the same rule. */}
+                <div className="flex flex-wrap justify-end gap-2">
                 {workflow.allowedPhaseTransitions.map((target) => {
                   const forward = target > workflow.currentPhaseNumber;
                   const blocked = forward && !workflow.readiness.ready;
@@ -655,14 +670,19 @@ export default function RoleHubDashboard() {
                     </button>
                   );
                 })}
+                </div>
                 {!workflow.readiness.ready && workflow.allowedPhaseTransitions.some((target) => target > workflow.currentPhaseNumber) && (
-                  <p id="objective-transition-blocked" className="basis-full text-[12px] font-semibold text-[#8f4d18]">{t('hub.transitionBlocked', { phase: workflow.currentPhaseNumber })}</p>
+                  <p id="objective-transition-blocked" className="text-right text-[12px] font-semibold text-[#8f4d18]">{t('hub.transitionBlocked', { phase: workflow.currentPhaseNumber })}</p>
                 )}
               </div>
             )}
           </div>
         )}
       </section>
+      {!citizenView && selectedPhaseNumber != null && (
+        <ObjectiveWorkspace key={`${detail.id}-${selectedPhaseNumber}`} initiativeId={detail.id} phaseNumber={selectedPhaseNumber} onChanged={() => void loadDetail(detail.id)} />
+      )}
+      </>
     );
   };
 
@@ -770,15 +790,12 @@ export default function RoleHubDashboard() {
           </div>
         ) : state === 'completed' ? (
           <div className="space-y-7 pt-6">
-            <section aria-labelledby="phase-summary-heading" className="grid gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
+            <section aria-labelledby="phase-summary-heading">
               <div>
                 <h3 id="phase-summary-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.phaseSummary')}</h3>
                 <p className="mt-2 text-[14px] leading-relaxed text-[#666]">{selectedPhase.completionSummary || t('hub.citizen.completedSummaryFallback')}</p>
                 <p className="mt-3 text-[13px] font-semibold text-[#47662f]">{t('hub.citizen.completedNoActiveControls')}</p>
               </div>
-              <Link to={phaseResultsPath} className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#f68b2c] px-5 text-[14px] font-bold text-white hover:bg-[#df7720]">
-                <FileDown size={17} aria-hidden="true" /> {t('hub.citizen.viewResults')}
-              </Link>
             </section>
 
             <section aria-labelledby="completed-tools-heading">
@@ -977,7 +994,14 @@ export default function RoleHubDashboard() {
     }
     return (
       <div className="space-y-8">
-        {facilitatorInitiatives.map((initiative) => {
+        <PilotSelector
+          id="facilitator-pilot"
+          className="max-w-md"
+          options={facilitatorInitiatives.filter((item) => item.pilotSlug).map((item) => ({ value: item.pilotSlug as string, label: item.title }))}
+          value={facilitatorInitiative?.pilotSlug || ''}
+          onChange={switchFacilitatorPilot}
+        />
+        {(facilitatorInitiative ? [facilitatorInitiative] : []).map((initiative) => {
           return (
             <section key={initiative.id} className="spice-card p-6 md:p-8" aria-labelledby={`facilitator-initiative-${initiative.id}`}>
               <p className="text-[11px] font-bold uppercase tracking-wide text-[#888]">{t('hub.assignedPilot')}</p>
@@ -996,10 +1020,10 @@ export default function RoleHubDashboard() {
                 <div className="mt-3 flex flex-wrap gap-3">
                 {initiative.currentPhaseNumber && (
                   <>
-                    <Link to={`/hub/${initiative.id}/phase/${initiative.currentPhaseNumber}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><ListChecks size={16} /> {t('hub.preparePhaseActivities')}</Link>
+                    <button type="button" onClick={() => selectPhase(initiative.currentPhaseNumber as number)} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><ListChecks size={16} /> {t('hub.preparePhaseActivities')}</button>
                   </>
                 )}
-                <Link to="/repository" className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><BookOpenText size={16} /> {t('phaseDetail.uploadMaterials')}</Link>
+                <Link to={`/repository?pilotId=${initiative.id}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><BookOpenText size={16} /> {t('phaseDetail.uploadMaterials')}</Link>
                 <Link to={`/forum-voting?initiative=${initiative.id}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]"><MessageSquareText size={16} /> {t('hub.prepareDraftProposal')}</Link>
                 </div>
               </div>

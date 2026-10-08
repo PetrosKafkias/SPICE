@@ -461,4 +461,15 @@ export async function seedDatabase(db) {
     ];
     insertMany(db, 'INSERT INTO dashboard_data (page, data_key, payload_json, updated_at) VALUES (?, ?, ?, ?)', dashboardRows.map(([page, key, payload]) => [page, key, JSON.stringify(payload), NOW]));
   }
+
+  // The demonstration CitiVoice campaign belongs to the Thessaloniki pilot; other pilots have no data yet.
+  if (Number(db.prepare('SELECT COUNT(*) AS count FROM citivoice_datasets').get().count) === 0) {
+    const metrics = db.prepare('SELECT * FROM citivoice_metrics ORDER BY rowid').all().map((row) => ({
+      key: row.metric_key, value: Number(row.metric_value), label: row.metric_label,
+      periodLabel: row.period_label, updatedAt: row.updated_at,
+    }));
+    const data = Object.fromEntries(db.prepare("SELECT data_key, payload_json FROM dashboard_data WHERE page = 'citivoice'").all().map((row) => [row.data_key, JSON.parse(row.payload_json)]));
+    db.prepare(`INSERT INTO citivoice_datasets (pilot_slug, area_name, metrics_json, data_json, source, updated_at) VALUES ('thessaloniki', 'Parko Kritis', ?, ?, 'demonstration', ?)`)
+      .run(JSON.stringify(metrics), JSON.stringify(data), NOW);
+  }
 }

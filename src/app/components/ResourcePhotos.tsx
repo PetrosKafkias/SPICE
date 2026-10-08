@@ -4,6 +4,8 @@ import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
 import { apiRequest, jsonBody } from '../lib/api';
+import { usePilotContext } from '../lib/activePilot';
+import PilotSelector from './PilotSelector';
 
 interface ResourcePhoto {
   id: number;
@@ -62,6 +64,9 @@ export default function ResourcePhotos({ toolId }: { toolId: string }) {
   const [caption, setCaption] = useState('');
   const [busy, setBusy] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Facilitators assigned to several pilots choose which pilot a photo documents.
+  const { options: pilotOptions, activePilot, setActivePilot } = usePilotContext();
+  const uploadPilots = pilotOptions.filter((pilot) => pilot.initiativeId);
 
   const load = useCallback(async () => {
     try {
@@ -94,7 +99,7 @@ export default function ResourcePhotos({ toolId }: { toolId: string }) {
         toast.error(t('toolDetail.photos.tooLarge'));
         return;
       }
-      await apiRequest(`/api/resources/${toolId}/photos`, { method: 'POST', body: jsonBody({ imageData, caption }) });
+      await apiRequest(`/api/resources/${toolId}/photos`, { method: 'POST', body: jsonBody({ imageData, caption, initiativeId: activePilot?.initiativeId || undefined }) });
       toast.success(t(data.access.publishesDirectly ? 'toolDetail.photos.shared' : 'toolDetail.photos.sentForApproval'));
       setFile(null);
       setCaption('');
@@ -139,6 +144,7 @@ export default function ResourcePhotos({ toolId }: { toolId: string }) {
       <div className="grid gap-6 p-6">
         {data.access.canUpload && (
           <form onSubmit={upload} className="grid gap-3 border-2 border-dashed border-[#e4c9a4] bg-[#fffaf4] p-4">
+            <PilotSelector id="resource-photo-pilot" className="sm:max-w-xs" options={uploadPilots.map((pilot) => ({ value: pilot.slug, label: `${pilot.city} · ${pilot.title}` }))} value={activePilot?.slug || ''} onChange={setActivePilot} />
             <div className="grid gap-3 sm:grid-cols-[auto_1fr]">
               <label className="inline-flex min-h-11 min-w-0 cursor-pointer items-center justify-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] transition-colors hover:border-[#ca7428] hover:text-[#ca7428] focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#ca7428]">
                 <ImagePlus size={16} className="flex-none" aria-hidden="true" />

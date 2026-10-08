@@ -544,7 +544,12 @@ function canOperateInitiative(db, user, initiative) {
   return initiativeIsInScope(user, initiative) || isAssignedFacilitator(db, user, initiative.id);
 }
 
-function operableInitiativeFor(db, user) {
+// A facilitator may be assigned to several pilots, so callers can name the pilot they act on.
+function operableInitiativeFor(db, user, preferredInitiativeId = 0) {
+  if (preferredInitiativeId) {
+    const preferred = db.prepare('SELECT id, organisation_id FROM hub_initiatives WHERE id = ?').get(preferredInitiativeId);
+    return preferred && canOperateInitiative(db, user, preferred) ? preferred : null;
+  }
   const initiative = (user.organisation_id
     ? db.prepare('SELECT id, organisation_id FROM hub_initiatives WHERE organisation_id = ?').get(user.organisation_id)
     : null)
@@ -1870,22 +1875,36 @@ export async function createApiHandler(options = {}) {
         const message = String(body.message || '').trim();
         const rating = Number(body.rating);
         const source = body.source === 'account' ? 'account' : 'footer';
-        const sus = Array.isArray(body.sus) ? body.sus.map(Number) : [];
         const fieldErrors = {};
         if (!['general', 'technical', 'improvement'].includes(category)) fieldErrors.category = 'Select a feedback type.';
         if (!Number.isInteger(rating) || rating < 1 || rating > 5) fieldErrors.rating = 'Select an overall rating from 1 to 5.';
         if (message.length < 10) fieldErrors.message = 'Enter at least 10 characters so we can understand your feedback.';
         if (message.length > 2000) fieldErrors.message = 'Feedback must be 2,000 characters or fewer.';
-        if (source === 'account' && (sus.length !== 10 || sus.some((value) => !Number.isInteger(value) || value < 1 || value > 5))) fieldErrors.sus = 'Answer all 10 usability statements.';
         if (Object.keys(fieldErrors).length) {
           sendError(response, 400, 'Please correct the highlighted fields.', fieldErrors);
           return true;
         }
         const { user } = getSessionUser(db, request);
-        const susScore = sus.length === 10 ? sus.reduce((total, value, index) => total + (index % 2 === 0 ? value - 1 : 5 - value), 0) * 2.5 : null;
-        const result = db.prepare('INSERT INTO user_feedback (user_id, category, rating, message, source, created_at, sus_json, sus_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
-          .run(user?.id || null, category, rating, message, source, new Date().toISOString(), sus.length ? JSON.stringify(sus) : null, susScore);
+        const result = db.prepare('INSERT INTO user_feedback (user_id, category, rating, message, source, created_at) VALUES (?, ?, ?, ?, ?, ?)')
+          .run(user?.id || null, category, rating, message, source, new Date().toISOString());
         sendJson(response, 201, { id: Number(result.lastInsertRowid), message: 'Thank you. Your feedback has been submitted successfully.' });
+        return true;
+      }
+
+      if (method === 'POST' && pathname === '/api/feedback/sus') {
+        // Standard System Usability Scale: 10 statements rated 1-5, scored 0-100.
+        const session = requireUser(db, request, response);
+        if (!session) return true;
+        const body = await readJson(request);
+        const answers = Array.isArray(body.answers) ? body.answers.map(Number) : [];
+        if (answers.length !== 10 || answers.some((value) => !Number.isInteger(value) || value < 1 || value > 5)) {
+          sendError(response, 400, 'Answer all 10 usability statements.', { sus: 'Answer all 10 usability statements.' });
+          return true;
+        }
+        const score = answers.reduce((total, value, index) => total + (index % 2 === 0 ? value - 1 : 5 - value), 0) * 2.5;
+        const result = db.prepare('INSERT INTO sus_responses (user_id, answers_json, score, created_at) VALUES (?, ?, ?, ?)')
+          .run(session.user.id, JSON.stringify(answers), score, new Date().toISOString());
+        sendJson(response, 201, { id: Number(result.lastInsertRowid), score });
         return true;
       }
 
@@ -1969,9 +1988,9 @@ export async function createApiHandler(options = {}) {
       if (resourcePhotosMatch && method === 'POST') {
         const session = requirePermission(db, request, response, 'repository:upload');
         if (!session) return true;
-        const initiative = operableInitiativeFor(db, session.user);
-        if (!initiative) { sendError(response, 403, 'Only staff assigned to a pilot site can share photos.'); return true; }
         const body = await readJson(request);
+        const initiative = operableInitiativeFor(db, session.user, Number(body.initiativeId || 0));
+        if (!initiative) { sendError(response, 403, 'Only staff assigned to a pilot site can share photos.'); return true; }
         const imageData = String(body.imageData || '');
         const caption = String(body.caption || '').trim();
         const fieldErrors = {};
@@ -2750,12 +2769,14 @@ export async function createApiHandler(options = {}) {
       }
 
       if (method === 'GET' && pathname === '/api/citivoice') {
-        const metrics = db.prepare('SELECT * FROM citivoice_metrics ORDER BY rowid').all().map((row) => ({
-          key: row.metric_key, value: Number(row.metric_value), label: row.metric_label,
-          periodLabel: row.period_label, updatedAt: row.updated_at,
-        }));
-        const data = Object.fromEntries(db.prepare("SELECT data_key, payload_json FROM dashboard_data WHERE page = 'citivoice'").all().map((row) => [row.data_key, JSON.parse(row.payload_json)]));
-        sendJson(response, 200, { metrics, data });
+        // Aggregated campaign outputs per pilot site; pilots without a campaign return an empty dataset.
+        const pilot = String(url.searchParams.get('pilot') || 'thessaloniki').toLowerCase();
+        if (!/^[a-z0-9-]{2,60}$/.test(pilot)) { sendError(response, 400, 'Choose a valid pilot.'); return true; }
+        const row = db.prepare('SELECT * FROM citivoice_datasets WHERE pilot_slug = ?').get(pilot);
+        sendJson(response, 200, row ? {
+          pilot, available: true, areaName: row.area_name, source: row.source, updatedAt: row.updated_at,
+          metrics: parseJson(row.metrics_json, []), data: parseJson(row.data_json, {}),
+        } : { pilot, available: false, areaName: null, source: null, updatedAt: null, metrics: [], data: {} });
         return true;
       }
 

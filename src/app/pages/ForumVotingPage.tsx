@@ -8,6 +8,7 @@ import { FieldMessage, FormField, FormGrid } from '../components/FormLayout';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
 import { apiRequest, ApiError, jsonBody } from '../lib/api';
+import { readStoredPilot, storeActivePilot } from '../lib/activePilot';
 import { usePermissions } from '../auth/usePermissions';
 import LoadingState from '../components/LoadingState';
 import { normalizeRole, roleKey } from '../auth/permissions';
@@ -194,13 +195,25 @@ export default function ForumVotingPage() {
     setShowProposalForm(true);
   };
 
-  const switchPilot = (initiativeId: number) => {
+  const switchPilot = (initiativeId: number, replace = false) => {
+    const slug = context?.availablePilots.find((pilot) => pilot.id === initiativeId)?.pilotSlug;
+    if (slug) storeActivePilot(slug);
     const params = new URLSearchParams(location.search);
     params.set('initiative', String(initiativeId));
     params.delete('proposal');
     setExpandedId(null);
-    navigate(`${location.pathname}?${params.toString()}`);
+    navigate(`${location.pathname}?${params.toString()}`, { replace });
   };
+
+  // Without an explicit pilot in the link, open the pilot the user last worked on (e.g. a facilitator's active pilot).
+  useEffect(() => {
+    if (!context || new URLSearchParams(location.search).get('initiative')) return;
+    const stored = readStoredPilot();
+    const match = stored && stored !== context.pilotSlug ? context.availablePilots.find((pilot) => pilot.pilotSlug === stored) : null;
+    if (match) switchPilot(match.id, true);
+    // switchPilot is recreated each render; the effect only needs to react to a new context.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [context]);
 
   const submitProposal = async (event: React.FormEvent) => {
     event.preventDefault();

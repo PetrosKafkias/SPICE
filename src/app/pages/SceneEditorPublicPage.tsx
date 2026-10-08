@@ -1,5 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Box, Cloud, Download, Eye, Layers, Maximize2, Move, RotateCcw, Sun, ZoomIn, ZoomOut } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Box, Download, Eye, Layers, Maximize2, Move, RotateCcw, Sun, ZoomIn, ZoomOut } from 'lucide-react';
+import LoadingState from '../components/LoadingState';
+import PilotSelector from '../components/PilotSelector';
+import { usePilotContext } from '../lib/activePilot';
 import { toast } from 'sonner';
 import SpicePublicShell from '../components/SpicePublicShell';
 import { apiRequest, jsonBody } from '../lib/api';
@@ -15,14 +18,33 @@ const LAYERS = [
   { id: 'heatmap', labelKey: 'scene.layer.heatmap', active: false },
 ];
 
+// 3D scenes are prepared per pilot site; pilots without a scene show an explanation instead of the viewer.
+const PILOT_SCENES: Record<string, { image: string; area: string }> = {
+  thessaloniki: { image: sceneImg, area: 'Parko Kritis' },
+};
+
+interface StoredSceneState {
+  pilots?: Record<string, Record<string, unknown>>;
+  [key: string]: unknown;
+}
+
 const SCENARIOS = [
   { id: 'cycle', labelKey: 'scene.scenario.cycle', active: true },
   { id: 'garden', labelKey: 'scene.scenario.garden', active: false },
   { id: 'seating', labelKey: 'scene.scenario.seating', active: false },
 ];
 
-export default function SceneEditorPublicPage() {
+interface SceneViewerProps {
+  pilotSlug: string;
+  pilotCity: string;
+  area: string;
+  image: string;
+  selector: ReactNode;
+}
+
+function SceneViewer({ pilotSlug, pilotCity, area, image, selector }: SceneViewerProps) {
   const { t } = useI18n();
+  const remoteState = useRef<StoredSceneState>({});
   const [layers, setLayers] = useState(LAYERS);
   const [scenarios, setScenarios] = useState(SCENARIOS);
   const [timeOfDay, setTimeOfDay] = useState(50);
@@ -36,16 +58,18 @@ export default function SceneEditorPublicPage() {
   const sceneRef = useRef<HTMLDivElement>(null);
 
   const activeScenario = scenarios.find((scenario) => scenario.active);
-  const activeScenarioLabel = activeScenario ? t(activeScenario.labelKey as TranslationKey) : t('scene.scenario.none');
-  const activeLayerCount = layers.filter((layer) => layer.active).length;
   const sceneBrightness = useMemo(() => 0.78 + (timeOfDay / 100) * 0.34, [timeOfDay]);
   const sceneWarmth = Math.abs(timeOfDay - 50) / 140;
 
   useEffect(() => {
     let cancelled = false;
     void apiRequest<{ state: Record<string, unknown>; updatedAt: string | null }>('/api/scene-state')
-      .then(({ state }) => {
+      .then(({ state: stored }) => {
         if (cancelled) return;
+        // The saved view is kept per pilot; older single-scene views belong to the Thessaloniki scene.
+        remoteState.current = stored as StoredSceneState;
+        const perPilot = (stored as StoredSceneState).pilots;
+        const state = (perPilot ? perPilot[pilotSlug] : pilotSlug === 'thessaloniki' ? stored : undefined) || {};
         const storedLayers = state.layers && typeof state.layers === 'object' ? state.layers as Record<string, boolean> : {};
         setLayers((items) => items.map((item) => item.id in storedLayers ? { ...item, active: Boolean(storedLayers[item.id]) } : item));
         if (typeof state.scenarioId === 'string') {
@@ -68,7 +92,7 @@ export default function SceneEditorPublicPage() {
         }
       });
     return () => { cancelled = true; };
-  }, []);
+  }, [pilotSlug]);
 
   useEffect(() => {
     if (!remoteReady) return;
@@ -82,12 +106,14 @@ export default function SceneEditorPublicPage() {
         pan,
         firstPerson,
       };
-      void apiRequest('/api/scene-state', { method: 'PUT', body: jsonBody({ state }) })
+      const pilots = { ...(remoteState.current.pilots || {}), [pilotSlug]: state };
+      remoteState.current = { pilots };
+      void apiRequest('/api/scene-state', { method: 'PUT', body: jsonBody({ state: { pilots } }) })
         .then(() => setPersistenceStatus('saved'))
         .catch(() => setPersistenceStatus('error'));
     }, 500);
     return () => window.clearTimeout(timer);
-  }, [firstPerson, layers, pan, remoteReady, scenarios, timeOfDay, zoom]);
+  }, [firstPerson, layers, pan, pilotSlug, remoteReady, scenarios, timeOfDay, zoom]);
 
   const toggleLayer = (id: string) =>
     setLayers((prev) => prev.map((layer) => (layer.id === id ? { ...layer, active: !layer.active } : layer)));
@@ -105,8 +131,8 @@ export default function SceneEditorPublicPage() {
 
   const exportConfiguration = () => {
     const payload = {
-      pilot: 'Thessaloniki',
-      location: 'Parko Kritis',
+      pilot: pilotCity,
+      location: area,
       activeScenario: activeScenario?.id || null,
       zoom,
       timeOfDay,
@@ -122,24 +148,6 @@ export default function SceneEditorPublicPage() {
     anchor.click();
     URL.revokeObjectURL(url);
     toast.success(t('scene.downloadedConfiguration'));
-  };
-
-  const exportImage = () => {
-    const anchor = document.createElement('a');
-    anchor.href = sceneImg;
-    anchor.download = 'spice-parko-kritis-scene.png';
-    anchor.click();
-    toast.success(t('scene.downloadedImage'));
-  };
-
-  const shareScene = async () => {
-    const url = `${window.location.origin}${window.location.pathname}?scenario=${encodeURIComponent(activeScenario?.id || '')}&zoom=${zoom}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      toast.success(t('scene.linkCopied'));
-    } catch {
-      toast.error(t('scene.clipboardError'));
-    }
   };
 
   const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -171,7 +179,7 @@ export default function SceneEditorPublicPage() {
           onPointerCancel={stopDragging}
         >
           <img
-            src={sceneImg}
+            src={image}
             alt={t('scene.imageAlt')}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-300"
             style={{
@@ -188,9 +196,13 @@ export default function SceneEditorPublicPage() {
 
           <div className="absolute top-5 left-5 w-[200px] sm:w-[220px] flex flex-col gap-3">
             <div className="bg-white bg-opacity-95 p-4 shadow-lg">
-              <p className="text-[11px] font-semibold text-[#888] uppercase tracking-wide mb-1">{t('scene.activePilot')}</p>
-              <p className="text-[14px] font-bold text-[#444]">Thessaloniki</p>
-              <p className="text-[12px] text-[#888]">Parko Kritis</p>
+              {selector || (
+                <>
+                  <p className="text-[11px] font-semibold text-[#888] uppercase tracking-wide mb-1">{t('scene.activePilot')}</p>
+                  <p className="text-[14px] font-bold text-[#444]">{pilotCity}</p>
+                </>
+              )}
+              <p className="text-[12px] text-[#888]">{area}</p>
               <p className={`mt-2 text-[10px] font-bold uppercase tracking-wide ${persistenceStatus === 'error' ? 'text-red-700' : 'text-[#637948]'}`} role="status">
                 {persistenceStatus === 'loading' ? t('scene.loading') : persistenceStatus === 'saving' ? t('scene.saving') : persistenceStatus === 'error' ? t('scene.saveFailed') : t('scene.saved')}
               </p>
@@ -271,61 +283,34 @@ export default function SceneEditorPublicPage() {
           </div>
         </div>
 
-        <div className="spice-page spice-wide-page grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div className="bg-white border-2 border-[#bfc0c5] p-5 shadow-sm">
-            <div className="flex items-center gap-2 mb-3">
-              <Box size={18} className="text-[#ca7428]" />
-              <p className="text-[15px] font-bold text-[#444]">{t('scene.details')}</p>
-            </div>
-            <div className="flex flex-col gap-2 text-[13px]">
-              <div className="flex justify-between gap-3"><span className="text-[#888]">{t('scene.pilot')}</span><span className="font-semibold text-[#444]">Thessaloniki</span></div>
-              <div className="flex justify-between gap-3"><span className="text-[#888]">{t('scene.location')}</span><span className="font-semibold text-[#444]">Parko Kritis</span></div>
-              <div className="flex justify-between gap-3"><span className="text-[#888]">{t('scene.phase')}</span><span className="font-semibold text-[#444]">{t('scene.phaseValue')}</span></div>
-              <div className="flex justify-between gap-3"><span className="text-[#888]">{t('scene.activeScenario')}</span><span className="font-semibold text-[#ca7428] text-right">{activeScenarioLabel}</span></div>
-            </div>
-          </div>
-
-          <div className="bg-white border-2 border-[#bfc0c5] p-5 shadow-sm">
-            <div className="flex items-center gap-2 mb-3">
-              <Cloud size={18} className="text-[#ca7428]" />
-              <p className="text-[15px] font-bold text-[#444]">{t('scene.environment')}</p>
-            </div>
-            <div className="flex flex-col gap-3">
-              <div>
-                <p className="text-[12px] text-[#888] mb-1">{t('scene.timeOfDay')}</p>
-                <input type="range" min={0} max={100} value={timeOfDay} onChange={(event) => setTimeOfDay(Number(event.target.value))} className="w-full accent-[#f68b2c]" />
-              </div>
-              <div>
-                <p className="text-[12px] text-[#888] mb-1">{t('scene.visibleLayers')}</p>
-                <p className="text-[15px] font-semibold text-[#444]">{t('scene.layerCount', { active: activeLayerCount, total: layers.length })}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white border-2 border-[#bfc0c5] p-5 shadow-sm">
-            <div className="flex items-center gap-2 mb-3">
-              <Download size={18} className="text-[#ca7428]" />
-              <p className="text-[15px] font-bold text-[#444]">{t('scene.exportOptions')}</p>
-            </div>
-            <div className="flex flex-col gap-2">
-              {[
-                { labelKey: 'scene.exportConfiguration', action: exportConfiguration },
-                { labelKey: 'scene.downloadImage', action: exportImage },
-                { labelKey: 'scene.copyLink', action: shareScene },
-              ].map((option) => (
-                <button
-                  type="button"
-                  key={option.labelKey}
-                  onClick={option.action}
-                  className="w-full cursor-pointer py-2.5 border border-gray-200 text-[13px] font-medium text-[#444] hover:bg-[#fdf4ea] hover:border-[#ca7428] transition-colors"
-                >
-                  {t(option.labelKey as TranslationKey)}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
     </SpicePublicShell>
   );
+}
+
+export default function SceneEditorPublicPage() {
+  const { t } = useI18n();
+  const { options, activePilot, setActivePilot, loading } = usePilotContext();
+  const slug = activePilot?.slug || 'thessaloniki';
+  const scene = PILOT_SCENES[slug];
+  const selector = options.length > 1 ? (
+    <PilotSelector id="scene-pilot" options={options.map((pilot) => ({ value: pilot.slug, label: pilot.city }))} value={slug} onChange={setActivePilot} />
+  ) : null;
+
+  if (loading) return <SpicePublicShell variant="public"><LoadingState message={t('scene.loading')} minHeight="520px" /></SpicePublicShell>;
+  if (!scene) {
+    return (
+      <SpicePublicShell variant="public">
+        <div className="spice-page spice-wide-page flex flex-col gap-6">
+          {selector && <div className="max-w-sm">{selector}</div>}
+          <section className="spice-card-dashed p-8 text-center" aria-live="polite">
+            <Box size={28} className="mx-auto text-[#ca7428]" aria-hidden="true" />
+            <h1 className="mt-3 text-[20px] font-bold text-[#444]">{t('scene.noScene', { pilot: activePilot?.city || '' })}</h1>
+            <p className="mx-auto mt-2 max-w-xl text-[14px] text-[#666]">{t('scene.noSceneText')}</p>
+          </section>
+        </div>
+      </SpicePublicShell>
+    );
+  }
+  return <SceneViewer key={slug} pilotSlug={slug} pilotCity={activePilot?.city || 'Thessaloniki'} area={scene.area} image={scene.image} selector={selector} />;
 }

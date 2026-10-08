@@ -82,6 +82,19 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     });
     assert.equal(submitted.status, 201);
     assert.ok(submitted.payload.id);
+
+    // Account feedback no longer depends on the usability questionnaire, which is submitted on its own.
+    const accountFeedback = await request(baseUrl, '/api/feedback', {
+      method: 'POST', body: { category: 'general', rating: 5, message: 'The objective workspace is clear.', source: 'account' },
+    });
+    assert.equal(accountFeedback.status, 201);
+    assert.equal((await request(baseUrl, '/api/feedback/sus', { method: 'POST', body: { answers: [5, 1, 5, 1, 5, 1, 5, 1, 5, 1] } })).status, 401);
+    const citizen = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'citizen' } });
+    const incomplete = await request(baseUrl, '/api/feedback/sus', { method: 'POST', cookie: citizen.cookie, body: { answers: [5, 1, 5] } });
+    assert.equal(incomplete.status, 400);
+    const sus = await request(baseUrl, '/api/feedback/sus', { method: 'POST', cookie: citizen.cookie, body: { answers: [5, 1, 5, 1, 5, 1, 5, 1, 5, 1] } });
+    assert.equal(sus.status, 201);
+    assert.equal(sus.payload.score, 100);
   });
 
   await t.test('state-changing requests accept the loopback development proxy and reject foreign origins', async () => {
@@ -895,6 +908,28 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
       if (original.flag === undefined) delete process.env.VITE_ENABLE_DEMO_LOGIN; else process.env.VITE_ENABLE_DEMO_LOGIN = original.flag;
       if (original.vercel === undefined) delete process.env.VERCEL; else process.env.VERCEL = original.vercel;
     }
+  });
+
+  await t.test('CitiVoice data and resource photos follow the selected pilot', async () => {
+    const thessaloniki = await request(baseUrl, '/api/citivoice?pilot=thessaloniki');
+    assert.equal(thessaloniki.status, 200);
+    assert.equal(thessaloniki.payload.available, true);
+    assert.equal(thessaloniki.payload.areaName, 'Parko Kritis');
+    assert.equal(thessaloniki.payload.metrics.length, 5);
+    const rovaniemi = await request(baseUrl, '/api/citivoice?pilot=rovaniemi');
+    assert.equal(rovaniemi.payload.available, false);
+    assert.deepEqual(rovaniemi.payload.metrics, []);
+    assert.equal((await request(baseUrl, '/api/citivoice?pilot=..%2Fsecret')).status, 400);
+
+    const pixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    const facilitator = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'facilitator' } });
+    const assigned = await request(baseUrl, '/api/hub/facilitator-assignments', { cookie: facilitator.cookie });
+    const initiativeId = assigned.payload.initiatives[0].id;
+    const photosPath = '/api/resources/scenario-building/photos';
+    const toAssignedPilot = await request(baseUrl, photosPath, { method: 'POST', cookie: facilitator.cookie, body: { imageData: pixel, initiativeId } });
+    assert.equal(toAssignedPilot.status, 201);
+    const toOtherPilot = await request(baseUrl, photosPath, { method: 'POST', cookie: facilitator.cookie, body: { imageData: pixel, initiativeId: 999999 } });
+    assert.equal(toOtherPilot.status, 403);
   });
 
   await t.test('sign-out invalidates the server session', async () => {

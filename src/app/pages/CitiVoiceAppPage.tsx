@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useState, type ElementType } from 'react';
-import { AlertTriangle, ArrowRight, ChevronDown, Download, Image, MapPin, MessageCircle, Tag, Users } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState, type ElementType } from 'react';
+import { AlertTriangle, ArrowRight, Image, MapPin, MessageCircle, Tag, Users } from 'lucide-react';
 import { Area, AreaChart, Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useNavigate } from 'react-router';
-import { toast } from 'sonner';
 import SpicePublicShell from '../components/SpicePublicShell';
 import StandardPageHeader from '../components/StandardPageHeader';
 import { useI18n } from '../context/I18nContext';
 import type { TranslationKey } from '../i18n/translations';
 import { apiRequest } from '../lib/api';
 import LoadingState from '../components/LoadingState';
+import PilotSelector from '../components/PilotSelector';
+import { usePilotContext } from '../lib/activePilot';
 import mapImage from '../../imports/Homepage/087caaf231c4809ec526b07765a4cd03a2735839.png';
 
 interface Metric {
@@ -39,8 +40,11 @@ interface DashboardData {
 }
 
 interface CitiVoiceResponse {
+  pilot: string;
+  available: boolean;
+  areaName: string | null;
   metrics: Metric[];
-  data: DashboardData;
+  data: Partial<DashboardData>;
 }
 
 type MapTab = 'heatmap' | 'points' | 'clusters';
@@ -99,26 +103,6 @@ function translatedValue(value: string, mapping: Record<string, TranslationKey>,
   return key ? t(key) : value;
 }
 
-function downloadCsv(metrics: Metric[], data: DashboardData, t: Translate) {
-  const lines = [
-    [t('citivoice.csvMetric'), t('citivoice.csvValue'), t('citivoice.csvPeriod')],
-    ...metrics.map((metric) => [t(METRIC_CONFIG[metric.key]?.labelKey || 'citivoice.contributions'), metric.value, t(`citivoice.period.${metric.key}` as TranslationKey)]),
-    [],
-    [t('citivoice.csvTopLocation'), t('citivoice.contributions'), t('citivoice.csvDescription')],
-    ...data.locations.map((location) => [translatedValue(location.name, LOCATION_KEYS, t), location.count, translatedValue(location.description, LOCATION_DESCRIPTION_KEYS, t)]),
-    [],
-    [t('citivoice.csvSupportedIdea'), t('citivoice.votes')],
-    ...data.ideas.map((idea) => [translatedValue(idea.name, IDEA_KEYS, t), idea.votes]),
-  ];
-  const csv = lines.map((line) => line.map((value) => `"${String(value ?? '').replaceAll('"', '""')}"`).join(',')).join('\n');
-  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = `citivoice-summary-${new Date().toISOString().slice(0, 10)}.csv`;
-  anchor.click();
-  URL.revokeObjectURL(url);
-}
-
 export default function CitiVoiceAppPage() {
   const navigate = useNavigate();
   const { t, formatNumber } = useI18n();
@@ -127,37 +111,43 @@ export default function CitiVoiceAppPage() {
   const [data, setData] = useState<DashboardData>(EMPTY_DATA);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [useCaseId, setUseCaseId] = useState<string>('all');
+  const [available, setAvailable] = useState(true);
+  const [areaName, setAreaName] = useState('');
+  const { options: pilotOptions, activePilot, setActivePilot, loading: pilotsLoading } = usePilotContext({ allPilots: true });
+  const pilotSlug = activePilot?.slug || '';
 
   const selectedLocation = useMemo(
     () => (useCaseId === 'all' ? null : data.locations.find((location) => location.id === useCaseId) || null),
     [data.locations, useCaseId],
   );
 
-  const load = async () => {
+  // CitiVoice outputs are pilot-specific: load the dataset of the selected pilot.
+  const load = useCallback(async () => {
     setStatus('loading');
     try {
-      const result = await apiRequest<CitiVoiceResponse>('/api/citivoice');
+      const query = pilotSlug ? `?pilot=${encodeURIComponent(pilotSlug)}` : '';
+      const result = await apiRequest<CitiVoiceResponse>(`/api/citivoice${query}`);
       setMetrics(result.metrics);
-      setData(result.data);
+      setData({ ...EMPTY_DATA, ...result.data });
+      setAvailable(result.available);
+      setAreaName(result.areaName || '');
+      setUseCaseId('all');
       setStatus('ready');
     } catch {
       setStatus('error');
     }
-  };
+  }, [pilotSlug]);
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    if (!pilotsLoading) void load();
+  }, [load, pilotsLoading]);
 
   const localizedEngagement = data.engagement.map((item, index) => ({
     ...item,
     localizedWeek: t('citivoice.week', { number: index + 1 }),
   }));
 
-  const handleDownload = () => {
-    downloadCsv(metrics, data, t);
-    toast.success(t('citivoice.downloaded'));
-  };
-
-  if (status === 'loading') {
+  if (status === 'loading' || pilotsLoading) {
     return <SpicePublicShell><LoadingState message={t('common.loading')} minHeight="500px" /></SpicePublicShell>;
   }
 
@@ -177,29 +167,31 @@ export default function CitiVoiceAppPage() {
         description={t('citivoice.subtitle')}
         actions={(
           <>
-            <button type="button" onClick={handleDownload} className="flex min-h-11 cursor-pointer items-center justify-center gap-2 border-2 border-[#444] bg-white px-5 py-3 text-[14px] font-semibold text-[#444] transition-colors hover:border-[#ca7428] hover:text-[#ca7428] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ca7428]"><Download size={17} />{t('citivoice.downloadSummary')}</button>
             <button type="button" onClick={() => navigate('/app/citivoice')} className="flex min-h-11 cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#e07a20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#444]">{t('citivoice.openWorkspace')}<ArrowRight size={17} /></button>
           </>
         )}
       />
       <div className="spice-page spice-wide-page flex flex-col gap-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-        <div className="flex flex-col gap-2 border-2 border-[#bfc0c5] bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-          <label htmlFor="citivoice-use-case" className="text-[13px] font-bold text-[#444]">{t('citivoice.useCase')}</label>
-          <div className="relative sm:w-[320px]">
-            <select
-              id="citivoice-use-case"
-              value={useCaseId}
-              onChange={(event) => setUseCaseId(event.target.value)}
-              className="w-full appearance-none border-2 border-[#bfc0c5] bg-white px-3 py-2.5 pr-9 text-[13px] font-semibold text-[#444] outline-none transition-colors hover:border-[#ca7428]"
-            >
-              <option value="all">{t('citivoice.useCaseAll')}</option>
-              {data.locations.map((location) => (
-                <option key={location.id || location.name} value={location.id || location.name}>{translatedValue(location.name, LOCATION_KEYS, t)}</option>
-              ))}
-            </select>
-            <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#888]" />
+        <div className="flex flex-col gap-4 border-2 border-[#bfc0c5] bg-white p-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="sm:w-[320px]">
+            {pilotOptions.length > 1 ? (
+              <PilotSelector id="citivoice-pilot" options={pilotOptions.map((pilot) => ({ value: pilot.slug, label: `${pilot.city} · ${pilot.title}` }))} value={pilotSlug} onChange={setActivePilot} />
+            ) : activePilot ? (
+              <div>
+                <p className="text-[12px] font-bold uppercase tracking-wide text-[#a85f20]">{t('pilotContext.label')}</p>
+                <p className="mt-1 text-[15px] font-bold text-[#444]">{activePilot.city} · {activePilot.title}</p>
+              </div>
+            ) : null}
           </div>
         </div>
+
+        {!available ? (
+          <section className="spice-card-dashed p-8 text-center" aria-live="polite">
+            <MapPin size={28} className="mx-auto text-[#ca7428]" aria-hidden="true" />
+            <h2 className="mt-3 text-[18px] font-bold text-[#444]">{t('citivoice.noData')}</h2>
+            <p className="mx-auto mt-2 max-w-xl text-[14px] text-[#666]">{t('citivoice.noDataText')}</p>
+          </section>
+        ) : (<>
 
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {metrics.map((metric) => {
@@ -212,7 +204,7 @@ export default function CitiVoiceAppPage() {
         <section className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_340px]">
           <article className="overflow-hidden border-2 border-[#bfc0c5] bg-white shadow-sm">
             <div className="border-b border-gray-100 p-5">
-              <h2 className="flex items-center gap-2 text-[17px] font-bold text-[#444]"><MapPin size={18} className="text-[#ca7428]" />{t('citivoice.feedbackMap')}</h2>
+              <h2 className="flex items-center gap-2 text-[17px] font-bold text-[#444]"><MapPin size={18} className="text-[#ca7428]" />{t('citivoice.feedbackMap', { area: areaName })}</h2>
               {selectedLocation && <p className="mt-1 text-[13px] font-semibold text-[#a85f20]">{t('citivoice.centeredOn', { location: translatedValue(selectedLocation.name, LOCATION_KEYS, t) })}</p>}
             </div>
             <div className="flex gap-2 overflow-x-auto border-b border-gray-100 px-5 py-3">
@@ -223,7 +215,7 @@ export default function CitiVoiceAppPage() {
                 className="absolute inset-0 transition-transform duration-500 ease-out"
                 style={selectedLocation ? { transform: 'scale(1.8)', transformOrigin: `${selectedLocation.x ?? 50}% ${selectedLocation.y ?? 50}%` } : undefined}
               >
-                <img src={mapImage} alt={t('citivoice.mapAlt')} className="absolute inset-0 h-full w-full object-cover opacity-75" />
+                <img src={mapImage} alt={t('citivoice.mapAlt', { area: areaName })} className="absolute inset-0 h-full w-full object-cover opacity-75" />
                 {mapTab === 'heatmap' && <><span className="absolute left-[20%] top-[34%] h-24 w-32 rounded-full bg-red-500/40 blur-xl" /><span className="absolute left-[50%] top-[46%] h-28 w-36 rounded-full bg-[#f68b2c]/45 blur-xl" /><span className="absolute right-[14%] top-[22%] h-20 w-28 rounded-full bg-yellow-400/35 blur-xl" /></>}
                 {mapTab === 'points' && [[22, 38], [38, 62], [51, 48], [65, 28], [78, 57], [84, 34]].map(([left, top], index) => <span key={index} className="absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-[#f68b2c] shadow" style={{ left: `${left}%`, top: `${top}%` }} />)}
                 {mapTab === 'clusters' && [{ left: 28, top: 43, count: 134 }, { left: 56, top: 55, count: 412 }, { left: 80, top: 32, count: 166 }].map((cluster) => <span key={cluster.count} className="absolute grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-white bg-[#ca7428]/90 text-[12px] font-bold text-white shadow" style={{ left: `${cluster.left}%`, top: `${cluster.top}%` }}>{cluster.count}</span>)}
@@ -277,6 +269,7 @@ export default function CitiVoiceAppPage() {
           <article className="border-2 border-[#bfc0c5] bg-white p-5 shadow-sm"><h3 className="mb-4 text-[15px] font-bold text-[#444]">{t('citivoice.concerns')}</h3><ResponsiveContainer width="100%" height={220}><BarChart data={data.categories.map((item) => ({ ...item, localizedName: translatedValue(item.name, CATEGORY_KEYS, t) }))} layout="vertical"><XAxis type="number" tick={{ fontSize: 10, fill: '#888' }} axisLine={false} tickLine={false} /><YAxis type="category" dataKey="localizedName" tick={{ fontSize: 10, fill: '#444' }} width={120} axisLine={false} tickLine={false} /><Tooltip contentStyle={{ fontSize: 12 }} /><Bar dataKey="value" fill="#2e6e45" /></BarChart></ResponsiveContainer></article>
           <article className="border-2 border-[#bfc0c5] bg-white p-5 shadow-sm"><h3 className="mb-4 text-[15px] font-bold text-[#444]">{t('citivoice.ideas')}</h3><div className="flex flex-col gap-4">{data.ideas.map((idea) => <div key={idea.name}><div className="flex items-center justify-between gap-3"><p className="text-[12px] font-medium text-[#444]">{translatedValue(idea.name, IDEA_KEYS, t)}</p><span className="text-[12px] font-bold text-[#444]">{formatNumber(idea.votes)}</span></div><div className="mt-1 h-2 w-full bg-gray-100"><div className="h-2" style={{ width: `${(idea.votes / maxIdea) * 100}%`, backgroundColor: idea.support ? '#2e6e45' : '#c0392b' }} /></div></div>)}</div></article>
         </section>
+        </>)}
       </div>
     </SpicePublicShell>
   );

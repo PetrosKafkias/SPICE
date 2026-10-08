@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import SpicePublicShell from '../components/SpicePublicShell';
-import FeedbackForm from '../components/FeedbackForm';
+import FeedbackForm, { SusForm } from '../components/FeedbackForm';
 import { FieldMessage, FormField, FormGrid } from '../components/FormLayout';
 import { useAuth, type AuthUser } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
@@ -77,7 +77,6 @@ function Sidebar({ tab }: { tab: AccountTab }) {
   const items: Array<{ id: AccountTab; labelKey: TranslationKey; path: string; icon: ElementType }> = [
     { id: 'details', labelKey: 'account.details', path: '/account', icon: User },
     { id: 'notifications', labelKey: 'notifications.title', path: '/account/notifications', icon: Bell },
-    { id: 'privacy', labelKey: 'account.privacy', path: '/account/privacy', icon: Eye },
     { id: 'rate', labelKey: 'feedback.accountTitle', path: '/account/rate-us', icon: Star },
   ];
 
@@ -445,7 +444,7 @@ function PrivacyTab({ user }: { user: AuthUser }) {
 
 function RateUsTab() {
   const { t } = useI18n();
-  return <section className="spice-card p-6 md:p-8" aria-labelledby="account-feedback-title"><div className="mb-7 flex items-start gap-4"><span className="grid h-12 w-12 flex-none place-items-center rounded-full bg-[#fff0e2] text-[#ca7428]"><Star size={24} aria-hidden="true" /></span><div><h1 id="account-feedback-title" className="text-[30px] font-semibold text-[#444] md:text-[34px]">{t('feedback.accountTitle')}</h1><p className="mt-2 max-w-[760px] text-[15px] leading-relaxed text-[#555]">{t('feedback.accountText')}</p></div></div><FeedbackForm source="account" includeSus /></section>;
+  return <div className="grid gap-6"><section className="spice-card p-6 md:p-8" aria-labelledby="account-feedback-title"><div className="mb-7 flex items-start gap-4"><span className="grid h-12 w-12 flex-none place-items-center rounded-full bg-[#fff0e2] text-[#ca7428]"><Star size={24} aria-hidden="true" /></span><div><h1 id="account-feedback-title" className="text-[30px] font-semibold text-[#444] md:text-[34px]">{t('feedback.accountTitle')}</h1><p className="mt-2 max-w-[760px] text-[15px] leading-relaxed text-[#555]">{t('feedback.accountText')}</p></div></div><FeedbackForm source="account" /></section><section className="spice-card p-6 md:p-8" aria-labelledby="account-sus-title"><div className="mb-6"><h2 id="account-sus-title" className="text-[24px] font-semibold text-[#444]">{t('feedback.susTitle')}</h2><p className="mt-2 max-w-[760px] text-[15px] leading-relaxed text-[#555]">{t('feedback.susText')}</p></div><SusForm /></section></div>;
 }
 
 export default function AccountPage() {
