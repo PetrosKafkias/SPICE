@@ -4,7 +4,7 @@ import {
   Activity, ArrowRight, BookOpenText, Building2, CalendarDays, CheckCircle2,
   Circle, CircleAlert, CircleDot, Clock, FilePlus2, FileText, GitCompareArrows,
   Layers3, ListChecks, LockKeyhole, MapPin, MapPinned, MessageSquareText,
-  PencilLine, Plus, Users, Vote, Wrench,
+  PencilLine, Plus, UserMinus, Users, Vote, Wrench,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePermissions } from '../auth/usePermissions';
@@ -1151,41 +1151,56 @@ export default function RoleHubDashboard() {
                 {detail && (detail.lifecycleStatus === 'active' || detail.lifecycleStatus === 'completed') && <>
                 {renderRoadmap()}
                 {detail && (
-                  <section aria-labelledby="facilitator-assignment-title" className="spice-card p-6">
-                    <div className="flex items-start gap-3">
-                      <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-[#fff0e1] text-[#ca7428]"><Users size={18} /></span>
-                      <div className="min-w-0 flex-1">
-                        <h3 id="facilitator-assignment-title" className="text-[18px] font-bold text-[#444]">{t('hub.assignedFacilitatorsTitle')}</h3>
-                        {detail.facilitators.length === 0 ? (
-                          <p className="mt-1 text-[14px] text-[#666]">{t('hub.noFacilitatorAssigned')}</p>
-                        ) : (
-                          <ul className="mt-3 grid max-w-xl gap-2">
-                            {detail.facilitators.map((facilitator) => (
-                              <li key={facilitator.id} className="flex items-center gap-3 border-2 border-[#e4e4e4] bg-white p-3">
-                                <span className="grid h-10 w-10 flex-none place-items-center overflow-hidden rounded-full border border-[#bfc0c5] bg-[#f3f3f4] text-[#666]" aria-hidden="true">
-                                  {facilitator.avatarData ? <img src={facilitator.avatarData} alt="" className="h-full w-full object-cover" /> : <Users size={18} />}
-                                </span>
-                                <span className="min-w-0 flex-1">
-                                  <span className="block truncate text-[14px] font-bold text-[#444]">{facilitator.fullName}</span>
-                                  <span className="block truncate text-[12px] text-[#777]">{facilitator.email}</span>
-                                </span>
-                                <button type="button" onClick={() => void unassignFacilitator(facilitator.id)} disabled={savingFacilitator} aria-label={t('hub.unassignFacilitatorNamed', { name: facilitator.fullName })} className="min-h-10 flex-none cursor-pointer border-2 border-[#a86622] px-3 text-[12px] font-bold text-[#a86622] hover:bg-[#fff3e8] disabled:cursor-wait disabled:opacity-60">
-                                  {t('hub.unassignFacilitator')}
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                        <form onSubmit={assignFacilitator} className="mt-4 flex max-w-xl flex-col gap-2 sm:flex-row">
-                          <label htmlFor="facilitator-email" className="sr-only">{t('hub.facilitatorEmailLabel')}</label>
-                          <input id="facilitator-email" type="email" required value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} placeholder="facilitator@example.org" className="min-h-11 min-w-0 flex-1 border-2 border-[#bfc0c5] px-3 text-[14px] focus:border-[#ca7428] focus:outline-none" />
-                          <button type="submit" disabled={savingFacilitator || !facilitatorEmail.trim()} className="inline-flex min-h-11 flex-none cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] px-4 text-[13px] font-bold text-white hover:bg-[#e07a20] disabled:cursor-wait disabled:opacity-60">
-                            <Plus size={15} aria-hidden="true" />{savingFacilitator ? t('hub.assigningFacilitator') : t('hub.assignFacilitator')}
-                          </button>
-                        </form>
-                        <p className="mt-2 max-w-xl text-[12px] leading-relaxed text-[#777]">{t('hub.facilitatorsShareBrief')}</p>
+                  <section aria-labelledby="facilitator-assignment-title" className="spice-card p-6 md:p-8">
+                    <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                      <div className="flex items-start gap-3">
+                        <span className="grid h-11 w-11 flex-none place-items-center rounded-full bg-[#fff0e1] text-[#ca7428]"><Users size={20} aria-hidden="true" /></span>
+                        <div>
+                          <h3 id="facilitator-assignment-title" className="flex flex-wrap items-center gap-2 text-[20px] font-bold text-[#444]">
+                            {t('hub.assignedFacilitatorsTitle')}
+                            <span className="rounded-full bg-[#fff0e1] px-2.5 py-0.5 text-[12px] font-bold text-[#a85f20]">{detail.facilitators.length}</span>
+                          </h3>
+                          <p className="mt-1 max-w-xl text-[13px] leading-relaxed text-[#666]">{t('hub.facilitatorsShareBrief')}</p>
+                        </div>
                       </div>
+                      <form onSubmit={assignFacilitator} className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto">
+                        <label htmlFor="facilitator-email" className="sr-only">{t('hub.facilitatorEmailLabel')}</label>
+                        <input id="facilitator-email" type="email" required value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} placeholder="facilitator@example.org" className="min-h-11 min-w-0 flex-1 border-2 border-[#bfc0c5] px-3 text-[14px] focus:border-[#ca7428] focus:outline-none lg:w-72" />
+                        <button type="submit" disabled={savingFacilitator || !facilitatorEmail.trim()} className="inline-flex min-h-11 flex-none cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] px-4 text-[13px] font-bold text-white hover:bg-[#e07a20] disabled:cursor-not-allowed disabled:opacity-60">
+                          <Plus size={15} aria-hidden="true" />{savingFacilitator ? t('hub.assigningFacilitator') : t('hub.assignFacilitator')}
+                        </button>
+                      </form>
                     </div>
+                    {detail.facilitators.length === 0 ? (
+                      <p className="mt-6 spice-card-dashed p-5 text-[14px] text-[#666]">{t('hub.noFacilitatorAssigned')}</p>
+                    ) : (
+                      <ul className="mt-6 grid gap-3 border-t-2 border-[#eee] pt-6 sm:grid-cols-2 xl:grid-cols-3">
+                        {detail.facilitators.map((facilitator) => {
+                          const initials = facilitator.fullName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join('');
+                          return (
+                            <li key={facilitator.id} className="group flex items-center gap-3 border border-[#e2e2e5] bg-[#fafafa] p-3 transition-colors hover:border-[#f0c49a] hover:bg-white">
+                              <span className="grid h-11 w-11 flex-none place-items-center overflow-hidden rounded-full bg-[#fde3c9] text-[14px] font-bold text-[#a85f20]" aria-hidden="true">
+                                {facilitator.avatarData ? <img src={facilitator.avatarData} alt="" className="h-full w-full object-cover" /> : initials}
+                              </span>
+                              <span className="min-w-0 flex-1">
+                                <span className="block truncate text-[14px] font-bold text-[#444]">{facilitator.fullName}</span>
+                                <span className="block truncate text-[12px] text-[#777]" title={facilitator.email}>{facilitator.email}</span>
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => void unassignFacilitator(facilitator.id)}
+                                disabled={savingFacilitator}
+                                title={t('hub.unassignFacilitator')}
+                                aria-label={t('hub.unassignFacilitatorNamed', { name: facilitator.fullName })}
+                                className="grid h-9 w-9 flex-none cursor-pointer place-items-center text-[#999] transition-colors hover:bg-[#fff0e1] hover:text-[#a85f20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ca7428] disabled:cursor-wait disabled:opacity-50"
+                              >
+                                <UserMinus size={17} aria-hidden="true" />
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
                   </section>
                 )}
                 </>}

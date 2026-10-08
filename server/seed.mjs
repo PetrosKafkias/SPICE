@@ -143,6 +143,24 @@ export async function seedDatabase(db) {
     `).run(initiativeId, citizenDemoId, NOW);
 
     const demoFixture = process.env.SPICE_DEMO_FIXTURE || 'baseline';
+    // Demonstration pilots run with a facilitation team rather than a single facilitator.
+    if (demoFixture === 'participation' || demoFixture === 'completed-phase-showcase') {
+      const team = [
+        ['maria.georgiou@spice.local', 'Maria Georgiou'],
+        ['nikos.dimitriou@spice.local', 'Nikos Dimitriou'],
+        ['eleni.papadaki@spice.local', 'Eleni Papadaki'],
+        ['kostas.ioannou@spice.local', 'Kostas Ioannou'],
+        ['sofia.alexiou@spice.local', 'Sofia Alexiou'],
+        ['giorgos.nikolaou@spice.local', 'Giorgos Nikolaou'],
+      ];
+      for (const [email, fullName] of team) {
+        const memberId = ensureDemoUser(email, fullName, 'Facilitator', 'Thessaloniki');
+        db.prepare(`
+          INSERT INTO hub_participants (initiative_id, user_id, invited_at, assignment_role) VALUES (?, ?, ?, 'facilitator')
+          ON CONFLICT(initiative_id, user_id) DO UPDATE SET assignment_role = 'facilitator'
+        `).run(initiativeId, memberId, NOW);
+      }
+    }
     if (demoFixture === 'initial') {
       db.prepare(`
         UPDATE hub_initiatives SET status = 'draft', lifecycle_status = 'setup_required',
