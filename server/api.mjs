@@ -15,7 +15,6 @@ import {
   activityTransitionsFor,
   activityTransitionLabel,
   allowedObjectiveTransitions,
-  phaseReadiness,
   proposalTransitionsFor,
   publicActivityStatus,
   workflowSummary,
@@ -160,7 +159,7 @@ function getSessionUser(db, request) {
 function requireUser(db, request, response) {
   const session = getSessionUser(db, request);
   if (!session.user) {
-    sendError(response, 401, 'Please sign in to continue.');
+    sendError(response, 401, 'Please log in to continue.');
     return null;
   }
   return session;
@@ -939,7 +938,7 @@ export async function createApiHandler(options = {}) {
           db.exec('ROLLBACK');
           throw error;
         }
-        sendJson(response, 200, { message: 'Email verified successfully. You can now sign in.' });
+        sendJson(response, 200, { message: 'Email verified successfully. You can now log in.' });
         return true;
       }
 
@@ -950,7 +949,7 @@ export async function createApiHandler(options = {}) {
         const attemptKey = `${request.socket.remoteAddress || 'local'}:${email}`;
         const attempt = signInAttempts.get(attemptKey);
         if (attempt && attempt.count >= 10 && attempt.resetAt > Date.now()) {
-          sendError(response, 429, 'Too many sign-in attempts. Please try again later.', undefined, 'AUTH_RATE_LIMITED');
+          sendError(response, 429, 'Too many login attempts. Please try again later.', undefined, 'AUTH_RATE_LIMITED');
           return true;
         }
 
@@ -970,7 +969,7 @@ export async function createApiHandler(options = {}) {
         }
 
         if (!user.email_verified_at) {
-          sendError(response, 403, 'Please verify your email address before signing in.', undefined, 'AUTH_EMAIL_UNVERIFIED');
+          sendError(response, 403, 'Please verify your email address before logging in.', undefined, 'AUTH_EMAIL_UNVERIFIED');
           return true;
         }
 
@@ -1101,7 +1100,7 @@ export async function createApiHandler(options = {}) {
         const staffView = Boolean((elevated || facilitatorAccess) && !citizenPreview);
         const participant = user && db.prepare('SELECT 1 FROM hub_participants WHERE initiative_id = ? AND user_id = ?').get(initiativeId, user.id);
         const publicAccess = ['active','completed'].includes(row.lifecycle_status) && ['published','active','paused','completed'].includes(row.status) && (row.visibility === 'public' || participant);
-        if (!elevated && !facilitatorAccess && !publicAccess) { sendError(response, user ? 403 : 401, user ? 'This pilot site is not available to your account.' : 'Please sign in to view this pilot site.'); return true; }
+        if (!elevated && !facilitatorAccess && !publicAccess) { sendError(response, user ? 403 : 401, user ? 'This pilot site is not available to your account.' : 'Please log in to view this pilot site.'); return true; }
         // The five-phase roadmap is public process context. Upcoming phases remain
         // visible, but their unpublished configuration is removed below.
         const phaseRows = db.prepare('SELECT * FROM hub_phases WHERE initiative_id = ? ORDER BY phase_number').all(initiativeId);
@@ -1370,13 +1369,7 @@ export async function createApiHandler(options = {}) {
           sendError(response, 409, `Objective ${previousPhaseNumber} can only move to Objective ${allowedObjectiveTransitions(previousPhaseNumber).join(' or ') || 'no other objective'}.`, null, 'INVALID_PHASE_TRANSITION');
           return true;
         }
-        if (!movingBackward) {
-          const readiness = phaseReadiness(db, row, previousPhaseNumber);
-          if (!readiness.ready) {
-            sendJson(response, 409, { code: 'PHASE_NOT_READY', error: 'Complete the current phase requirements before advancing.', readiness });
-            return true;
-          }
-        }
+        // Readiness requirements guide the Municipality but do not block the move: the Municipality decides when to advance.
         const now = new Date().toISOString();
         db.exec('BEGIN IMMEDIATE');
         try {

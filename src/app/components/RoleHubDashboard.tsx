@@ -656,14 +656,11 @@ export default function RoleHubDashboard() {
                 <div className="flex flex-wrap justify-end gap-2">
                 {workflow.allowedPhaseTransitions.map((target) => {
                   const forward = target > workflow.currentPhaseNumber;
-                  const blocked = forward && !workflow.readiness.ready;
                   return (
                     <button
                       key={target}
                       type="button"
                       onClick={() => setPendingPhaseNumber(target)}
-                      disabled={blocked}
-                      aria-describedby={blocked ? 'objective-transition-blocked' : undefined}
                       className={`inline-flex min-h-11 cursor-pointer items-center gap-2 px-4 py-2 text-[13px] font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#444] disabled:cursor-not-allowed disabled:opacity-50 ${forward ? 'bg-[#f68b2c] text-white hover:bg-[#df7720]' : 'border-2 border-[#ca7428] bg-white text-[#a85f20] hover:bg-[#fff4e9]'}`}
                     >
                       {forward ? t('workflow.button.advancePhase', { phase: target }) : t('hub.returnToObjective', { phase: target })} <ArrowRight size={15} aria-hidden="true" className={forward ? '' : 'rotate-180'} />
@@ -671,9 +668,6 @@ export default function RoleHubDashboard() {
                   );
                 })}
                 </div>
-                {!workflow.readiness.ready && workflow.allowedPhaseTransitions.some((target) => target > workflow.currentPhaseNumber) && (
-                  <p id="objective-transition-blocked" className="text-right text-[12px] font-semibold text-[#8f4d18]">{t('hub.transitionBlocked', { phase: workflow.currentPhaseNumber })}</p>
-                )}
               </div>
             )}
           </div>

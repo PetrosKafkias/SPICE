@@ -78,7 +78,7 @@ export default function PhaseChangeDialog({ targetPhaseNumber, currentPhaseNumbe
             <button ref={cancelRef} type="button" onClick={onCancel} disabled={saving} className="min-h-11 cursor-pointer border-2 border-[#444] px-5 py-2.5 text-[14px] font-semibold text-[#444] hover:bg-[#f4f4f4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#ca7428] disabled:cursor-wait disabled:opacity-50">
               {t('common.cancel')}
             </button>
-            <button type="button" onClick={onConfirm} disabled={saving || (isForward && requirements.some((item) => !item.met))} className="min-h-11 cursor-pointer bg-[#f68b2c] px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-[#e07a20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#444] disabled:cursor-not-allowed disabled:bg-[#d4d4d4] disabled:text-[#666]">
+            <button type="button" onClick={onConfirm} disabled={saving} className="min-h-11 cursor-pointer bg-[#f68b2c] px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-[#e07a20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#444] disabled:cursor-not-allowed disabled:bg-[#d4d4d4] disabled:text-[#666]">
               {saving ? t('common.saving') : t('hub.confirmPhaseAction')}
             </button>
           </div>

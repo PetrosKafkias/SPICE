@@ -1,10 +1,12 @@
 import { ArrowRight, BookOpenCheck, CheckCircle2, Grid3X3, LogIn, MapPinned, MessageSquareText, UserPlus } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { Navigate, useLocation, useNavigate } from 'react-router';
 import SpicePublicShell from '../components/SpicePublicShell';
 import StandardPageHeader from '../components/StandardPageHeader';
 import RoleHubDashboard from '../components/RoleHubDashboard';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
+import { usePermissions } from '../auth/usePermissions';
+import { hasSeenFirstEntry } from '../lib/firstEntry';
 import type { TranslationKey } from '../i18n/translations';
 
 const PUBLIC_HUB_OPTIONS: Array<{
@@ -23,6 +25,11 @@ export default function OverviewPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useI18n();
+  const { role } = usePermissions();
+  const { search } = useLocation();
+
+  // First visit: a Municipality user starts by choosing how to begin. Deep links to an objective still open the hub.
+  if (user && role === 'municipality' && !search && !hasSeenFirstEntry(user.id)) return <Navigate to="/co-creation-process" replace />;
 
   if (user) {
     return (

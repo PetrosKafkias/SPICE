@@ -19,6 +19,7 @@ const CitiVoiceAppPage = lazy(() => import('./pages/CitiVoiceAppPage'));
 const ForumVotingPage = lazy(() => import('./pages/ForumVotingPage'));
 const InsightsPage = lazy(() => import('./pages/InsightsPage'));
 const CoCreationGuidePage = lazy(() => import('./pages/CoCreationGuidePage'));
+const CoCreationProcessPage = lazy(() => import('./pages/CoCreationProcessPage'));
 const RepositoryPublicPage = lazy(() => import('./pages/RepositoryPublicPage'));
 const SceneEditorPublicPage = lazy(() => import('./pages/SceneEditorPublicPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
@@ -42,7 +43,7 @@ export const router = createBrowserRouter([
   { path: '/home', element: <Navigate to="/" replace /> },
   { path: '/landing', element: <Navigate to="/" replace /> },
 
-  { path: '/co-creation-process', element: <Navigate to="/co-creation-hub" replace /> },
+  { path: '/co-creation-process', Component: CoCreationProcessPage },
   { path: '/get-started', element: <Navigate to="/co-creation-hub" replace /> },
   { path: '/co-creation-hub', Component: OverviewPage },
   { path: '/hub', element: <Navigate to="/co-creation-hub" replace /> },
