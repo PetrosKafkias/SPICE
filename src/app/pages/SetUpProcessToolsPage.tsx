@@ -34,14 +34,6 @@ const OBJECTIVE_PHASES: Record<string, number[]> = {
   consolidation: [5],
 };
 
-const OBJECTIVE_LABELS: Record<string, TranslationKey> = {
-  framing: 'setup.objective.framing',
-  collective: 'setup.objective.collective',
-  codesign: 'setup.objective.codesign',
-  prototype: 'setup.objective.prototype',
-  consolidation: 'setup.objective.consolidation',
-};
-
 const MODE_OPTIONS: Array<'all' | Mode> = ['all', 'Online', 'Offline', 'Hybrid'];
 
 // Participation levels of the SPICE catalogue, matched against each resource's English tags so the
@@ -230,7 +222,7 @@ export default function SetUpProcessToolsPage() {
   const [query, setQuery] = useState('');
   const [modeFilter, setModeFilter] = useState<string>('all');
   const [levelFilter, setLevelFilter] = useState<string>('all');
-  const [phaseFilter, setPhaseFilter] = useState<string>('recommended');
+  const [phaseFilter, setPhaseFilter] = useState<string>('all');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -271,15 +263,13 @@ export default function SetUpProcessToolsPage() {
   const filteredTools = scoredTools.filter(({ tool }) => {
     const matchSearch = `${tool.name} ${tool.shortDesc} ${phaseNameById.get(tool.phase) || ''} ${tool.objectiveTags.join(' ')}`.toLowerCase().includes(query.toLowerCase());
     const matchMode = modeFilter === 'all' || tool.mode === modeFilter || tool.mode === 'Hybrid';
-    const matchPhase = phaseFilter === 'recommended' ? selectedPhases.includes(tool.phase) : tool.phase === Number(phaseFilter);
+    const matchPhase = phaseFilter === 'all' || tool.phase === Number(phaseFilter);
     const levelTag = PARTICIPATION_LEVELS.find((level) => level.value === levelFilter)?.tag;
     const matchLevel = !levelTag || (PARTICIPATION_TAGS.get(tool.id) || []).includes(levelTag);
     return matchSearch && matchMode && matchPhase && matchLevel;
   });
 
-  const activeObjectiveLabels = exploring ? [] : processSetup.objectives.map((id) => OBJECTIVE_LABELS[id]).filter(Boolean).map((key) => t(key));
-  const selectedCount = filteredTools.filter(({ tool }) => isSelected(tool.phase, tool.id)).length;
-  const visiblePhase = (phaseNumber: number) => (phaseFilter === 'recommended' ? selectedPhases.includes(phaseNumber) : Number(phaseFilter) === phaseNumber);
+  const visiblePhase = (phaseNumber: number) => phaseFilter === 'all' || Number(phaseFilter) === phaseNumber;
   const showDigital = modeFilter !== 'Offline';
 
   // Every visible Objective is listed, so its digital tools can be chosen even when no analogue resource matches.
@@ -357,28 +347,6 @@ export default function SetUpProcessToolsPage() {
           </div>
         </div>
 
-        {/* Free exploration has no questionnaire answers to base recommendations on. */}
-        {!exploring && <section className="grid gap-4 spice-card p-5 lg:grid-cols-[1fr_260px]">
-          <div>
-            <div className="mb-3 flex items-center gap-2 text-[14px] font-bold text-[#444]">
-              <Sparkles size={18} className="text-[#ca7428]" /> {t('setup.recommendationBasis')}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {(activeObjectiveLabels.length ? activeObjectiveLabels : [t('setup.allObjectives')]).map((label) => (
-                <span key={label} className="bg-[#fef3e8] px-3 py-1.5 text-[12px] font-semibold text-[#ca7428]">{label}</span>
-              ))}
-              <span className="bg-[#f2f2f2] px-3 py-1.5 text-[12px] font-semibold text-[#555]">{processSetup.mode ? t(`resources.${processSetup.mode.toLowerCase()}` as TranslationKey) : t('setup.anyMode')}</span>
-              {processSetup.groupSize && <span className="bg-[#f2f2f2] px-3 py-1.5 text-[12px] font-semibold text-[#555]">{processSetup.groupSize}</span>}
-              {processSetup.duration && <span className="bg-[#f2f2f2] px-3 py-1.5 text-[12px] font-semibold text-[#555]">{processSetup.duration}</span>}
-            </div>
-          </div>
-          <div className="border-t border-[#eee] pt-4 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
-            <p className="text-[28px] font-bold text-[#444]">{myProcessTools.length}</p>
-            <p className="text-[13px] font-semibold text-[#666]">{tp(myProcessTools.length, { one: 'setup.enabledCount.one', other: 'setup.enabledCount.other' })}</p>
-            <p className="mt-2 text-[12px] text-[#888]">{tp(selectedCount, { one: 'setup.currentEnabled.one', other: 'setup.currentEnabled.other' })}</p>
-          </div>
-        </section>}
-
         <ObjectiveCoverage selections={draft} onSelectObjective={showObjective} />
 
         <section className="spice-card p-5">
@@ -398,7 +366,7 @@ export default function SetUpProcessToolsPage() {
                 />
               </span>
             </label>
-            <SelectFilter label={t('setup.phase')} value={phaseFilter} options={[{ value: 'recommended', label: t('setup.recommendedPhases') }, ...PHASES.map((phase) => ({ value: String(phase.id), label: t(phase.nameKey) }))]} onChange={setPhaseFilter} />
+            <SelectFilter label={t('setup.phase')} value={phaseFilter} options={[{ value: 'all', label: t('setup.allObjectivesFilter') }, ...PHASES.map((phase) => ({ value: String(phase.id), label: t(phase.nameKey) }))]} onChange={setPhaseFilter} />
             <SelectFilter label={t('setup.mode')} value={modeFilter} options={MODE_OPTIONS.map((mode) => ({ value: mode, label: mode === 'all' ? t('setup.allModes') : t(`resources.${mode.toLowerCase()}` as TranslationKey) }))} onChange={setModeFilter} />
             <SelectFilter label={t('setup.participationLevelFilter')} value={levelFilter} options={[{ value: 'all', label: t('setup.allParticipationLevels') }, ...PARTICIPATION_LEVELS.map((level) => ({ value: level.value, label: t(level.labelKey) }))]} onChange={setLevelFilter} />
           </div>
