@@ -17,7 +17,7 @@ import {
 import { toast } from 'sonner';
 import SpicePublicShell from '../components/SpicePublicShell';
 import LoadingState from '../components/LoadingState';
-import { getTools, PHASES, type Mode, type Tool } from '../data/tools';
+import { getTools, PHASES, TOOLS, type Mode, type Tool } from '../data/tools';
 import { useI18n } from '../context/I18nContext';
 import { DEFAULT_PROCESS_SETUP, processSetupFromInitiative, type ProcessSetupState } from '../lib/processSetup';
 import { OBJECTIVE_NUMBERS, resourceLockMessage, useObjectiveResources, type ObjectiveSelections } from '../lib/objectiveResources';
@@ -43,6 +43,15 @@ const OBJECTIVE_LABELS: Record<string, TranslationKey> = {
 };
 
 const MODE_OPTIONS: Array<'all' | Mode> = ['all', 'Online', 'Offline', 'Hybrid'];
+
+// Participation levels of the SPICE catalogue, matched against each resource's English tags so the
+// filter works in every language.
+const PARTICIPATION_LEVELS: Array<{ value: string; tag: string; labelKey: TranslationKey }> = [
+  { value: 'consult', tag: 'To consult', labelKey: 'setup.participation.consult' },
+  { value: 'codesign', tag: 'To co-design', labelKey: 'setup.participation.codesign' },
+  { value: 'selfgovern', tag: 'To self-govern', labelKey: 'setup.participation.selfgovern' },
+];
+const PARTICIPATION_TAGS = new Map(TOOLS.map((tool) => [tool.id, tool.objectiveTags]));
 
 const PHASE_ICONS: Record<number, ElementType> = {
   1: Wrench,
@@ -220,6 +229,7 @@ export default function SetUpProcessToolsPage() {
   const [draft, setDraft] = useState<ObjectiveSelections>(selections);
   const [query, setQuery] = useState('');
   const [modeFilter, setModeFilter] = useState<string>('all');
+  const [levelFilter, setLevelFilter] = useState<string>('all');
   const [phaseFilter, setPhaseFilter] = useState<string>('recommended');
   const [saving, setSaving] = useState(false);
 
@@ -262,7 +272,9 @@ export default function SetUpProcessToolsPage() {
     const matchSearch = `${tool.name} ${tool.shortDesc} ${phaseNameById.get(tool.phase) || ''} ${tool.objectiveTags.join(' ')}`.toLowerCase().includes(query.toLowerCase());
     const matchMode = modeFilter === 'all' || tool.mode === modeFilter || tool.mode === 'Hybrid';
     const matchPhase = phaseFilter === 'recommended' ? selectedPhases.includes(tool.phase) : tool.phase === Number(phaseFilter);
-    return matchSearch && matchMode && matchPhase;
+    const levelTag = PARTICIPATION_LEVELS.find((level) => level.value === levelFilter)?.tag;
+    const matchLevel = !levelTag || (PARTICIPATION_TAGS.get(tool.id) || []).includes(levelTag);
+    return matchSearch && matchMode && matchPhase && matchLevel;
   });
 
   const activeObjectiveLabels = exploring ? [] : processSetup.objectives.map((id) => OBJECTIVE_LABELS[id]).filter(Boolean).map((key) => t(key));
@@ -388,6 +400,7 @@ export default function SetUpProcessToolsPage() {
             </label>
             <SelectFilter label={t('setup.phase')} value={phaseFilter} options={[{ value: 'recommended', label: t('setup.recommendedPhases') }, ...PHASES.map((phase) => ({ value: String(phase.id), label: t(phase.nameKey) }))]} onChange={setPhaseFilter} />
             <SelectFilter label={t('setup.mode')} value={modeFilter} options={MODE_OPTIONS.map((mode) => ({ value: mode, label: mode === 'all' ? t('setup.allModes') : t(`resources.${mode.toLowerCase()}` as TranslationKey) }))} onChange={setModeFilter} />
+            <SelectFilter label={t('setup.participationLevelFilter')} value={levelFilter} options={[{ value: 'all', label: t('setup.allParticipationLevels') }, ...PARTICIPATION_LEVELS.map((level) => ({ value: level.value, label: t(level.labelKey) }))]} onChange={setLevelFilter} />
           </div>
         </section>
 
