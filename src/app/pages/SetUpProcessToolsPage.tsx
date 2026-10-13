@@ -330,7 +330,7 @@ export default function SetUpProcessToolsPage() {
           </div>
           <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:flex-nowrap">
             <button
-              onClick={() => navigate(exploring ? '/co-creation-process' : '/setup-questionnaire')}
+              onClick={() => navigate(exploring ? '/co-creation-process?revisit=1' : '/setup-questionnaire')}
               className="flex items-center gap-2 whitespace-nowrap border border-[#444] bg-white px-5 py-3 text-[14px] font-semibold text-[#444] transition-colors hover:bg-[#f7f7f7]"
             >
               <ArrowLeft size={15} /> {t(exploring ? 'common.back' : 'setup.previousStep')}
@@ -345,7 +345,8 @@ export default function SetUpProcessToolsPage() {
           </div>
         </div>
 
-        <section className="grid gap-4 spice-card p-5 lg:grid-cols-[1fr_260px]">
+        {/* Free exploration has no questionnaire answers to base recommendations on. */}
+        {!exploring && <section className="grid gap-4 spice-card p-5 lg:grid-cols-[1fr_260px]">
           <div>
             <div className="mb-3 flex items-center gap-2 text-[14px] font-bold text-[#444]">
               <Sparkles size={18} className="text-[#ca7428]" /> {t('setup.recommendationBasis')}
@@ -364,7 +365,7 @@ export default function SetUpProcessToolsPage() {
             <p className="text-[13px] font-semibold text-[#666]">{tp(myProcessTools.length, { one: 'setup.enabledCount.one', other: 'setup.enabledCount.other' })}</p>
             <p className="mt-2 text-[12px] text-[#888]">{tp(selectedCount, { one: 'setup.currentEnabled.one', other: 'setup.currentEnabled.other' })}</p>
           </div>
-        </section>
+        </section>}
 
         <ObjectiveCoverage selections={draft} onSelectObjective={showObjective} />
 

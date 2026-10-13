@@ -449,13 +449,17 @@ export default function RoleHubDashboard() {
                 ? { label: t('hub.exitPreview'), to: '/co-creation-hub' }
                 : { label: t('hub.previewAsCitizen'), to: `/co-creation-hub?phase=${detail?.currentPhaseNumber || 1}&preview=citizen` }
               : undefined,
+            // The start page stays reachable after setup, for revisiting the ways to begin.
+            role === 'municipality' && !previewingAsCitizen
+              ? { label: t('hub.chooseHowToBegin'), to: '/co-creation-process?revisit=1' }
+              : undefined,
           )}
         </div>
       </section>
     );
   };
 
-  const renderPilotCard = (initiative: Initiative, action?: { label: string; to: string }) => (
+  const renderPilotCard = (initiative: Initiative, action?: { label: string; to: string }, secondaryAction?: { label: string; to: string }) => (
     <div className="flex w-full flex-col gap-4 spice-card p-5 lg:w-[320px] lg:flex-shrink-0">
       <div className="flex items-center justify-between gap-3">
         <p className="text-[11px] font-bold uppercase tracking-wide text-[#888]">{t('hub.yourPilot')}</p>
@@ -478,6 +482,11 @@ export default function RoleHubDashboard() {
       {action && (
         <Link to={action.to} className="mt-1 inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 border-2 border-[#444] bg-white px-4 py-2 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]">
           {action.label}
+        </Link>
+      )}
+      {secondaryAction && (
+        <Link to={secondaryAction.to} className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] px-4 py-2 text-[13px] font-bold text-white hover:bg-[#df771d]">
+          {secondaryAction.label} <ArrowRight size={15} aria-hidden="true" />
         </Link>
       )}
     </div>

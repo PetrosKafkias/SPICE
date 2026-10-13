@@ -1,4 +1,4 @@
-import { Link, Navigate, useNavigate } from 'react-router';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
 import { Bot, Clock, Compass, DraftingCompass, FileStack, ArrowRight, RefreshCw } from 'lucide-react';
 import SpicePublicShell from '../components/SpicePublicShell';
 import StandardPageHeader from '../components/StandardPageHeader';
@@ -43,10 +43,13 @@ export default function CoCreationProcessPage() {
   const { role } = usePermissions();
   const isMunicipality = role === 'municipality';
   const { status } = useAuth();
+  // "Choose how to begin" in the hub reopens the page on purpose, even after setup.
+  const [searchParams] = useSearchParams();
+  const revisiting = searchParams.get('revisit') === '1';
   const { initiative, selections, loading } = useObjectiveResources(isMunicipality);
 
-  // The page is the Municipality's starting point only until every Objective has a resource;
-  // everyone else, and a Municipality whose process is set up, goes straight to the hub.
+  // The page is the Municipality's starting point until every Objective has a resource; afterwards it
+  // opens only when revisited from the hub. Everyone else goes straight to the hub.
   if (status === 'loading' || (isMunicipality && loading)) {
     return (
       <SpicePublicShell variant="public">
@@ -54,7 +57,7 @@ export default function CoCreationProcessPage() {
       </SpicePublicShell>
     );
   }
-  if (!isMunicipality || (initiative && selectionsComplete(selections))) return <Navigate to="/co-creation-hub" replace />;
+  if (!isMunicipality || (!revisiting && initiative && selectionsComplete(selections))) return <Navigate to="/co-creation-hub" replace />;
 
   return (
     <SpicePublicShell variant="public">
