@@ -4,7 +4,8 @@ import { toast } from 'sonner';
 import { useI18n } from '../context/I18nContext';
 import { apiRequest, jsonBody } from '../lib/api';
 import type { Tool } from '../data/tools';
-import { DIGITAL_TOOL_IDS, recommendedResourceIds, resolveSpiceResource, type SpiceResource } from '../data/spiceResources';
+import { recommendedResourceIds, resolveSpiceResource, type SpiceResource } from '../data/spiceResources';
+import { processPhase, type DigitalToolId } from '../data/processFramework';
 import { objectiveLock, RESOURCE_LOCK_KEYS, resourceLockMessage, type ResourceEditContext } from '../lib/objectiveResources';
 import { localizedApiError } from '../lib/localizedApiError';
 
@@ -35,8 +36,11 @@ export default function ObjectiveToolSelection({ initiativeId, phaseNumber, enab
 
   const recommendedIds = useMemo(() => recommendedResourceIds(phaseNumber, tools), [phaseNumber, tools]);
   const resolve = (ids: string[]) => ids.map((id) => resolveSpiceResource(id, tools, t)).filter((item): item is SpiceResource => Boolean(item));
-  const recommended = resolve(recommendedIds);
-  const others = resolve([...new Set([...DIGITAL_TOOL_IDS, ...selected])].filter((id) => !recommendedIds.includes(id)));
+  // Every resource the methodology offers for this Objective; digital tools use their Objective-specific role.
+  const digitalScopes = new Map((processPhase(phaseNumber).digitalTools || []).map((tool) => [tool.toolId, t(tool.descriptionKey)]));
+  const recommended = resolve(recommendedIds).map((resource) => ({ ...resource, description: digitalScopes.get(resource.id as DigitalToolId) || resource.description }));
+  // Resources from another Objective stay listed only while selected, so they can still be removed.
+  const others = resolve(selected.filter((id) => !recommendedIds.includes(id)));
 
   const dirty = JSON.stringify([...selected].sort()) !== JSON.stringify([...enabledTools].sort())
     || objectiveNotes.trim() !== municipalityNotes.trim()

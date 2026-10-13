@@ -4,7 +4,7 @@ import {
   Activity, ArrowRight, BookOpenText, Building2, CalendarDays, CheckCircle2,
   Circle, CircleAlert, CircleDot, Clock, FilePlus2, FileText,
   Layers3, ListChecks, Lock, MapPin, MapPinned, MessageSquareText,
-  PencilLine, Plus, RefreshCw, UserMinus, Users, Vote, Wrench,
+  PencilLine, Plus, RefreshCw, UserMinus, Users, Vote,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePermissions } from '../auth/usePermissions';
@@ -191,7 +191,7 @@ function completeRoadmapPhases(phases: Phase[]): Phase[] {
 export default function RoleHubDashboard() {
   const { role, can } = usePermissions();
   const { user } = useAuth();
-  const { formatDate, language, t } = useI18n();
+  const { formatDate, language, t, tp } = useI18n();
   const tools = useMemo(() => getTools(language), [language]);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -501,42 +501,7 @@ export default function RoleHubDashboard() {
       );
     }
 
-    const selectedToolNames = detail.setupSelectedTools
-      .map((toolId) => tools.find((tool) => tool.id === toolId)?.name)
-      .filter((name): name is string => Boolean(name));
-
-    return (
-      <section className="spice-card border-l-4 border-l-[#4e789b] p-6 md:p-8" aria-labelledby="setup-summary-title">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-[12px] font-bold uppercase tracking-wide text-[#254f72]">{t(`hub.lifecycle.${detail.lifecycleStatus}` as TranslationKey)}</p>
-            <h2 id="setup-summary-title" className="mt-2 text-[20px] font-bold text-[#444]">{t('hub.lifecycle.setupSummaryTitle')}</h2>
-            <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-[#666]">{t('hub.lifecycle.setupSummaryText')}</p>
-          </div>
-          <Wrench size={26} className="flex-none text-[#4e789b]" aria-hidden="true" />
-        </div>
-
-        <div className="mt-5">
-          {selectedToolNames.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {selectedToolNames.map((name) => (
-                <span key={name} className="flex items-center gap-1.5 border-2 border-[#dce5ec] bg-[#f7fbfd] px-3 py-1.5 text-[12px] font-semibold text-[#444]"><ListChecks size={13} className="text-[#4e789b]" />{name}</span>
-              ))}
-            </div>
-          ) : (
-            <p className="text-[13px] text-[#888]">{t('hub.lifecycle.setupNoToolsSelected')}</p>
-          )}
-          {detail.setupUpdatedAt && (
-            <p className="mt-3 flex items-center gap-2 text-[12px] text-[#888]"><CalendarDays size={14} />{t('hub.lifecycle.setupLastUpdated', { date: formatDate(detail.setupUpdatedAt, { dateStyle: 'medium' }) })}</p>
-          )}
-        </div>
-
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link to="/setup-questionnaire" className="inline-flex min-h-11 items-center gap-2 border-2 border-[#444] bg-white px-5 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]">{t('hub.lifecycle.reviewSetup')}</Link>
-          <Link to="/setup-tools" className="inline-flex min-h-11 items-center gap-2 border-2 border-[#444] bg-white px-5 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]">{t('hub.lifecycle.editSelectedTools')}</Link>
-        </div>
-      </section>
-    );
+    return null;
   };
 
   const renderRoadmap = () => {
@@ -578,7 +543,7 @@ export default function RoleHubDashboard() {
                     {t('hub.phaseNumber', { phase: phase.phaseNumber })} <span aria-hidden="true">·</span> {t(stateLabelKey)}
                   </span>
                   <span className={`mt-1 block max-w-[140px] text-[13px] font-bold leading-tight text-[#444] transition-colors ${locked ? '' : 'group-hover:text-[#ca7428]'}`}>{t(`hub.phase${phase.phaseNumber}` as TranslationKey)}</span>
-                  <span className="mt-1 block text-[11px] text-[#888]">{t('hub.phaseToolCount', { count: phase.enabledTools.length })}</span>
+                  <span className="mt-1 block text-[11px] text-[#888]">{tp(phase.enabledTools.length, { one: 'hub.phaseToolCount.one', other: 'hub.phaseToolCount.other' })}</span>
                 </button>
               </div>
             );
