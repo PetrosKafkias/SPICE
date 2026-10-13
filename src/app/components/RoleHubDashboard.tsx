@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import {
   Activity, ArrowRight, BookOpenText, Building2, CalendarDays, CheckCircle2,
-  Circle, CircleAlert, CircleDot, Clock, FilePlus2, FileText, GitCompareArrows,
-  Layers3, ListChecks, LockKeyhole, MapPin, MapPinned, MessageSquareText,
-  PencilLine, Plus, UserMinus, Users, Vote, Wrench,
+  Circle, CircleAlert, CircleDot, Clock, FilePlus2, FileText,
+  Layers3, ListChecks, Lock, MapPin, MapPinned, MessageSquareText,
+  PencilLine, Plus, RefreshCw, UserMinus, Users, Vote, Wrench,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePermissions } from '../auth/usePermissions';
@@ -12,6 +12,7 @@ import { normalizeRole, roleKey } from '../auth/permissions';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
 import { apiRequest, jsonBody } from '../lib/api';
+import { localizedApiError } from '../lib/localizedApiError';
 import { pilotSlug } from '../lib/pilot';
 import { statusKey } from '../lib/statusLabel';
 import { phaseState } from '../lib/phaseState';
@@ -20,6 +21,7 @@ import { resolveSpiceResource, type SpiceResource } from '../data/spiceResources
 import PhaseChangeDialog from './PhaseChangeDialog';
 import PilotSelector from './PilotSelector';
 import ObjectiveWorkspace from './ObjectiveWorkspace';
+import ObjectiveCoverage from './ObjectiveCoverage';
 import { readStoredPilot, storeActivePilot } from '../lib/activePilot';
 import type { WorkflowSummary } from './WorkflowNextActionPanel';
 import type { TranslationKey } from '../i18n/translations';
@@ -216,8 +218,6 @@ export default function RoleHubDashboard() {
   const [savingFacilitator, setSavingFacilitator] = useState(false);
   const [facilitatorInitiatives, setFacilitatorInitiatives] = useState<FacilitatorInitiative[]>([]);
   const [facilitatorLoading, setFacilitatorLoading] = useState(false);
-  const [activationConfirming, setActivationConfirming] = useState(false);
-  const [activating, setActivating] = useState(false);
 
   const citizenPilotSlug = role === 'citizen' && user ? pilotSlug(user.pilotSite) : null;
 
@@ -340,8 +340,8 @@ export default function RoleHubDashboard() {
       setSelectedPhaseNumber(pendingPhaseNumber);
       setPendingPhaseNumber(null);
       toast.success(t('hub.phaseChangedSuccess', { phase: pendingPhaseNumber }));
-    } catch {
-      setError(t('hub.errorUpdatePhase'));
+    } catch (caught) {
+      setError(localizedApiError(t, caught, 'hub.errorUpdatePhase'));
     } finally {
       setSavingPhaseChange(false);
     }
@@ -378,29 +378,6 @@ export default function RoleHubDashboard() {
       setError(t('hub.errorUnassignFacilitator'));
     } finally {
       setSavingFacilitator(false);
-    }
-  };
-
-  const activatePilot = async () => {
-    if (!detail) return;
-    setActivating(true);
-    setError('');
-    try {
-      const result = await apiRequest<{ initiative: InitiativeDetail }>(`/api/hub/initiatives/${detail.id}/activate`, {
-        method: 'POST',
-        body: jsonBody({ version: detail.version, confirmed: true, reason: 'Municipality reviewed the process setup and activated the pilot.' }),
-      });
-      setDetail(result.initiative);
-      setInitiatives((current) => current.map((initiative) => initiative.id === result.initiative.id
-        ? { ...initiative, lifecycleStatus: result.initiative.lifecycleStatus, status: result.initiative.status }
-        : initiative));
-      setActivationConfirming(false);
-      toast.success(t('hub.lifecycle.activatedSuccess'));
-      void loadDetail(detail.id);
-    } catch {
-      setError(t('hub.lifecycle.activationFailed'));
-    } finally {
-      setActivating(false);
     }
   };
 
@@ -508,57 +485,18 @@ export default function RoleHubDashboard() {
 
   const renderMunicipalityLifecycle = () => {
     if (!detail) return null;
-    const questionnaireComplete = Boolean(detail.setupCompletedAt);
-    const toolsSelected = detail.setupSelectedTools.length > 0;
-
-    if (detail.lifecycleStatus === 'setup_required') {
+    if (detail.lifecycleStatus !== 'active' && detail.lifecycleStatus !== 'completed') {
+      const selections = Object.fromEntries(detail.phases.map((phase) => [phase.phaseNumber, phase.enabledTools]));
       return (
         <section className="spice-card border-l-4 border-l-[#f68b2c] p-6 md:p-8" aria-labelledby="setup-required-title">
           <p className="text-[12px] font-bold uppercase tracking-wide text-[#a85f20]">{t('hub.lifecycle.setup_required')}</p>
           <h2 id="setup-required-title" className="mt-2 text-[24px] font-bold text-[#444]">{t('hub.lifecycle.setupRequiredTitle')}</h2>
-          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-[#666]">{t('hub.lifecycle.setupRequiredText')}</p>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <div className="flex items-center gap-3 border-2 border-[#e4e4e4] bg-white p-4">
-              {questionnaireComplete ? <CheckCircle2 className="text-[#3f7046]" size={20} /> : <Circle className="text-[#999]" size={20} />}
-              <span className="font-semibold text-[#444]">{t('hub.lifecycle.questionnaire')}</span>
-            </div>
-            <div className="flex items-center gap-3 border-2 border-[#e4e4e4] bg-white p-4">
-              {toolsSelected ? <CheckCircle2 className="text-[#3f7046]" size={20} /> : <Circle className="text-[#999]" size={20} />}
-              <span className="font-semibold text-[#444]">{t('hub.lifecycle.recommendations')}</span>
-            </div>
-          </div>
-          <Link to={questionnaireComplete ? '/setup-tools' : '/setup-questionnaire'} className="mt-6 inline-flex min-h-12 items-center gap-2 bg-[#f68b2c] px-6 font-bold text-white hover:bg-[#df771d]">
-            {t(questionnaireComplete ? 'hub.lifecycle.reviewRecommendations' : 'hub.lifecycle.startSetup')} <ArrowRight size={17} />
-          </Link>
-        </section>
-      );
-    }
-
-    if (detail.lifecycleStatus === 'ready_to_activate') {
-      return (
-        <section className="spice-card border-l-4 border-l-[#4e789b] p-6 md:p-8" aria-labelledby="ready-activate-title">
-          <p className="text-[12px] font-bold uppercase tracking-wide text-[#254f72]">{t('hub.lifecycle.ready_to_activate')}</p>
-          <h2 id="ready-activate-title" className="mt-2 text-[24px] font-bold text-[#444]">{t('hub.lifecycle.readyTitle')}</h2>
-          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-[#666]">{t('hub.lifecycle.readyText')}</p>
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            {[t('hub.lifecycle.questionnaireComplete'), t('hub.lifecycle.toolsReviewed'), t('hub.lifecycle.historyProtected')].map((label) => (
-              <div key={label} className="flex items-center gap-3 border-2 border-[#dce5ec] bg-[#f7fbfd] p-4"><CheckCircle2 size={20} className="flex-none text-[#3f7046]" /><span className="text-[13px] font-semibold text-[#444]">{label}</span></div>
-            ))}
-          </div>
+          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-[#666]">{t('hub.lifecycle.autoActivateText')}</p>
+          <div className="mt-6"><ObjectiveCoverage selections={selections} /></div>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link to="/setup-questionnaire" className="inline-flex min-h-12 items-center border-2 border-[#444] bg-white px-5 font-bold text-[#444]">{t('hub.lifecycle.reviewSetup')}</Link>
-            {!activationConfirming && <button type="button" onClick={() => setActivationConfirming(true)} className="inline-flex min-h-12 cursor-pointer items-center gap-2 bg-[#f68b2c] px-6 font-bold text-white hover:bg-[#df771d]">{t('hub.lifecycle.activate')} <ArrowRight size={17} /></button>}
+            <Link to="/setup-questionnaire" className="inline-flex min-h-12 items-center gap-2 bg-[#f68b2c] px-6 font-bold text-white hover:bg-[#df771d]">{t('process.setup')} <ArrowRight size={17} /></Link>
+            <Link to="/setup-tools?mode=explore" className="inline-flex min-h-12 items-center gap-2 border-2 border-[#444] bg-white px-6 font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]">{t('process.explore')} <ArrowRight size={17} /></Link>
           </div>
-          {activationConfirming && (
-            <div className="mt-6 border-2 border-[#f68b2c] bg-[#fff8f2] p-5" role="alertdialog" aria-labelledby="activation-confirm-title">
-              <h3 id="activation-confirm-title" className="text-[18px] font-bold text-[#444]">{t('hub.lifecycle.confirmTitle')}</h3>
-              <p className="mt-2 max-w-3xl text-[14px] leading-relaxed text-[#666]">{t('hub.lifecycle.confirmText')}</p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <button type="button" onClick={() => setActivationConfirming(false)} disabled={activating} className="min-h-11 cursor-pointer border-2 border-[#444] bg-white px-5 font-bold text-[#444]">{t('common.cancel')}</button>
-                <button type="button" onClick={() => void activatePilot()} disabled={activating} className="min-h-11 cursor-pointer bg-[#f68b2c] px-5 font-bold text-white disabled:cursor-wait disabled:opacity-60">{activating ? t('hub.lifecycle.activating') : t('hub.lifecycle.confirmActivate')}</button>
-              </div>
-            </div>
-          )}
         </section>
       );
     }
@@ -656,11 +594,15 @@ export default function RoleHubDashboard() {
                 <div className="flex flex-wrap justify-end gap-2">
                 {workflow.allowedPhaseTransitions.map((target) => {
                   const forward = target > workflow.currentPhaseNumber;
+                  const incomplete = forward ? workflow.resourceCompletion.incompleteResourceIds : [];
                   return (
                     <button
                       key={target}
                       type="button"
                       onClick={() => setPendingPhaseNumber(target)}
+                      disabled={incomplete.length > 0}
+                      aria-describedby={incomplete.length > 0 ? 'advance-blocked-reason' : undefined}
+                      title={incomplete.length > 0 ? t('hub.advanceBlocked', { incomplete: incomplete.length, total: workflow.resourceCompletion.total }) : undefined}
                       className={`inline-flex min-h-11 cursor-pointer items-center gap-2 px-4 py-2 text-[13px] font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#444] disabled:cursor-not-allowed disabled:opacity-50 ${forward ? 'bg-[#f68b2c] text-white hover:bg-[#df7720]' : 'border-2 border-[#ca7428] bg-white text-[#a85f20] hover:bg-[#fff4e9]'}`}
                     >
                       {forward ? t('workflow.button.advancePhase', { phase: target }) : t('hub.returnToObjective', { phase: target })} <ArrowRight size={15} aria-hidden="true" className={forward ? '' : 'rotate-180'} />
@@ -668,6 +610,12 @@ export default function RoleHubDashboard() {
                   );
                 })}
                 </div>
+                {workflow.resourceCompletion.incompleteResourceIds.length > 0 && workflow.allowedPhaseTransitions.some((target) => target > workflow.currentPhaseNumber) && (
+                  <div id="advance-blocked-reason" className="max-w-md text-right text-[12px] font-semibold text-[#8a4b16]" aria-live="polite">
+                    <p className="inline-flex items-center gap-1.5"><Lock size={13} aria-hidden="true" />{t('hub.advanceBlocked', { incomplete: workflow.resourceCompletion.incompleteResourceIds.length, total: workflow.resourceCompletion.total })}</p>
+                    <p className="mt-0.5 font-medium text-[#666]">{workflow.resourceCompletion.incompleteResourceIds.map((id) => resolveSpiceResource(id, tools, t)?.name || id).join(', ')}</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -906,58 +854,24 @@ export default function RoleHubDashboard() {
     );
   };
 
+  // The same "See possible scenarios" option as on the start page: shown, but not available yet.
   const renderCrossPilotComparison = () => {
     if (!detail || !activeInitiative) return null;
-    const comparisonAvailable = pilotFinalized || (detail.currentPhaseNumber ?? 0) >= 5;
-
     return (
-      <section
-        className={`mt-8 border-2 p-6 md:p-8 ${comparisonAvailable ? 'border-[#d0d1d5] bg-white' : 'border-[#c9cbd1] bg-[#f1f1f2]'}`}
-        aria-labelledby="cross-pilot-comparison-title"
-      >
+      <section className="mt-8 border-[3px] border-[#d0d0d0] bg-white p-6 md:p-8" aria-labelledby="possible-scenarios-title" aria-disabled="true">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex min-w-0 items-start gap-4">
-            <span className={`grid h-12 w-12 flex-none place-items-center rounded-full ${comparisonAvailable ? 'bg-[#fff0e1] text-[#ca7428]' : 'bg-[#dedfe2] text-[#666]'}`} aria-hidden="true">
-              {comparisonAvailable ? <GitCompareArrows size={23} /> : <LockKeyhole size={22} />}
+            <span className="grid h-12 w-12 flex-none place-items-center rounded-full bg-[#d6d6d6] text-[#ca7428]" aria-hidden="true">
+              <RefreshCw size={23} />
             </span>
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 id="cross-pilot-comparison-title" className={`text-[20px] font-bold ${comparisonAvailable ? 'text-[#444]' : 'text-[#555]'}`}>
-                  {t('hub.crossPilotComparisonTitle')}
-                </h2>
-                <span className={`px-2.5 py-1 text-[11px] font-bold uppercase ${comparisonAvailable ? 'bg-[#e8f5ef] text-[#2e6e45]' : 'bg-[#dedfe2] text-[#555]'}`}>
-                  {t(comparisonAvailable ? 'hub.crossPilotComparisonAvailable' : 'status.locked')}
-                </span>
-              </div>
-              <p className={`mt-2 max-w-3xl text-[14px] leading-relaxed ${comparisonAvailable ? 'text-[#666]' : 'text-[#5f6063]'}`}>
-                {t('hub.crossPilotComparisonText')}
-              </p>
-              {!comparisonAvailable && (
-                <p id="cross-pilot-comparison-lock-note" className="mt-3 flex items-start gap-2 text-[13px] font-semibold text-[#555]" role="status">
-                  <LockKeyhole size={16} className="mt-0.5 flex-none" aria-hidden="true" />
-                  {t('hub.crossPilotComparisonLocked', { phase: 5 })}
-                </p>
-              )}
+              <h2 id="possible-scenarios-title" className="text-[20px] font-bold text-[#444]">{t('process.scenarios')}</h2>
+              <p className="mt-2 max-w-3xl text-[14px] leading-relaxed text-[#555]">{t('process.scenariosText')}</p>
             </div>
           </div>
-
-          {comparisonAvailable ? (
-            <Link
-              to="/pilot-sites#cross-site-evaluation"
-              className="inline-flex min-h-12 flex-none cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] px-5 py-3 text-[14px] font-bold text-white transition-colors duration-200 hover:bg-[#df7720] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#444]"
-            >
-              {t('hub.openCrossPilotComparison')} <ArrowRight size={17} aria-hidden="true" />
-            </Link>
-          ) : (
-            <button
-              type="button"
-              disabled
-              aria-describedby="cross-pilot-comparison-lock-note"
-              className="inline-flex min-h-12 flex-none cursor-not-allowed items-center justify-center gap-2 border-2 border-[#b8bac0] bg-[#dedfe2] px-5 py-3 text-[14px] font-bold text-[#666]"
-            >
-              <LockKeyhole size={17} aria-hidden="true" /> {t('hub.openCrossPilotComparison')}
-            </button>
-          )}
+          <button type="button" disabled className="inline-flex min-h-12 flex-none cursor-not-allowed items-center justify-center gap-2 bg-[#8c8c8c] px-6 py-3 text-[15px] font-bold text-white">
+            {t('process.comingSoon')} <Clock size={18} aria-hidden="true" />
+          </button>
         </div>
       </section>
     );
@@ -1144,6 +1058,7 @@ export default function RoleHubDashboard() {
                 {detail && renderMunicipalityLifecycle()}
                 {detail && (detail.lifecycleStatus === 'active' || detail.lifecycleStatus === 'completed') && <>
                 {renderRoadmap()}
+                </>}
                 {detail && (
                   <section aria-labelledby="facilitator-assignment-title" className="spice-card p-6 md:p-8">
                     <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
@@ -1155,12 +1070,15 @@ export default function RoleHubDashboard() {
                             <span className="rounded-full bg-[#fff0e1] px-2.5 py-0.5 text-[12px] font-bold text-[#a85f20]">{detail.facilitators.length}</span>
                           </h3>
                           <p className="mt-1 max-w-xl text-[13px] leading-relaxed text-[#666]">{t('hub.facilitatorsShareBrief')}</p>
+                          {detail.lifecycleStatus !== 'active' && (
+                            <p className="mt-3 flex max-w-xl items-start gap-2 border-l-4 border-[#d5d6da] bg-[#f7f7f8] px-3 py-2 text-[13px] font-semibold text-[#555]"><Lock size={15} className="mt-0.5 flex-none" aria-hidden="true" />{t('hub.facilitatorsInactive')}</p>
+                          )}
                         </div>
                       </div>
                       <form onSubmit={assignFacilitator} className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto">
                         <label htmlFor="facilitator-email" className="sr-only">{t('hub.facilitatorEmailLabel')}</label>
-                        <input id="facilitator-email" type="email" required value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} placeholder="facilitator@example.org" className="min-h-11 min-w-0 flex-1 border-2 border-[#bfc0c5] px-3 text-[14px] focus:border-[#ca7428] focus:outline-none lg:w-72" />
-                        <button type="submit" disabled={savingFacilitator || !facilitatorEmail.trim()} className="inline-flex min-h-11 flex-none cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] px-4 text-[13px] font-bold text-white hover:bg-[#e07a20] disabled:cursor-not-allowed disabled:opacity-60">
+                        <input id="facilitator-email" type="email" required disabled={detail.lifecycleStatus !== 'active'} value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} placeholder="facilitator@example.org" className="min-h-11 min-w-0 flex-1 border-2 border-[#bfc0c5] px-3 text-[14px] focus:border-[#ca7428] focus:outline-none lg:w-72" />
+                        <button type="submit" disabled={detail.lifecycleStatus !== 'active' || savingFacilitator || !facilitatorEmail.trim()} className="inline-flex min-h-11 flex-none cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] px-4 text-[13px] font-bold text-white hover:bg-[#e07a20] disabled:cursor-not-allowed disabled:opacity-60">
                           <Plus size={15} aria-hidden="true" />{savingFacilitator ? t('hub.assigningFacilitator') : t('hub.assignFacilitator')}
                         </button>
                       </form>
@@ -1197,7 +1115,6 @@ export default function RoleHubDashboard() {
                     )}
                   </section>
                 )}
-                </>}
               </>
             )}
           </>

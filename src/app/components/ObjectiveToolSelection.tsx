@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Landmark, Save } from 'lucide-react';
+import { Landmark, Lock, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { useI18n } from '../context/I18nContext';
 import { apiRequest, jsonBody } from '../lib/api';
 import type { Tool } from '../data/tools';
 import { DIGITAL_TOOL_IDS, recommendedResourceIds, resolveSpiceResource, type SpiceResource } from '../data/spiceResources';
+import { objectiveLock, RESOURCE_LOCK_KEYS, resourceLockMessage, type ResourceEditContext } from '../lib/objectiveResources';
+import { localizedApiError } from '../lib/localizedApiError';
 
 interface Props {
   initiativeId: number;
@@ -13,10 +15,12 @@ interface Props {
   municipalityNotes: string;
   municipalityToolNotes: Record<string, string>;
   tools: Tool[];
+  /** Pilot lifecycle, current Objective and published tools, which decide what may still change. */
+  editContext: ResourceEditContext;
   onSaved: () => Promise<void>;
 }
 
-export default function ObjectiveToolSelection({ initiativeId, phaseNumber, enabledTools, municipalityNotes, municipalityToolNotes, tools, onSaved }: Props) {
+export default function ObjectiveToolSelection({ initiativeId, phaseNumber, enabledTools, municipalityNotes, municipalityToolNotes, tools, editContext, onSaved }: Props) {
   const { t } = useI18n();
   const [selected, setSelected] = useState<string[]>(enabledTools);
   const [objectiveNotes, setObjectiveNotes] = useState(municipalityNotes);
@@ -38,7 +42,12 @@ export default function ObjectiveToolSelection({ initiativeId, phaseNumber, enab
     || objectiveNotes.trim() !== municipalityNotes.trim()
     || selected.some((id) => (toolNotes[id] || '').trim() !== (municipalityToolNotes[id] || '').trim());
 
-  const toggle = (id: string) => setSelected((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));
+  const lockMessageFor = (id: string) => resourceLockMessage(t, editContext, phaseNumber, id, selected);
+  const objectiveLocked = objectiveLock(editContext, phaseNumber);
+  const toggle = (id: string) => {
+    if (lockMessageFor(id)) return;
+    setSelected((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));
+  };
 
   const save = async () => {
     setSaving(true);
@@ -53,8 +62,8 @@ export default function ObjectiveToolSelection({ initiativeId, phaseNumber, enab
       });
       await onSaved();
       toast.success(t('phaseDetail.toolSelectionSaved'));
-    } catch {
-      toast.error(t('common.error'));
+    } catch (caught) {
+      toast.error(localizedApiError(t, caught));
     } finally {
       setSaving(false);
     }
@@ -66,10 +75,11 @@ export default function ObjectiveToolSelection({ initiativeId, phaseNumber, enab
       <ul className="mt-3 grid gap-3 lg:grid-cols-2">
         {resources.map((resource) => {
           const checked = selected.includes(resource.id);
+          const lockMessage = lockMessageFor(resource.id);
           return (
             <li key={resource.id} className={`border-2 p-4 ${checked ? 'border-[#f68b2c] bg-[#fffaf4]' : 'border-[#d5d6da] bg-white'}`}>
               <label className="flex cursor-pointer items-start gap-3">
-                <input type="checkbox" checked={checked} onChange={() => toggle(resource.id)} className="mt-1 h-4 w-4 flex-none accent-[#ca7428]" />
+                <input type="checkbox" checked={checked} disabled={Boolean(lockMessage)} onChange={() => toggle(resource.id)} className="mt-1 h-4 w-4 flex-none accent-[#ca7428] disabled:cursor-not-allowed" />
                 <span className="min-w-0 flex-1">
                   <span className="flex flex-wrap items-center gap-2">
                     <span className="text-[14px] font-bold text-[#444]">{resource.name}</span>
@@ -78,6 +88,7 @@ export default function ObjectiveToolSelection({ initiativeId, phaseNumber, enab
                   </span>
                   <span className="mt-1 line-clamp-2 block text-[12px] leading-relaxed text-[#666]">{resource.description}</span>
                   <span className="mt-1 block text-[12px] font-semibold text-[#a85f20]">{t(checked ? 'phaseDetail.toolSelected' : 'phaseDetail.toolNotSelected')}</span>
+                  {lockMessage && !objectiveLocked && <span className="mt-1 flex items-start gap-1.5 text-[12px] font-semibold text-[#8a4b16]"><Lock size={13} className="mt-0.5 flex-none" aria-hidden="true" />{lockMessage}</span>}
                 </span>
               </label>
               {checked && (
@@ -103,6 +114,7 @@ export default function ObjectiveToolSelection({ initiativeId, phaseNumber, enab
     <section className="mt-8 border-t-2 border-[#eee] pt-7" aria-labelledby="tool-selection-title">
       <h2 id="tool-selection-title" className="text-[22px] font-bold text-[#444]">{t('hub.toolsHeadingManage', { phase: phaseNumber })}</h2>
       <p className="mt-1 max-w-3xl text-sm leading-relaxed text-[#666]">{t('phaseDetail.toolSelectionText')}</p>
+      {objectiveLocked && <p className="mt-3 flex max-w-3xl items-start gap-2 border-l-4 border-[#d5d6da] bg-[#f7f7f8] px-4 py-3 text-[13px] font-semibold text-[#555]"><Lock size={15} className="mt-0.5 flex-none" aria-hidden="true" />{t(RESOURCE_LOCK_KEYS[objectiveLocked], { number: phaseNumber })}</p>}
 
       <label className="mt-5 block max-w-3xl border-l-4 border-[#4e789b] bg-[#f1f7fb] p-4 text-[13px] font-bold text-[#31556f]">
         <span className="flex items-center gap-2 text-[11px] uppercase tracking-wide"><Landmark size={14} aria-hidden="true" />{t('phaseDetail.municipalityNotesLabel')}</span>

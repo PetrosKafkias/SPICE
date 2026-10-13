@@ -11,6 +11,7 @@ import { resolveSpiceResource } from '../data/spiceResources';
 import type { TranslationKey } from '../i18n/translations';
 import { processPhase } from '../data/processFramework';
 import { apiRequest } from '../lib/api';
+import { PUBLISHED_ACTIVITY_STATUSES, type ResourceEditContext } from '../lib/objectiveResources';
 
 interface Phase {
   id: number;
@@ -40,6 +41,7 @@ interface Initiative {
   phases: Phase[];
   currentPhaseNumber: number | null;
   pilotFinalizedAt: string | null;
+  lifecycleStatus: string;
 }
 
 const PHASE_TEXT_KEYS: Record<number, TranslationKey> = {
@@ -95,6 +97,14 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
   const state = phase && initiative ? phaseState(phase.phaseNumber, initiative.currentPhaseNumber, Boolean(initiative.pilotFinalizedAt)) : null;
   const stateLabelKey: TranslationKey | null = state === 'completed' ? 'hub.phaseCompleted' : state === 'current' ? 'hub.phaseCurrent' : state === 'incomplete' ? 'hub.phaseUpcoming' : null;
   const liveActivities = (phase?.activities || []).filter((activity) => activity.workflowStatus !== 'cancelled');
+  const editContext: ResourceEditContext = {
+    lifecycleStatus: initiative?.pilotFinalizedAt ? 'completed' : initiative?.lifecycleStatus || 'setup_required',
+    currentPhaseNumber: initiative?.currentPhaseNumber ?? null,
+    published: Object.fromEntries((initiative?.phases || []).map((item) => [
+      item.phaseNumber,
+      item.activities.filter((activity) => activity.toolKey && PUBLISHED_ACTIVITY_STATUSES.includes(activity.workflowStatus)).map((activity) => activity.toolKey as string),
+    ])),
+  };
   const otherActivities = liveActivities.filter((activity) => !activity.toolKey || !phase?.enabledTools.includes(activity.toolKey));
 
   // A new implementation starts from what the platform already knows: the resource's catalogue
@@ -218,6 +228,7 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
                 municipalityNotes={phase.municipalityNotes || ''}
                 municipalityToolNotes={phase.municipalityToolNotes || EMPTY_TOOL_NOTES}
                 tools={tools}
+                editContext={editContext}
                 onSaved={refresh}
               />
             )}

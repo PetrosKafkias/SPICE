@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ElementType } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import {
   ArrowLeft,
   ArrowRight,
@@ -7,6 +7,7 @@ import {
   CircleAlert,
   Clock,
   ListChecks,
+  Lock,
   Search,
   SlidersHorizontal,
   Sparkles,
@@ -18,23 +19,12 @@ import SpicePublicShell from '../components/SpicePublicShell';
 import LoadingState from '../components/LoadingState';
 import { getTools, PHASES, type Mode, type Tool } from '../data/tools';
 import { useI18n } from '../context/I18nContext';
-import { apiRequest, jsonBody } from '../lib/api';
 import { DEFAULT_PROCESS_SETUP, processSetupFromInitiative, type ProcessSetupState } from '../lib/processSetup';
+import { OBJECTIVE_NUMBERS, resourceLockMessage, useObjectiveResources, type ObjectiveSelections } from '../lib/objectiveResources';
+import ObjectiveCoverage from '../components/ObjectiveCoverage';
+import ObjectiveDigitalTools from '../components/ObjectiveDigitalTools';
 import type { TranslationKey } from '../i18n/translations';
 import { localizedApiError } from '../lib/localizedApiError';
-
-interface Initiative {
-  id: number;
-  version: number;
-  setupStage: string | null;
-  setupObjectives: string[];
-  setupParticipationLevel: string | null;
-  setupGroupSize: string | null;
-  setupDuration: string | null;
-  setupFacilitator: string | null;
-  setupMode: string | null;
-  setupSelectedTools: string[];
-}
 
 const OBJECTIVE_PHASES: Record<string, number[]> = {
   framing: [1],
@@ -138,11 +128,13 @@ function SelectFilter({ label, value, options, onChange }: {
   );
 }
 
-function ToolCard({ tool, phaseName, reasons, inProcess, onToggle, onMore, t }: {
+function ToolCard({ tool, phaseName, reasons, inProcess, lockMessage, onToggle, onMore, t }: {
   tool: Tool;
   phaseName: string;
   reasons: string[];
   inProcess: boolean;
+  /** Why the resource cannot be added or removed right now, if it cannot. */
+  lockMessage: string | null;
   onToggle: () => void;
   onMore: () => void;
   t: (key: TranslationKey, values?: Record<string, string | number>) => string;
@@ -201,12 +193,16 @@ function ToolCard({ tool, phaseName, reasons, inProcess, onToggle, onMore, t }: 
         </button>
         <button
           onClick={onToggle}
-          className="flex-1 px-4 py-2.5 text-[13px] font-bold text-white transition-colors"
+          disabled={Boolean(lockMessage)}
+          title={lockMessage || undefined}
+          className="flex flex-1 items-center justify-center gap-1.5 px-4 py-2.5 text-[13px] font-bold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-60"
           style={{ backgroundColor: inProcess ? '#a86622' : '#f68b2c' }}
         >
+          {lockMessage && <Lock size={13} aria-hidden="true" />}
           {inProcess ? t('setup.disableTool') : t('setup.enableTool')}
         </button>
       </div>
+      {lockMessage && <p className="flex items-start gap-1.5 text-[12px] font-semibold text-[#8a4b16]"><Lock size={13} className="mt-0.5 flex-none" aria-hidden="true" />{lockMessage}</p>}
     </article>
   );
 }
@@ -214,51 +210,44 @@ function ToolCard({ tool, phaseName, reasons, inProcess, onToggle, onMore, t }: 
 export default function SetUpProcessToolsPage() {
   const navigate = useNavigate();
   const { language, t, tp } = useI18n();
+  // "Explore the toolkit freely" opens the same page without the questionnaire: every Objective is shown.
+  const [searchParams] = useSearchParams();
+  const exploring = searchParams.get('mode') === 'explore';
   const tools = useMemo(() => getTools(language), [language]);
-  const [initiativeId, setInitiativeId] = useState<number | null>(null);
-  const [version, setVersion] = useState(0);
+  const { initiative, selections, loading, error, save, editContext } = useObjectiveResources(true);
   const [processSetup, setProcessSetup] = useState<ProcessSetupState>(DEFAULT_PROCESS_SETUP);
-  const [myProcessTools, setMyProcessTools] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState('');
+  // Draft of the resources chosen per Objective; saved together when the Municipality continues.
+  const [draft, setDraft] = useState<ObjectiveSelections>(selections);
   const [query, setQuery] = useState('');
   const [modeFilter, setModeFilter] = useState<string>('all');
   const [phaseFilter, setPhaseFilter] = useState<string>('recommended');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      setLoadError('');
-      try {
-        const result = await apiRequest<{ initiatives: Initiative[] }>('/api/hub/initiatives');
-        const initiative = result.initiatives[0];
-        if (cancelled) return;
-        if (!initiative) {
-          setLoadError(t('setup.noPilot'));
-          return;
-        }
-        setInitiativeId(initiative.id);
-        setVersion(initiative.version);
-        setProcessSetup(processSetupFromInitiative(initiative));
-        setMyProcessTools(initiative.setupSelectedTools || []);
-      } catch (caught) {
-        if (!cancelled) setLoadError(localizedApiError(t, caught, 'setup.loadFailed'));
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [t]);
+    if (initiative) setProcessSetup(processSetupFromInitiative(initiative));
+    setDraft(selections);
+  }, [initiative, selections]);
 
-  const addToolToProcess = (toolId: string) => setMyProcessTools((prev) => (prev.includes(toolId) ? prev : [...prev, toolId]));
-  const removeToolFromProcess = (toolId: string) => setMyProcessTools((prev) => prev.filter((id) => id !== toolId));
+  const loadError = error ? localizedApiError(t, error, 'setup.loadFailed') : !loading && !initiative ? t('setup.noPilot') : '';
+  const myProcessTools = [...new Set(OBJECTIVE_NUMBERS.flatMap((number) => draft[number] || []))];
+  const isSelected = (phaseNumber: number, id: string) => (draft[phaseNumber] || []).includes(id);
+  // The same rules as the server, checked against the unsaved draft.
+  const lockMessageFor = (phaseNumber: number, id: string) => resourceLockMessage(t, editContext, phaseNumber, id, draft[phaseNumber] || []);
+  const toggleResource = (phaseNumber: number, id: string, name: string) => {
+    const lockMessage = lockMessageFor(phaseNumber, id);
+    if (lockMessage) { toast.error(lockMessage); return; }
+    const selected = isSelected(phaseNumber, id);
+    setDraft((current) => ({
+      ...current,
+      [phaseNumber]: selected ? (current[phaseNumber] || []).filter((item) => item !== id) : [...(current[phaseNumber] || []), id],
+    }));
+    toast.success(t(selected ? 'coverage.removed' : 'coverage.added', { resource: name, number: phaseNumber }));
+  };
 
   const selectedPhases = useMemo(() => {
-    const phases = processSetup.objectives.flatMap((objective) => OBJECTIVE_PHASES[objective] || []);
+    const phases = exploring ? [] : processSetup.objectives.flatMap((objective) => OBJECTIVE_PHASES[objective] || []);
     return phases.length ? Array.from(new Set(phases)) : [1, 2, 3, 4, 5];
-  }, [processSetup.objectives]);
+  }, [exploring, processSetup.objectives]);
 
   const phaseNameById = useMemo(() => new Map(PHASES.map((phase) => [phase.id, t(phase.nameKey)])), [t]);
 
@@ -269,49 +258,45 @@ export default function SetUpProcessToolsPage() {
     }).sort((a, b) => b.score - a.score || a.tool.phase - b.tool.phase || a.tool.name.localeCompare(b.tool.name));
   }, [phaseNameById, processSetup, selectedPhases, t, tools]);
 
-  const filteredTools = scoredTools.filter(({ tool, score }) => {
+  const filteredTools = scoredTools.filter(({ tool }) => {
     const matchSearch = `${tool.name} ${tool.shortDesc} ${phaseNameById.get(tool.phase) || ''} ${tool.objectiveTags.join(' ')}`.toLowerCase().includes(query.toLowerCase());
     const matchMode = modeFilter === 'all' || tool.mode === modeFilter || tool.mode === 'Hybrid';
     const matchPhase = phaseFilter === 'recommended' ? selectedPhases.includes(tool.phase) : tool.phase === Number(phaseFilter);
-    return matchSearch && matchMode && matchPhase && score > 0;
+    return matchSearch && matchMode && matchPhase;
   });
 
-  const activeObjectiveLabels = processSetup.objectives.map((id) => OBJECTIVE_LABELS[id]).filter(Boolean).map((key) => t(key));
-  const selectedCount = filteredTools.filter(({ tool }) => myProcessTools.includes(tool.id)).length;
+  const activeObjectiveLabels = exploring ? [] : processSetup.objectives.map((id) => OBJECTIVE_LABELS[id]).filter(Boolean).map((key) => t(key));
+  const selectedCount = filteredTools.filter(({ tool }) => isSelected(tool.phase, tool.id)).length;
+  const visiblePhase = (phaseNumber: number) => (phaseFilter === 'recommended' ? selectedPhases.includes(phaseNumber) : Number(phaseFilter) === phaseNumber);
+  const showDigital = modeFilter !== 'Offline';
 
+  // Every visible Objective is listed, so its digital tools can be chosen even when no analogue resource matches.
   const toolsByPhase = PHASES.map((phase) => ({
     phase,
     tools: filteredTools.filter(({ tool }) => tool.phase === phase.id),
-  })).filter((group) => group.tools.length > 0);
-
-  const toggleTool = (tool: Tool) => {
-    if (myProcessTools.includes(tool.id)) {
-      removeToolFromProcess(tool.id);
-      toast.success(t('setup.toolDisabled', { tool: tool.name }));
-      return;
-    }
-    addToolToProcess(tool.id);
-    toast.success(t('setup.toolEnabled', { tool: tool.name }));
-  };
+  })).filter((group) => visiblePhase(group.phase.id) && (group.tools.length > 0 || showDigital));
 
   const continueWithTools = async () => {
     if (myProcessTools.length === 0) {
       toast.error(t('setup.enableOne'));
       return;
     }
-    if (!initiativeId) return;
+    if (!initiative) return;
     setSaving(true);
     try {
-      const result = await apiRequest<{ initiative: Initiative }>(`/api/hub/initiatives/${initiativeId}`, {
-        method: 'PATCH', body: jsonBody({ setupSelectedTools: myProcessTools, version }),
-      });
-      setVersion(result.initiative.version);
+      await save(draft);
+      // The hub decides where to land: the start page until every Objective has a resource, the hub afterwards.
       navigate('/co-creation-hub');
-    } catch {
-      toast.error(t('setup.selectedSaveFailed'));
+    } catch (caught) {
+      toast.error(localizedApiError(t, caught, 'setup.selectedSaveFailed'));
     } finally {
       setSaving(false);
     }
+  };
+
+  const showObjective = (phaseNumber: number) => {
+    setPhaseFilter(String(phaseNumber));
+    window.requestAnimationFrame(() => document.getElementById(`setup-objective-${phaseNumber}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   };
 
   if (loading) {
@@ -337,18 +322,18 @@ export default function SetUpProcessToolsPage() {
       <div className="spice-page spice-wide-page flex flex-col gap-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
         <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="text-[13px] font-bold uppercase tracking-wide text-[#ca7428]">{t('setup.toolsStep')}</p>
+            <p className="text-[13px] font-bold uppercase tracking-wide text-[#ca7428]">{t(exploring ? 'process.explore' : 'setup.toolsStep')}</p>
             <h1 className="mt-2 text-[32px] font-bold text-[#444]">{t('setup.toolsTitle')}</h1>
             <p className="mt-2 max-w-[760px] text-[15px] font-medium leading-relaxed text-[#666]">
-              {t('setup.toolsIntro')}
+              {t(exploring ? 'setup.exploreIntro' : 'setup.toolsIntro')}
             </p>
           </div>
           <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:flex-nowrap">
             <button
-              onClick={() => navigate('/setup-questionnaire')}
+              onClick={() => navigate(exploring ? '/co-creation-process' : '/setup-questionnaire')}
               className="flex items-center gap-2 whitespace-nowrap border border-[#444] bg-white px-5 py-3 text-[14px] font-semibold text-[#444] transition-colors hover:bg-[#f7f7f7]"
             >
-              <ArrowLeft size={15} /> {t('setup.previousStep')}
+              <ArrowLeft size={15} /> {t(exploring ? 'common.back' : 'setup.previousStep')}
             </button>
             <button
               onClick={() => void continueWithTools()}
@@ -381,6 +366,8 @@ export default function SetUpProcessToolsPage() {
           </div>
         </section>
 
+        <ObjectiveCoverage selections={draft} onSelectObjective={showObjective} />
+
         <section className="spice-card p-5">
           <div className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#444]">
             <SlidersHorizontal size={17} className="text-[#ca7428]" /> {t('setup.filterRecommendations')}
@@ -412,7 +399,7 @@ export default function SetUpProcessToolsPage() {
 
         <div className="flex flex-col gap-8">
           {toolsByPhase.map(({ phase, tools }) => (
-            <div key={phase.id} className="flex flex-col gap-4">
+            <div key={phase.id} id={`setup-objective-${phase.id}`} className="flex scroll-mt-28 flex-col gap-4">
               <div className="flex items-center gap-3">
                 <span className={`grid h-8 w-8 flex-shrink-0 place-items-center rounded-full text-[13px] font-bold text-white ${phase.bg}`}>{phase.id}</span>
                 <h3 className="text-[17px] font-bold text-[#444]">{t(phase.nameKey)}</h3>
@@ -425,18 +412,20 @@ export default function SetUpProcessToolsPage() {
                     tool={tool}
                     phaseName={phaseNameById.get(tool.phase) || ''}
                     reasons={reasons}
-                    inProcess={myProcessTools.includes(tool.id)}
-                    onToggle={() => toggleTool(tool)}
+                    inProcess={isSelected(tool.phase, tool.id)}
+                    lockMessage={lockMessageFor(tool.phase, tool.id)}
+                    onToggle={() => toggleResource(tool.phase, tool.id, tool.name)}
                     onMore={() => navigate(`/tool-detail/${tool.id}`)}
                     t={t}
                   />
                 ))}
               </div>
+              {showDigital && <ObjectiveDigitalTools phaseNumber={phase.id} selectedIds={draft[phase.id] || []} onToggle={(id, name) => toggleResource(phase.id, id, name)} lockMessageFor={(id) => lockMessageFor(phase.id, id)} />}
             </div>
           ))}
         </div>
 
-        {filteredTools.length === 0 && (
+        {toolsByPhase.length === 0 && (
           <div className="spice-card-dashed py-16 text-center">
             <p className="text-[16px] font-bold text-[#444]">{t('setup.noTools')}</p>
             <p className="mt-2 text-[13px] text-[#777]">{t('setup.noToolsHint')}</p>

@@ -26,6 +26,8 @@ export interface WorkflowHandoff {
 export interface WorkflowSummary {
   currentPhaseNumber: number;
   allowedPhaseTransitions: number[];
+  /** Advancing waits until every resource selected for the current Objective is completed. */
+  resourceCompletion: { total: number; completed: number; incompleteResourceIds: string[] };
   readiness: {
     phaseNumber: number;
     ready: boolean;

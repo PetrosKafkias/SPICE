@@ -15,6 +15,7 @@ import {
   activityTransitionsFor,
   activityTransitionLabel,
   allowedObjectiveTransitions,
+  objectiveResourceStates,
   proposalTransitionsFor,
   publicActivityStatus,
   workflowSummary,
@@ -625,6 +626,64 @@ function initiativeFromRow(row, phases = [], facilitators = []) {
   };
 }
 
+// The resources the Municipality chose for each Objective, from either entry path (process setup or
+// free exploration). The Municipality starts on the "Choose how you'd like to begin" page until every
+// Objective has at least one.
+function objectiveResourcesFor(db, initiativeId) {
+  const objectives = [1, 2, 3, 4, 5].map((phaseNumber) => ({ phaseNumber, ...objectiveResourceStates(db, initiativeId, phaseNumber) }));
+  return { objectives, complete: objectives.every((objective) => objective.resourceIds.length > 0) };
+}
+
+// There is no separate activation step: the pilot becomes active once every Objective has a resource,
+// whichever entry path selected them. An active pilot never returns to setup.
+function activatePilotWhenCovered(db, initiativeId, actor) {
+  const row = db.prepare('SELECT * FROM hub_initiatives WHERE id = ?').get(initiativeId);
+  if (!row || ['active', 'completed'].includes(row.lifecycle_status)) return false;
+  if (!objectiveResourcesFor(db, initiativeId).complete) return false;
+  const now = new Date().toISOString();
+  db.prepare(`UPDATE hub_initiatives
+    SET lifecycle_status='active', status='active', activated_at=COALESCE(activated_at, ?), published_at=COALESCE(published_at, ?),
+        current_phase_number=COALESCE(current_phase_number, 1), updated_at=?, version=version+1
+    WHERE id=?`).run(now, now, now, initiativeId);
+  db.prepare(`UPDATE hub_phases SET status='open' WHERE initiative_id=? AND phase_number=1 AND status='not_started'`).run(initiativeId);
+  addAudit(db, {
+    actor, action: 'hub.initiative.activate', targetType: 'hub_initiative', targetId: initiativeId,
+    previousValue: { lifecycleStatus: row.lifecycle_status }, newValue: { lifecycleStatus: 'active' },
+    reason: 'Every Objective has at least one selected resource',
+  });
+  return true;
+}
+
+// What may change in an Objective's resources once the pilot runs: completed Objectives are read-only,
+// a published tool stays in the current Objective, and no Objective may be left without a resource.
+function resourceChangeBlock(db, initiative, phaseNumber, previous, next) {
+  const removed = previous.filter((id) => !next.includes(id));
+  const added = next.filter((id) => !previous.includes(id));
+  if (!removed.length && !added.length) return null;
+  if (initiative.lifecycle_status === 'completed') {
+    return { code: 'OBJECTIVE_LOCKED', message: 'This pilot is completed, so its resources can no longer change.' };
+  }
+  if (initiative.lifecycle_status !== 'active') return null;
+  const currentPhaseNumber = Number(initiative.current_phase_number || 1);
+  if (phaseNumber < currentPhaseNumber) {
+    return { code: 'OBJECTIVE_LOCKED', message: `Objective ${phaseNumber} is completed, so its resources can no longer change.` };
+  }
+  if (next.length === 0) {
+    return { code: 'OBJECTIVE_NEEDS_RESOURCE', message: 'Every Objective of an active pilot needs at least one resource. Add another resource before removing this one.' };
+  }
+  if (phaseNumber === currentPhaseNumber) {
+    const published = objectiveResourceStates(db, initiative.id, phaseNumber).publishedResourceIds.filter((id) => removed.includes(id));
+    if (published.length) {
+      return {
+        code: 'RESOURCE_PUBLISHED',
+        message: `${published.map((id) => SPICE_RESOURCE_NAMES.get(id) || id).join(', ')} already has an approved and published activity, so it stays in this Objective.`,
+        fields: { enabledTools: published.join(', ') },
+      };
+    }
+  }
+  return null;
+}
+
 function phaseFromRow(row) {
   return {
     id: Number(row.id), phaseNumber: Number(row.phase_number), title: row.title,
@@ -1044,7 +1103,8 @@ export async function createApiHandler(options = {}) {
           ORDER BY h.updated_at DESC
         `).all(user.id);
         else rows = db.prepare(`SELECT * FROM hub_initiatives WHERE visibility = 'public' AND status IN ('published','active','completed') AND lifecycle_status IN ('active','completed') ORDER BY updated_at DESC`).all();
-        sendJson(response, 200, { initiatives: rows.map((row) => initiativeFromRow(row)) });
+        const staffList = role === 'municipality' || role === 'admin';
+        sendJson(response, 200, { initiatives: rows.map((row) => (staffList ? { ...initiativeFromRow(row), objectiveResources: objectiveResourcesFor(db, row.id) } : initiativeFromRow(row))) });
         return true;
       }
 
@@ -1257,53 +1317,6 @@ export async function createApiHandler(options = {}) {
         return true;
       }
 
-      const hubActivationMatch = pathname.match(/^\/api\/hub\/initiatives\/(\d+)\/activate$/);
-      if (hubActivationMatch && method === 'POST') {
-        const session = requirePermission(db, request, response, 'hub:publish');
-        if (!session) return true;
-        if (normalizeRole(session.user.role) !== 'municipality') {
-          sendError(response, 403, 'Only the Municipality / Pilot Coordinator can activate an assigned pilot.', null, 'MUNICIPALITY_REQUIRED');
-          return true;
-        }
-        const initiativeId = Number(hubActivationMatch[1]);
-        const row = db.prepare('SELECT * FROM hub_initiatives WHERE id = ?').get(initiativeId);
-        if (!row) { sendError(response, 404, 'Pilot site not found.'); return true; }
-        if (!initiativeIsInScope(session.user, row)) { sendError(response, 403, 'You cannot activate another municipality\'s pilot site.'); return true; }
-        const body = await readJson(request);
-        if (body.version != null && Number(body.version) !== Number(row.version)) {
-          sendError(response, 409, 'This pilot site changed since you opened it. Review the latest version before activating.');
-          return true;
-        }
-        const setupComplete = Boolean(
-          row.setup_stage
-          && parseJson(row.setup_objectives_json, []).length > 0
-          && row.setup_participation_level
-          && row.setup_goal
-          && parseJson(row.setup_selected_tools_json, []).length > 0
-        );
-        if (!setupComplete || row.lifecycle_status !== 'ready_to_activate') {
-          sendError(response, 409, 'Complete and review the process setup before activating this pilot.', null, 'PILOT_SETUP_INCOMPLETE');
-          return true;
-        }
-        if (body.confirmed !== true) {
-          sendError(response, 400, 'Confirm that the pilot is ready to become active.', null, 'PILOT_ACTIVATION_CONFIRMATION_REQUIRED');
-          return true;
-        }
-        const now = new Date().toISOString();
-        db.prepare(`UPDATE hub_initiatives
-          SET lifecycle_status='active', status='active', activated_at=?, published_at=COALESCE(published_at, ?),
-              current_phase_number=COALESCE(current_phase_number, 1), updated_at=?, version=version+1
-          WHERE id=?`).run(now, now, now, initiativeId);
-        db.prepare(`UPDATE hub_phases SET status='open' WHERE initiative_id=? AND phase_number=1 AND status='not_started'`).run(initiativeId);
-        addAudit(db, {
-          actor: session.user, action: 'hub.initiative.activate', targetType: 'hub_initiative', targetId: initiativeId,
-          previousValue: { lifecycleStatus: row.lifecycle_status }, newValue: { lifecycleStatus: 'active' }, reason: String(body.reason || 'Municipality confirmed pilot activation'),
-        });
-        const updated = db.prepare('SELECT * FROM hub_initiatives WHERE id = ?').get(initiativeId);
-        sendJson(response, 200, { initiative: initiativeFromRow(updated) });
-        return true;
-      }
-
       if (hubMatch && method === 'PATCH') {
         const session = requirePermission(db, request, response, 'hub:edit');
         if (!session) return true;
@@ -1334,11 +1347,8 @@ export async function createApiHandler(options = {}) {
           setupMode: body.mode == null ? row.setup_mode : String(body.mode),
         };
         const setupComplete = Boolean(next.setupStage && next.setupObjectives.length > 0 && next.setupParticipationLevel && next.setupGoal);
-        const setupToolsComplete = next.setupSelectedTools.length > 0;
         const lifecycleBeforeSetup = nextStatus === 'draft' ? 'setup_required' : row.lifecycle_status;
-        const nextLifecycleStatus = lifecycleBeforeSetup === 'setup_required' && setupComplete && setupToolsComplete
-          ? 'ready_to_activate'
-          : lifecycleBeforeSetup;
+        const nextLifecycleStatus = lifecycleBeforeSetup === 'ready_to_activate' ? 'setup_required' : lifecycleBeforeSetup;
         const now = new Date().toISOString();
         db.prepare(`UPDATE hub_initiatives SET title=?, description=?, objectives=?, location=?, status=?, visibility=?, enabled_tools_json=?, setup_stage=?, setup_objectives_json=?, setup_participation_level=?, setup_goal=?, setup_selected_tools_json=?, setup_group_size=?, setup_duration=?, setup_facilitator=?, setup_mode=?, setup_completed_at=?, setup_updated_at=?, lifecycle_status=?, published_at=?, updated_at=?, version=version+1 WHERE id=?`)
           .run(next.title, next.description, next.objectives, next.location, next.status, next.visibility, JSON.stringify(next.enabledTools), next.setupStage, JSON.stringify(next.setupObjectives), next.setupParticipationLevel, next.setupGoal, JSON.stringify(next.setupSelectedTools), next.setupGroupSize, next.setupDuration, next.setupFacilitator, next.setupMode, setupComplete ? (row.setup_completed_at || now) : row.setup_completed_at, now, nextLifecycleStatus, ['published','active'].includes(next.status) ? (row.published_at || now) : row.published_at, now, initiativeId);
@@ -1369,7 +1379,15 @@ export async function createApiHandler(options = {}) {
           sendError(response, 409, `Objective ${previousPhaseNumber} can only move to Objective ${allowedObjectiveTransitions(previousPhaseNumber).join(' or ') || 'no other objective'}.`, null, 'INVALID_PHASE_TRANSITION');
           return true;
         }
-        // Readiness requirements guide the Municipality but do not block the move: the Municipality decides when to advance.
+        if (currentPhaseNumber > previousPhaseNumber) {
+          const { resourceIds, completedResourceIds } = objectiveResourceStates(db, initiativeId, previousPhaseNumber);
+          const incomplete = resourceIds.filter((id) => !completedResourceIds.includes(id));
+          if (incomplete.length) {
+            sendError(response, 409, `${incomplete.length} of ${resourceIds.length} resources of Objective ${previousPhaseNumber} are not completed yet: ${incomplete.map((id) => SPICE_RESOURCE_NAMES.get(id) || id).join(', ')}.`, { incompleteResourceIds: incomplete.join(', ') }, 'OBJECTIVE_RESOURCES_INCOMPLETE');
+            return true;
+          }
+        }
+        // The other readiness requirements guide the Municipality but do not block the move.
         const now = new Date().toISOString();
         db.exec('BEGIN IMMEDIATE');
         try {
@@ -1427,6 +1445,8 @@ export async function createApiHandler(options = {}) {
           const requested = [...new Set(body.enabledTools.map(String))];
           const unknown = requested.filter((toolId) => !SPICE_RESOURCE_NAMES.has(toolId));
           if (unknown.length) { sendError(response, 400, 'Choose tools from the SPICE catalogue.', { enabledTools: `Unknown tools: ${unknown.join(', ')}` }); return true; }
+          const blocked = resourceChangeBlock(db, initiative, phaseNumber, enabledTools, requested);
+          if (blocked) { sendError(response, 409, blocked.message, blocked.fields, blocked.code); return true; }
           enabledTools = requested;
         }
         const municipalityNotes = body.municipalityNotes == null
@@ -1455,7 +1475,14 @@ export async function createApiHandler(options = {}) {
           previousValue: { enabledTools: parseJson(phase.enabled_tools_json, []), municipalityNotes: phase.municipality_notes, municipalityToolNotes: previousToolNotes },
           newValue: { enabledTools, municipalityNotes, municipalityToolNotes },
         });
-        sendJson(response, 200, { phase: staffPhaseFromRow(db.prepare('SELECT * FROM hub_phases WHERE id = ?').get(phase.id)) });
+        const activated = activatePilotWhenCovered(db, initiativeId, session.user);
+        const lifecycle = db.prepare('SELECT lifecycle_status, version FROM hub_initiatives WHERE id = ?').get(initiativeId);
+        sendJson(response, 200, {
+          phase: staffPhaseFromRow(db.prepare('SELECT * FROM hub_phases WHERE id = ?').get(phase.id)),
+          activated,
+          lifecycleStatus: lifecycle.lifecycle_status,
+          version: Number(lifecycle.version),
+        });
         return true;
       }
 

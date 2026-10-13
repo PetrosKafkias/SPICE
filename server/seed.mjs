@@ -186,7 +186,7 @@ export async function seedDatabase(db) {
         WHERE id = ?
       `).run(
         JSON.stringify(['inclusive_design', 'community_priorities']), NOW,
-        JSON.stringify(['hopes-and-fears', 'key-informant-interviews', 'scenario-building', 'top-10-design-principles-manifesto']),
+        JSON.stringify(['hopes-and-fears', 'key-informant-interviews', 'scenario-building', 'top-10-design-principles-manifesto', 'lo-fi-prototyping', 'scene', 'stewardship-canvas', 'citivoice']),
         NOW, NOW, initiativeId,
       );
 
@@ -196,8 +196,8 @@ export async function seedDatabase(db) {
         [1, 'completed', ['hopes-and-fears'], 1, 'Residents and municipal staff agreed the participation scope, documented accessibility priorities, and identified shade and safer access as the first shared needs.', '2026-05-01', '2026-05-20', '2026-05-20T16:00:00.000Z'],
         [2, 'completed', ['key-informant-interviews'], 1, 'Interviews and local observations built a shared evidence base around heat, movement, play, accessibility, and everyday stewardship of Parko Kritis.', '2026-05-21', '2026-06-30', '2026-06-30T16:00:00.000Z'],
         [3, 'open', ['scenario-building', 'top-10-design-principles-manifesto'], 0, null, '2026-07-01', '2026-09-18', null],
-        [4, 'not_started', [], 0, null, null, null, null],
-        [5, 'not_started', [], 0, null, null, null, null],
+        [4, 'not_started', ['lo-fi-prototyping', 'scene'], 0, null, null, null, null],
+        [5, 'not_started', ['stewardship-canvas', 'citivoice'], 0, null, null, null, null],
       ];
       const updatePhase = db.prepare(`
         UPDATE hub_phases SET status = ?, enabled_tools_json = ?, results_visible = ?,

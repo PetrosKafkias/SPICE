@@ -6,7 +6,8 @@ import RoleHubDashboard from '../components/RoleHubDashboard';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
 import { usePermissions } from '../auth/usePermissions';
-import { hasSeenFirstEntry } from '../lib/firstEntry';
+import LoadingState from '../components/LoadingState';
+import { selectionsComplete, useObjectiveResources } from '../lib/objectiveResources';
 import type { TranslationKey } from '../i18n/translations';
 
 const PUBLIC_HUB_OPTIONS: Array<{
@@ -28,8 +29,18 @@ export default function OverviewPage() {
   const { role } = usePermissions();
   const { search } = useLocation();
 
-  // First visit: a Municipality user starts by choosing how to begin. Deep links to an objective still open the hub.
-  if (user && role === 'municipality' && !search && !hasSeenFirstEntry(user.id)) return <Navigate to="/co-creation-process" replace />;
+  // A Municipality starts on "Choose how you'd like to begin" until every Objective has at least one resource.
+  // Links into the hub with parameters (an Objective, a pilot, or "Go to the Co-Creation Hub") still open it.
+  const checkStart = Boolean(user) && role === 'municipality' && !search;
+  const { initiative, selections, loading } = useObjectiveResources(checkStart);
+  if (checkStart && loading) {
+    return (
+      <SpicePublicShell variant="public">
+        <div className="spice-page spice-wide-page"><LoadingState message={t('common.loading')} minHeight="256px" size="lg" /></div>
+      </SpicePublicShell>
+    );
+  }
+  if (checkStart && initiative && !selectionsComplete(selections)) return <Navigate to="/co-creation-process" replace />;
 
   if (user) {
     return (

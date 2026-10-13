@@ -18,6 +18,11 @@ const ERROR_KEYS: Record<string, TranslationKey> = {
   AUTH_INVALID_CREDENTIALS: 'apiError.invalidCredentials',
   AUTH_SUSPENDED: 'apiError.suspended',
   AUTH_EMAIL_UNVERIFIED: 'apiError.emailUnverified',
+  PILOT_NOT_ACTIVE: 'apiError.pilotNotActive',
+  OBJECTIVE_LOCKED: 'apiError.objectiveLocked',
+  RESOURCE_PUBLISHED: 'apiError.resourcePublished',
+  OBJECTIVE_NEEDS_RESOURCE: 'apiError.objectiveNeedsResource',
+  OBJECTIVE_RESOURCES_INCOMPLETE: 'apiError.objectiveResourcesIncomplete',
 };
 
 const FIELD_ERROR_KEYS: Record<string, TranslationKey> = {

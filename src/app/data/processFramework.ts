@@ -23,6 +23,11 @@ export interface ProcessPhaseDefinition {
   digitalTools?: DigitalToolUsage[];
 }
 
+// Digital tools per Objective follow D3.3 Annex A.6.7 ("Use of digital tools in the events"), read by
+// what each column describes: challenge identification (Objective 2), scenario building (Objective 3),
+// prototype validation (Objective 4) and long-term governance (Objective 5). Objective 1 is the
+// Municipality's internal framing phase and has no digital tool.
+
 export const PROCESS_PHASES: ProcessPhaseDefinition[] = [
   {
     number: 1,
@@ -35,11 +40,6 @@ export const PROCESS_PHASES: ProcessPhaseDefinition[] = [
     actionKeys: ['phase.1.action1', 'phase.1.action2', 'phase.1.action3', 'phase.1.action4'],
     expectedOutcomeKey: 'phase.1.outcome',
     eventTypeKeys: ['phase.event.ev1', 'phase.event.ev2'],
-    digitalTools: [
-      { toolId: 'citivoice', nameKey: 'nav.citivoice', route: '/citivoice-app', descriptionKey: 'phase.1.tool.citivoice.scope' },
-      { toolId: 'chatbot', nameKey: 'nav.aiChatbot', route: '/co-creation-guide', descriptionKey: 'tools.aiChatbotText' },
-      { toolId: 'scene', nameKey: 'nav.sceneEditor', route: '/3d-scene-editor', descriptionKey: 'phase.1.tool.scene.scope' },
-    ],
   },
   {
     number: 2,
@@ -53,7 +53,7 @@ export const PROCESS_PHASES: ProcessPhaseDefinition[] = [
     eventTypeKeys: ['phase.event.ev3'],
     digitalTools: [
       { toolId: 'citivoice', nameKey: 'nav.citivoice', route: '/citivoice-app', descriptionKey: 'phase.2.tool.citivoice.scope' },
-      { toolId: 'chatbot', nameKey: 'nav.aiChatbot', route: '/co-creation-guide', descriptionKey: 'tools.aiChatbotText' },
+      { toolId: 'chatbot', nameKey: 'nav.aiChatbot', route: '/co-creation-guide', descriptionKey: 'phase.2.tool.chatbot.scope' },
       { toolId: 'scene', nameKey: 'nav.sceneEditor', route: '/3d-scene-editor', descriptionKey: 'phase.2.tool.scene.scope' },
     ],
   },
@@ -69,6 +69,7 @@ export const PROCESS_PHASES: ProcessPhaseDefinition[] = [
     eventTypeKeys: ['phase.event.ev4'],
     digitalTools: [
       { toolId: 'citivoice', nameKey: 'nav.citivoice', route: '/citivoice-app', descriptionKey: 'phase.3.tool.citivoice.scope' },
+      { toolId: 'chatbot', nameKey: 'nav.aiChatbot', route: '/co-creation-guide', descriptionKey: 'phase.3.tool.chatbot.scope' },
       { toolId: 'scene', nameKey: 'nav.sceneEditor', route: '/3d-scene-editor', descriptionKey: 'phase.3.tool.scene.scope' },
     ],
   },
@@ -84,6 +85,7 @@ export const PROCESS_PHASES: ProcessPhaseDefinition[] = [
     eventTypeKeys: ['phase.event.ev5'],
     digitalTools: [
       { toolId: 'citivoice', nameKey: 'nav.citivoice', route: '/citivoice-app', descriptionKey: 'phase.4.tool.citivoice.scope' },
+      { toolId: 'scene', nameKey: 'nav.sceneEditor', route: '/3d-scene-editor', descriptionKey: 'phase.4.tool.scene.scope' },
     ],
   },
   {
@@ -97,6 +99,9 @@ export const PROCESS_PHASES: ProcessPhaseDefinition[] = [
     actionKeys: ['phase.5.action1', 'phase.5.action2', 'phase.5.action3', 'phase.5.action4', 'phase.5.action5', 'phase.5.action6', 'phase.5.action7', 'phase.5.action8', 'phase.5.action9'],
     expectedOutcomeKey: 'phase.5.outcome',
     eventTypeKeys: ['phase.event.ev6', 'phase.event.ev7'],
+    digitalTools: [
+      { toolId: 'citivoice', nameKey: 'nav.citivoice', route: '/citivoice-app', descriptionKey: 'phase.5.tool.citivoice.scope' },
+    ],
   },
 ];
 

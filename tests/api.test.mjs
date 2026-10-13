@@ -359,24 +359,27 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
       },
     });
     assert.equal(setupBeforeActivation.status, 200);
-    assert.equal(setupBeforeActivation.payload.initiative.lifecycleStatus, 'ready_to_activate');
+    // Completing the questionnaire does not activate the pilot: only a resource for every Objective does.
+    assert.equal(setupBeforeActivation.payload.initiative.lifecycleStatus, 'setup_required');
 
     const citizenBeforeActivation = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: citizenLogin.cookie });
     assert.equal(citizenBeforeActivation.status, 403);
 
-    const adminActivation = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/activate`, {
-      method: 'POST', cookie: adminLogin.cookie,
-      body: { version: setupBeforeActivation.payload.initiative.version, confirmed: true },
+    const facilitatorBeforeActivation = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/facilitators`, {
+      method: 'POST', cookie: municipalityLogin.cookie, body: { email: 'facilitator@spice.local' },
     });
-    assert.equal(adminActivation.status, 403);
-    assert.equal(adminActivation.payload.code, 'MUNICIPALITY_REQUIRED');
+    assert.equal(facilitatorBeforeActivation.payload.code, 'PILOT_NOT_ACTIVE');
+    assert.equal((await request(baseUrl, `/api/hub/initiatives/${initiative.id}/activate`, { method: 'POST', cookie: municipalityLogin.cookie, body: { confirmed: true } })).status, 404);
 
-    const publish = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/activate`, {
-      method: 'POST', cookie: municipalityLogin.cookie,
-      body: { version: setupBeforeActivation.payload.initiative.version, confirmed: true, reason: 'Municipality reviewed the setup and activated the pilot.' },
-    });
-    assert.equal(publish.status, 200);
-    assert.equal(publish.payload.initiative.lifecycleStatus, 'active');
+    const coverage = { 1: ['hopes-and-fears'], 2: ['citivoice'], 3: ['scene'], 4: ['scene'], 5: ['citivoice'] };
+    let publish;
+    for (const [number, enabledTools] of Object.entries(coverage)) {
+      publish = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/phases/${number}`, { method: 'PATCH', cookie: municipalityLogin.cookie, body: { enabledTools } });
+      assert.equal(publish.status, 200);
+      assert.equal(publish.payload.activated, Number(number) === 5);
+    }
+    assert.equal(publish.payload.lifecycleStatus, 'active');
+    assert.equal(api.db.prepare("SELECT reason FROM audit_log WHERE action = 'hub.initiative.activate' AND target_id = ? ORDER BY rowid DESC").get(String(initiative.id)).reason, 'Every Objective has at least one selected resource');
     const citizenPublishedView = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: citizenLogin.cookie });
     assert.equal(citizenPublishedView.status, 200);
     assert.equal(citizenPublishedView.payload.access.canManage, false);
@@ -551,7 +554,7 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
 
     const facilitatorPhaseAdvance = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/current-phase`, {
       method: 'PATCH', cookie: facilitatorLogin.cookie,
-      body: { currentPhaseNumber: 2, version: publish.payload.initiative.version, reason: 'Only municipality staff may advance the formal process.' },
+      body: { currentPhaseNumber: 2, version: publish.payload.version, reason: 'Only municipality staff may advance the formal process.' },
     });
     assert.equal(facilitatorPhaseAdvance.status, 403);
 
@@ -660,7 +663,7 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     const completeSetup = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, {
       method: 'PATCH', cookie: municipalityLogin.cookie,
       body: {
-        version: publish.payload.initiative.version,
+        version: publish.payload.version,
         stage: 'framing-readiness',
         setupObjectives: ['understand-needs'],
         participationLevel: 'co-design',
@@ -678,6 +681,25 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     assert.equal(unconfirmedAdvance.status, 400);
     assert.equal(unconfirmedAdvance.payload.code, 'PHASE_CONFIRMATION_REQUIRED');
 
+    // Advancing waits for every resource of the current Objective; only Hopes and fears has a completed activity.
+    const incompleteAdvance = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/current-phase`, {
+      method: 'PATCH', cookie: municipalityLogin.cookie,
+      body: { currentPhaseNumber: 2, version: completeSetup.payload.initiative.version, confirmed: true },
+    });
+    assert.equal(incompleteAdvance.status, 409);
+    assert.equal(incompleteAdvance.payload.code, 'OBJECTIVE_RESOURCES_INCOMPLETE');
+    assert.match(incompleteAdvance.payload.error, /^2 of 3 resources/);
+    const workflowBeforeAdvance = (await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: municipalityLogin.cookie })).payload.workflow;
+    assert.deepEqual(workflowBeforeAdvance.resourceCompletion, { total: 3, completed: 1, incompleteResourceIds: ['stakeholder-mapping', 'citivoice'] });
+
+    // In the current Objective a published tool stays; unpublished tools can still be removed, but never the last one.
+    const phaseOneTools = (enabledTools) => request(baseUrl, `/api/hub/initiatives/${initiative.id}/phases/1`, { method: 'PATCH', cookie: municipalityLogin.cookie, body: { enabledTools } });
+    const removePublished = await phaseOneTools(['stakeholder-mapping', 'citivoice']);
+    assert.equal(removePublished.status, 409);
+    assert.equal(removePublished.payload.code, 'RESOURCE_PUBLISHED');
+    assert.equal((await phaseOneTools([])).payload.code, 'OBJECTIVE_NEEDS_RESOURCE');
+    assert.equal((await phaseOneTools(['hopes-and-fears'])).status, 200);
+
     const advancePhase = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/current-phase`, {
       method: 'PATCH', cookie: municipalityLogin.cookie,
       body: {
@@ -691,6 +713,12 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     assert.equal(advancePhase.payload.initiative.currentPhaseNumber, 2);
     assert.equal(advancePhase.payload.initiative.phases[0].status, 'completed');
     assert.equal(advancePhase.payload.initiative.phases[1].status, 'open');
+    // A completed Objective is read-only; upcoming Objectives stay fully editable.
+    const lockedObjective = await phaseOneTools(['hopes-and-fears', 'stakeholder-mapping']);
+    assert.equal(lockedObjective.status, 409);
+    assert.equal(lockedObjective.payload.code, 'OBJECTIVE_LOCKED');
+    const upcomingObjective = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/phases/3`, { method: 'PATCH', cookie: municipalityLogin.cookie, body: { enabledTools: ['citivoice'] } });
+    assert.equal(upcomingObjective.status, 200);
     const completedPhaseCitizenView = await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: citizenLogin.cookie });
     assert.ok(completedPhaseCitizenView.payload.initiative.phases[0].results.some((result) => result.id === workshopOutput.payload.document.id));
     assert.ok(completedPhaseCitizenView.payload.initiative.phases[0].myContributions.some((item) => item.id === contribution.payload.contribution.id));
@@ -819,6 +847,39 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     assert.equal((await move(municipality.cookie, 2)).payload.code, 'INVALID_PHASE_TRANSITION');
     // Moving forward is allowed by the sequence; it may still wait for the Objective's readiness checks.
     assert.notEqual((await move(municipality.cookie, 4)).payload.code, 'INVALID_PHASE_TRANSITION');
+  });
+
+  await t.test('the municipality list reports which objectives have a selected resource', async () => {
+    const municipality = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'municipality' } });
+    const citizen = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'citizen' } });
+    const list = async (cookie) => (await request(baseUrl, '/api/hub/initiatives', { cookie })).payload.initiatives;
+    const initiative = (await list(municipality.cookie))[0];
+    const saved = api.db.prepare('SELECT id, enabled_tools_json FROM hub_phases WHERE initiative_id = ?').all(initiative.id);
+    const savedLifecycle = api.db.prepare('SELECT lifecycle_status, status FROM hub_initiatives WHERE id = ?').get(initiative.id);
+    // Start from a pilot still in setup, so every Objective can be filled in from scratch.
+    api.db.prepare("UPDATE hub_initiatives SET lifecycle_status = 'setup_required' WHERE id = ?").run(initiative.id);
+    api.db.prepare("UPDATE hub_phases SET enabled_tools_json = '[]' WHERE initiative_id = ?").run(initiative.id);
+    const auditsBefore = Number(api.db.prepare("SELECT COUNT(*) AS count FROM audit_log WHERE action = 'hub.phase.update'").get().count);
+
+    const empty = (await list(municipality.cookie))[0].objectiveResources;
+    assert.equal(empty.complete, false);
+    assert.deepEqual(empty.objectives.map((objective) => objective.phaseNumber), [1, 2, 3, 4, 5]);
+    assert.equal((await list(citizen.cookie)).every((item) => item.objectiveResources === undefined), true);
+
+    // Analogue resources and digital tools both count, whichever entry path saved them.
+    const choices = { 1: ['hopes-and-fears'], 2: ['citivoice'], 3: ['scene'], 4: ['scene'], 5: ['citivoice'] };
+    for (const [number, enabledTools] of Object.entries(choices)) {
+      const result = await request(baseUrl, `/api/hub/initiatives/${initiative.id}/phases/${number}`, { method: 'PATCH', cookie: municipality.cookie, body: { enabledTools } });
+      assert.equal(result.status, 200);
+      assert.equal(result.payload.activated, Number(number) === 5);
+      assert.equal((await list(municipality.cookie))[0].objectiveResources.complete, Number(number) === 5);
+    }
+    assert.deepEqual((await list(municipality.cookie))[0].objectiveResources.objectives.map((objective) => objective.resourceIds), Object.values(choices));
+    assert.equal(Number(api.db.prepare("SELECT COUNT(*) AS count FROM audit_log WHERE action = 'hub.phase.update'").get().count), auditsBefore + 5);
+
+    const restore = api.db.prepare('UPDATE hub_phases SET enabled_tools_json = ? WHERE id = ?');
+    saved.forEach((row) => restore.run(row.enabled_tools_json, row.id));
+    api.db.prepare('UPDATE hub_initiatives SET lifecycle_status = ?, status = ? WHERE id = ?').run(savedLifecycle.lifecycle_status, savedLifecycle.status, initiative.id);
   });
 
   await t.test('an initiative can have several facilitators, managed only by the municipality', async () => {

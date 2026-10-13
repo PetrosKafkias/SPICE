@@ -12,6 +12,27 @@ export function allowedObjectiveTransitions(currentPhaseNumber) {
   return OBJECTIVE_TRANSITIONS[Number(currentPhaseNumber)] || [];
 }
 
+// From "Approve and publish" onwards a tool's activity is public, so the tool stays in its Objective.
+export const PUBLISHED_ACTIVITY_STATUSES = Object.freeze(['published', 'scheduled', 'open', 'closed', 'completed']);
+
+/**
+ * The resources selected for one Objective and how far their activities have come. A resource is
+ * completed when an activity implementing it (tool_key) is completed; a resource without one is not.
+ */
+export function objectiveResourceStates(db, initiativeId, phaseNumber) {
+  const phase = db.prepare('SELECT id, enabled_tools_json FROM hub_phases WHERE initiative_id = ? AND phase_number = ?').get(initiativeId, phaseNumber);
+  if (!phase) return { resourceIds: [], completedResourceIds: [], publishedResourceIds: [] };
+  const resourceIds = JSON.parse(phase.enabled_tools_json || '[]');
+  const activities = db.prepare('SELECT tool_key, workflow_status FROM hub_activities WHERE initiative_id = ? AND phase_id = ? AND tool_key IS NOT NULL')
+    .all(initiativeId, phase.id);
+  const withStatus = (statuses) => resourceIds.filter((id) => activities.some((activity) => activity.tool_key === id && statuses.includes(activity.workflow_status)));
+  return {
+    resourceIds,
+    completedResourceIds: withStatus(['completed']),
+    publishedResourceIds: withStatus(PUBLISHED_ACTIVITY_STATUSES),
+  };
+}
+
 export const PROPOSAL_WORKFLOW_STATUSES = Object.freeze([
   'draft', 'municipality_review', 'needs_revision', 'published', 'discussion_open',
   'voting_open', 'participation_closed', 'decision_pending', 'approved', 'declined', 'archived',
@@ -242,9 +263,16 @@ export function workflowSummary(db, initiative, user) {
     toRole: row.to_role, status: row.status, message: row.message, createdAt: row.created_at,
   }));
 
+  const resources = objectiveResourceStates(db, initiative.id, phaseNumber);
   return {
     currentPhaseNumber: phaseNumber,
     allowedPhaseTransitions: allowedObjectiveTransitions(phaseNumber),
+    // Advancing waits until every resource selected for the current Objective is completed.
+    resourceCompletion: {
+      total: resources.resourceIds.length,
+      completed: resources.completedResourceIds.length,
+      incompleteResourceIds: resources.resourceIds.filter((id) => !resources.completedResourceIds.includes(id)),
+    },
     readiness,
     metrics,
     nextAction: nextActionFor(role, initiative, readiness, metrics),
