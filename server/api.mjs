@@ -139,6 +139,33 @@ function serializeUser(row) {
   };
 }
 
+// The SPICE AI Chatbot is a separate RAG service (WP4). Its answers are normalised so the page can
+// always show the answer with its sources, the excerpts it used and its reasoning.
+const CHATBOT_TONES = new Set(['professional', 'friendly', 'simple']);
+const CHATBOT_MODES = new Set(['exploratory', 'factual']);
+
+function chatbotText(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function normalizeChatbotAnswer(data) {
+  const list = (value) => (Array.isArray(value) ? value : []);
+  const sources = list(data.sources ?? data.documents).map((item) => (typeof item === 'string'
+    ? { title: item.trim(), url: null }
+    : { title: chatbotText(item?.title ?? item?.name ?? item?.source), url: chatbotText(item?.url) || null }))
+    .filter((item) => item.title)
+    .slice(0, 20);
+  const excerpts = list(data.excerpts ?? data.contexts ?? data.chunks).map((item) => (typeof item === 'string'
+    ? { source: null, text: item.trim() }
+    : { source: chatbotText(item?.source ?? item?.title) || null, text: chatbotText(item?.text ?? item?.content ?? item?.excerpt) }))
+    .filter((item) => item.text)
+    .slice(0, 20);
+  const reasoning = Array.isArray(data.reasoning)
+    ? data.reasoning.map(chatbotText).filter(Boolean).join('\n')
+    : chatbotText(data.reasoning ?? data.rationale);
+  return { answer: chatbotText(data.answer ?? data.response ?? data.text), sources, excerpts, reasoning };
+}
+
 function getSessionUser(db, request) {
   const token = parseCookies(request.headers.cookie)[SESSION_COOKIE];
   if (!token) return { token: null, tokenHash: null, user: null };
@@ -2805,6 +2832,44 @@ export async function createApiHandler(options = {}) {
         if (!guestOrUser) { sendJson(response, 200, { state: {}, updatedAt: null }); return true; }
         const row = db.prepare('SELECT state_json, updated_at FROM scene_states WHERE user_id = ?').get(guestOrUser.id);
         sendJson(response, 200, { state: row ? JSON.parse(row.state_json || '{}') : {}, updatedAt: row?.updated_at || null });
+        return true;
+      }
+
+      if (pathname === '/api/chatbot/ask' && method === 'POST') {
+        const session = requireUser(db, request, response);
+        if (!session) return true;
+        const body = await readJson(request);
+        const question = chatbotText(body.question).slice(0, 2000);
+        if (!question) { sendError(response, 400, 'Type a question first.', { question: 'Enter a question.' }); return true; }
+        const endpoint = process.env.SPICE_CHATBOT_URL;
+        if (!endpoint) {
+          sendError(response, 503, 'The SPICE knowledge base is not connected in this environment.', null, 'CHATBOT_NOT_CONNECTED');
+          return true;
+        }
+        const payload = {
+          question,
+          pilot: chatbotText(body.pilot) || null,
+          tone: CHATBOT_TONES.has(body.tone) ? body.tone : 'professional',
+          mode: CHATBOT_MODES.has(body.mode) ? body.mode : 'exploratory',
+          language: chatbotText(body.language) || 'en',
+        };
+        try {
+          const upstream = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(process.env.SPICE_CHATBOT_TOKEN ? { Authorization: `Bearer ${process.env.SPICE_CHATBOT_TOKEN}` } : {}),
+            },
+            body: JSON.stringify(payload),
+            signal: AbortSignal.timeout(45000),
+          });
+          if (!upstream.ok) throw new Error(`Chatbot responded with ${upstream.status}`);
+          const answer = normalizeChatbotAnswer(await upstream.json());
+          if (!answer.answer) throw new Error('Chatbot returned no answer');
+          sendJson(response, 200, answer);
+        } catch {
+          sendError(response, 502, 'The SPICE AI Chatbot could not answer right now.', null, 'CHATBOT_UNAVAILABLE');
+        }
         return true;
       }
 

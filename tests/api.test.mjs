@@ -993,6 +993,49 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     assert.equal(toOtherPilot.status, 403);
   });
 
+  await t.test('the AI chatbot proxies the RAG service and returns sources, excerpts and reasoning', async () => {
+    const citizen = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'citizen' } });
+    const ask = (body, cookie = citizen.cookie) => request(baseUrl, '/api/chatbot/ask', { method: 'POST', cookie, body });
+    assert.equal((await request(baseUrl, '/api/chatbot/ask', { method: 'POST', body: { question: 'Hello?' } })).status, 401);
+    assert.equal((await ask({ question: '  ' })).status, 400);
+    const previousUrl = process.env.SPICE_CHATBOT_URL;
+    delete process.env.SPICE_CHATBOT_URL;
+    const notConnected = await ask({ question: 'What cultural title did Bielsko-Biała receive for 2026?' });
+    assert.equal(notConnected.status, 503);
+    assert.equal(notConnected.payload.code, 'CHATBOT_NOT_CONNECTED');
+
+    let received = null;
+    const rag = createServer(async (req, res) => {
+      let raw = '';
+      for await (const chunk of req) raw += chunk;
+      received = JSON.parse(raw);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        response: 'An answer grounded in the pilot documents.',
+        documents: ['City report 2024.pdf', { title: 'Bidbook.pdf', url: 'https://example.org/bidbook.pdf' }],
+        contexts: [{ source: 'City report 2024.pdf', content: 'A relevant passage.' }, ''],
+        reasoning: ['Retrieved two documents.', 'Combined their passages.'],
+      }));
+    });
+    await new Promise((resolve) => rag.listen(0, '127.0.0.1', resolve));
+    process.env.SPICE_CHATBOT_URL = `http://127.0.0.1:${rag.address().port}/ask`;
+    try {
+      const answered = await ask({ question: 'What cultural title did Bielsko-Biała receive for 2026?', pilot: 'bielsko-biala', tone: 'friendly', mode: 'factual', language: 'en' });
+      assert.equal(answered.status, 200);
+      assert.deepEqual(received, { question: 'What cultural title did Bielsko-Biała receive for 2026?', pilot: 'bielsko-biala', tone: 'friendly', mode: 'factual', language: 'en' });
+      assert.deepEqual(answered.payload, {
+        answer: 'An answer grounded in the pilot documents.',
+        sources: [{ title: 'City report 2024.pdf', url: null }, { title: 'Bidbook.pdf', url: 'https://example.org/bidbook.pdf' }],
+        excerpts: [{ source: 'City report 2024.pdf', text: 'A relevant passage.' }],
+        reasoning: 'Retrieved two documents.\nCombined their passages.',
+      });
+    } finally {
+      await new Promise((resolve) => rag.close(resolve));
+      if (previousUrl === undefined) delete process.env.SPICE_CHATBOT_URL;
+      else process.env.SPICE_CHATBOT_URL = previousUrl;
+    }
+  });
+
   await t.test('sign-out invalidates the server session', async () => {
     const signOut = await request(baseUrl, '/api/auth/signout', { method: 'POST', cookie: demoCookie });
     assert.equal(signOut.status, 200);
