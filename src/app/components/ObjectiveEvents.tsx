@@ -97,7 +97,7 @@ export default function ObjectiveEvents({ initiativeId, phaseNumber, events, act
   const dangerButton = 'min-h-10 cursor-pointer rounded-md border-2 border-red-700 bg-white px-3 text-[13px] font-bold text-red-800 hover:bg-red-50';
 
   return (
-    <section className="mt-8 border-t-2 border-[#eee] pt-7" aria-labelledby="objective-events-title">
+    <section className="mt-6" aria-labelledby="objective-events-title">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-3xl">
           <h2 id="objective-events-title" className="text-[22px] font-bold text-[#444]">{t('events.sectionTitle', { phase: phaseNumber })}</h2>

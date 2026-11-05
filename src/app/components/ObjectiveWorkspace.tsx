@@ -2,17 +2,18 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { BookOpenText, CheckCircle2, CircleAlert, Landmark, MessageSquareText } from 'lucide-react';
 import LoadingState from './LoadingState';
-import ObjectiveToolSelection from './ObjectiveToolSelection';
+import ObjectiveTabs, { type ObjectiveTab } from './ObjectiveTabs';
 import ObjectiveEvents from './ObjectiveEvents';
 import ToolImplementationCard, { type ImplementationDefaults, type ToolImplementation } from './ToolImplementationCard';
 import { useI18n } from '../context/I18nContext';
 import { phaseState } from '../lib/phaseState';
 import { getTools } from '../data/tools';
-import { resolveSpiceResource } from '../data/spiceResources';
+import { recommendedResourceIds, resolveSpiceResource } from '../data/spiceResources';
 import type { TranslationKey } from '../i18n/translations';
 import { processPhase } from '../data/processFramework';
-import { apiRequest } from '../lib/api';
-import { PUBLISHED_ACTIVITY_STATUSES, type ResourceEditContext } from '../lib/objectiveResources';
+import { apiRequest, jsonBody } from '../lib/api';
+import { localizedApiError } from '../lib/localizedApiError';
+import { toast } from 'sonner';
 import type { HubEvent } from '../lib/events';
 
 interface Phase {
@@ -51,7 +52,6 @@ const PHASE_TEXT_KEYS: Record<number, TranslationKey> = {
   1: 'hub.phase1Text', 2: 'hub.phase2Text', 3: 'hub.phase3Text', 4: 'hub.phase4Text', 5: 'hub.phase5Text',
 };
 
-const EMPTY_TOOL_NOTES: Record<string, string> = {};
 
 interface Props {
   initiativeId: number;
@@ -69,6 +69,9 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
   const [canManage, setCanManage] = useState(false);
   const [canFacilitate, setCanFacilitate] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<ObjectiveTab>('activities');
+  const [objectiveNotes, setObjectiveNotes] = useState('');
+  const [savingNotes, setSavingNotes] = useState(false);
   const [error, setError] = useState('');
 
   const load = useCallback(async (silent = false) => {
@@ -100,14 +103,42 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
   const state = phase && initiative ? phaseState(phase.phaseNumber, initiative.currentPhaseNumber, Boolean(initiative.pilotFinalizedAt)) : null;
   const stateLabelKey: TranslationKey | null = state === 'completed' ? 'hub.phaseCompleted' : state === 'current' ? 'hub.phaseCurrent' : state === 'incomplete' ? 'hub.phaseUpcoming' : null;
   const liveActivities = (phase?.activities || []).filter((activity) => activity.workflowStatus !== 'cancelled');
-  const editContext: ResourceEditContext = {
-    lifecycleStatus: initiative?.pilotFinalizedAt ? 'completed' : initiative?.lifecycleStatus || 'setup_required',
-    currentPhaseNumber: initiative?.currentPhaseNumber ?? null,
-    published: Object.fromEntries((initiative?.phases || []).map((item) => [
-      item.phaseNumber,
-      item.activities.filter((activity) => activity.toolKey && PUBLISHED_ACTIVITY_STATUSES.includes(activity.workflowStatus)).map((activity) => activity.toolKey as string),
-    ])),
+  const savedObjectiveNotes = phase?.municipalityNotes || '';
+  useEffect(() => { setObjectiveNotes(savedObjectiveNotes); }, [savedObjectiveNotes]);
+
+  // The Municipality configures an Objective through its events: choosing a resource for an event
+  // adds it to the Objective. The dialog offers the Objective's resources and the methodology's
+  // recommended ones for it.
+  const eventResources = phase
+    ? [...new Set([...phase.enabledTools, ...recommendedResourceIds(phase.phaseNumber, tools)])]
+      .map((toolId) => ({ id: toolId, name: resolveSpiceResource(toolId, tools, t)?.name || toolId }))
+    : [];
+
+  const patchPhase = async (body: Record<string, unknown>, successKey: TranslationKey) => {
+    if (!phase) return false;
+    try {
+      await apiRequest(`/api/hub/initiatives/${initiativeId}/phases/${phase.phaseNumber}`, { method: 'PATCH', body: jsonBody(body) });
+      await refresh();
+      toast.success(t(successKey));
+      return true;
+    } catch (caught) {
+      toast.error(localizedApiError(t, caught));
+      return false;
+    }
   };
+  const saveObjectiveNotes = async () => {
+    setSavingNotes(true);
+    await patchPhase({ municipalityNotes: objectiveNotes }, 'objectiveTabs.instructionsSaved');
+    setSavingNotes(false);
+  };
+  const saveToolNote = (toolId: string) => (note: string) => patchPhase(
+    { municipalityToolNotes: { ...(phase?.municipalityToolNotes || {}), [toolId]: note } },
+    'objectiveTabs.instructionsSaved',
+  );
+  const removeFromObjective = (toolId: string) => () => patchPhase(
+    { enabledTools: (phase?.enabledTools || []).filter((id) => id !== toolId) },
+    'objectiveTabs.resourceRemoved',
+  );
   const otherActivities = liveActivities.filter((activity) => !activity.toolKey || !phase?.enabledTools.includes(activity.toolKey));
 
   // A new implementation starts from what the platform already knows: the resource's catalogue
@@ -152,6 +183,8 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
         defaults={defaultsFor(toolId)}
         events={phase.events || []}
         insideEvent={insideEvent}
+        onSaveMunicipalityNote={canManage ? saveToolNote(toolId) : undefined}
+        onRemoveFromObjective={canManage && !insideEvent ? removeFromObjective(toolId) : undefined}
         canManage={canManage}
         canFacilitate={canFacilitate}
         onChanged={refresh}
@@ -177,155 +210,170 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
             <h2 id="objective-workspace-title" className="mt-3 text-[28px] font-bold leading-tight text-[#444] md:text-[34px]">{t(framework.titleKey)}</h2>
             <p className="mt-4 max-w-3xl text-[16px] leading-relaxed text-[#666]">{t(PHASE_TEXT_KEYS[phase.phaseNumber] || 'hub.phase1Text')}</p>
 
-            <section className="mt-7 grid gap-5 border-t-2 border-[#eee] pt-7 lg:grid-cols-[0.9fr_1.1fr]" aria-labelledby="phase-framework-title">
-              <div className="border-l-4 border-[#ca7428] bg-[#fff7ef] p-5">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-[#a85f20]">{t('phaseDetail.guidingQuestion')}</p>
-                <h2 id="phase-framework-title" className="mt-2 text-[20px] font-bold leading-snug text-[#444]">{t(framework.questionKey)}</h2>
-                <p className="mt-3 text-[14px] leading-relaxed text-[#666]">{t(framework.summaryKey)}</p>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="border-2 border-[#d7d8dc] bg-white p-5">
-                  <h3 className="text-[15px] font-bold text-[#444]">{t('phaseDetail.eventTypes')}</h3>
-                  <ul className="mt-3 space-y-2 text-[13px] leading-relaxed text-[#666]">
-                    {framework.eventTypeKeys.map((eventTypeKey) => <li key={eventTypeKey} className="border-l-2 border-[#efc79f] pl-3">{t(eventTypeKey)}</li>)}
-                  </ul>
-                </div>
-                <div className="border-2 border-[#d7d8dc] bg-white p-5">
-                  <h3 className="text-[15px] font-bold text-[#444]">{t('phaseDetail.outputs')}</h3>
-                  <ul className="mt-3 space-y-2 text-[13px] leading-relaxed text-[#666]">
-                    <li className="flex items-start gap-2"><CheckCircle2 size={15} className="mt-0.5 flex-none text-[#58723d]" aria-hidden="true" />{t(framework.expectedOutcomeKey)}</li>
-                  </ul>
-                </div>
-              </div>
-            </section>
+            <ObjectiveTabs idPrefix="objective" active={tab} onChange={setTab} />
 
-            {(phase.startDate || phase.endDate) && (
-              <p className="mt-4 text-sm font-semibold text-[#59713d]">
-                {phase.startDate ? formatDate(phase.startDate, { dateStyle: 'medium' }) : '—'}
-                {' – '}
-                {phase.endDate ? formatDate(phase.endDate, { dateStyle: 'medium' }) : '—'}
-              </p>
-            )}
-
-            <div className="mt-6 max-w-3xl border-t-2 border-[#eee] pt-6">
-              {state === 'current' && (
-                <>
-                  <h2 className="text-[16px] font-bold text-[#444]">{t('phaseDetail.doNow')}</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-[#666]">{phase.instructions || t('phaseDetail.defaultInstructions')}</p>
-                  {canParticipate ? (
-                    <Link to={`/forum-voting?initiative=${initiativeId}`} className="mt-5 inline-flex min-h-11 cursor-pointer items-center gap-2 bg-[#f68b2c] px-5 py-2.5 font-bold text-white">{t('phaseDetail.joinDiscussion')} <MessageSquareText size={16} /></Link>
-                  ) : (
-                    <p className="mt-4 text-sm font-semibold text-[#8f4d18]">{t('phaseDetail.signIn')}</p>
-                  )}
-                </>
+            {tab === 'activities' && (
+              <div role="tabpanel" id="objective-panel-activities" aria-labelledby="objective-tab-activities">
+              {canCoordinate && (
+                <ObjectiveEvents
+                  initiativeId={Number(initiativeId)}
+                  phaseNumber={phase.phaseNumber}
+                  events={phase.events || []}
+                  activities={phase.activities}
+                  resources={eventResources}
+                  canManage={canManage}
+                  renderActivity={(toolId) => renderToolCard(toolId, true)}
+                  onChanged={refresh}
+                />
               )}
-              {state === 'completed' && (
-                <>
-                  <h2 className="text-[16px] font-bold text-[#444]">{t('phaseDetail.publishedOutcomes')}</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-[#666]">
-                    {phase.resultsVisible
-                      ? t('phaseDetail.resultsAvailable')
-                      : t('phaseDetail.resultsPending')}
-                  </p>
-                  {phase.resultsVisible && phase.completionSummary && (
-                    <div className="mt-4 border-l-4 border-[#58723d] bg-[#f4f8ef] p-4 text-sm leading-relaxed text-[#444]">
-                      <p className="font-bold">{t('phaseDetail.reportTitle')}</p>
-                      <p className="mt-2 whitespace-pre-line">{phase.completionSummary}</p>
+
+              {canCoordinate && (
+                <section className="mt-8 border-t-2 border-[#eee] pt-7" aria-labelledby="selected-tools-title">
+                  <h2 id="selected-tools-title" className="text-[22px] font-bold text-[#444]">{t(phase.events?.length ? 'events.unassignedTitle' : 'phaseDetail.selectedToolsTitle', { phase: phase.phaseNumber })}</h2>
+                  <p className="mt-1 max-w-3xl text-sm leading-relaxed text-[#666]">{phase.events?.length ? t('events.unassignedText') : t(canManage ? 'phaseDetail.selectedToolsManagerText' : 'phaseDetail.selectedToolsFacilitatorText')}</p>
+
+                  {phase.enabledTools.length === 0 ? (
+                    <div className="mt-5 spice-card-dashed p-6 text-sm text-[#666]">{t(canManage ? 'phaseDetail.noSelectedToolsManager' : 'phaseDetail.noSelectedToolsFacilitator')}</div>
+                  ) : unassignedTools.length === 0 ? (
+                    <div className="mt-5 rounded-xl border border-dashed border-[#bfc0c5] p-6 text-sm text-[#666]">{t('events.allAssigned')}</div>
+                  ) : (
+                    <div className="mt-5 grid gap-5 xl:grid-cols-2">
+                      {unassignedTools.map((toolId) => <div key={toolId} className="flex">{renderToolCard(toolId, false)}</div>)}
                     </div>
                   )}
-                  <p className="mt-4 text-sm font-semibold text-[#8f4d18]">{t('phaseDetail.closed')}</p>
-                  <div className="mt-5 flex flex-wrap gap-3">
-                    {phase.resultsVisible && (
-                      <Link to="/repository" className="inline-flex min-h-11 cursor-pointer items-center gap-2 bg-[#f68b2c] px-5 py-2.5 font-bold text-white"><BookOpenText size={16} /> {t('phaseDetail.viewRepository')}</Link>
-                    )}
-                    <Link to={`/forum-voting?initiative=${initiativeId}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-5 py-2.5 font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]"><MessageSquareText size={16} /> {t('phaseDetail.reviewDiscussion')}</Link>
-                  </div>
-                </>
+                </section>
               )}
-              {state === 'incomplete' && (
-                <>
-                  <h2 className="text-[16px] font-bold text-[#444]">{t('phaseDetail.next')}</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-[#666]">{t('phaseDetail.upcomingText')}</p>
-                </>
-              )}
-            </div>
 
-            {canManage && (
-              <ObjectiveToolSelection
-                initiativeId={Number(initiativeId)}
-                phaseNumber={phase.phaseNumber}
-                enabledTools={phase.enabledTools}
-                municipalityNotes={phase.municipalityNotes || ''}
-                municipalityToolNotes={phase.municipalityToolNotes || EMPTY_TOOL_NOTES}
-                tools={tools}
-                editContext={editContext}
-                onSaved={refresh}
-              />
-            )}
-
-            {canCoordinate && (
-              <ObjectiveEvents
-                initiativeId={Number(initiativeId)}
-                phaseNumber={phase.phaseNumber}
-                events={phase.events || []}
-                activities={phase.activities}
-                resources={phase.enabledTools.map((toolId) => ({ id: toolId, name: resolveSpiceResource(toolId, tools, t)?.name || toolId }))}
-                canManage={canManage}
-                renderActivity={(toolId) => renderToolCard(toolId, true)}
-                onChanged={refresh}
-              />
-            )}
-
-            {canCoordinate && (
-              <section className="mt-8 border-t-2 border-[#eee] pt-7" aria-labelledby="selected-tools-title">
-                <h2 id="selected-tools-title" className="text-[22px] font-bold text-[#444]">{t(phase.events?.length ? 'events.unassignedTitle' : 'phaseDetail.selectedToolsTitle', { phase: phase.phaseNumber })}</h2>
-                <p className="mt-1 max-w-3xl text-sm leading-relaxed text-[#666]">{phase.events?.length ? t('events.unassignedText') : t(canManage ? 'phaseDetail.selectedToolsManagerText' : 'phaseDetail.selectedToolsFacilitatorText')}</p>
-
-                {!canManage && (
-                  <div className="mt-5 max-w-3xl border-l-4 border-[#4e789b] bg-[#f1f7fb] p-4 text-[14px] leading-relaxed text-[#31556f]">
-                    <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide"><Landmark size={14} aria-hidden="true" />{t('phaseDetail.municipalityNotesTitle')}</p>
-                    <p className="mt-1.5 whitespace-pre-line">{phase.municipalityNotes || t('phaseDetail.noMunicipalityInstructions')}</p>
-                  </div>
-                )}
-
-                {phase.enabledTools.length === 0 ? (
-                  <div className="mt-5 spice-card-dashed p-6 text-sm text-[#666]">{t(canManage ? 'phaseDetail.noSelectedToolsManager' : 'phaseDetail.noSelectedToolsFacilitator')}</div>
-                ) : unassignedTools.length === 0 ? (
-                  <div className="mt-5 rounded-xl border border-dashed border-[#bfc0c5] p-6 text-sm text-[#666]">{t('events.allAssigned')}</div>
-                ) : (
+              {canCoordinate && otherActivities.length > 0 && (
+                <section className="mt-8 border-t-2 border-[#eee] pt-7" aria-labelledby="other-activities-title">
+                  <h2 id="other-activities-title" className="text-[18px] font-bold text-[#444]">{t('phaseDetail.otherActivitiesTitle')}</h2>
+                  <p className="mt-1 max-w-3xl text-sm leading-relaxed text-[#666]">{t('phaseDetail.otherActivitiesText')}</p>
                   <div className="mt-5 grid gap-5 xl:grid-cols-2">
-                    {unassignedTools.map((toolId) => <div key={toolId} className="flex">{renderToolCard(toolId, false)}</div>)}
+                    {otherActivities.map((activity) => (
+                      <ToolImplementationCard
+                        key={activity.id}
+                        initiativeId={Number(initiativeId)}
+                        phaseNumber={phase.phaseNumber}
+                        toolKey={null}
+                        title={activity.title}
+                        implementation={activity}
+                        events={phase.events || []}
+                        canManage={canManage}
+                        canFacilitate={canFacilitate}
+                        onChanged={refresh}
+                      />
+                    ))}
                   </div>
-                )}
-              </section>
+                </section>
+              )}
+
+              </div>
             )}
 
-            {canCoordinate && otherActivities.length > 0 && (
-              <section className="mt-8 border-t-2 border-[#eee] pt-7" aria-labelledby="other-activities-title">
-                <h2 id="other-activities-title" className="text-[18px] font-bold text-[#444]">{t('phaseDetail.otherActivitiesTitle')}</h2>
-                <p className="mt-1 max-w-3xl text-sm leading-relaxed text-[#666]">{t('phaseDetail.otherActivitiesText')}</p>
-                <div className="mt-5 grid gap-5 xl:grid-cols-2">
-                  {otherActivities.map((activity) => (
-                    <ToolImplementationCard
-                      key={activity.id}
-                      initiativeId={Number(initiativeId)}
-                      phaseNumber={phase.phaseNumber}
-                      toolKey={null}
-                      title={activity.title}
-                      implementation={activity}
-                      events={phase.events || []}
-                      canManage={canManage}
-                      canFacilitate={canFacilitate}
-                      onChanged={refresh}
-                    />
-                  ))}
+            {tab === 'about' && (
+              <div role="tabpanel" id="objective-panel-about" aria-labelledby="objective-tab-about">
+              <section className="mt-6 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]" aria-labelledby="phase-framework-title">
+                <div className="border-l-4 border-[#ca7428] bg-[#fff7ef] p-5">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-[#a85f20]">{t('phaseDetail.guidingQuestion')}</p>
+                  <h2 id="phase-framework-title" className="mt-2 text-[20px] font-bold leading-snug text-[#444]">{t(framework.questionKey)}</h2>
+                  <p className="mt-3 text-[14px] leading-relaxed text-[#666]">{t(framework.summaryKey)}</p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="border-2 border-[#d7d8dc] bg-white p-5">
+                    <h3 className="text-[15px] font-bold text-[#444]">{t('phaseDetail.eventTypes')}</h3>
+                    <ul className="mt-3 space-y-2 text-[13px] leading-relaxed text-[#666]">
+                      {framework.eventTypeKeys.map((eventTypeKey) => <li key={eventTypeKey} className="border-l-2 border-[#efc79f] pl-3">{t(eventTypeKey)}</li>)}
+                    </ul>
+                  </div>
+                  <div className="border-2 border-[#d7d8dc] bg-white p-5">
+                    <h3 className="text-[15px] font-bold text-[#444]">{t('phaseDetail.outputs')}</h3>
+                    <ul className="mt-3 space-y-2 text-[13px] leading-relaxed text-[#666]">
+                      <li className="flex items-start gap-2"><CheckCircle2 size={15} className="mt-0.5 flex-none text-[#58723d]" aria-hidden="true" />{t(framework.expectedOutcomeKey)}</li>
+                    </ul>
+                  </div>
                 </div>
               </section>
-            )}
 
-            {canCoordinate && (
-              <div className="mt-8 max-w-3xl border-t-2 border-[#eee] pt-7">
-                <Link to={`/repository?pilotId=${initiativeId}&phase=${phase.phaseNumber}&phaseId=${phase.id}&returnPhase=${phase.phaseNumber}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 py-2 text-sm font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]"><BookOpenText size={16} /> {t('phaseDetail.uploadMaterials')}</Link>
+              {(phase.startDate || phase.endDate) && (
+                <p className="mt-4 text-sm font-semibold text-[#59713d]">
+                  {phase.startDate ? formatDate(phase.startDate, { dateStyle: 'medium' }) : '—'}
+                  {' – '}
+                  {phase.endDate ? formatDate(phase.endDate, { dateStyle: 'medium' }) : '—'}
+                </p>
+              )}
+
+              <div className="mt-6 max-w-3xl border-t-2 border-[#eee] pt-6">
+                {state === 'current' && (
+                  <>
+                    <h2 className="text-[16px] font-bold text-[#444]">{t('phaseDetail.doNow')}</h2>
+                    <p className="mt-2 text-sm leading-relaxed text-[#666]">{phase.instructions || t('phaseDetail.defaultInstructions')}</p>
+                    {canParticipate ? (
+                      <Link to={`/forum-voting?initiative=${initiativeId}`} className="mt-5 inline-flex min-h-11 cursor-pointer items-center gap-2 bg-[#f68b2c] px-5 py-2.5 font-bold text-white">{t('phaseDetail.joinDiscussion')} <MessageSquareText size={16} /></Link>
+                    ) : (
+                      <p className="mt-4 text-sm font-semibold text-[#8f4d18]">{t('phaseDetail.signIn')}</p>
+                    )}
+                  </>
+                )}
+                {state === 'completed' && (
+                  <>
+                    <h2 className="text-[16px] font-bold text-[#444]">{t('phaseDetail.publishedOutcomes')}</h2>
+                    <p className="mt-2 text-sm leading-relaxed text-[#666]">
+                      {phase.resultsVisible
+                        ? t('phaseDetail.resultsAvailable')
+                        : t('phaseDetail.resultsPending')}
+                    </p>
+                    {phase.resultsVisible && phase.completionSummary && (
+                      <div className="mt-4 border-l-4 border-[#58723d] bg-[#f4f8ef] p-4 text-sm leading-relaxed text-[#444]">
+                        <p className="font-bold">{t('phaseDetail.reportTitle')}</p>
+                        <p className="mt-2 whitespace-pre-line">{phase.completionSummary}</p>
+                      </div>
+                    )}
+                    <p className="mt-4 text-sm font-semibold text-[#8f4d18]">{t('phaseDetail.closed')}</p>
+                    <div className="mt-5 flex flex-wrap gap-3">
+                      {phase.resultsVisible && (
+                        <Link to="/repository" className="inline-flex min-h-11 cursor-pointer items-center gap-2 bg-[#f68b2c] px-5 py-2.5 font-bold text-white"><BookOpenText size={16} /> {t('phaseDetail.viewRepository')}</Link>
+                      )}
+                      <Link to={`/forum-voting?initiative=${initiativeId}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-5 py-2.5 font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]"><MessageSquareText size={16} /> {t('phaseDetail.reviewDiscussion')}</Link>
+                    </div>
+                  </>
+                )}
+                {state === 'incomplete' && (
+                  <>
+                    <h2 className="text-[16px] font-bold text-[#444]">{t('phaseDetail.next')}</h2>
+                    <p className="mt-2 text-sm leading-relaxed text-[#666]">{t('phaseDetail.upcomingText')}</p>
+                  </>
+                )}
+              </div>
+
+
+                {canCoordinate && (
+                  <div className="mt-8 max-w-3xl border-t-2 border-[#eee] pt-7">
+                    <div className="rounded-lg border-l-4 border-[#4e789b] bg-[#f1f7fb] p-4 text-[14px] leading-relaxed text-[#31556f]">
+                      <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide"><Landmark size={14} aria-hidden="true" />{t(canManage ? 'phaseDetail.municipalityNotesLabel' : 'phaseDetail.municipalityNotesTitle')}</p>
+                      {canManage ? (
+                        <>
+                          <textarea
+                            id="objective-municipality-notes"
+                            value={objectiveNotes}
+                            onChange={(event) => setObjectiveNotes(event.target.value)}
+                            rows={3}
+                            className="mt-2 w-full resize-y rounded-md border-2 border-[#c9d8e4] bg-white p-3 text-[14px] text-[#444] focus:border-[#4e789b] focus:outline-none"
+                            placeholder={t('phaseDetail.municipalityNotesPlaceholder')}
+                          />
+                          <button type="button" onClick={() => void saveObjectiveNotes()} disabled={savingNotes || objectiveNotes.trim() === (phase.municipalityNotes || '').trim()} className="mt-3 inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md bg-[#f68b2c] px-4 text-[13px] font-bold text-white hover:bg-[#df771d] disabled:cursor-not-allowed disabled:opacity-50">{t('objectiveTabs.saveInstructions')}</button>
+                        </>
+                      ) : (
+                        <p className="mt-1.5 whitespace-pre-line">{phase.municipalityNotes || t('phaseDetail.noMunicipalityInstructions')}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+              {canCoordinate && (
+                <div className="mt-8 max-w-3xl border-t-2 border-[#eee] pt-7">
+                  <Link to={`/repository?pilotId=${initiativeId}&phase=${phase.phaseNumber}&phaseId=${phase.id}&returnPhase=${phase.phaseNumber}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 py-2 text-sm font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]"><BookOpenText size={16} /> {t('phaseDetail.uploadMaterials')}</Link>
+                </div>
+              )}
               </div>
             )}
           </section>

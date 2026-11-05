@@ -2350,6 +2350,13 @@ export const en = {
   'events.unassignedTitle': 'Activities not in an event yet',
   'events.unassignedText': 'These selected resources do not belong to an event yet. Add them to an event with Choose activities, or prepare them here first.',
   'events.allAssigned': 'Every selected resource is part of an event.',
+  'account.showNameInForum': 'Show my name in Discuss and Decide',
+  'objectiveTabs.activities': 'Activities',
+  'objectiveTabs.about': 'About this Objective',
+  'objectiveTabs.saveInstructions': 'Save instructions',
+  'objectiveTabs.instructionsSaved': 'Instructions for facilitators saved.',
+  'objectiveTabs.resourceRemoved': 'Resource removed from the Objective.',
+  'objectiveTabs.removeFromObjective': 'Remove from Objective {{phase}}',
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -4512,6 +4519,13 @@ const el: Record<TranslationKey, string> = {
   'events.unassignedTitle': 'Δραστηριότητες χωρίς εκδήλωση',
   'events.unassignedText': 'Αυτοί οι επιλεγμένοι πόροι δεν ανήκουν ακόμη σε εκδήλωση. Προσθέστε τους σε εκδήλωση με την Επιλογή δραστηριοτήτων ή προετοιμάστε τους πρώτα εδώ.',
   'events.allAssigned': 'Κάθε επιλεγμένος πόρος ανήκει σε εκδήλωση.',
+  'account.showNameInForum': 'Εμφάνιση του ονόματός μου στο Συζητώ και Αποφασίζω',
+  'objectiveTabs.activities': 'Δραστηριότητες',
+  'objectiveTabs.about': 'Σχετικά με τον Στόχο',
+  'objectiveTabs.saveInstructions': 'Αποθήκευση οδηγιών',
+  'objectiveTabs.instructionsSaved': 'Οι οδηγίες για τους διευκολυντές αποθηκεύτηκαν.',
+  'objectiveTabs.resourceRemoved': 'Ο πόρος αφαιρέθηκε από τον Στόχο.',
+  'objectiveTabs.removeFromObjective': 'Αφαίρεση από τον Στόχο {{phase}}',
 };
 
 const fi: Record<TranslationKey, string> = {
@@ -6693,6 +6707,13 @@ const fi: Record<TranslationKey, string> = {
   'events.unassignedTitle': 'Toiminnat, jotka eivät vielä kuulu tapahtumaan',
   'events.unassignedText': 'Nämä valitut resurssit eivät vielä kuulu tapahtumaan. Lisää ne tapahtumaan Valitse toiminnat -painikkeella tai valmistele ne ensin tässä.',
   'events.allAssigned': 'Jokainen valittu resurssi kuuluu tapahtumaan.',
+  'account.showNameInForum': 'Näytä nimeni Keskustele ja päätä -osiossa',
+  'objectiveTabs.activities': 'Toiminnat',
+  'objectiveTabs.about': 'Tietoa tavoitteesta',
+  'objectiveTabs.saveInstructions': 'Tallenna ohjeet',
+  'objectiveTabs.instructionsSaved': 'Ohjeet fasilitaattoreille tallennettiin.',
+  'objectiveTabs.resourceRemoved': 'Resurssi poistettiin tavoitteesta.',
+  'objectiveTabs.removeFromObjective': 'Poista tavoitteesta {{phase}}',
 };
 
 const pl: Record<TranslationKey, string> = {
@@ -8874,6 +8895,13 @@ const pl: Record<TranslationKey, string> = {
   'events.unassignedTitle': 'Działania jeszcze bez wydarzenia',
   'events.unassignedText': 'Te wybrane zasoby nie należą jeszcze do żadnego wydarzenia. Dodaj je do wydarzenia przyciskiem Wybierz działania albo najpierw przygotuj je tutaj.',
   'events.allAssigned': 'Każdy wybrany zasób należy do wydarzenia.',
+  'account.showNameInForum': 'Pokazuj moje imię w sekcji Dyskutuj i decyduj',
+  'objectiveTabs.activities': 'Działania',
+  'objectiveTabs.about': 'O tym celu',
+  'objectiveTabs.saveInstructions': 'Zapisz instrukcje',
+  'objectiveTabs.instructionsSaved': 'Instrukcje dla facylitatorów zostały zapisane.',
+  'objectiveTabs.resourceRemoved': 'Zasób został usunięty z celu.',
+  'objectiveTabs.removeFromObjective': 'Usuń z celu {{phase}}',
 };
 
 const pt: Record<TranslationKey, string> = {
@@ -11052,6 +11080,13 @@ const pt: Record<TranslationKey, string> = {
   'events.unassignedTitle': 'Atividades ainda sem evento',
   'events.unassignedText': 'Estes recursos selecionados ainda não pertencem a um evento. Adicione-os a um evento com Escolher atividades ou prepare-os primeiro aqui.',
   'events.allAssigned': 'Todos os recursos selecionados fazem parte de um evento.',
+  'account.showNameInForum': 'Mostrar o meu nome em Discutir e Decidir',
+  'objectiveTabs.activities': 'Atividades',
+  'objectiveTabs.about': 'Sobre este Objetivo',
+  'objectiveTabs.saveInstructions': 'Guardar instruções',
+  'objectiveTabs.instructionsSaved': 'Instruções para os facilitadores guardadas.',
+  'objectiveTabs.resourceRemoved': 'Recurso removido do Objetivo.',
+  'objectiveTabs.removeFromObjective': 'Remover do Objetivo {{phase}}',
 };
 
 export const translations: Record<LanguageCode, Record<TranslationKey, string>> = { en, el, fi, pl, pt };

@@ -876,8 +876,15 @@ function syncEventLogistics(db, eventRow) {
  * gets a draft one; activities of resources no longer chosen leave the event but are kept.
  */
 function assignEventActivities(db, { eventRow, phase, toolKeys, actor }) {
-  const selected = new Set(parseJson(phase.enabled_tools_json, []));
-  const keys = [...new Set((Array.isArray(toolKeys) ? toolKeys : []).map(String))].filter((key) => selected.has(key));
+  // The Municipality configures an Objective through its events: a catalogue resource chosen for an
+  // event joins the Objective's selected resources.
+  const enabled = parseJson(phase.enabled_tools_json, []);
+  const keys = [...new Set((Array.isArray(toolKeys) ? toolKeys : []).map(String))].filter((key) => SPICE_RESOURCE_NAMES.has(key));
+  const added = keys.filter((key) => !enabled.includes(key));
+  if (added.length) {
+    db.prepare('UPDATE hub_phases SET enabled_tools_json = ? WHERE id = ?').run(JSON.stringify([...enabled, ...added]), phase.id);
+    addAudit(db, { actor, action: 'hub.phase.update', targetType: 'hub_phase', targetId: phase.id, previousValue: { enabledTools: enabled }, newValue: { enabledTools: [...enabled, ...added], via: 'event' } });
+  }
   const now = new Date().toISOString();
   db.prepare('UPDATE hub_activities SET event_id = NULL, updated_at = ? WHERE event_id = ? AND (tool_key IS NULL OR tool_key NOT IN (' + (keys.length ? keys.map(() => '?').join(',') : "''") + '))')
     .run(now, eventRow.id, ...keys);
@@ -892,8 +899,8 @@ function assignEventActivities(db, { eventRow, phase, toolKeys, actor }) {
         initiative_id, phase_id, title, description, status, workflow_status, assigned_to_user_id,
         tool_key, selected_tool_ids_json, activity_type, instructions, participation_mode,
         visibility, contribution_types_json, event_id, created_at, updated_at
-      ) VALUES (?, ?, ?, '', 'draft', 'draft', ?, ?, ?, 'participation', '', 'offline', 'public', '["text"]', ?, ?, ?)
-    `).run(eventRow.initiative_id, phase.id, SPICE_RESOURCE_NAMES.get(toolKey) || toolKey, actor.id, toolKey, JSON.stringify([toolKey]), eventRow.id, now, now);
+      ) VALUES (?, ?, ?, '', ?, 'draft', ?, ?, ?, 'participation', '', 'offline', 'public', '["text"]', ?, ?, ?)
+    `).run(eventRow.initiative_id, phase.id, SPICE_RESOURCE_NAMES.get(toolKey) || toolKey, publicActivityStatus('draft'), actor.id, toolKey, JSON.stringify([toolKey]), eventRow.id, now, now);
     addAudit(db, { actor, action: 'hub.activity.create', targetType: 'hub_activity', targetId: result.lastInsertRowid, newValue: { eventId: eventRow.id, toolKey, workflowStatus: 'draft' } });
   });
   syncEventLogistics(db, eventRow);

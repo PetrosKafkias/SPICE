@@ -23,6 +23,7 @@ import PilotSelector from './PilotSelector';
 import ObjectiveWorkspace from './ObjectiveWorkspace';
 import ObjectiveCoverage from './ObjectiveCoverage';
 import CitizenEvents from './CitizenEvents';
+import ObjectiveTabs, { type ObjectiveTab } from './ObjectiveTabs';
 import ActivitySummary from './ActivitySummary';
 import type { ActivityCompletion, HubEvent } from '../lib/events';
 import { readStoredPilot, storeActivePilot } from '../lib/activePilot';
@@ -218,6 +219,9 @@ export default function RoleHubDashboard() {
   const [canParticipate, setCanParticipate] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [selectedPhaseNumber, setSelectedPhaseNumber] = useState<number | null>(null);
+  const [citizenTab, setCitizenTab] = useState<ObjectiveTab>('activities');
+  // Content of the tab that is not selected stays rendered but hidden, so section order is kept.
+  const inTab = (tab: ObjectiveTab) => (citizenTab === tab ? '' : 'hidden');
   const [pendingPhaseNumber, setPendingPhaseNumber] = useState<number | null>(null);
   const [savingPhaseChange, setSavingPhaseChange] = useState(false);
   const [facilitatorEmail, setFacilitatorEmail] = useState('');
@@ -609,12 +613,14 @@ export default function RoleHubDashboard() {
   };
 
   // Upcoming events of every Objective, so citizens can register ahead of time.
-  const renderCitizenEvents = () => {
+  const renderCitizenEvents = (phaseNumber: number) => {
     if (!detail) return null;
+    const currentPhase = detail.currentPhaseNumber ?? 1;
+    const shown = (eventPhase: number) => eventPhase === phaseNumber || (phaseNumber === currentPhase && eventPhase > currentPhase);
     const allActivities = detail.phases.flatMap((phase) => phase.activities);
     return (
       <CitizenEvents
-        events={detail.phases.flatMap((phase) => (phase.events || []).map((event) => ({ ...event, phaseNumber: phase.phaseNumber })))}
+        events={detail.phases.filter((phase) => shown(phase.phaseNumber)).flatMap((phase) => (phase.events || []).map((event) => ({ ...event, phaseNumber: phase.phaseNumber })))}
         activities={allActivities.map((activity) => ({
           id: activity.id, eventId: activity.eventId, title: (activity.toolKey && resolveSpiceResource(activity.toolKey, tools, t)?.name) || activity.title,
           instructions: activity.instructions, requiredMaterials: activity.requiredMaterials, accessibilityNotes: activity.accessibilityNotes,
@@ -705,7 +711,7 @@ export default function RoleHubDashboard() {
 
     return (
       <section id="citizen-phase-content" tabIndex={-1} className="mt-5 scroll-mt-24 border-2 border-[#cfd0d4] bg-white p-5 outline-none md:p-7" aria-labelledby="selected-phase-heading" aria-live="polite">
-        <header className="flex flex-col gap-4 border-b-2 border-[#eee] pb-5 md:flex-row md:items-start md:justify-between">
+        <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="min-w-0">
             <p className="text-[11px] font-bold uppercase text-[#a85f20]">{t('hub.phaseNumber', { phase: selectedPhaseNumber })} <span aria-hidden="true">·</span> {t(stateKey)}</p>
             <h2 id="selected-phase-heading" className="mt-1 text-[24px] font-bold leading-tight text-[#444]">{phaseTitle}</h2>
@@ -713,6 +719,7 @@ export default function RoleHubDashboard() {
           </div>
           {period && <p className="flex min-h-10 flex-none items-center gap-2 bg-[#f5f5f5] px-3 text-[12px] font-semibold text-[#555]"><CalendarDays size={16} aria-hidden="true" />{period}</p>}
         </header>
+        {state !== 'incomplete' && <ObjectiveTabs idPrefix="citizen-objective" active={citizenTab} onChange={setCitizenTab} />}
 
         {state === 'incomplete' ? (
           <div className="py-6">
@@ -733,7 +740,8 @@ export default function RoleHubDashboard() {
           </div>
         ) : state === 'completed' ? (
           <div className="space-y-7 pt-6">
-            <section aria-labelledby="phase-summary-heading">
+            {citizenTab === 'activities' && renderCitizenEvents(selectedPhaseNumber)}
+            <section className={inTab('about')} aria-labelledby="phase-summary-heading">
               <div>
                 <h3 id="phase-summary-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.phaseSummary')}</h3>
                 <p className="mt-2 text-[14px] leading-relaxed text-[#666]">{selectedPhase.completionSummary || t('hub.citizen.completedSummaryFallback')}</p>
@@ -742,7 +750,7 @@ export default function RoleHubDashboard() {
             </section>
 
             {selectedPhase.activities.some((activity) => activity.completion) && (
-              <section aria-labelledby="activity-summaries-heading">
+              <section className={inTab('activities')} aria-labelledby="activity-summaries-heading">
                 <h3 id="activity-summaries-heading" className="text-[18px] font-bold text-[#444]">{t('completion.summariesTitle')}</h3>
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
                   {selectedPhase.activities.filter((activity) => activity.completion).map((activity) => (
@@ -755,7 +763,7 @@ export default function RoleHubDashboard() {
               </section>
             )}
 
-            <section aria-labelledby="completed-tools-heading">
+            <section className={inTab('about')} aria-labelledby="completed-tools-heading">
               <h3 id="completed-tools-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.toolsUsed')}</h3>
               {visibleTools.length ? (
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -779,7 +787,7 @@ export default function RoleHubDashboard() {
               ) : <p className="mt-3 spice-card-dashed p-4 text-[13px] text-[#666]">{t('hub.citizen.completedNoTools')}</p>}
             </section>
 
-            <section aria-labelledby="published-results-heading">
+            <section className={inTab('about')} aria-labelledby="published-results-heading">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h3 id="published-results-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.publishedResults')}</h3>
                 {publishedResults.length > 0 && <Link to={phaseResultsPath} className="text-[13px] font-bold text-[#a85f20] underline underline-offset-4">{t('hub.citizen.viewAllResults')}</Link>}
@@ -788,9 +796,9 @@ export default function RoleHubDashboard() {
                 : <div className="mt-4 spice-card-dashed p-5"><p className="font-bold text-[#555]">{t('hub.citizen.noPublishedResults')}</p><p className="mt-1 text-[13px] text-[#666]">{t('hub.citizen.noPublishedResultsText')}</p></div>}
             </section>
 
-            {renderContributionList()}
+            {citizenTab === 'activities' && renderContributionList()}
 
-            <section className="border-l-4 border-[#59713d] bg-[#f0f8ea] p-5" aria-labelledby="published-outcomes-heading">
+            <section className={`border-l-4 border-[#59713d] bg-[#f0f8ea] p-5 ${inTab('about')}`} aria-labelledby="published-outcomes-heading">
               <h3 id="published-outcomes-heading" className="text-[17px] font-bold text-[#3d5c26]">{t('hub.citizen.publishedOutcomes')}</h3>
               <p className="mt-2 text-[14px] leading-relaxed text-[#3d5c26]">{selectedPhase.completionSummary || t('hub.citizen.completedSummaryFallback')}</p>
               <Link to={`/forum-voting?initiative=${initiative.id}&phase=${selectedPhaseNumber}`} className="mt-4 inline-flex min-h-11 items-center gap-2 font-bold text-[#35521f] underline underline-offset-4">{t('hub.citizen.viewMunicipalityDecisions')} <ArrowRight size={15} /></Link>
@@ -798,13 +806,14 @@ export default function RoleHubDashboard() {
           </div>
         ) : (
           <div className="space-y-7 pt-6">
-            <section className="grid gap-4 md:grid-cols-3" aria-label={t('hub.citizen.currentPhaseFacts')}>
+            {citizenTab === 'activities' && renderCitizenEvents(selectedPhaseNumber)}
+            <section className={`grid gap-4 md:grid-cols-3 ${inTab('about')}`} aria-label={t('hub.citizen.currentPhaseFacts')}>
               <div className="border-l-4 border-[#f68b2c] bg-[#fff8f2] p-4"><p className="text-[11px] font-bold uppercase text-[#a85f20]">{t('hub.citizen.happeningNow')}</p><p className="mt-2 text-[13px] leading-relaxed text-[#555]">{openActivities.length ? t('hub.citizen.openActivitiesCount', { count: openActivities.length }) : t('hub.citizen.noOpenActivitiesText')}</p></div>
               <div className="border-l-4 border-[#59713d] bg-[#f3f7ef] p-4"><p className="text-[11px] font-bold uppercase text-[#47662f]">{t('hub.citizen.availableTools')}</p><p className="mt-2 text-[13px] leading-relaxed text-[#555]">{t('hub.citizen.availableToolsCount', { count: visibleTools.length })}</p></div>
               <div className="border-l-4 border-[#55738f] bg-[#f1f6fa] p-4"><p className="text-[11px] font-bold uppercase text-[#355b78]">{t('hub.citizen.whatHappensNext')}</p><p className="mt-2 text-[13px] leading-relaxed text-[#555]">{t('hub.citizen.currentNext')}</p></div>
             </section>
 
-            <section aria-labelledby="open-activities-heading">
+            <section className={inTab('activities')} aria-labelledby="open-activities-heading">
               <h3 id="open-activities-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.openActivities')}</h3>
               {selectedPhase.activities.length ? (
                 <div className="mt-4 grid gap-4 lg:grid-cols-2">
@@ -843,7 +852,7 @@ export default function RoleHubDashboard() {
               ) : <div className="mt-4 spice-card-dashed p-5"><p className="font-bold text-[#555]">{t('hub.citizen.noOpenActivities')}</p><p className="mt-1 text-[13px] text-[#666]">{t('hub.citizen.noOpenActivitiesText')}</p></div>}
             </section>
 
-            <section aria-labelledby="available-tools-heading">
+            <section className={inTab('about')} aria-labelledby="available-tools-heading">
               <h3 id="available-tools-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.toolsAvailable')}</h3>
               {visibleTools.length ? (
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -863,8 +872,8 @@ export default function RoleHubDashboard() {
               ) : <div className="mt-4 spice-card-dashed p-5"><p className="font-bold text-[#555]">{t('hub.citizen.noPublishedTools')}</p><p className="mt-1 text-[13px] text-[#666]">{t('hub.citizen.noPublishedToolsText')}</p></div>}
             </section>
 
-            {publishedResources.length > 0 && <section aria-labelledby="phase-resources-heading"><h3 id="phase-resources-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.publishedResources')}</h3><div className="mt-4 grid gap-4 md:grid-cols-2">{publishedResources.map(renderResultCard)}</div></section>}
-            {renderContributionList()}
+            {publishedResources.length > 0 && <section className={inTab('about')} aria-labelledby="phase-resources-heading"><h3 id="phase-resources-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.publishedResources')}</h3><div className="mt-4 grid gap-4 md:grid-cols-2">{publishedResources.map(renderResultCard)}</div></section>}
+            {citizenTab === 'activities' && renderContributionList()}
           </div>
         )}
       </section>
@@ -1011,7 +1020,6 @@ export default function RoleHubDashboard() {
             ) : (
               <>
                 {renderRoadmap()}
-                {renderCitizenEvents()}
                 {renderCitizenPhaseWorkspace(citizenInitiative)}
               </>
             )}
@@ -1154,7 +1162,6 @@ export default function RoleHubDashboard() {
             ) : (
               <>
                 {renderRoadmap()}
-                {renderCitizenEvents()}
                 {renderCitizenPhaseWorkspace(citizenInitiative)}
               </>
             )}

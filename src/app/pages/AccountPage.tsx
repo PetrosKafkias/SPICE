@@ -8,6 +8,7 @@ import {
   Clock,
   Download,
   Eye,
+  EyeOff,
   ImagePlus,
   LockKeyhole,
   Mail,
@@ -224,7 +225,22 @@ function ProfilePicture({ user, initials, children }: { user: AuthUser; initials
 
 function DetailsTab({ user }: { user: AuthUser }) {
   const { t } = useI18n();
+  const { updateProfile } = useAuth();
   const [editing, setEditing] = useState(false);
+  const [savingIdentity, setSavingIdentity] = useState(false);
+  // Discuss and Decide is anonymous by default; showing the name is the profile's Public visibility.
+  const nameVisible = user.preferences.profileVisibility === 'public';
+  const setNameVisible = async (visible: boolean) => {
+    setSavingIdentity(true);
+    try {
+      await updateProfile({ profileVisibility: visible ? 'public' : 'private' });
+      toast.success(t(visible ? 'forum.identity.nowVisible' : 'forum.identity.nowAnonymous'));
+    } catch {
+      toast.error(t('common.error'));
+    } finally {
+      setSavingIdentity(false);
+    }
+  };
   const initials = user.fullName.split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase();
   const localizedRoleKey = roleKey(normalizeRole(user.role));
 
@@ -248,6 +264,20 @@ function DetailsTab({ user }: { user: AuthUser }) {
           <DetailItem icon={MapPin} label={t('account.pilot')} value={user.pilotSite} />
           <DetailItem icon={Phone} label={t('account.phone')} value={user.phone} />
         </div>
+
+        {/* Staff always speak for the pilot under their name, so only citizens choose. */}
+        {normalizeRole(user.role) === 'citizen' && (
+        <div className="mt-5 flex items-center justify-between gap-5 border-t border-[#ededed] bg-[#f1f7fb] p-5" aria-busy={savingIdentity}>
+          <div className="flex items-start gap-3">
+            {nameVisible ? <Eye size={20} className="mt-0.5 flex-none text-[#31556f]" aria-hidden="true" /> : <EyeOff size={20} className="mt-0.5 flex-none text-[#31556f]" aria-hidden="true" />}
+            <div>
+              <p className="text-[16px] font-bold text-[#24445c]">{t('account.showNameInForum')}</p>
+              <p className="mt-1 text-[14px] leading-relaxed text-[#31556f]">{t(nameVisible ? 'forum.identity.visibleText' : 'forum.identity.anonymousText')}</p>
+            </div>
+          </div>
+          <PreferenceToggle value={nameVisible} onChange={(value) => { if (!savingIdentity) void setNameVisible(value); }} label={t('account.showNameInForum')} />
+        </div>
+        )}
 
         {editing && <ProfileForm user={user} onClose={() => setEditing(false)} />}
       </section>

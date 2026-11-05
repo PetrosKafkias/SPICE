@@ -642,6 +642,18 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     assert.equal(staffPhase.events[0].teamNotes, 'Bring printed maps.');
     assert.deepEqual(staffPhase.activities.filter((item) => item.eventId === eventId).map((item) => item.toolKey).sort(), ['hopes-and-fears', 'stakeholder-mapping']);
     assert.equal(staffPhase.activities.find((item) => item.toolKey === 'hopes-and-fears').location, 'Town hall');
+    // Choosing a catalogue resource that the Objective does not have yet adds it to the Objective.
+    assert.equal(staffPhase.enabledTools.includes('world-cafe'), false);
+    const draftEvent = await createEvent(municipalityLogin.cookie, { phaseNumber: 1, title: 'Draft café evening', activityToolKeys: ['world-cafe'] });
+    assert.equal(draftEvent.status, 201);
+    const phaseWithCafe = (await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: municipalityLogin.cookie })).payload.initiative.phases[0];
+    assert.ok(phaseWithCafe.enabledTools.includes('world-cafe'));
+    assert.equal(phaseWithCafe.activities.find((item) => item.toolKey === 'world-cafe').eventId, draftEvent.payload.event.id);
+    assert.equal((await request(baseUrl, `/api/hub/events/${draftEvent.payload.event.id}`, { method: 'DELETE', cookie: municipalityLogin.cookie })).status, 200);
+    // Leave Objective 1 as it was for the progression checks below.
+    const cafeActivity = phaseWithCafe.activities.find((item) => item.toolKey === 'world-cafe');
+    assert.equal((await request(baseUrl, `/api/hub/activities/${cafeActivity.id}`, { method: 'PATCH', cookie: municipalityLogin.cookie, body: { workflowStatus: 'cancelled' } })).status, 200);
+    assert.equal((await request(baseUrl, `/api/hub/initiatives/${initiative.id}/phases/1`, { method: 'PATCH', cookie: municipalityLogin.cookie, body: { enabledTools: phaseWithCafe.enabledTools.filter((id) => id !== 'world-cafe') } })).status, 200);
     const citizenEvent = () => request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: citizenLogin.cookie })
       .then((result) => result.payload.initiative.phases[0].events.find((item) => item.id === eventId));
     const beforeRegistration = await citizenEvent();

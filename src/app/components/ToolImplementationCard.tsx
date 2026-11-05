@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Accessibility, CalendarDays, CircleAlert, FileText, Landmark, Package, Pencil, Settings2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Accessibility, CalendarDays, CircleAlert, FileText, Landmark, Minus, Package, Pencil, Settings2 } from 'lucide-react';
 import { DetailRow } from './EventDetailsHeader';
 import ActivitySummary from './ActivitySummary';
 import CompleteActivityDialog, { type CompletionInput } from './CompleteActivityDialog';
@@ -89,6 +89,10 @@ interface Props {
   events?: HubEvent[];
   /** Shown inside its event's card, so the event's logistics are not repeated. */
   insideEvent?: boolean;
+  /** Lets the Municipality edit its instructions for facilitators about this resource in place. */
+  onSaveMunicipalityNote?: (note: string) => Promise<boolean>;
+  /** Lets the Municipality take a resource that has no activity yet out of the Objective. */
+  onRemoveFromObjective?: () => Promise<boolean>;
   canManage: boolean;
   canFacilitate: boolean;
   onChanged: () => Promise<void>;
@@ -140,7 +144,7 @@ const inputClass = 'mt-2 min-h-11 w-full border-2 border-[#bfc0c5] bg-white px-3
 const textareaClass = 'mt-2 w-full resize-y border-2 border-[#bfc0c5] bg-white p-3 font-normal focus:border-[#ca7428] focus:outline-none';
 
 
-export default function ToolImplementationCard({ initiativeId, phaseNumber, toolKey, title, kindLabel, municipalityNote, implementation, defaults, events = [], insideEvent = false, canManage, canFacilitate, onChanged }: Props) {
+export default function ToolImplementationCard({ initiativeId, phaseNumber, toolKey, title, kindLabel, municipalityNote, implementation, defaults, events = [], insideEvent = false, onSaveMunicipalityNote, onRemoveFromObjective, canManage, canFacilitate, onChanged }: Props) {
   const { t, formatDate } = useI18n();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -148,6 +152,22 @@ export default function ToolImplementationCard({ initiativeId, phaseNumber, tool
   const [reviewNotes, setReviewNotes] = useState('');
   const [pendingAction, setPendingAction] = useState<ImplementationAction | null>(null);
   const [completing, setCompleting] = useState<'complete' | 'edit' | null>(null);
+  const [noteDraft, setNoteDraft] = useState(municipalityNote || '');
+  const [savingNote, setSavingNote] = useState(false);
+  useEffect(() => { setNoteDraft(municipalityNote || ''); }, [municipalityNote]);
+  const noteDirty = noteDraft.trim() !== (municipalityNote || '').trim();
+  const saveNote = async () => {
+    if (!onSaveMunicipalityNote) return;
+    setSavingNote(true);
+    await onSaveMunicipalityNote(noteDraft.trim());
+    setSavingNote(false);
+  };
+  const removeFromObjective = async () => {
+    if (!onRemoveFromObjective) return;
+    setSaving(true);
+    await onRemoveFromObjective();
+    setSaving(false);
+  };
   const assignableEvents = events.filter((event) => event.status !== 'cancelled');
   const event = implementation?.eventId ? events.find((item) => item.id === implementation.eventId) || null : null;
   const canConfigure = canManage || canFacilitate;
@@ -243,8 +263,25 @@ export default function ToolImplementationCard({ initiativeId, phaseNumber, tool
 
       {toolKey && (
         <div className="mt-4 rounded-lg border-l-4 border-[#4e789b] bg-[#f1f7fb] p-4 text-[13px] leading-relaxed text-[#31556f]">
-          <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide"><Landmark size={14} aria-hidden="true" />{t('phaseDetail.municipalityInstructions')}</p>
-          <p className="mt-1.5 whitespace-pre-line">{municipalityNote || t('phaseDetail.noMunicipalityInstructions')}</p>
+          <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide"><Landmark size={14} aria-hidden="true" />{t(onSaveMunicipalityNote ? 'phaseDetail.toolNoteLabel' : 'phaseDetail.municipalityInstructions')}</p>
+          {onSaveMunicipalityNote ? (
+            <>
+              <textarea
+                id={`tool-note-${toolKey}`}
+                value={noteDraft}
+                onChange={(event) => setNoteDraft(event.target.value)}
+                rows={2}
+                aria-label={t('phaseDetail.toolNoteLabel')}
+                placeholder={t('phaseDetail.toolNotePlaceholder')}
+                className="mt-2 w-full resize-y rounded-md border-2 border-[#c9d8e4] bg-white p-2.5 text-[13px] text-[#444] focus:border-[#4e789b] focus:outline-none"
+              />
+              {noteDirty && (
+                <button type="button" onClick={() => void saveNote()} disabled={savingNote} className="mt-2 inline-flex min-h-9 cursor-pointer items-center rounded-md bg-[#4e789b] px-3 text-[12px] font-bold text-white hover:bg-[#3e6584] disabled:cursor-wait disabled:opacity-60">{t('objectiveTabs.saveInstructions')}</button>
+              )}
+            </>
+          ) : (
+            <p className="mt-1.5 whitespace-pre-line">{municipalityNote || t('phaseDetail.noMunicipalityInstructions')}</p>
+          )}
         </div>
       )}
 
@@ -334,6 +371,11 @@ export default function ToolImplementationCard({ initiativeId, phaseNumber, tool
               <strong>{t('phaseDetail.statusLabel')}:</strong> {t(statusKey(implementation.workflowStatus))}
               {contributionStateKey && <span className="block text-[12px] text-[#777]">{t(contributionStateKey)}</span>}
             </p>
+          )}
+          {onRemoveFromObjective && !implementation && (
+            <button type="button" onClick={() => void removeFromObjective()} disabled={saving} className="inline-flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-[#ca7428] bg-white px-4 py-2 text-sm font-bold text-[#a85f20] hover:bg-[#fff4e9] disabled:cursor-wait disabled:opacity-60">
+              <Minus size={16} aria-hidden="true" />{t('objectiveTabs.removeFromObjective', { phase: phaseNumber })}
+            </button>
           )}
           {editable && (
             <button type="button" onClick={startEditing} className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-[#444] bg-white px-4 py-2 text-sm font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]">
