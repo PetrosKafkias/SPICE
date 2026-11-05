@@ -219,6 +219,20 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     const participantNotifications = await request(baseUrl, '/api/notifications?filter=unread', { cookie: citizenCookie });
     assert.ok(participantNotifications.payload.notifications.some((item) => item.eventType === 'comment_reply'));
 
+    // Discuss and Decide is anonymous by default: other people do not see a citizen's name until they choose otherwise.
+    const commentsAs = async (cookie) => (await request(baseUrl, `/api/forum/proposals/${existingProposalId}/comments`, { cookie })).payload.comments
+      .find((item) => item.id === participantComment.payload.comment.id);
+    const asGuest = await commentsAs(undefined);
+    assert.equal(asGuest.anonymous, true);
+    assert.equal(asGuest.author, null);
+    assert.ok((await commentsAs(citizenCookie)).author, 'authors still see their own name');
+    assert.ok(!commentNotification.body.includes(participantComment.payload.comment.author));
+    assert.equal((await request(baseUrl, '/api/profile', { method: 'PATCH', cookie: citizenCookie, body: { profileVisibility: 'public' } })).status, 200);
+    const named = await commentsAs(undefined);
+    assert.equal(named.anonymous, false);
+    assert.ok(named.author);
+    await request(baseUrl, '/api/profile', { method: 'PATCH', cookie: citizenCookie, body: { profileVisibility: 'private' } });
+
     const created = await request(baseUrl, '/api/forum/proposals', {
       method: 'POST', cookie: demoCookie,
       body: {
@@ -570,8 +584,8 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     assert.equal(closedContribution.status, 409);
 
     // The facilitator runs the activity lifecycle, including reversible operational steps.
-    const activityStep = (workflowStatus, cookie = facilitatorLogin.cookie) => request(baseUrl, `/api/hub/activities/${activityId}`, {
-      method: 'PATCH', cookie, body: { workflowStatus },
+    const activityStep = (workflowStatus, cookie = facilitatorLogin.cookie, extra = {}) => request(baseUrl, `/api/hub/activities/${activityId}`, {
+      method: 'PATCH', cookie, body: { workflowStatus, ...extra },
     });
     const citizenContribute = () => request(baseUrl, `/api/hub/activities/${activityId}/contributions`, {
       method: 'POST', cookie: citizenLogin.cookie, body: { contributionType: 'text', content: 'Lifecycle contribution check.' },
@@ -582,9 +596,18 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     assert.equal((await citizenContribute()).status, 201);
     assert.equal((await activityStep('scheduled')).payload.code, 'INVALID_ACTIVITY_TRANSITION');
     assert.equal((await activityStep('closed')).status, 200);
-    const completedByFacilitator = await activityStep('completed');
+    // Completing records what took place: the summary is required and becomes public.
+    assert.equal((await activityStep('completed')).payload.code, 'ACTIVITY_SUMMARY_REQUIRED');
+    const completedByFacilitator = await activityStep('completed', facilitatorLogin.cookie, {
+      completion: { summary: 'Residents mapped three priority streets and agreed on next steps.', outcomes: 'Three priority streets', participants: 18 },
+    });
     assert.equal(completedByFacilitator.status, 200);
     assert.equal(completedByFacilitator.payload.activity.status, 'completed');
+    assert.equal(completedByFacilitator.payload.activity.completion.participants, 18);
+    const publicPilot = await request(baseUrl, `/api/hub/initiatives/${completedByFacilitator.payload.activity.initiativeId}`, { cookie: citizenLogin.cookie });
+    const publicActivity = publicPilot.payload.initiative.phases.flatMap((phase) => phase.activities).find((item) => item.id === activityId);
+    assert.match(publicActivity.completion.summary, /priority streets/);
+    assert.equal(publicActivity.facilitatorNotes, null);
     assert.equal((await citizenContribute()).status, 409);
     assert.equal((await activityStep('open')).payload.code, 'INVALID_ACTIVITY_TRANSITION');
     assert.equal((await activityStep('open', adminLogin.cookie)).payload.code, 'INVALID_ACTIVITY_TRANSITION');
@@ -599,6 +622,46 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
       ['closed', 'open', 'reopened'], ['open', 'closed', 'closed'], ['closed', 'completed', 'completed'], ['completed', 'closed', 'reverted_from_completed'],
     ]);
     assert.ok(lifecycleAudit.every((entry) => entry.actor && entry.timestamp));
+
+    // Events group activities of one Objective; only the Municipality manages them.
+    const eventBody = {
+      phaseNumber: 1, title: 'Neighbourhood workshop', instructions: 'Join us to map the park entrance together.',
+      startAt: new Date(Date.now() + 7 * 86400000).toISOString(), participationMode: 'citivoice', duration: '2 hours',
+      location: 'Town hall', expectedParticipants: '30', meetingLinks: 'https://meet.example.test/spice',
+      teamNotes: 'Bring printed maps.', languageSupport: 'Greek, English', supportContact: 'events@example.test',
+      activityToolKeys: ['hopes-and-fears', 'stakeholder-mapping'], status: 'published',
+    };
+    const createEvent = (cookie, body = eventBody) => request(baseUrl, `/api/hub/initiatives/${initiative.id}/events`, { method: 'POST', cookie, body });
+    assert.equal((await createEvent(citizenLogin.cookie)).status, 403);
+    assert.equal((await createEvent(facilitatorLogin.cookie)).status, 403);
+    assert.equal((await createEvent(municipalityLogin.cookie, { ...eventBody, startAt: '' })).payload.fieldErrors.startAt !== undefined, true);
+    const createdEvent = await createEvent(municipalityLogin.cookie);
+    assert.equal(createdEvent.status, 201);
+    const eventId = createdEvent.payload.event.id;
+    const staffPhase = (await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: municipalityLogin.cookie })).payload.initiative.phases[0];
+    assert.equal(staffPhase.events[0].teamNotes, 'Bring printed maps.');
+    assert.deepEqual(staffPhase.activities.filter((item) => item.eventId === eventId).map((item) => item.toolKey).sort(), ['hopes-and-fears', 'stakeholder-mapping']);
+    assert.equal(staffPhase.activities.find((item) => item.toolKey === 'hopes-and-fears').location, 'Town hall');
+    const citizenEvent = () => request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: citizenLogin.cookie })
+      .then((result) => result.payload.initiative.phases[0].events.find((item) => item.id === eventId));
+    const beforeRegistration = await citizenEvent();
+    assert.equal(beforeRegistration.teamNotes, null);
+    assert.equal(beforeRegistration.meetingLinks, null);
+    assert.equal(beforeRegistration.registrationOpen, true);
+    const registration = await request(baseUrl, `/api/hub/events/${eventId}/registration`, { method: 'POST', cookie: citizenLogin.cookie });
+    assert.equal(registration.status, 200);
+    assert.equal(registration.payload.event.registrationCount, 1);
+    const afterRegistration = await citizenEvent();
+    assert.equal(afterRegistration.registered, true);
+    assert.equal(afterRegistration.meetingLinks, 'https://meet.example.test/spice');
+    assert.equal((await request(baseUrl, `/api/hub/events/${eventId}/registrations`, { cookie: citizenLogin.cookie })).status, 403);
+    const registrants = await request(baseUrl, `/api/hub/events/${eventId}/registrations`, { cookie: municipalityLogin.cookie });
+    assert.equal(registrants.payload.registrations.length, 1);
+    assert.equal((await request(baseUrl, `/api/hub/events/${eventId}`, { method: 'DELETE', cookie: municipalityLogin.cookie })).payload.code, 'EVENT_NOT_DELETABLE');
+    assert.equal((await request(baseUrl, `/api/hub/events/${eventId}`, { method: 'PATCH', cookie: municipalityLogin.cookie, body: { status: 'draft' } })).payload.code, 'EVENT_HAS_REGISTRATIONS');
+    const unregistered = await request(baseUrl, `/api/hub/events/${eventId}/registration`, { method: 'DELETE', cookie: citizenLogin.cookie });
+    assert.equal(unregistered.payload.event.registered, false);
+    assert.equal(unregistered.payload.event.registrationCount, 0);
 
     const municipalityAdmin = await request(baseUrl, '/api/admin/overview', { cookie: municipalityLogin.cookie });
     assert.equal(municipalityAdmin.status, 403);

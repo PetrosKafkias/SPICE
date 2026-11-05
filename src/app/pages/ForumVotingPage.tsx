@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import SpicePublicShell from '../components/SpicePublicShell';
 import StandardPageHeader from '../components/StandardPageHeader';
+import ForumIdentityNotice from '../components/ForumIdentityNotice';
 import { FieldMessage, FormField, FormGrid } from '../components/FormLayout';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
@@ -38,9 +39,11 @@ interface Proposal {
   description: string;
   supportPct: number;
   totalVotes: number;
-  author: string;
+  author: string | null;
   authorRole: string;
   authorAvatar: string | null;
+  /** Posted anonymously: author is null for everyone except the author. */
+  anonymous?: boolean;
   createdAt: string;
   comments: number;
   upvotes: number;
@@ -74,9 +77,10 @@ interface CommentItem {
   id: number;
   body: string;
   createdAt: string;
-  author: string;
+  author: string | null;
   authorRole: string;
   authorAvatar: string | null;
+  anonymous?: boolean;
   parentCommentId: number | null;
 }
 
@@ -96,8 +100,8 @@ const STATUS_BADGE: Record<string, string> = {
   'Needs Revision': 'bg-[#fff5d9] text-[#7a5b00]',
 };
 
-function ForumAvatar({ src, name, size = 'sm' }: { src: string | null; name: string; size?: 'sm' | 'md' }) {
-  const initials = name.split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase();
+function ForumAvatar({ src, name, size = 'sm', anonymous = false }: { src: string | null; name: string; size?: 'sm' | 'md'; anonymous?: boolean }) {
+  const initials = anonymous ? '?' : name.split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase();
   return <span className={`grid flex-none place-items-center overflow-hidden rounded-full border border-[#ca7428] bg-[#fff0e2] font-bold text-[#ca7428] ${size === 'md' ? 'h-10 w-10 text-[12px]' : 'h-8 w-8 text-[10px]'}`}>{src ? <img src={src} alt="" className="h-full w-full object-cover"/> : <span aria-hidden="true">{initials}</span>}<span className="sr-only">{name}</span></span>;
 }
 
@@ -117,6 +121,10 @@ export default function ForumVotingPage() {
   const { user } = useAuth();
   const { can } = usePermissions();
   const { t, formatDate } = useI18n();
+  // Anonymous authors have no name for other people; authors see their own name with a reminder.
+  const authorLabel = (item: { author: string | null; anonymous?: boolean }) => (!item.author
+    ? t('forum.anonymousParticipant')
+    : item.anonymous ? t('forum.youAnonymous', { name: item.author }) : item.author);
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [context, setContext] = useState<ForumContext | null>(null);
   const [facets, setFacets] = useState<ForumFacets>({ itemTypes: [], categories: [], statuses: [] });
@@ -465,6 +473,8 @@ export default function ForumVotingPage() {
           </form>
         )}
 
+        {user && normalizeRole(user.role) === 'citizen' && <ForumIdentityNotice onChanged={() => { setExpandedId(null); setComments({}); void loadProposals(); }} />}
+
         <div className="flex flex-wrap items-center gap-3" aria-label={t('forum.filters')}>
           <label className="relative"><span className="sr-only">{t('forum.allTopics')}</span><select value={topicFilter} onChange={(event) => setTopicFilter(event.target.value)} className="min-h-11 cursor-pointer appearance-none border border-[#999] bg-white px-4 py-2 pr-9 text-[14px] text-[#444] outline-none transition-colors hover:border-[#ca7428]"><option value="all">{t('forum.allTopics')}</option>{TOPICS.map((topic) => <option key={topic.value} value={topic.value}>{t(topic.key)}</option>)}</select><ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#444]" /></label>
           <label className="relative"><span className="sr-only">{t('forum.filter.itemType')}</span><select value={itemTypeFilter} onChange={(event) => setItemTypeFilter(event.target.value)} className="min-h-11 cursor-pointer appearance-none border border-[#999] bg-white px-4 py-2 pr-9 text-[14px] text-[#444] outline-none transition-colors hover:border-[#ca7428]"><option value="all">{t('forum.filter.allTypes')}</option>{facets.itemTypes.map((type) => <option key={type} value={type}>{t(`forum.item.${type}` as TranslationKey)}</option>)}</select><ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#444]" /></label>
@@ -501,7 +511,7 @@ export default function ForumVotingPage() {
                   <div className="mt-4"><p className="mb-1.5 text-[12px] text-[#777]">{t('forum.support', { percent: proposal.supportPct, count: proposal.totalVotes })}</p><div className="h-1.5 w-full bg-gray-100"><div className="h-1.5 bg-[#2e6e45]" style={{ width: `${proposal.supportPct}%` }} /></div></div>
                   <ProposalLifecycle status={proposal.workflowStatus || proposal.status} />
                   {proposal.history.length > 0 && <details className="mt-4 border-t border-[#dedee1] pt-3"><summary className="flex cursor-pointer list-none items-center gap-2 text-[13px] font-bold text-[#a85f20]"><History size={17} aria-hidden="true" />{t('forum.evolutionHistory')}<ChevronDown size={15} className="ml-1" aria-hidden="true" /></summary><ol className="mt-3 grid gap-2 border-l-2 border-[#e7c8aa] pl-4">{proposal.history.map((event) => <li key={event.id} className="text-[12px] leading-relaxed text-[#666]"><span className="font-bold text-[#444]">{t(`forum.history.${event.eventType}` as TranslationKey)}</span> · {t('forum.phaseShort', { number: event.phaseNumber })} · {formatDate(event.createdAt, { dateStyle: 'medium' })}{event.note && <span className="block mt-0.5">{event.note}</span>}</li>)}</ol></details>}
-                  <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-2"><ForumAvatar src={proposal.authorAvatar} name={proposal.author} size="md"/><p className="text-[12px] text-[#777]">{t('forum.by', { name: proposal.author, role: t(roleKey(normalizeRole(proposal.authorRole))) })} - {formatDate(proposal.createdAt, { dateStyle: 'medium' })}</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={() => user ? setReportForm({ proposalId: proposal.id, reason: '', details: '' }) : signIn()} className="flex min-h-10 cursor-pointer items-center justify-center gap-2 border border-gray-300 px-3 py-2 text-[13px] font-medium text-[#444] hover:bg-gray-50"><Flag size={15} />{t('forum.report')}</button><button type="button" onClick={() => toggleComments(proposal.id)} className="flex min-h-10 cursor-pointer items-center justify-center gap-2 border border-gray-300 px-4 py-2 text-[13px] font-medium text-[#444] hover:bg-gray-50" aria-expanded={expandedId === proposal.id}><MessageSquare size={15} />{proposal.comments} {t('forum.comments')}<ChevronDown size={14} className={`transition-transform ${expandedId === proposal.id ? 'rotate-180' : ''}`} /></button></div></div>
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-2"><ForumAvatar src={proposal.authorAvatar} name={authorLabel(proposal)} anonymous={proposal.anonymous && !proposal.author} size="md"/><p className="text-[12px] text-[#777]">{t('forum.by', { name: authorLabel(proposal), role: t(roleKey(normalizeRole(proposal.authorRole))) })} - {formatDate(proposal.createdAt, { dateStyle: 'medium' })}</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={() => user ? setReportForm({ proposalId: proposal.id, reason: '', details: '' }) : signIn()} className="flex min-h-10 cursor-pointer items-center justify-center gap-2 border border-gray-300 px-3 py-2 text-[13px] font-medium text-[#444] hover:bg-gray-50"><Flag size={15} />{t('forum.report')}</button><button type="button" onClick={() => toggleComments(proposal.id)} className="flex min-h-10 cursor-pointer items-center justify-center gap-2 border border-gray-300 px-4 py-2 text-[13px] font-medium text-[#444] hover:bg-gray-50" aria-expanded={expandedId === proposal.id}><MessageSquare size={15} />{proposal.comments} {t('forum.comments')}<ChevronDown size={14} className={`transition-transform ${expandedId === proposal.id ? 'rotate-180' : ''}`} /></button></div></div>
                 </div>
               </div>
 
@@ -548,8 +558,8 @@ export default function ForumVotingPage() {
 
               {expandedId === proposal.id && (
                 <section className="mt-5 border-t-2 border-[#e5e5e5] pt-5" aria-label={t('forum.comments')}>
-                  {!comments[proposal.id] ? <p className="py-5 text-center text-[13px] text-[#777]">{t('common.loading')}</p> : comments[proposal.id].length === 0 ? <p className="py-5 text-center text-[13px] text-[#777]">{t('notifications.empty')}</p> : <div className="grid gap-3">{comments[proposal.id].map((comment) => <article key={comment.id} className={`flex items-start gap-3 bg-[#f7f7f7] p-4 ${comment.parentCommentId ? 'ml-5 border-l-2 border-[#ca7428] sm:ml-10' : ''}`}><ForumAvatar src={comment.authorAvatar} name={comment.author}/><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2 text-[12px]"><span className="font-bold text-[#444]">{comment.author}</span><span className="text-[#777]">({t(roleKey(normalizeRole(comment.authorRole)))})</span><span className="text-[#999]">{formatDate(comment.createdAt)}</span></div><p className="mt-2 text-[13px] leading-relaxed text-[#555]">{comment.body}</p>{user && Number(user.id) !== 0 && <button type="button" onClick={() => { setReplyingTo((current) => ({ ...current, [proposal.id]: comment })); document.getElementById(`comment-input-${proposal.id}`)?.focus(); }} className="mt-2 cursor-pointer text-[12px] font-semibold text-[#ca7428] underline underline-offset-3 hover:text-[#9b4e13]">{t('forum.reply')}</button>}</div></article>)}</div>}
-                  {proposal.moderationStatus === 'locked' || !['discussion_open', 'voting_open'].includes(proposal.workflowStatus) ? <p className="mt-4 text-sm font-semibold text-[#666]">{t('forum.discussionClosed')}</p> : user && context?.access.canParticipate ? <div className="mt-4">{replyingTo[proposal.id] && <div className="mb-2 flex items-center justify-between gap-3 border-l-4 border-[#ca7428] bg-[#fff4e9] px-3 py-2 text-[12px] font-semibold text-[#555]"><span>{t('forum.replyingTo', { name: replyingTo[proposal.id]?.author || '' })}</span><button type="button" onClick={() => setReplyingTo((current) => ({ ...current, [proposal.id]: null }))} className="grid h-7 w-7 cursor-pointer place-items-center hover:bg-white" aria-label={t('common.cancel')}><X size={15} /></button></div>}<div className="flex flex-col gap-3 sm:flex-row"><label className="flex-1"><span className="sr-only">{t('forum.addComment')}</span><textarea id={`comment-input-${proposal.id}`} value={commentDrafts[proposal.id] || ''} onChange={(event) => setCommentDrafts((current) => ({ ...current, [proposal.id]: event.target.value }))} rows={2} placeholder={t('forum.addComment')} className="w-full resize-y border-2 border-[#b2b2b8] px-4 py-3 text-[13px] outline-none focus:border-[#ca7428]" /></label><button type="button" onClick={() => postComment(proposal.id)} disabled={!(commentDrafts[proposal.id] || '').trim()} className="flex min-h-11 cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] px-5 py-3 text-[13px] font-semibold text-white hover:bg-[#e07a20] disabled:cursor-default disabled:opacity-45"><Send size={16} />{t('forum.post')}</button></div></div> : <div className="mt-4">{user ? <p className="border-l-4 border-[#ca7428] bg-[#fff4e9] p-4 text-[13px] font-semibold text-[#5d3a1c]">{t('forum.participationRestricted')}</p> : <SignInPrompt onSignIn={signIn} />}</div>}
+                  {!comments[proposal.id] ? <p className="py-5 text-center text-[13px] text-[#777]">{t('common.loading')}</p> : comments[proposal.id].length === 0 ? <p className="py-5 text-center text-[13px] text-[#777]">{t('notifications.empty')}</p> : <div className="grid gap-3">{comments[proposal.id].map((comment) => <article key={comment.id} className={`flex items-start gap-3 bg-[#f7f7f7] p-4 ${comment.parentCommentId ? 'ml-5 border-l-2 border-[#ca7428] sm:ml-10' : ''}`}><ForumAvatar src={comment.authorAvatar} name={authorLabel(comment)} anonymous={comment.anonymous && !comment.author}/><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2 text-[12px]"><span className="font-bold text-[#444]">{authorLabel(comment)}</span><span className="text-[#777]">({t(roleKey(normalizeRole(comment.authorRole)))})</span><span className="text-[#999]">{formatDate(comment.createdAt)}</span></div><p className="mt-2 text-[13px] leading-relaxed text-[#555]">{comment.body}</p>{user && Number(user.id) !== 0 && <button type="button" onClick={() => { setReplyingTo((current) => ({ ...current, [proposal.id]: comment })); document.getElementById(`comment-input-${proposal.id}`)?.focus(); }} className="mt-2 cursor-pointer text-[12px] font-semibold text-[#ca7428] underline underline-offset-3 hover:text-[#9b4e13]">{t('forum.reply')}</button>}</div></article>)}</div>}
+                  {proposal.moderationStatus === 'locked' || !['discussion_open', 'voting_open'].includes(proposal.workflowStatus) ? <p className="mt-4 text-sm font-semibold text-[#666]">{t('forum.discussionClosed')}</p> : user && context?.access.canParticipate ? <div className="mt-4">{replyingTo[proposal.id] && <div className="mb-2 flex items-center justify-between gap-3 border-l-4 border-[#ca7428] bg-[#fff4e9] px-3 py-2 text-[12px] font-semibold text-[#555]"><span>{t('forum.replyingTo', { name: replyingTo[proposal.id] ? authorLabel(replyingTo[proposal.id] as CommentItem) : '' })}</span><button type="button" onClick={() => setReplyingTo((current) => ({ ...current, [proposal.id]: null }))} className="grid h-7 w-7 cursor-pointer place-items-center hover:bg-white" aria-label={t('common.cancel')}><X size={15} /></button></div>}<div className="flex flex-col gap-3 sm:flex-row"><label className="flex-1"><span className="sr-only">{t('forum.addComment')}</span><textarea id={`comment-input-${proposal.id}`} value={commentDrafts[proposal.id] || ''} onChange={(event) => setCommentDrafts((current) => ({ ...current, [proposal.id]: event.target.value }))} rows={2} placeholder={t('forum.addComment')} className="w-full resize-y border-2 border-[#b2b2b8] px-4 py-3 text-[13px] outline-none focus:border-[#ca7428]" /></label><button type="button" onClick={() => postComment(proposal.id)} disabled={!(commentDrafts[proposal.id] || '').trim()} className="flex min-h-11 cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] px-5 py-3 text-[13px] font-semibold text-white hover:bg-[#e07a20] disabled:cursor-default disabled:opacity-45"><Send size={16} />{t('forum.post')}</button></div></div> : <div className="mt-4">{user ? <p className="border-l-4 border-[#ca7428] bg-[#fff4e9] p-4 text-[13px] font-semibold text-[#5d3a1c]">{t('forum.participationRestricted')}</p> : <SignInPrompt onSignIn={signIn} />}</div>}
                 </section>
               )}
             </div>

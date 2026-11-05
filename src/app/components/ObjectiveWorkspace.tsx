@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { BookOpenText, CheckCircle2, CircleAlert, Landmark, MessageSquareText } from 'lucide-react';
 import LoadingState from './LoadingState';
 import ObjectiveToolSelection from './ObjectiveToolSelection';
+import ObjectiveEvents from './ObjectiveEvents';
 import ToolImplementationCard, { type ImplementationDefaults, type ToolImplementation } from './ToolImplementationCard';
 import { useI18n } from '../context/I18nContext';
 import { phaseState } from '../lib/phaseState';
@@ -12,6 +13,7 @@ import type { TranslationKey } from '../i18n/translations';
 import { processPhase } from '../data/processFramework';
 import { apiRequest } from '../lib/api';
 import { PUBLISHED_ACTIVITY_STATUSES, type ResourceEditContext } from '../lib/objectiveResources';
+import type { HubEvent } from '../lib/events';
 
 interface Phase {
   id: number;
@@ -28,6 +30,7 @@ interface Phase {
   startDate: string | null;
   endDate: string | null;
   activities: ToolImplementation[];
+  events: HubEvent[];
   municipalityNotes?: string;
   municipalityToolNotes?: Record<string, string>;
 }
@@ -127,6 +130,33 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
       languageSupport: latest?.languageSupport || '',
       supportContact: latest?.supportContact || '',
     };
+  };
+
+  // An activity that belongs to an event is shown inside that event; the others stay in the list below.
+  const assignedEventIds = new Set((phase?.events || []).filter((event) => event.status !== 'cancelled').map((event) => event.id));
+  const toolInEvent = (toolId: string) => liveActivities.some((activity) => activity.toolKey === toolId && activity.eventId != null && assignedEventIds.has(activity.eventId));
+  const unassignedTools = (phase?.enabledTools || []).filter((toolId) => !toolInEvent(toolId));
+  const renderToolCard = (toolId: string, insideEvent: boolean) => {
+    if (!phase) return null;
+    const resource = resolveSpiceResource(toolId, tools, t);
+    return (
+      <ToolImplementationCard
+        key={toolId}
+        initiativeId={Number(initiativeId)}
+        phaseNumber={phase.phaseNumber}
+        toolKey={toolId}
+        title={resource?.name || toolId}
+        kindLabel={resource ? t(resource.kind === 'digital' ? 'phaseDetail.kindDigital' : 'phaseDetail.kindAnalog') : undefined}
+        municipalityNote={phase.municipalityToolNotes?.[toolId]}
+        implementation={liveActivities.find((activity) => activity.toolKey === toolId)}
+        defaults={defaultsFor(toolId)}
+        events={phase.events || []}
+        insideEvent={insideEvent}
+        canManage={canManage}
+        canFacilitate={canFacilitate}
+        onChanged={refresh}
+      />
+    );
   };
 
   return (
@@ -234,9 +264,22 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
             )}
 
             {canCoordinate && (
+              <ObjectiveEvents
+                initiativeId={Number(initiativeId)}
+                phaseNumber={phase.phaseNumber}
+                events={phase.events || []}
+                activities={phase.activities}
+                resources={phase.enabledTools.map((toolId) => ({ id: toolId, name: resolveSpiceResource(toolId, tools, t)?.name || toolId }))}
+                canManage={canManage}
+                renderActivity={(toolId) => renderToolCard(toolId, true)}
+                onChanged={refresh}
+              />
+            )}
+
+            {canCoordinate && (
               <section className="mt-8 border-t-2 border-[#eee] pt-7" aria-labelledby="selected-tools-title">
-                <h2 id="selected-tools-title" className="text-[22px] font-bold text-[#444]">{t('phaseDetail.selectedToolsTitle', { phase: phase.phaseNumber })}</h2>
-                <p className="mt-1 max-w-3xl text-sm leading-relaxed text-[#666]">{t(canManage ? 'phaseDetail.selectedToolsManagerText' : 'phaseDetail.selectedToolsFacilitatorText')}</p>
+                <h2 id="selected-tools-title" className="text-[22px] font-bold text-[#444]">{t(phase.events?.length ? 'events.unassignedTitle' : 'phaseDetail.selectedToolsTitle', { phase: phase.phaseNumber })}</h2>
+                <p className="mt-1 max-w-3xl text-sm leading-relaxed text-[#666]">{phase.events?.length ? t('events.unassignedText') : t(canManage ? 'phaseDetail.selectedToolsManagerText' : 'phaseDetail.selectedToolsFacilitatorText')}</p>
 
                 {!canManage && (
                   <div className="mt-5 max-w-3xl border-l-4 border-[#4e789b] bg-[#f1f7fb] p-4 text-[14px] leading-relaxed text-[#31556f]">
@@ -247,27 +290,11 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
 
                 {phase.enabledTools.length === 0 ? (
                   <div className="mt-5 spice-card-dashed p-6 text-sm text-[#666]">{t(canManage ? 'phaseDetail.noSelectedToolsManager' : 'phaseDetail.noSelectedToolsFacilitator')}</div>
+                ) : unassignedTools.length === 0 ? (
+                  <div className="mt-5 rounded-xl border border-dashed border-[#bfc0c5] p-6 text-sm text-[#666]">{t('events.allAssigned')}</div>
                 ) : (
                   <div className="mt-5 grid gap-5 xl:grid-cols-2">
-                    {phase.enabledTools.map((toolId) => {
-                      const resource = resolveSpiceResource(toolId, tools, t);
-                      return (
-                        <ToolImplementationCard
-                          key={toolId}
-                          initiativeId={Number(initiativeId)}
-                          phaseNumber={phase.phaseNumber}
-                          toolKey={toolId}
-                          title={resource?.name || toolId}
-                          kindLabel={resource ? t(resource.kind === 'digital' ? 'phaseDetail.kindDigital' : 'phaseDetail.kindAnalog') : undefined}
-                          municipalityNote={phase.municipalityToolNotes?.[toolId]}
-                          implementation={liveActivities.find((activity) => activity.toolKey === toolId)}
-                          defaults={defaultsFor(toolId)}
-                          canManage={canManage}
-                          canFacilitate={canFacilitate}
-                          onChanged={refresh}
-                        />
-                      );
-                    })}
+                    {unassignedTools.map((toolId) => <div key={toolId} className="flex">{renderToolCard(toolId, false)}</div>)}
                   </div>
                 )}
               </section>
@@ -286,6 +313,7 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
                       toolKey={null}
                       title={activity.title}
                       implementation={activity}
+                      events={phase.events || []}
                       canManage={canManage}
                       canFacilitate={canFacilitate}
                       onChanged={refresh}

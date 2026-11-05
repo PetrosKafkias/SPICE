@@ -396,7 +396,7 @@ function proposalFromRow(row) {
 function proposalHistory(db, proposalId) {
   return db.prepare(`
     SELECT e.id, e.phase_number, e.event_type, e.from_status, e.to_status,
-           e.note, e.created_at, u.full_name AS actor_name, u.role AS actor_role
+           e.note, e.created_at, u.full_name AS actor_name, u.role AS actor_role, u.profile_visibility AS actor_visibility
     FROM forum_proposal_events e
     LEFT JOIN users u ON u.id = e.actor_user_id
     WHERE e.proposal_id = ?
@@ -405,7 +405,7 @@ function proposalHistory(db, proposalId) {
     id: Number(row.id), phaseNumber: Number(row.phase_number), eventType: row.event_type,
     fromStatus: row.from_status || null, toStatus: row.to_status || null,
     note: row.note || null, createdAt: row.created_at,
-    actorName: row.actor_name || null, actorRole: row.actor_role || null,
+    actorName: authorIsAnonymous(row.actor_role, row.actor_visibility) ? null : row.actor_name || null, actorRole: row.actor_role || null,
   }));
 }
 
@@ -422,6 +422,26 @@ function addProposalEvent(db, {
     proposalId, phaseNumber, actorUserId, eventType,
     fromStatus, toStatus, note, createdAt,
   );
+}
+
+/**
+ * Discuss and Decide is anonymous by default: a citizen's name and photo are shown only when they made
+ * their profile public. Staff speak for the pilot and are always named. Authors still see their own name.
+ */
+function authorIsAnonymous(authorRole, authorVisibility) {
+  return normalizeRole(authorRole) === 'citizen' && authorVisibility !== 'public';
+}
+
+function withAuthorPrivacy(item, row, viewer, authorIdKey = 'user_id') {
+  const anonymous = authorIsAnonymous(row.author_role ?? row.role, row.author_visibility);
+  if (!anonymous) return { ...item, anonymous: false };
+  const own = viewer && Number(viewer.id) === Number(row[authorIdKey]);
+  const admin = viewer && normalizeRole(viewer.role) === 'admin';
+  return own || admin ? { ...item, anonymous: true } : { ...item, author: null, authorAvatar: null, authorId: null, anonymous: true };
+}
+
+function forumDisplayName(user) {
+  return authorIsAnonymous(user.role, user.profile_visibility) ? 'An anonymous participant' : user.full_name;
 }
 
 function listProposals(db, viewer = null, filters = {}) {
@@ -451,6 +471,7 @@ function listProposals(db, viewer = null, filters = {}) {
       u.full_name AS author_name,
       u.role AS author_role,
       u.avatar_data AS author_avatar,
+      u.profile_visibility AS author_visibility,
       (SELECT COUNT(*) FROM forum_comments c WHERE c.proposal_id = p.id) AS comments_count,
       v.direction AS user_vote
     FROM forum_proposals p
@@ -458,7 +479,7 @@ function listProposals(db, viewer = null, filters = {}) {
     LEFT JOIN forum_votes v ON v.proposal_id = p.id AND v.user_id = ?
     WHERE ${clauses.join(' AND ')}
     ORDER BY p.phase_number DESC, p.updated_at DESC
-  `).all(viewerId, ...params).map((row) => ({ ...proposalFromRow(row), history: proposalHistory(db, row.id) }));
+  `).all(viewerId, ...params).map((row) => ({ ...withAuthorPrivacy(proposalFromRow(row), row, viewer), history: proposalHistory(db, row.id) }));
 }
 
 function scenarioFromRow(row) {
@@ -723,6 +744,7 @@ function phaseFromRow(row) {
     completedAt: row.completed_at || null,
     startDate: row.start_date, endDate: row.end_date,
     activities: row.activities || [],
+    events: row.events || [],
     results: row.results || [],
     myContributions: row.myContributions || [],
   };
@@ -771,7 +793,141 @@ function activityFromRow(row) {
     submittedAt: row.submitted_at || null, publishedAt: row.published_at || null,
     closedAt: row.closed_at || null, completedAt: row.completed_at || null,
     cancelledAt: row.cancelled_at || null,
+    eventId: row.event_id ? Number(row.event_id) : null,
+    completion: row.completion_summary ? {
+      summary: row.completion_summary,
+      outcomes: row.completion_outcomes || null,
+      discussionPoints: row.completion_discussion_points || null,
+      nextSteps: row.completion_next_steps || null,
+      participants: row.completion_participants == null ? null : Number(row.completion_participants),
+      recordedAt: row.completion_recorded_at || null,
+    } : null,
   };
+}
+
+const EVENT_STATUSES = Object.freeze(['draft', 'published', 'completed', 'cancelled']);
+const EVENT_MODES = Object.freeze(['offline', 'online', 'hybrid', 'citivoice']);
+const PUBLIC_EVENT_STATUSES = Object.freeze(['published', 'completed']);
+
+/**
+ * One event as a viewer may see it. Team notes are internal to staff, and meeting links are only
+ * shared with staff and with citizens who registered.
+ */
+function eventFromRow(row, { staff = false, registered = false, registrationCount = 0 } = {}) {
+  const startAt = row.start_at || null;
+  const upcoming = !startAt || Date.parse(startAt) > Date.now() - 12 * 60 * 60 * 1000;
+  return {
+    id: Number(row.id), initiativeId: Number(row.initiative_id), phaseId: Number(row.phase_id),
+    title: row.title, instructions: row.instructions || '', startAt,
+    participationMode: row.participation_mode || 'offline',
+    duration: row.duration || null, location: row.location || null,
+    expectedParticipants: row.expected_participants || null,
+    meetingLinks: staff || registered ? row.meeting_links || null : null,
+    hasMeetingLinks: Boolean(row.meeting_links),
+    teamNotes: staff ? row.team_notes || null : null,
+    languageSupport: row.language_support || null,
+    supportContact: row.support_contact || null,
+    status: row.status,
+    registrationOpen: Boolean(row.registration_open) && row.status === 'published' && upcoming,
+    registered,
+    registrationCount: Number(registrationCount || 0),
+    publishedAt: row.published_at || null,
+    createdAt: row.created_at, updatedAt: row.updated_at,
+  };
+}
+
+function eventRegistrationCounts(db, eventIds) {
+  if (!eventIds.length) return new Map();
+  const rows = db.prepare(`
+    SELECT event_id, COUNT(*) AS total FROM hub_event_registrations
+    WHERE status = 'registered' AND event_id IN (${eventIds.map(() => '?').join(',')})
+    GROUP BY event_id
+  `).all(...eventIds);
+  return new Map(rows.map((row) => [Number(row.event_id), Number(row.total)]));
+}
+
+function cleanText(value, max = 4000) {
+  return String(value ?? '').trim().slice(0, max) || null;
+}
+
+function validEventDate(value) {
+  if (!value) return null;
+  const parsed = Date.parse(String(value));
+  return Number.isNaN(parsed) ? undefined : String(value);
+}
+
+// An activity's logistics follow its event, so the citizen views and the workflow read one source.
+function syncEventLogistics(db, eventRow) {
+  db.prepare(`
+    UPDATE hub_activities SET start_date = ?, location = ?, participation_mode = ?, estimated_duration = ?,
+      expected_participants = ?, language_support = ?, support_contact = ?, updated_at = ?
+    WHERE event_id = ?
+  `).run(
+    eventRow.start_at || null, eventRow.location || null,
+    eventRow.participation_mode === 'citivoice' ? 'online' : eventRow.participation_mode,
+    eventRow.duration || null, eventRow.expected_participants || null,
+    eventRow.language_support || null, eventRow.support_contact || null,
+    new Date().toISOString(), eventRow.id,
+  );
+}
+
+/**
+ * Puts the activities of the chosen resources under one event. A resource without an activity yet
+ * gets a draft one; activities of resources no longer chosen leave the event but are kept.
+ */
+function assignEventActivities(db, { eventRow, phase, toolKeys, actor }) {
+  const selected = new Set(parseJson(phase.enabled_tools_json, []));
+  const keys = [...new Set((Array.isArray(toolKeys) ? toolKeys : []).map(String))].filter((key) => selected.has(key));
+  const now = new Date().toISOString();
+  db.prepare('UPDATE hub_activities SET event_id = NULL, updated_at = ? WHERE event_id = ? AND (tool_key IS NULL OR tool_key NOT IN (' + (keys.length ? keys.map(() => '?').join(',') : "''") + '))')
+    .run(now, eventRow.id, ...keys);
+  keys.forEach((toolKey) => {
+    const existing = db.prepare("SELECT id FROM hub_activities WHERE phase_id = ? AND tool_key = ? AND workflow_status != 'cancelled'").get(phase.id, toolKey);
+    if (existing) {
+      db.prepare('UPDATE hub_activities SET event_id = ?, updated_at = ? WHERE id = ?').run(eventRow.id, now, existing.id);
+      return;
+    }
+    const result = db.prepare(`
+      INSERT INTO hub_activities (
+        initiative_id, phase_id, title, description, status, workflow_status, assigned_to_user_id,
+        tool_key, selected_tool_ids_json, activity_type, instructions, participation_mode,
+        visibility, contribution_types_json, event_id, created_at, updated_at
+      ) VALUES (?, ?, ?, '', 'draft', 'draft', ?, ?, ?, 'participation', '', 'offline', 'public', '["text"]', ?, ?, ?)
+    `).run(eventRow.initiative_id, phase.id, SPICE_RESOURCE_NAMES.get(toolKey) || toolKey, actor.id, toolKey, JSON.stringify([toolKey]), eventRow.id, now, now);
+    addAudit(db, { actor, action: 'hub.activity.create', targetType: 'hub_activity', targetId: result.lastInsertRowid, newValue: { eventId: eventRow.id, toolKey, workflowStatus: 'draft' } });
+  });
+  syncEventLogistics(db, eventRow);
+}
+
+function readEventFields(body, current = {}) {
+  const pick = (key, column, max = 4000) => (body[key] === undefined ? current[column] ?? null : cleanText(body[key], max));
+  const startAt = body.startAt === undefined ? current.start_at ?? null : validEventDate(body.startAt);
+  return {
+    title: body.title === undefined ? current.title : String(body.title || '').trim().slice(0, 160),
+    instructions: body.instructions === undefined ? current.instructions || '' : String(body.instructions || '').trim().slice(0, 6000),
+    start_at: startAt,
+    participation_mode: body.participationMode === undefined ? current.participation_mode || 'offline'
+      : (EVENT_MODES.includes(body.participationMode) ? body.participationMode : 'offline'),
+    duration: pick('duration', 'duration', 120),
+    location: pick('location', 'location', 300),
+    expected_participants: pick('expectedParticipants', 'expected_participants', 120),
+    meeting_links: pick('meetingLinks', 'meeting_links', 2000),
+    team_notes: pick('teamNotes', 'team_notes'),
+    language_support: pick('languageSupport', 'language_support', 300),
+    support_contact: pick('supportContact', 'support_contact', 300),
+    registration_open: body.registrationOpen == null ? (current.registration_open ?? 1) : (body.registrationOpen ? 1 : 0),
+  };
+}
+
+function eventFieldErrors(fields, status) {
+  const errors = {};
+  if (!fields.title || fields.title.length < 3) errors.title = 'Enter a title of at least 3 characters.';
+  if (fields.start_at === undefined) errors.startAt = 'Enter a valid date and time.';
+  if (status === 'published') {
+    if (!fields.start_at) errors.startAt = 'Set the date and time before publishing the event.';
+    if (fields.instructions.length < 10) errors.instructions = 'Add instructions of at least 10 characters before publishing.';
+  }
+  return errors;
 }
 
 function contributionFromRow(row) {
@@ -1203,9 +1359,30 @@ export async function createApiHandler(options = {}) {
         const activitiesByPhase = new Map();
         activityRows.forEach((activityRow) => {
           const items = activitiesByPhase.get(Number(activityRow.phase_id)) || [];
-          // Facilitator implementation notes are internal to staff.
-          items.push(activityFromRow(staffView ? activityRow : { ...activityRow, facilitator_notes: null }));
+          // Team (facilitator) notes are internal to staff, and a summary is public only once the activity is completed.
+          items.push(activityFromRow(staffView ? activityRow : {
+            ...activityRow,
+            facilitator_notes: null,
+            completion_summary: activityRow.workflow_status === 'completed' ? activityRow.completion_summary : null,
+          }));
           activitiesByPhase.set(Number(activityRow.phase_id), items);
+        });
+        const eventRows = staffView
+          ? db.prepare('SELECT * FROM hub_events WHERE initiative_id = ? ORDER BY COALESCE(start_at, created_at)').all(initiativeId)
+          : db.prepare(`SELECT * FROM hub_events WHERE initiative_id = ? AND status IN ('published','completed') ORDER BY COALESCE(start_at, created_at)`).all(initiativeId);
+        const registrationCounts = eventRegistrationCounts(db, eventRows.map((eventRow) => Number(eventRow.id)));
+        const myRegistrations = user && !citizenPreview
+          ? new Set(db.prepare("SELECT event_id FROM hub_event_registrations WHERE user_id = ? AND status = 'registered'").all(user.id).map((item) => Number(item.event_id)))
+          : new Set();
+        const eventsByPhase = new Map();
+        eventRows.forEach((eventRow) => {
+          const items = eventsByPhase.get(Number(eventRow.phase_id)) || [];
+          items.push(eventFromRow(eventRow, {
+            staff: staffView,
+            registered: myRegistrations.has(Number(eventRow.id)),
+            registrationCount: registrationCounts.get(Number(eventRow.id)) || 0,
+          }));
+          eventsByPhase.set(Number(eventRow.phase_id), items);
         });
         const repositoryRows = staffView
           ? db.prepare(`
@@ -1271,6 +1448,8 @@ export async function createApiHandler(options = {}) {
           return (staffView ? staffPhaseFromRow : phaseFromRow)({
             ...visiblePhaseRow,
             activities: isUpcomingPublicPhase ? [] : activitiesByPhase.get(Number(phaseRow.id)) || [],
+            // Citizens register ahead of time, so published events of upcoming Objectives stay visible.
+            events: eventsByPhase.get(Number(phaseRow.id)) || [],
             results: isUpcomingPublicPhase ? [] : resultsByPhase.get(Number(phaseRow.id)) || [],
             myContributions: isUpcomingPublicPhase ? [] : contributionsByPhase.get(Number(phaseRow.id)) || [],
           });
@@ -1578,6 +1757,11 @@ export async function createApiHandler(options = {}) {
           String(body.facilitatorNotes || '').trim().slice(0, 4000) || null, String(body.expectedParticipants || '').trim().slice(0, 120) || null,
           now, now,
         );
+        const eventRow = body.eventId ? db.prepare("SELECT * FROM hub_events WHERE id = ? AND phase_id = ? AND status != 'cancelled'").get(Number(body.eventId), phase.id) : null;
+        if (eventRow) {
+          db.prepare('UPDATE hub_activities SET event_id = ? WHERE id = ?').run(eventRow.id, result.lastInsertRowid);
+          syncEventLogistics(db, eventRow);
+        }
         addAudit(db, { actor: session.user, action: 'hub.activity.create', targetType: 'hub_activity', targetId: result.lastInsertRowid, newValue: { initiativeId, phaseNumber, title, workflowStatus } });
         sendJson(response, 201, { activity: activityFromRow(db.prepare('SELECT * FROM hub_activities WHERE id = ?').get(result.lastInsertRowid)) });
         return true;
@@ -1613,6 +1797,21 @@ export async function createApiHandler(options = {}) {
         if (['published','scheduled','open'].includes(requestedWorkflowStatus) && instructions.length < 10) {
           sendError(response, 400, 'Add clear participation instructions before publishing this activity.', { instructions: 'Enter at least 10 characters.' }, 'ACTIVITY_INSTRUCTIONS_REQUIRED');
           return true;
+        }
+        // Completing an activity records what took place; the summary is the part citizens read.
+        const completion = body.completion && typeof body.completion === 'object' ? body.completion : null;
+        const completionSummary = completion ? String(completion.summary || '').trim() : String(activity.completion_summary || '');
+        if (requestedWorkflowStatus === 'completed' && (requestedWorkflowStatus !== currentWorkflowStatus || completion) && completionSummary.length < 20) {
+          sendError(response, 400, 'Summarise what took place before completing the activity.', { summary: 'Enter at least 20 characters.' }, 'ACTIVITY_SUMMARY_REQUIRED');
+          return true;
+        }
+        let eventId = activity.event_id;
+        if (body.eventId !== undefined) {
+          eventId = body.eventId ? Number(body.eventId) : null;
+          if (eventId && !db.prepare("SELECT 1 FROM hub_events WHERE id = ? AND phase_id = ? AND status != 'cancelled'").get(eventId, activity.phase_id)) {
+            sendError(response, 400, 'Choose an event of this Objective.', { eventId: 'The event is not available.' }, 'EVENT_NOT_AVAILABLE');
+            return true;
+          }
         }
         const status = publicActivityStatus(requestedWorkflowStatus);
         const now = new Date().toISOString();
@@ -1671,6 +1870,22 @@ export async function createApiHandler(options = {}) {
           body.expectedParticipants === undefined ? activity.expected_participants : String(body.expectedParticipants || '').trim().slice(0, 120) || null,
           now, activityId,
         );
+        if (completion && requestedWorkflowStatus === 'completed') {
+          const participants = completion.participants === '' || completion.participants == null ? null : Math.max(0, Math.round(Number(completion.participants)));
+          db.prepare(`
+            UPDATE hub_activities SET completion_summary=?, completion_outcomes=?, completion_discussion_points=?,
+              completion_next_steps=?, completion_participants=?, completion_recorded_by_user_id=?, completion_recorded_at=?
+            WHERE id=?
+          `).run(
+            completionSummary.slice(0, 6000), cleanText(completion.outcomes, 6000), cleanText(completion.discussionPoints, 6000),
+            cleanText(completion.nextSteps, 4000), Number.isFinite(participants) ? participants : null, session.user.id, now, activityId,
+          );
+        }
+        if (eventId !== activity.event_id) {
+          db.prepare('UPDATE hub_activities SET event_id = ? WHERE id = ?').run(eventId, activityId);
+          const eventRow = eventId ? db.prepare('SELECT * FROM hub_events WHERE id = ?').get(eventId) : null;
+          if (eventRow) syncEventLogistics(db, eventRow);
+        }
         if (requestedWorkflowStatus !== currentWorkflowStatus) {
           const actorRole = normalizeRole(session.user.role);
           const toRole = requestedWorkflowStatus === 'ready_for_review' ? 'municipality'
@@ -1704,6 +1919,163 @@ export async function createApiHandler(options = {}) {
         }
         addAudit(db, { actor: session.user, action: 'hub.activity.update', targetType: 'hub_activity', targetId: activityId, previousValue: { status: activity.status, workflowStatus: currentWorkflowStatus }, newValue: { status, workflowStatus: requestedWorkflowStatus, ...(statusChanged ? { transition: activityTransitionLabel(currentWorkflowStatus, requestedWorkflowStatus) } : {}) }, reason: body.reason || null });
         sendJson(response, 200, { activity: activityFromRow(db.prepare('SELECT * FROM hub_activities WHERE id = ?').get(activityId)) });
+        return true;
+      }
+
+      // Events: the Municipality groups the activities of one Objective under a shared event.
+      const initiativeEventsMatch = pathname.match(/^\/api\/hub\/initiatives\/(\d+)\/events$/);
+      if (initiativeEventsMatch && method === 'POST') {
+        const session = requirePermission(db, request, response, 'hub:configure-participation');
+        if (!session) return true;
+        const initiativeId = Number(initiativeEventsMatch[1]);
+        const initiative = db.prepare('SELECT * FROM hub_initiatives WHERE id = ?').get(initiativeId);
+        if (!initiative) { sendError(response, 404, 'Pilot site not found.'); return true; }
+        if (!initiativeIsInScope(session.user, initiative)) { sendError(response, 403, 'You cannot manage this pilot site\'s events.'); return true; }
+        if (initiative.lifecycle_status !== 'active') { sendError(response, 409, 'Activate the pilot before creating events.', null, 'PILOT_NOT_ACTIVE'); return true; }
+        const body = await readJson(request);
+        const phase = db.prepare('SELECT * FROM hub_phases WHERE initiative_id = ? AND phase_number = ?').get(initiativeId, Number(body.phaseNumber));
+        if (!phase) { sendError(response, 400, 'Choose a valid Objective.'); return true; }
+        const status = body.status === 'published' ? 'published' : 'draft';
+        const fields = readEventFields(body);
+        const fieldErrors = eventFieldErrors(fields, status);
+        if (Object.keys(fieldErrors).length) { sendError(response, 400, 'Please correct the highlighted fields.', fieldErrors, 'EVENT_INVALID'); return true; }
+        const now = new Date().toISOString();
+        let eventId = 0;
+        db.exec('BEGIN IMMEDIATE');
+        try {
+          const result = db.prepare(`
+            INSERT INTO hub_events (
+              initiative_id, phase_id, title, instructions, start_at, participation_mode, duration, location,
+              expected_participants, meeting_links, team_notes, language_support, support_contact, status,
+              registration_open, created_by_user_id, published_at, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `).run(
+            initiativeId, phase.id, fields.title, fields.instructions, fields.start_at, fields.participation_mode,
+            fields.duration, fields.location, fields.expected_participants, fields.meeting_links, fields.team_notes,
+            fields.language_support, fields.support_contact, status, fields.registration_open, session.user.id,
+            status === 'published' ? now : null, now, now,
+          );
+          eventId = Number(result.lastInsertRowid);
+          const eventRow = db.prepare('SELECT * FROM hub_events WHERE id = ?').get(eventId);
+          assignEventActivities(db, { eventRow, phase, toolKeys: body.activityToolKeys, actor: session.user });
+          addAudit(db, { actor: session.user, action: 'hub.event.create', targetType: 'hub_event', targetId: eventId, newValue: { initiativeId, phaseNumber: phase.phase_number, title: fields.title, status } });
+          db.exec('COMMIT');
+        } catch (error) {
+          db.exec('ROLLBACK');
+          throw error;
+        }
+        sendJson(response, 201, { event: eventFromRow(db.prepare('SELECT * FROM hub_events WHERE id = ?').get(eventId), { staff: true }) });
+        return true;
+      }
+
+      const eventMatch = pathname.match(/^\/api\/hub\/events\/(\d+)$/);
+      if (eventMatch && (method === 'PATCH' || method === 'DELETE')) {
+        const session = requirePermission(db, request, response, 'hub:configure-participation');
+        if (!session) return true;
+        const eventRow = db.prepare('SELECT * FROM hub_events WHERE id = ?').get(Number(eventMatch[1]));
+        if (!eventRow) { sendError(response, 404, 'Event not found.'); return true; }
+        const initiative = db.prepare('SELECT * FROM hub_initiatives WHERE id = ?').get(eventRow.initiative_id);
+        if (!initiativeIsInScope(session.user, initiative)) { sendError(response, 403, 'You cannot manage this pilot site\'s events.'); return true; }
+        const registrations = eventRegistrationCounts(db, [Number(eventRow.id)]).get(Number(eventRow.id)) || 0;
+        if (method === 'DELETE') {
+          // Once citizens have registered, an event is cancelled instead, so they keep a record of it.
+          if (eventRow.status !== 'draft' || registrations > 0) { sendError(response, 409, 'Only a draft event without registrations can be deleted. Cancel it instead.', null, 'EVENT_NOT_DELETABLE'); return true; }
+          db.prepare('UPDATE hub_activities SET event_id = NULL WHERE event_id = ?').run(eventRow.id);
+          db.prepare('DELETE FROM hub_events WHERE id = ?').run(eventRow.id);
+          addAudit(db, { actor: session.user, action: 'hub.event.delete', targetType: 'hub_event', targetId: eventRow.id, previousValue: { title: eventRow.title } });
+          sendJson(response, 200, { deleted: true });
+          return true;
+        }
+        const body = await readJson(request);
+        const status = body.status === undefined ? eventRow.status : String(body.status);
+        if (!EVENT_STATUSES.includes(status)) { sendError(response, 400, 'Choose a valid event status.'); return true; }
+        if (status === 'draft' && eventRow.status !== 'draft' && registrations > 0) {
+          sendError(response, 409, 'Citizens have registered for this event, so it cannot return to draft.', null, 'EVENT_HAS_REGISTRATIONS');
+          return true;
+        }
+        const fields = readEventFields(body, eventRow);
+        const fieldErrors = eventFieldErrors(fields, status);
+        if (Object.keys(fieldErrors).length) { sendError(response, 400, 'Please correct the highlighted fields.', fieldErrors, 'EVENT_INVALID'); return true; }
+        const now = new Date().toISOString();
+        const phase = db.prepare('SELECT * FROM hub_phases WHERE id = ?').get(eventRow.phase_id);
+        db.exec('BEGIN IMMEDIATE');
+        try {
+          db.prepare(`
+            UPDATE hub_events SET title=?, instructions=?, start_at=?, participation_mode=?, duration=?, location=?,
+              expected_participants=?, meeting_links=?, team_notes=?, language_support=?, support_contact=?,
+              status=?, registration_open=?, published_at=?, updated_at=? WHERE id=?
+          `).run(
+            fields.title, fields.instructions, fields.start_at, fields.participation_mode, fields.duration, fields.location,
+            fields.expected_participants, fields.meeting_links, fields.team_notes, fields.language_support, fields.support_contact,
+            status, fields.registration_open, status === 'published' ? eventRow.published_at || now : eventRow.published_at, now, eventRow.id,
+          );
+          const updated = db.prepare('SELECT * FROM hub_events WHERE id = ?').get(eventRow.id);
+          if (body.activityToolKeys !== undefined) assignEventActivities(db, { eventRow: updated, phase, toolKeys: body.activityToolKeys, actor: session.user });
+          else syncEventLogistics(db, updated);
+          addAudit(db, { actor: session.user, action: 'hub.event.update', targetType: 'hub_event', targetId: eventRow.id, previousValue: { status: eventRow.status }, newValue: { status, title: fields.title } });
+          db.exec('COMMIT');
+        } catch (error) {
+          db.exec('ROLLBACK');
+          throw error;
+        }
+        // Registered citizens hear about a cancellation or a change of date.
+        if (registrations > 0 && (status === 'cancelled' && eventRow.status !== 'cancelled' || (fields.start_at || null) !== (eventRow.start_at || null))) {
+          const registrants = db.prepare("SELECT user_id FROM hub_event_registrations WHERE event_id = ? AND status = 'registered'").all(eventRow.id);
+          registrants.forEach((registrant) => createNotification(db, {
+            userId: registrant.user_id, actorUserId: session.user.id, type: 'workflow', eventType: 'event_update',
+            title: status === 'cancelled' ? 'Event cancelled' : 'Event date changed',
+            body: status === 'cancelled' ? `“${fields.title}” has been cancelled.` : `“${fields.title}” has a new date and time.`,
+            tag: 'Event', pilot: initiative.municipality || initiative.pilot_slug,
+            actionUrl: `/co-creation-hub?phase=${phase.phase_number}`, payload: { eventId: eventRow.id }, createdAt: now,
+          }));
+        }
+        sendJson(response, 200, { event: eventFromRow(db.prepare('SELECT * FROM hub_events WHERE id = ?').get(eventRow.id), { staff: true, registrationCount: registrations }) });
+        return true;
+      }
+
+      const eventRegistrationMatch = pathname.match(/^\/api\/hub\/events\/(\d+)\/registration$/);
+      if (eventRegistrationMatch && (method === 'POST' || method === 'DELETE')) {
+        const session = requirePermission(db, request, response, 'hub:participate');
+        if (!session) return true;
+        const eventRow = db.prepare('SELECT * FROM hub_events WHERE id = ?').get(Number(eventRegistrationMatch[1]));
+        if (!eventRow || !PUBLIC_EVENT_STATUSES.includes(eventRow.status)) { sendError(response, 404, 'Event not found.'); return true; }
+        const initiative = db.prepare('SELECT * FROM hub_initiatives WHERE id = ?').get(eventRow.initiative_id);
+        const participant = db.prepare('SELECT 1 FROM hub_participants WHERE initiative_id = ? AND user_id = ?').get(initiative.id, session.user.id);
+        if (initiative.visibility !== 'public' && !participant && !canOperateInitiative(db, session.user, initiative)) {
+          sendError(response, 403, 'This event is not available to your account.'); return true;
+        }
+        const now = new Date().toISOString();
+        const existing = db.prepare('SELECT * FROM hub_event_registrations WHERE event_id = ? AND user_id = ?').get(eventRow.id, session.user.id);
+        if (method === 'POST') {
+          if (!eventFromRow(eventRow).registrationOpen) { sendError(response, 409, 'Registration for this event is closed.', null, 'EVENT_REGISTRATION_CLOSED'); return true; }
+          if (existing) db.prepare("UPDATE hub_event_registrations SET status = 'registered', updated_at = ? WHERE event_id = ? AND user_id = ?").run(now, eventRow.id, session.user.id);
+          else db.prepare("INSERT INTO hub_event_registrations (event_id, user_id, status, created_at, updated_at) VALUES (?, ?, 'registered', ?, ?)").run(eventRow.id, session.user.id, now, now);
+          // A registered citizen also joins the pilot, so participant-only activities become visible.
+          db.prepare("INSERT OR IGNORE INTO hub_participants (initiative_id, user_id, invited_at, assignment_role) VALUES (?, ?, ?, 'participant')").run(initiative.id, session.user.id, now);
+          addAudit(db, { actor: session.user, action: 'hub.event.register', targetType: 'hub_event', targetId: eventRow.id });
+        } else {
+          if (existing) db.prepare("UPDATE hub_event_registrations SET status = 'cancelled', updated_at = ? WHERE event_id = ? AND user_id = ?").run(now, eventRow.id, session.user.id);
+          addAudit(db, { actor: session.user, action: 'hub.event.unregister', targetType: 'hub_event', targetId: eventRow.id });
+        }
+        const count = eventRegistrationCounts(db, [Number(eventRow.id)]).get(Number(eventRow.id)) || 0;
+        sendJson(response, 200, { event: eventFromRow(eventRow, { registered: method === 'POST', registrationCount: count }) });
+        return true;
+      }
+
+      const eventRegistrationsMatch = pathname.match(/^\/api\/hub\/events\/(\d+)\/registrations$/);
+      if (eventRegistrationsMatch && method === 'GET') {
+        const session = requirePermission(db, request, response, 'hub:facilitate');
+        if (!session) return true;
+        const eventRow = db.prepare('SELECT * FROM hub_events WHERE id = ?').get(Number(eventRegistrationsMatch[1]));
+        if (!eventRow) { sendError(response, 404, 'Event not found.'); return true; }
+        const initiative = db.prepare('SELECT * FROM hub_initiatives WHERE id = ?').get(eventRow.initiative_id);
+        if (!canOperateInitiative(db, session.user, initiative)) { sendError(response, 403, 'You cannot view this event\'s registrations.'); return true; }
+        const registrations = db.prepare(`
+          SELECT r.user_id, r.created_at, u.full_name, u.email FROM hub_event_registrations r
+          JOIN users u ON u.id = r.user_id
+          WHERE r.event_id = ? AND r.status = 'registered' ORDER BY r.created_at
+        `).all(eventRow.id).map((row) => ({ userId: Number(row.user_id), name: row.full_name, email: row.email, registeredAt: row.created_at }));
+        sendJson(response, 200, { registrations });
         return true;
       }
 
@@ -2282,14 +2654,15 @@ export async function createApiHandler(options = {}) {
           sendError(response, 404, 'Proposal not found.'); return true;
         }
         const comments = db.prepare(`
-          SELECT c.id, c.body, c.created_at, c.parent_comment_id, u.full_name, u.role, u.avatar_data
+          SELECT c.id, c.body, c.created_at, c.parent_comment_id, c.user_id, u.full_name, u.role, u.avatar_data,
+                 u.profile_visibility AS author_visibility
           FROM forum_comments c JOIN users u ON u.id = c.user_id
           WHERE c.proposal_id = ? ORDER BY c.created_at ASC
-        `).all(proposalId).map((row) => ({
+        `).all(proposalId).map((row) => withAuthorPrivacy({
           id: Number(row.id), body: row.body, createdAt: row.created_at,
           parentCommentId: row.parent_comment_id ? Number(row.parent_comment_id) : null,
           author: row.full_name, authorRole: row.role, authorAvatar: row.avatar_data || null,
-        }));
+        }, row, user || null));
         sendJson(response, 200, { comments });
         return true;
       }
@@ -2413,21 +2786,21 @@ export async function createApiHandler(options = {}) {
         createNotification(db, {
           userId: proposal.user_id, actorUserId: session.user.id, type: 'comment', eventType: 'proposal_comment',
           title: 'New comment on your proposal',
-          body: `${session.user.full_name} commented on “${proposal.title}”.`,
+          body: `${forumDisplayName(session.user)} commented on “${proposal.title}”.`,
           tag: 'Comment', pilot: proposal.pilot_site, actionUrl,
-          payload: { actorName: session.user.full_name, proposalTitle: proposal.title }, createdAt: now,
+          payload: { actorName: forumDisplayName(session.user), proposalTitle: proposal.title }, createdAt: now,
         });
         if (parentComment && Number(parentComment.user_id) !== Number(proposal.user_id)) {
           createNotification(db, {
             userId: parentComment.user_id, actorUserId: session.user.id, type: 'reply', eventType: 'comment_reply',
             title: 'New reply to your comment',
-            body: `${session.user.full_name} replied in “${proposal.title}”.`,
+            body: `${forumDisplayName(session.user)} replied in “${proposal.title}”.`,
             tag: 'Reply', pilot: proposal.pilot_site, actionUrl,
-            payload: { actorName: session.user.full_name, proposalTitle: proposal.title }, createdAt: now,
+            payload: { actorName: forumDisplayName(session.user), proposalTitle: proposal.title }, createdAt: now,
           });
         }
         sendJson(response, 201, {
-          comment: { id: Number(result.lastInsertRowid), body: comment, parentCommentId, createdAt: now, author: session.user.full_name, authorRole: session.user.role, authorAvatar: session.user.avatar_data || null },
+          comment: { id: Number(result.lastInsertRowid), body: comment, parentCommentId, createdAt: now, author: session.user.full_name, authorRole: session.user.role, authorAvatar: session.user.avatar_data || null, anonymous: authorIsAnonymous(session.user.role, session.user.profile_visibility) },
         });
         return true;
       }

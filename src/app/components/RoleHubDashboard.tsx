@@ -22,6 +22,9 @@ import PhaseChangeDialog from './PhaseChangeDialog';
 import PilotSelector from './PilotSelector';
 import ObjectiveWorkspace from './ObjectiveWorkspace';
 import ObjectiveCoverage from './ObjectiveCoverage';
+import CitizenEvents from './CitizenEvents';
+import ActivitySummary from './ActivitySummary';
+import type { ActivityCompletion, HubEvent } from '../lib/events';
 import { readStoredPilot, storeActivePilot } from '../lib/activePilot';
 import type { WorkflowSummary } from './WorkflowNextActionPanel';
 import type { TranslationKey } from '../i18n/translations';
@@ -52,6 +55,7 @@ interface Phase {
   startDate: string | null;
   endDate: string | null;
   activities: HubActivity[];
+  events?: HubEvent[];
   results: PhaseResult[];
   myContributions: CitizenContribution[];
 }
@@ -80,6 +84,8 @@ interface HubActivity {
   supportContact: string | null;
   votingEnabled: boolean;
   forumEnabled: boolean;
+  eventId: number | null;
+  completion: ActivityCompletion | null;
 }
 
 interface PhaseResult {
@@ -602,6 +608,27 @@ export default function RoleHubDashboard() {
     );
   };
 
+  // Upcoming events of every Objective, so citizens can register ahead of time.
+  const renderCitizenEvents = () => {
+    if (!detail) return null;
+    const allActivities = detail.phases.flatMap((phase) => phase.activities);
+    return (
+      <CitizenEvents
+        events={detail.phases.flatMap((phase) => (phase.events || []).map((event) => ({ ...event, phaseNumber: phase.phaseNumber })))}
+        activities={allActivities.map((activity) => ({
+          id: activity.id, eventId: activity.eventId, title: (activity.toolKey && resolveSpiceResource(activity.toolKey, tools, t)?.name) || activity.title,
+          instructions: activity.instructions, requiredMaterials: activity.requiredMaterials, accessibilityNotes: activity.accessibilityNotes,
+          workflowStatus: activity.workflowStatus,
+          kindLabel: activity.toolKey ? (() => { const resource = resolveSpiceResource(activity.toolKey, tools, t); return resource ? t(resource.kind === 'digital' ? 'phaseDetail.kindDigital' : 'phaseDetail.kindAnalog') : null; })() : null,
+        }))}
+        canParticipate={canParticipate}
+        signedIn={Boolean(user)}
+        preview={previewingAsCitizen}
+        onChanged={() => void loadDetail(detail.id)}
+      />
+    );
+  };
+
   const renderCitizenPhaseWorkspace = (initiative: Initiative) => {
     if (!detail || !selectedPhase || selectedPhaseNumber == null) return null;
     const state = phaseState(selectedPhaseNumber, detail.currentPhaseNumber, pilotFinalized);
@@ -714,6 +741,20 @@ export default function RoleHubDashboard() {
               </div>
             </section>
 
+            {selectedPhase.activities.some((activity) => activity.completion) && (
+              <section aria-labelledby="activity-summaries-heading">
+                <h3 id="activity-summaries-heading" className="text-[18px] font-bold text-[#444]">{t('completion.summariesTitle')}</h3>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  {selectedPhase.activities.filter((activity) => activity.completion).map((activity) => (
+                    <article key={activity.id} className="border-2 border-[#dedfe2] bg-white p-4">
+                      <h4 className="mb-3 text-[15px] font-bold text-[#444]">{activityTitle(activity)}</h4>
+                      <ActivitySummary completion={activity.completion as ActivityCompletion} />
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )}
+
             <section aria-labelledby="completed-tools-heading">
               <h3 id="completed-tools-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.toolsUsed')}</h3>
               {visibleTools.length ? (
@@ -785,8 +826,10 @@ export default function RoleHubDashboard() {
                         <div className="mt-5 border-l-4 border-[#f68b2c] bg-[#fff8f2] p-4">
                           <h5 className="flex items-center gap-2 text-[13px] font-bold text-[#444]"><BookOpenText size={16} aria-hidden="true" />{t('hub.citizen.participationInstructions')}</h5>
                           <p className="mt-2 text-[13px] leading-relaxed text-[#555]">{activity.instructions}</p>
-                          {activity.requiredMaterials && <p className="mt-2 text-[12px] text-[#666]"><strong>{t('hub.citizen.requiredMaterials')}:</strong> {activity.requiredMaterials}</p>}
+                          {activity.requiredMaterials && <p className="mt-2 text-[12px] text-[#666]"><strong>{t('activity.requiredNotes')}:</strong> {activity.requiredMaterials}</p>}
+                          {activity.accessibilityNotes && <p className="mt-2 text-[12px] text-[#666]"><strong>{t('activity.accessibilityNotes')}:</strong> {activity.accessibilityNotes}</p>}
                         </div>
+                        {activity.completion && <div className="mt-4"><ActivitySummary completion={activity.completion} /></div>}
                         {isOpen && canParticipate && (activity.forumEnabled || activity.votingEnabled) && (
                           <div className="mt-5 flex flex-wrap gap-2">
                             {activity.forumEnabled && <Link to={`/forum-voting?initiative=${initiative.id}&phase=${selectedPhaseNumber}`} className="inline-flex min-h-11 items-center gap-2 border-2 border-[#444] px-4 text-[13px] font-bold text-[#444]"><MessageSquareText size={15} />{t('hub.citizen.joinDiscussion')}</Link>}
@@ -968,6 +1011,7 @@ export default function RoleHubDashboard() {
             ) : (
               <>
                 {renderRoadmap()}
+                {renderCitizenEvents()}
                 {renderCitizenPhaseWorkspace(citizenInitiative)}
               </>
             )}
@@ -1110,6 +1154,7 @@ export default function RoleHubDashboard() {
             ) : (
               <>
                 {renderRoadmap()}
+                {renderCitizenEvents()}
                 {renderCitizenPhaseWorkspace(citizenInitiative)}
               </>
             )}
