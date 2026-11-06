@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { BookOpenText, CheckCircle2, CircleAlert, Landmark, MessageSquareText } from 'lucide-react';
 import LoadingState from './LoadingState';
@@ -58,10 +58,13 @@ interface Props {
   phaseNumber: number;
   /** Called after a save so the surrounding hub can refresh its roadmap and readiness. */
   onChanged?: () => void;
+  /** The Municipality's facilitator team, shown in its own tab. */
+  renderTeam?: () => ReactNode;
+  teamCount?: number;
 }
 
-/** Staff workspace of one objective: methodology framing, tool selection and tool implementations. */
-export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChanged }: Props) {
+/** Staff workspace of one objective: its events, activities, team and methodology, each in a tab. */
+export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChanged, renderTeam, teamCount }: Props) {
   const { language, t, formatDate } = useI18n();
   const tools = useMemo(() => getTools(language), [language]);
   const [initiative, setInitiative] = useState<Initiative | null>(null);
@@ -69,7 +72,7 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
   const [canManage, setCanManage] = useState(false);
   const [canFacilitate, setCanFacilitate] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<ObjectiveTab>('activities');
+  const [tab, setTab] = useState<ObjectiveTab>('events');
   const [objectiveNotes, setObjectiveNotes] = useState('');
   const [savingNotes, setSavingNotes] = useState(false);
   const [error, setError] = useState('');
@@ -163,10 +166,22 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
     };
   };
 
-  // An activity that belongs to an event is shown inside that event; the others stay in the list below.
+  // Activities not in an event yet come first in the Activities tab: they still need an event.
   const assignedEventIds = new Set((phase?.events || []).filter((event) => event.status !== 'cancelled').map((event) => event.id));
-  const toolInEvent = (toolId: string) => liveActivities.some((activity) => activity.toolKey === toolId && activity.eventId != null && assignedEventIds.has(activity.eventId));
-  const unassignedTools = (phase?.enabledTools || []).filter((toolId) => !toolInEvent(toolId));
+  const toolInEvent = (toolId: string) => liveActivities.some((activity) => activity.toolKey === toolId && (activity.eventIds || []).some((eventId) => assignedEventIds.has(eventId)));
+  const orderedTools = [
+    ...(phase?.enabledTools || []).filter((toolId) => !toolInEvent(toolId)),
+    ...(phase?.enabledTools || []).filter(toolInEvent),
+  ];
+  const tabs: ObjectiveTab[] = ['events', 'activities', ...(renderTeam ? ['team' as const] : []), 'about'];
+  const openActivity = (toolId: string) => {
+    setTab('activities');
+    // Wait for the Activities tab to render, then bring the activity's card into view.
+    window.setTimeout(() => {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      document.getElementById(`objective-activity-${toolId}`)?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    }, 60);
+  };
   const renderToolCard = (toolId: string, insideEvent: boolean) => {
     if (!phase) return null;
     const resource = resolveSpiceResource(toolId, tools, t);
@@ -208,13 +223,17 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
               {t('phaseDetail.progress', { phase: phase.phaseNumber, status: stateLabelKey ? t(stateLabelKey) : '' })}
             </span>
             <h2 id="objective-workspace-title" className="mt-3 text-[28px] font-bold leading-tight text-[#444] md:text-[34px]">{t(framework.titleKey)}</h2>
-            <p className="mt-4 max-w-3xl text-[16px] leading-relaxed text-[#666]">{t(PHASE_TEXT_KEYS[phase.phaseNumber] || 'hub.phase1Text')}</p>
 
-            <ObjectiveTabs idPrefix="objective" active={tab} onChange={setTab} />
+            <ObjectiveTabs
+              idPrefix="objective"
+              tabs={tabs}
+              active={tab}
+              onChange={setTab}
+              counts={{ events: (phase.events || []).filter((event) => event.status !== 'cancelled').length, activities: phase.enabledTools.length, team: teamCount }}
+            />
 
-            {tab === 'activities' && (
-              <div role="tabpanel" id="objective-panel-activities" aria-labelledby="objective-tab-activities">
-              {canCoordinate && (
+            {tab === 'events' && canCoordinate && (
+              <div role="tabpanel" id="objective-panel-events" aria-labelledby="objective-tab-events">
                 <ObjectiveEvents
                   initiativeId={Number(initiativeId)}
                   phaseNumber={phase.phaseNumber}
@@ -222,23 +241,28 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
                   activities={phase.activities}
                   resources={eventResources}
                   canManage={canManage}
-                  renderActivity={(toolId) => renderToolCard(toolId, true)}
+                  onOpenActivity={openActivity}
                   onChanged={refresh}
                 />
-              )}
+              </div>
+            )}
 
+            {tab === 'team' && renderTeam && (
+              <div role="tabpanel" id="objective-panel-team" aria-labelledby="objective-tab-team">{renderTeam()}</div>
+            )}
+
+            {tab === 'activities' && (
+              <div role="tabpanel" id="objective-panel-activities" aria-labelledby="objective-tab-activities">
               {canCoordinate && (
-                <section className="mt-8 border-t-2 border-[#eee] pt-7" aria-labelledby="selected-tools-title">
-                  <h2 id="selected-tools-title" className="text-[22px] font-bold text-[#444]">{t(phase.events?.length ? 'events.unassignedTitle' : 'phaseDetail.selectedToolsTitle', { phase: phase.phaseNumber })}</h2>
-                  <p className="mt-1 max-w-3xl text-sm leading-relaxed text-[#666]">{phase.events?.length ? t('events.unassignedText') : t(canManage ? 'phaseDetail.selectedToolsManagerText' : 'phaseDetail.selectedToolsFacilitatorText')}</p>
+                <section className="mt-6" aria-labelledby="selected-tools-title">
+                  <h2 id="selected-tools-title" className="text-[20px] font-bold text-[#444]">{t('phaseDetail.selectedToolsTitle', { phase: phase.phaseNumber })}</h2>
+                  <p className="mt-1 max-w-3xl text-sm leading-relaxed text-[#666]">{t('objectiveTabs.activitiesIntro')}</p>
 
                   {phase.enabledTools.length === 0 ? (
                     <div className="mt-5 spice-card-dashed p-6 text-sm text-[#666]">{t(canManage ? 'phaseDetail.noSelectedToolsManager' : 'phaseDetail.noSelectedToolsFacilitator')}</div>
-                  ) : unassignedTools.length === 0 ? (
-                    <div className="mt-5 rounded-xl border border-dashed border-[#bfc0c5] p-6 text-sm text-[#666]">{t('events.allAssigned')}</div>
                   ) : (
                     <div className="mt-5 grid gap-5 xl:grid-cols-2">
-                      {unassignedTools.map((toolId) => <div key={toolId} className="flex">{renderToolCard(toolId, false)}</div>)}
+                      {orderedTools.map((toolId) => <div key={toolId} id={`objective-activity-${toolId}`} className="flex scroll-mt-24">{renderToolCard(toolId, false)}</div>)}
                     </div>
                   )}
                 </section>
@@ -272,6 +296,7 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
 
             {tab === 'about' && (
               <div role="tabpanel" id="objective-panel-about" aria-labelledby="objective-tab-about">
+              <p className="mt-6 max-w-3xl text-[16px] leading-relaxed text-[#555]">{t(PHASE_TEXT_KEYS[phase.phaseNumber] || 'hub.phase1Text')}</p>
               <section className="mt-6 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]" aria-labelledby="phase-framework-title">
                 <div className="border-l-4 border-[#ca7428] bg-[#fff7ef] p-5">
                   <p className="text-[11px] font-bold uppercase tracking-wide text-[#a85f20]">{t('phaseDetail.guidingQuestion')}</p>
@@ -370,7 +395,8 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
                 )}
 
               {canCoordinate && (
-                <div className="mt-8 max-w-3xl border-t-2 border-[#eee] pt-7">
+                <div className="mt-8 flex max-w-3xl flex-wrap gap-3 border-t-2 border-[#eee] pt-7">
+                  <Link to={`/forum-voting?initiative=${initiativeId}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 py-2 text-sm font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]"><MessageSquareText size={16} /> {t(canManage ? 'phaseDetail.reviewDiscussion' : 'hub.prepareDraftProposal')}</Link>
                   <Link to={`/repository?pilotId=${initiativeId}&phase=${phase.phaseNumber}&phaseId=${phase.id}&returnPhase=${phase.phaseNumber}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 py-2 text-sm font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]"><BookOpenText size={16} /> {t('phaseDetail.uploadMaterials')}</Link>
                 </div>
               )}

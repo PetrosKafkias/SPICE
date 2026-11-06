@@ -1,16 +1,29 @@
 import { useRef, type KeyboardEvent } from 'react';
-import { CalendarCheck, Info } from 'lucide-react';
+import { CalendarCheck, ClipboardList, Info, Trophy, Users } from 'lucide-react';
 import { useI18n } from '../context/I18nContext';
+import type { TranslationKey } from '../i18n/translations';
 
-export type ObjectiveTab = 'activities' | 'about';
+export type ObjectiveTab = 'events' | 'activities' | 'team' | 'results' | 'about';
 
-const TABS: Array<{ id: ObjectiveTab; icon: typeof Info; labelKey: 'objectiveTabs.activities' | 'objectiveTabs.about' }> = [
-  { id: 'activities', icon: CalendarCheck, labelKey: 'objectiveTabs.activities' },
-  { id: 'about', icon: Info, labelKey: 'objectiveTabs.about' },
-];
+const TAB_META: Record<ObjectiveTab, { icon: typeof Info; labelKey: TranslationKey }> = {
+  events: { icon: CalendarCheck, labelKey: 'objectiveTabs.events' },
+  activities: { icon: ClipboardList, labelKey: 'objectiveTabs.activities' },
+  team: { icon: Users, labelKey: 'objectiveTabs.team' },
+  results: { icon: Trophy, labelKey: 'objectiveTabs.results' },
+  about: { icon: Info, labelKey: 'objectiveTabs.about' },
+};
 
-/** The "Activities" / "About this Objective" tabs of an Objective, as in the Co-Creation Hub. */
-export default function ObjectiveTabs({ idPrefix, active, onChange }: { idPrefix: string; active: ObjectiveTab; onChange: (tab: ObjectiveTab) => void }) {
+interface Props {
+  idPrefix: string;
+  tabs: ObjectiveTab[];
+  active: ObjectiveTab;
+  onChange: (tab: ObjectiveTab) => void;
+  /** Optional number shown next to a tab's label, such as the number of events. */
+  counts?: Partial<Record<ObjectiveTab, number>>;
+}
+
+/** The tabs of an Objective in the Co-Creation Hub; each role sees the tabs that matter to it. */
+export default function ObjectiveTabs({ idPrefix, tabs, active, onChange, counts = {} }: Props) {
   const { t } = useI18n();
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
 
@@ -18,15 +31,17 @@ export default function ObjectiveTabs({ idPrefix, active, onChange }: { idPrefix
   const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
     event.preventDefault();
-    const next = (index + (event.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length;
-    onChange(TABS[next].id);
+    const next = (index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+    onChange(tabs[next]);
     refs.current[next]?.focus();
   };
 
   return (
-    <div role="tablist" className="mt-6 flex flex-wrap gap-x-2 border-b border-[#e3e3e6]">
-      {TABS.map(({ id, icon: Icon, labelKey }, index) => {
+    <div role="tablist" className="mt-6 flex flex-wrap gap-x-1 border-b border-[#e3e3e6]">
+      {tabs.map((id, index) => {
+        const { icon: Icon, labelKey } = TAB_META[id];
         const selected = active === id;
+        const count = counts[id];
         return (
           <button
             key={id}
@@ -39,9 +54,10 @@ export default function ObjectiveTabs({ idPrefix, active, onChange }: { idPrefix
             tabIndex={selected ? 0 : -1}
             onClick={() => onChange(id)}
             onKeyDown={(event) => onKeyDown(event, index)}
-            className={`-mb-px inline-flex min-h-14 flex-none cursor-pointer items-center gap-2.5 border-b-[3px] px-4 sm:px-6 text-[17px] font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#ca7428] ${selected ? 'border-[#ca7428] text-[#ca7428]' : 'border-transparent text-[#333] hover:text-[#ca7428]'}`}
+            className={`-mb-px inline-flex min-h-14 flex-none cursor-pointer items-center gap-2 border-b-[3px] px-3 text-[16px] font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#ca7428] sm:px-5 ${selected ? 'border-[#ca7428] text-[#a85f20]' : 'border-transparent text-[#333] hover:text-[#a85f20]'}`}
           >
-            <Icon size={20} aria-hidden="true" />{t(labelKey)}
+            <Icon size={19} aria-hidden="true" />{t(labelKey)}
+            {count != null && <span className={`rounded-full px-2 py-0.5 text-[12px] ${selected ? 'bg-[#fff0e1] text-[#8a4b16]' : 'bg-[#eef0f3] text-[#444]'}`}>{count}</span>}
           </button>
         );
       })}

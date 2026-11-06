@@ -793,7 +793,7 @@ function activityFromRow(row) {
     submittedAt: row.submitted_at || null, publishedAt: row.published_at || null,
     closedAt: row.closed_at || null, completedAt: row.completed_at || null,
     cancelledAt: row.cancelled_at || null,
-    eventId: row.event_id ? Number(row.event_id) : null,
+    eventIds: Array.isArray(row.event_ids) ? row.event_ids : [],
     completion: row.completion_summary ? {
       summary: row.completion_summary,
       outcomes: row.completion_outcomes || null,
@@ -948,7 +948,7 @@ function saveEventReport(db, eventRow, report, { requireCore, actor }) {
     JSON.stringify(openingCheck), JSON.stringify(survey), actor.id, now, now,
   );
   // Minutes and feedback are kept only for activities that belong to the event.
-  const eventActivityIds = new Set(db.prepare('SELECT id FROM hub_activities WHERE event_id = ?').all(eventRow.id).map((row) => Number(row.id)));
+  const eventActivityIds = new Set(db.prepare('SELECT activity_id FROM hub_event_activities WHERE event_id = ?').all(eventRow.id).map((row) => Number(row.activity_id)));
   (Array.isArray(report.activityNotes) ? report.activityNotes : []).forEach((note) => {
     const activityId = Number(note?.activityId);
     if (!eventActivityIds.has(activityId)) return;
@@ -981,19 +981,65 @@ function validEventDate(value) {
   return Number.isNaN(parsed) ? undefined : String(value);
 }
 
-// An activity's logistics follow its event, so the citizen views and the workflow read one source.
-function syncEventLogistics(db, eventRow) {
+// An activity can take place in several events. Its own logistics follow its next event (or, once
+// all of them are past, the latest one), so the citizen views and the workflow read one source.
+function syncActivityLogistics(db, activityId) {
+  const now = new Date().toISOString().slice(0, 16);
+  const eventRow = db.prepare(`
+    SELECT e.* FROM hub_event_activities ea JOIN hub_events e ON e.id = ea.event_id
+    WHERE ea.activity_id = ? AND e.status != 'cancelled'
+    ORDER BY (e.start_at IS NULL OR e.start_at < ?), CASE WHEN e.start_at >= ? THEN e.start_at END, e.start_at DESC, e.id
+    LIMIT 1
+  `).get(activityId, now, now);
+  if (!eventRow) return;
   db.prepare(`
     UPDATE hub_activities SET start_date = ?, location = ?, participation_mode = ?, estimated_duration = ?,
       expected_participants = ?, language_support = ?, support_contact = ?, updated_at = ?
-    WHERE event_id = ?
+    WHERE id = ?
   `).run(
     eventRow.start_at || null, eventRow.location || null,
     eventRow.participation_mode === 'citivoice' ? 'online' : eventRow.participation_mode,
     eventRow.duration || null, eventRow.expected_participants || null,
     eventRow.language_support || null, eventRow.support_contact || null,
-    new Date().toISOString(), eventRow.id,
+    new Date().toISOString(), activityId,
   );
+}
+
+function syncEventLogistics(db, eventRow) {
+  db.prepare('SELECT activity_id FROM hub_event_activities WHERE event_id = ?').all(eventRow.id)
+    .forEach((row) => syncActivityLogistics(db, Number(row.activity_id)));
+}
+
+/** Replaces the events an activity takes place in. */
+function setActivityEvents(db, activityId, eventIds) {
+  const now = new Date().toISOString();
+  db.prepare('DELETE FROM hub_event_activities WHERE activity_id = ?').run(activityId);
+  const link = db.prepare('INSERT OR IGNORE INTO hub_event_activities (event_id, activity_id, created_at) VALUES (?, ?, ?)');
+  eventIds.forEach((eventId) => link.run(eventId, activityId, now));
+  syncActivityLogistics(db, activityId);
+}
+
+/** The events of each activity of a pilot, in date order: activity id → event ids. */
+function eventIdsByActivity(db, initiativeId) {
+  const map = new Map();
+  db.prepare(`
+    SELECT ea.activity_id, ea.event_id FROM hub_event_activities ea JOIN hub_events e ON e.id = ea.event_id
+    WHERE e.initiative_id = ? ORDER BY COALESCE(e.start_at, e.created_at), e.id
+  `).all(initiativeId).forEach((row) => {
+    const list = map.get(Number(row.activity_id)) || [];
+    list.push(Number(row.event_id));
+    map.set(Number(row.activity_id), list);
+  });
+  return map;
+}
+
+function withEventIds(db, row) {
+  if (!row) return row;
+  const ids = db.prepare(`
+    SELECT ea.event_id FROM hub_event_activities ea JOIN hub_events e ON e.id = ea.event_id
+    WHERE ea.activity_id = ? ORDER BY COALESCE(e.start_at, e.created_at), e.id
+  `).all(row.id).map((item) => Number(item.event_id));
+  return { ...row, event_ids: ids };
 }
 
 /**
@@ -1011,21 +1057,26 @@ function assignEventActivities(db, { eventRow, phase, toolKeys, actor }) {
     addAudit(db, { actor, action: 'hub.phase.update', targetType: 'hub_phase', targetId: phase.id, previousValue: { enabledTools: enabled }, newValue: { enabledTools: [...enabled, ...added], via: 'event' } });
   }
   const now = new Date().toISOString();
-  db.prepare('UPDATE hub_activities SET event_id = NULL, updated_at = ? WHERE event_id = ? AND (tool_key IS NULL OR tool_key NOT IN (' + (keys.length ? keys.map(() => '?').join(',') : "''") + '))')
-    .run(now, eventRow.id, ...keys);
+  const linked = db.prepare('SELECT ea.activity_id, a.tool_key FROM hub_event_activities ea JOIN hub_activities a ON a.id = ea.activity_id WHERE ea.event_id = ?').all(eventRow.id);
+  linked.filter((row) => !row.tool_key || !keys.includes(row.tool_key)).forEach((row) => {
+    db.prepare('DELETE FROM hub_event_activities WHERE event_id = ? AND activity_id = ?').run(eventRow.id, row.activity_id);
+    syncActivityLogistics(db, Number(row.activity_id));
+  });
+  const link = db.prepare('INSERT OR IGNORE INTO hub_event_activities (event_id, activity_id, created_at) VALUES (?, ?, ?)');
   keys.forEach((toolKey) => {
     const existing = db.prepare("SELECT id FROM hub_activities WHERE phase_id = ? AND tool_key = ? AND workflow_status != 'cancelled'").get(phase.id, toolKey);
     if (existing) {
-      db.prepare('UPDATE hub_activities SET event_id = ?, updated_at = ? WHERE id = ?').run(eventRow.id, now, existing.id);
+      link.run(eventRow.id, existing.id, now);
       return;
     }
     const result = db.prepare(`
       INSERT INTO hub_activities (
         initiative_id, phase_id, title, description, status, workflow_status, assigned_to_user_id,
         tool_key, selected_tool_ids_json, activity_type, instructions, participation_mode,
-        visibility, contribution_types_json, event_id, created_at, updated_at
-      ) VALUES (?, ?, ?, '', ?, 'draft', ?, ?, ?, 'participation', '', 'offline', 'public', '["text"]', ?, ?, ?)
-    `).run(eventRow.initiative_id, phase.id, SPICE_RESOURCE_NAMES.get(toolKey) || toolKey, publicActivityStatus('draft'), actor.id, toolKey, JSON.stringify([toolKey]), eventRow.id, now, now);
+        visibility, contribution_types_json, created_at, updated_at
+      ) VALUES (?, ?, ?, '', ?, 'draft', ?, ?, ?, 'participation', '', 'offline', 'public', '["text"]', ?, ?)
+    `).run(eventRow.initiative_id, phase.id, SPICE_RESOURCE_NAMES.get(toolKey) || toolKey, publicActivityStatus('draft'), actor.id, toolKey, JSON.stringify([toolKey]), now, now);
+    link.run(eventRow.id, result.lastInsertRowid, now);
     addAudit(db, { actor, action: 'hub.activity.create', targetType: 'hub_activity', targetId: result.lastInsertRowid, newValue: { eventId: eventRow.id, toolKey, workflowStatus: 'draft' } });
   });
   syncEventLogistics(db, eventRow);
@@ -1489,7 +1540,9 @@ export async function createApiHandler(options = {}) {
               ORDER BY phase_id, created_at
             `).all(initiativeId, !citizenPreview && participant ? 1 : 0);
         const activitiesByPhase = new Map();
-        activityRows.forEach((activityRow) => {
+        const activityEvents = eventIdsByActivity(db, initiativeId);
+        activityRows.forEach((rawActivityRow) => {
+          const activityRow = { ...rawActivityRow, event_ids: activityEvents.get(Number(rawActivityRow.id)) || [] };
           const items = activitiesByPhase.get(Number(activityRow.phase_id)) || [];
           // Team (facilitator) notes are internal to staff, and a summary is public only once the activity is completed.
           items.push(activityFromRow(staffView ? activityRow : {
@@ -1893,13 +1946,12 @@ export async function createApiHandler(options = {}) {
           String(body.facilitatorNotes || '').trim().slice(0, 4000) || null, String(body.expectedParticipants || '').trim().slice(0, 120) || null,
           now, now,
         );
-        const eventRow = body.eventId ? db.prepare("SELECT * FROM hub_events WHERE id = ? AND phase_id = ? AND status != 'cancelled'").get(Number(body.eventId), phase.id) : null;
-        if (eventRow) {
-          db.prepare('UPDATE hub_activities SET event_id = ? WHERE id = ?').run(eventRow.id, result.lastInsertRowid);
-          syncEventLogistics(db, eventRow);
-        }
+        const requestedEventIds = Array.isArray(body.eventIds) ? body.eventIds : body.eventId ? [body.eventId] : [];
+        const createdEventIds = [...new Set(requestedEventIds.map(Number))]
+          .filter((eventId) => db.prepare("SELECT 1 FROM hub_events WHERE id = ? AND phase_id = ? AND status != 'cancelled'").get(eventId, phase.id));
+        if (createdEventIds.length) setActivityEvents(db, Number(result.lastInsertRowid), createdEventIds);
         addAudit(db, { actor: session.user, action: 'hub.activity.create', targetType: 'hub_activity', targetId: result.lastInsertRowid, newValue: { initiativeId, phaseNumber, title, workflowStatus } });
-        sendJson(response, 201, { activity: activityFromRow(db.prepare('SELECT * FROM hub_activities WHERE id = ?').get(result.lastInsertRowid)) });
+        sendJson(response, 201, { activity: activityFromRow(withEventIds(db, db.prepare('SELECT * FROM hub_activities WHERE id = ?').get(result.lastInsertRowid))) });
         return true;
       }
 
@@ -1941,13 +1993,11 @@ export async function createApiHandler(options = {}) {
           sendError(response, 400, 'Summarise what took place before completing the activity.', { summary: 'Enter at least 20 characters.' }, 'ACTIVITY_SUMMARY_REQUIRED');
           return true;
         }
-        let eventId = activity.event_id;
-        if (body.eventId !== undefined) {
-          eventId = body.eventId ? Number(body.eventId) : null;
-          if (eventId && !db.prepare("SELECT 1 FROM hub_events WHERE id = ? AND phase_id = ? AND status != 'cancelled'").get(eventId, activity.phase_id)) {
-            sendError(response, 400, 'Choose an event of this Objective.', { eventId: 'The event is not available.' }, 'EVENT_NOT_AVAILABLE');
-            return true;
-          }
+        const requestedEvents = body.eventIds !== undefined ? body.eventIds : body.eventId !== undefined ? (body.eventId ? [body.eventId] : []) : undefined;
+        const eventIds = requestedEvents === undefined ? null : [...new Set((Array.isArray(requestedEvents) ? requestedEvents : []).map(Number))];
+        if (eventIds?.some((eventId) => !db.prepare("SELECT 1 FROM hub_events WHERE id = ? AND phase_id = ? AND status != 'cancelled'").get(eventId, activity.phase_id))) {
+          sendError(response, 400, 'Choose events of this Objective.', { eventIds: 'An event is not available.' }, 'EVENT_NOT_AVAILABLE');
+          return true;
         }
         const status = publicActivityStatus(requestedWorkflowStatus);
         const now = new Date().toISOString();
@@ -2017,11 +2067,7 @@ export async function createApiHandler(options = {}) {
             cleanText(completion.nextSteps, 4000), Number.isFinite(participants) ? participants : null, session.user.id, now, activityId,
           );
         }
-        if (eventId !== activity.event_id) {
-          db.prepare('UPDATE hub_activities SET event_id = ? WHERE id = ?').run(eventId, activityId);
-          const eventRow = eventId ? db.prepare('SELECT * FROM hub_events WHERE id = ?').get(eventId) : null;
-          if (eventRow) syncEventLogistics(db, eventRow);
-        }
+        if (eventIds) setActivityEvents(db, activityId, eventIds);
         if (requestedWorkflowStatus !== currentWorkflowStatus) {
           const actorRole = normalizeRole(session.user.role);
           const toRole = requestedWorkflowStatus === 'ready_for_review' ? 'municipality'
@@ -2054,7 +2100,7 @@ export async function createApiHandler(options = {}) {
           });
         }
         addAudit(db, { actor: session.user, action: 'hub.activity.update', targetType: 'hub_activity', targetId: activityId, previousValue: { status: activity.status, workflowStatus: currentWorkflowStatus }, newValue: { status, workflowStatus: requestedWorkflowStatus, ...(statusChanged ? { transition: activityTransitionLabel(currentWorkflowStatus, requestedWorkflowStatus) } : {}) }, reason: body.reason || null });
-        sendJson(response, 200, { activity: activityFromRow(db.prepare('SELECT * FROM hub_activities WHERE id = ?').get(activityId)) });
+        sendJson(response, 200, { activity: activityFromRow(withEventIds(db, db.prepare('SELECT * FROM hub_activities WHERE id = ?').get(activityId))) });
         return true;
       }
 
@@ -2116,7 +2162,7 @@ export async function createApiHandler(options = {}) {
         if (method === 'DELETE') {
           // Once citizens have registered, an event is cancelled instead, so they keep a record of it.
           if (eventRow.status !== 'draft' || registrations > 0) { sendError(response, 409, 'Only a draft event without registrations can be deleted. Cancel it instead.', null, 'EVENT_NOT_DELETABLE'); return true; }
-          db.prepare('UPDATE hub_activities SET event_id = NULL WHERE event_id = ?').run(eventRow.id);
+          db.prepare('DELETE FROM hub_event_activities WHERE event_id = ?').run(eventRow.id);
           db.prepare('DELETE FROM hub_events WHERE id = ?').run(eventRow.id);
           addAudit(db, { actor: session.user, action: 'hub.event.delete', targetType: 'hub_event', targetId: eventRow.id, previousValue: { title: eventRow.title } });
           sendJson(response, 200, { deleted: true });

@@ -640,16 +640,22 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     const eventId = createdEvent.payload.event.id;
     const staffPhase = (await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: municipalityLogin.cookie })).payload.initiative.phases[0];
     assert.equal(staffPhase.events[0].teamNotes, 'Bring printed maps.');
-    assert.deepEqual(staffPhase.activities.filter((item) => item.eventId === eventId).map((item) => item.toolKey).sort(), ['hopes-and-fears', 'stakeholder-mapping']);
+    assert.deepEqual(staffPhase.activities.filter((item) => item.eventIds.includes(eventId)).map((item) => item.toolKey).sort(), ['hopes-and-fears', 'stakeholder-mapping']);
     assert.equal(staffPhase.activities.find((item) => item.toolKey === 'hopes-and-fears').location, 'Town hall');
     // Choosing a catalogue resource that the Objective does not have yet adds it to the Objective.
     assert.equal(staffPhase.enabledTools.includes('world-cafe'), false);
-    const draftEvent = await createEvent(municipalityLogin.cookie, { phaseNumber: 1, title: 'Draft café evening', activityToolKeys: ['world-cafe'] });
+    const draftEvent = await createEvent(municipalityLogin.cookie, { phaseNumber: 1, title: 'Draft café evening', activityToolKeys: ['world-cafe', 'hopes-and-fears'] });
     assert.equal(draftEvent.status, 201);
     const phaseWithCafe = (await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: municipalityLogin.cookie })).payload.initiative.phases[0];
     assert.ok(phaseWithCafe.enabledTools.includes('world-cafe'));
-    assert.equal(phaseWithCafe.activities.find((item) => item.toolKey === 'world-cafe').eventId, draftEvent.payload.event.id);
+    assert.deepEqual(phaseWithCafe.activities.find((item) => item.toolKey === 'world-cafe').eventIds, [draftEvent.payload.event.id]);
+    // An activity can take place in several events; its logistics follow its next dated event.
+    const sharedActivity = phaseWithCafe.activities.find((item) => item.toolKey === 'hopes-and-fears');
+    assert.deepEqual([...sharedActivity.eventIds].sort((a, b) => a - b), [eventId, draftEvent.payload.event.id].sort((a, b) => a - b));
+    assert.equal(sharedActivity.location, 'Town hall');
     assert.equal((await request(baseUrl, `/api/hub/events/${draftEvent.payload.event.id}`, { method: 'DELETE', cookie: municipalityLogin.cookie })).status, 200);
+    const afterDelete = (await request(baseUrl, `/api/hub/initiatives/${initiative.id}`, { cookie: municipalityLogin.cookie })).payload.initiative.phases[0];
+    assert.deepEqual(afterDelete.activities.find((item) => item.toolKey === 'hopes-and-fears').eventIds, [eventId]);
     // Leave Objective 1 as it was for the progression checks below.
     const cafeActivity = phaseWithCafe.activities.find((item) => item.toolKey === 'world-cafe');
     assert.equal((await request(baseUrl, `/api/hub/activities/${cafeActivity.id}`, { method: 'PATCH', cookie: municipalityLogin.cookie, body: { workflowStatus: 'cancelled' } })).status, 200);

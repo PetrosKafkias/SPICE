@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import {
-  Activity, ArrowRight, BookOpenText, Building2, CalendarDays, CheckCircle2,
+  Activity, ArrowRight, Building2, CalendarDays, CheckCircle2,
   Circle, CircleAlert, CircleDot, Clock, FilePlus2, FileText,
-  Layers3, ListChecks, Lock, MapPin, MapPinned, MessageSquareText,
+  Layers3, Lock, MapPin, MapPinned, MessageSquareText,
   PencilLine, Plus, RefreshCw, UserMinus, Users, Vote,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -25,7 +25,7 @@ import ObjectiveCoverage from './ObjectiveCoverage';
 import CitizenEvents from './CitizenEvents';
 import ObjectiveTabs, { type ObjectiveTab } from './ObjectiveTabs';
 import ActivitySummary from './ActivitySummary';
-import type { ActivityCompletion, HubEvent } from '../lib/events';
+import { isUpcoming, type ActivityCompletion, type HubEvent } from '../lib/events';
 import { readStoredPilot, storeActivePilot } from '../lib/activePilot';
 import type { WorkflowSummary } from './WorkflowNextActionPanel';
 import type { TranslationKey } from '../i18n/translations';
@@ -85,7 +85,7 @@ interface HubActivity {
   supportContact: string | null;
   votingEnabled: boolean;
   forumEnabled: boolean;
-  eventId: number | null;
+  eventIds: number[];
   completion: ActivityCompletion | null;
 }
 
@@ -219,9 +219,8 @@ export default function RoleHubDashboard() {
   const [canParticipate, setCanParticipate] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [selectedPhaseNumber, setSelectedPhaseNumber] = useState<number | null>(null);
-  const [citizenTab, setCitizenTab] = useState<ObjectiveTab>('activities');
-  // Content of the tab that is not selected stays rendered but hidden, so section order is kept.
-  const inTab = (tab: ObjectiveTab) => (citizenTab === tab ? '' : 'hidden');
+  // null: the default tab of the selected Objective (Events while it runs, Results once completed).
+  const [citizenTab, setCitizenTab] = useState<ObjectiveTab | null>(null);
   const [pendingPhaseNumber, setPendingPhaseNumber] = useState<number | null>(null);
   const [savingPhaseChange, setSavingPhaseChange] = useState(false);
   const [facilitatorEmail, setFacilitatorEmail] = useState('');
@@ -318,6 +317,7 @@ export default function RoleHubDashboard() {
 
   const selectPhase = (phaseNumber: number) => {
     setSelectedPhaseNumber(phaseNumber);
+    setCitizenTab(null);
     // Deliberately not written to the URL: any location change remounts the route view (RouteExperience
     // keys on location.key), which reloads the hub and jumps back to the top.
     // The objective's content sits below the roadmap, so bring it into view as feedback for the click.
@@ -606,23 +606,88 @@ export default function RoleHubDashboard() {
         )}
       </section>
       {!citizenView && selectedPhaseNumber != null && (
-        <ObjectiveWorkspace key={`${detail.id}-${selectedPhaseNumber}`} initiativeId={detail.id} phaseNumber={selectedPhaseNumber} onChanged={() => void loadDetail(detail.id)} />
+        <ObjectiveWorkspace
+          key={`${detail.id}-${selectedPhaseNumber}`}
+          initiativeId={detail.id}
+          phaseNumber={selectedPhaseNumber}
+          onChanged={() => void loadDetail(detail.id)}
+          renderTeam={role === 'municipality' ? renderFacilitatorTeam : undefined}
+          teamCount={role === 'municipality' ? detail.facilitators.length : undefined}
+        />
       )}
       </>
     );
   };
 
-  // Upcoming events of every Objective, so citizens can register ahead of time.
-  const renderCitizenEvents = (phaseNumber: number) => {
+  // The facilitators the Municipality assigned to its pilot: a tab of the Objective workspace.
+  const renderFacilitatorTeam = () => {
+    if (!detail) return null;
+    return (
+      <section aria-labelledby="facilitator-assignment-title" className="mt-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h2 id="facilitator-assignment-title" className="text-[20px] font-bold text-[#444]">{t('hub.assignedFacilitatorsTitle')}</h2>
+            <p className="mt-1 max-w-xl text-[13px] leading-relaxed text-[#666]">{t('hub.facilitatorsShareBrief')}</p>
+            {detail.lifecycleStatus !== 'active' && (
+              <p className="mt-3 flex max-w-xl items-start gap-2 border-l-4 border-[#d5d6da] bg-[#f7f7f8] px-3 py-2 text-[13px] font-semibold text-[#555]"><Lock size={15} className="mt-0.5 flex-none" aria-hidden="true" />{t('hub.facilitatorsInactive')}</p>
+            )}
+          </div>
+          <form onSubmit={assignFacilitator} className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto">
+            <label htmlFor="facilitator-email" className="sr-only">{t('hub.facilitatorEmailLabel')}</label>
+            <input id="facilitator-email" type="email" required disabled={detail.lifecycleStatus !== 'active'} value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} placeholder="facilitator@example.org" className="min-h-11 min-w-0 flex-1 border-2 border-[#bfc0c5] px-3 text-[14px] focus:border-[#ca7428] focus:outline-none lg:w-72" />
+            <button type="submit" disabled={detail.lifecycleStatus !== 'active' || savingFacilitator || !facilitatorEmail.trim()} className="inline-flex min-h-11 flex-none cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] px-4 text-[13px] font-bold text-white hover:bg-[#e07a20] disabled:cursor-not-allowed disabled:opacity-60">
+              <Plus size={15} aria-hidden="true" />{savingFacilitator ? t('hub.assigningFacilitator') : t('hub.assignFacilitator')}
+            </button>
+          </form>
+        </div>
+        {detail.facilitators.length === 0 ? (
+          <p className="mt-6 spice-card-dashed p-5 text-[14px] text-[#666]">{t('hub.noFacilitatorAssigned')}</p>
+        ) : (
+          <ul className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {detail.facilitators.map((facilitator) => {
+              const initials = facilitator.fullName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join('');
+              return (
+                <li key={facilitator.id} className="group flex items-center gap-3 border border-[#e2e2e5] bg-[#fafafa] p-3 transition-colors hover:border-[#f0c49a] hover:bg-white">
+                  <span className="grid h-11 w-11 flex-none place-items-center overflow-hidden rounded-full bg-[#fde3c9] text-[14px] font-bold text-[#a85f20]" aria-hidden="true">
+                    {facilitator.avatarData ? <img src={facilitator.avatarData} alt="" className="h-full w-full object-cover" /> : initials}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[14px] font-bold text-[#444]">{facilitator.fullName}</span>
+                    <span className="block truncate text-[12px] text-[#777]" title={facilitator.email}>{facilitator.email}</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => void unassignFacilitator(facilitator.id)}
+                    disabled={savingFacilitator}
+                    title={t('hub.unassignFacilitator')}
+                    aria-label={t('hub.unassignFacilitatorNamed', { name: facilitator.fullName })}
+                    className="grid h-9 w-9 flex-none cursor-pointer place-items-center text-[#999] transition-colors hover:bg-[#fff0e1] hover:text-[#a85f20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ca7428] disabled:cursor-wait disabled:opacity-50"
+                  >
+                    <UserMinus size={17} aria-hidden="true" />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+    );
+  };
+
+  // Citizens see upcoming events (of this Objective and, from the current one, of later Objectives
+  // too, so they can register ahead of time) or the past events of this Objective with their report.
+  const renderCitizenEvents = (phaseNumber: number, show: 'upcoming' | 'past') => {
     if (!detail) return null;
     const currentPhase = detail.currentPhaseNumber ?? 1;
-    const shown = (eventPhase: number) => eventPhase === phaseNumber || (phaseNumber === currentPhase && eventPhase > currentPhase);
+    const shown = (eventPhase: number) => eventPhase === phaseNumber || (show === 'upcoming' && phaseNumber === currentPhase && eventPhase > currentPhase);
     const allActivities = detail.phases.flatMap((phase) => phase.activities);
     return (
       <CitizenEvents
+        key={`${phaseNumber}-${show}`}
+        show={show}
         events={detail.phases.filter((phase) => shown(phase.phaseNumber)).flatMap((phase) => (phase.events || []).map((event) => ({ ...event, phaseNumber: phase.phaseNumber })))}
         activities={allActivities.map((activity) => ({
-          id: activity.id, eventId: activity.eventId, title: (activity.toolKey && resolveSpiceResource(activity.toolKey, tools, t)?.name) || activity.title,
+          id: activity.id, eventIds: activity.eventIds || [], title: (activity.toolKey && resolveSpiceResource(activity.toolKey, tools, t)?.name) || activity.title,
           instructions: activity.instructions, requiredMaterials: activity.requiredMaterials, accessibilityNotes: activity.accessibilityNotes,
           workflowStatus: activity.workflowStatus,
           kindLabel: activity.toolKey ? (() => { const resource = resolveSpiceResource(activity.toolKey, tools, t); return resource ? t(resource.kind === 'digital' ? 'phaseDetail.kindDigital' : 'phaseDetail.kindAnalog') : null; })() : null,
@@ -657,6 +722,13 @@ export default function RoleHubDashboard() {
     const publishedResults = selectedPhase.results.filter((result) => result.resultType);
     const publishedResources = selectedPhase.results.filter((result) => !result.resultType);
     const openActivities = selectedPhase.activities.filter((activity) => activity.workflowStatus === 'open');
+    const tab: ObjectiveTab = citizenTab ?? (state === 'completed' ? 'results' : 'events');
+    const currentPhaseNumber = detail.currentPhaseNumber ?? 1;
+    const hasUpcoming = detail.phases.some((phase) => (phase.phaseNumber === selectedPhaseNumber || (selectedPhaseNumber === currentPhaseNumber && phase.phaseNumber > currentPhaseNumber))
+      && (phase.events || []).some((event) => event.status === 'published' && isUpcoming(event)));
+    // Activities that take place in an event are shown inside it; the rest are other ways to take part.
+    const eventIds = new Set((selectedPhase.events || []).filter((event) => event.status !== 'cancelled').map((event) => event.id));
+    const otherActivities = selectedPhase.activities.filter((activity) => activity.workflowStatus !== 'completed' && !(activity.eventIds || []).some((eventId) => eventIds.has(eventId)));
 
     const renderResultCard = (result: PhaseResult) => (
       <article key={result.id} className="flex min-w-0 flex-col border-2 border-[#dedfe2] bg-white p-4">
@@ -719,7 +791,7 @@ export default function RoleHubDashboard() {
           </div>
           {period && <p className="flex min-h-10 flex-none items-center gap-2 bg-[#f5f5f5] px-3 text-[12px] font-semibold text-[#555]"><CalendarDays size={16} aria-hidden="true" />{period}</p>}
         </header>
-        {state !== 'incomplete' && <ObjectiveTabs idPrefix="citizen-objective" active={citizenTab} onChange={setCitizenTab} />}
+        {state !== 'incomplete' && <ObjectiveTabs idPrefix="citizen-objective" tabs={['events', 'results', 'about']} active={tab} onChange={setCitizenTab} />}
 
         {state === 'incomplete' ? (
           <div className="py-6">
@@ -738,142 +810,131 @@ export default function RoleHubDashboard() {
               </div>
             </div>
           </div>
-        ) : state === 'completed' ? (
-          <div className="space-y-7 pt-6">
-            {citizenTab === 'activities' && renderCitizenEvents(selectedPhaseNumber)}
-            <section className={inTab('about')} aria-labelledby="phase-summary-heading">
-              <div>
-                <h3 id="phase-summary-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.phaseSummary')}</h3>
-                <p className="mt-2 text-[14px] leading-relaxed text-[#666]">{selectedPhase.completionSummary || t('hub.citizen.completedSummaryFallback')}</p>
-                <p className="mt-3 text-[13px] font-semibold text-[#47662f]">{t('hub.citizen.completedNoActiveControls')}</p>
-              </div>
-            </section>
+        ) : (
+          <div role="tabpanel" id={`citizen-objective-panel-${tab}`} aria-labelledby={`citizen-objective-tab-${tab}`} className="space-y-8 pt-6">
+            {tab === 'events' && (
+              <>
+                {hasUpcoming
+                  ? renderCitizenEvents(selectedPhaseNumber, 'upcoming')
+                  : <p className="spice-card-dashed p-5 text-[14px] text-[#666]">{t('events.noUpcoming')}</p>}
 
-            {selectedPhase.activities.some((activity) => activity.completion) && (
-              <section className={inTab('activities')} aria-labelledby="activity-summaries-heading">
-                <h3 id="activity-summaries-heading" className="text-[18px] font-bold text-[#444]">{t('completion.summariesTitle')}</h3>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  {selectedPhase.activities.filter((activity) => activity.completion).map((activity) => (
-                    <article key={activity.id} className="border-2 border-[#dedfe2] bg-white p-4">
-                      <h4 className="mb-3 text-[15px] font-bold text-[#444]">{activityTitle(activity)}</h4>
-                      <ActivitySummary completion={activity.completion as ActivityCompletion} />
-                    </article>
-                  ))}
-                </div>
-              </section>
+                {otherActivities.length > 0 && (
+                  <section aria-labelledby="open-activities-heading">
+                    <h2 id="open-activities-heading" className="text-[20px] font-bold text-[#444]">{t('events.otherWaysTitle')}</h2>
+                    <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                      {otherActivities.map((activity) => {
+                        const isOpen = activity.workflowStatus === 'open';
+                        return (
+                          <article key={activity.id} className="rounded-xl border border-[#d5d6da] bg-white p-5">
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                              <div><p className="text-[11px] font-bold uppercase text-[#a85f20]">{t(ACTIVITY_TYPE_KEYS[activity.activityType] || ACTIVITY_TYPE_KEYS.participation)}</p><h3 className="mt-1 text-[17px] font-bold text-[#444]">{activityTitle(activity)}</h3></div>
+                              <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase ${isOpen ? 'bg-[#e7f2df] text-[#47662f]' : 'bg-[#f2f2f2] text-[#666]'}`}>{t(statusKey(activity.status))}</span>
+                            </div>
+                            <dl className="mt-3 grid gap-2 text-[12px] text-[#555] sm:grid-cols-2">
+                              {activity.startDate && <div className="flex gap-2"><CalendarDays size={15} className="flex-none text-[#ca7428]" /><span><strong>{t('hub.citizen.starts')}:</strong> <time dateTime={activity.startDate}>{formatDate(activity.startDate, { dateStyle: 'medium', timeStyle: 'short' })}</time></span></div>}
+                              {activity.submissionDeadline && <div className="flex gap-2"><Clock size={15} className="flex-none text-[#ca7428]" /><span><strong>{t('hub.citizen.deadline')}:</strong> <time dateTime={activity.submissionDeadline}>{formatDate(activity.submissionDeadline, { dateStyle: 'medium', timeStyle: 'short' })}</time></span></div>}
+                              {activity.location && <div className="flex gap-2"><MapPin size={15} className="flex-none text-[#ca7428]" /><span>{activity.location}</span></div>}
+                              <div className="flex gap-2"><Activity size={15} className="flex-none text-[#ca7428]" /><span>{t(`resources.${activity.participationMode === 'offline' ? 'offline' : activity.participationMode}` as TranslationKey)}{activity.estimatedDuration ? ` · ${activity.estimatedDuration}` : ''}</span></div>
+                            </dl>
+                            <p className="mt-3 text-[13px] leading-relaxed text-[#555]">{activity.instructions || activity.description}</p>
+                            {isOpen && canParticipate && (activity.forumEnabled || activity.votingEnabled) && (
+                              <div className="mt-4 flex flex-wrap gap-2">
+                                {activity.forumEnabled && <Link to={`/forum-voting?initiative=${initiative.id}&phase=${selectedPhaseNumber}`} className="inline-flex min-h-11 items-center gap-2 border-2 border-[#444] px-4 text-[13px] font-bold text-[#444]"><MessageSquareText size={15} />{t('hub.citizen.joinDiscussion')}</Link>}
+                                {activity.votingEnabled && <Link to={`/forum-voting?initiative=${initiative.id}&phase=${selectedPhaseNumber}`} className="inline-flex min-h-11 items-center gap-2 border-2 border-[#444] px-4 text-[13px] font-bold text-[#444]"><Vote size={15} />{t('hub.citizen.vote')}</Link>}
+                              </div>
+                            )}
+                          </article>
+                        );
+                      })}
+                    </div>
+                  </section>
+                )}
+              </>
             )}
 
-            <section className={inTab('about')} aria-labelledby="completed-tools-heading">
-              <h3 id="completed-tools-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.toolsUsed')}</h3>
-              {visibleTools.length ? (
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  {visibleTools.map(({ resource, tool }) => {
-                    const relatedActivity = activityForResource(resource.id);
-                    const output = publishedResults.find((result) => result.toolKey === resource.id);
-                    return (
-                      <article key={resource.id} className="border-2 border-[#dedfe2] p-4">
-                        <h4 className="text-[15px] font-bold text-[#444]">{resource.name}</h4>
-                        <p className="mt-2 text-[12px] leading-relaxed text-[#666]">{resource.description}</p>
-                        {tool && <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-semibold text-[#555]"><span className="bg-[#f2f2f2] px-2 py-1">{tool.mode}</span><span className="bg-[#f2f2f2] px-2 py-1">{tool.duration}</span></div>}
-                        {relatedActivity && <p className="mt-3 text-[12px] text-[#666]"><strong>{t('hub.citizen.relatedActivity')}:</strong> {activityTitle(relatedActivity)}</p>}
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          <Link to={resource.route} className="inline-flex min-h-10 items-center border-2 border-[#444] px-3 text-[12px] font-bold text-[#444]">{t(resource.kind === 'digital' ? 'hub.citizen.openDigitalTool' : 'hub.citizen.viewToolDetails')}</Link>
-                          {output && <Link to={phaseItemPath(output.title)} className="inline-flex min-h-10 items-center bg-[#f68b2c] px-3 text-[12px] font-bold text-white">{t('hub.citizen.viewOutput')}</Link>}
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              ) : <p className="mt-3 spice-card-dashed p-4 text-[13px] text-[#666]">{t('hub.citizen.completedNoTools')}</p>}
-            </section>
+            {tab === 'results' && (
+              <>
+                {state === 'completed' && (
+                  <section className="border-l-4 border-[#59713d] bg-[#f0f8ea] p-5" aria-labelledby="published-outcomes-heading">
+                    <h2 id="published-outcomes-heading" className="text-[17px] font-bold text-[#3d5c26]">{t('hub.citizen.publishedOutcomes')}</h2>
+                    <p className="mt-2 text-[14px] leading-relaxed text-[#3d5c26]">{selectedPhase.completionSummary || t('hub.citizen.completedSummaryFallback')}</p>
+                    <Link to={`/forum-voting?initiative=${initiative.id}&phase=${selectedPhaseNumber}`} className="mt-4 inline-flex min-h-11 items-center gap-2 font-bold text-[#35521f] underline underline-offset-4">{t('hub.citizen.viewMunicipalityDecisions')} <ArrowRight size={15} /></Link>
+                  </section>
+                )}
 
-            <section className={inTab('about')} aria-labelledby="published-results-heading">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <h3 id="published-results-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.publishedResults')}</h3>
-                {publishedResults.length > 0 && <Link to={phaseResultsPath} className="text-[13px] font-bold text-[#a85f20] underline underline-offset-4">{t('hub.citizen.viewAllResults')}</Link>}
-              </div>
-              {publishedResults.length ? <div className="mt-4 grid gap-4 md:grid-cols-2">{publishedResults.slice(0, 4).map(renderResultCard)}</div>
-                : <div className="mt-4 spice-card-dashed p-5"><p className="font-bold text-[#555]">{t('hub.citizen.noPublishedResults')}</p><p className="mt-1 text-[13px] text-[#666]">{t('hub.citizen.noPublishedResultsText')}</p></div>}
-            </section>
+                {renderCitizenEvents(selectedPhaseNumber, 'past')}
 
-            {citizenTab === 'activities' && renderContributionList()}
+                {selectedPhase.activities.some((activity) => activity.completion) && (
+                  <section aria-labelledby="activity-summaries-heading">
+                    <h2 id="activity-summaries-heading" className="text-[20px] font-bold text-[#444]">{t('completion.summariesTitle')}</h2>
+                    <div className="mt-4 grid gap-4 md:grid-cols-2">
+                      {selectedPhase.activities.filter((activity) => activity.completion).map((activity) => (
+                        <article key={activity.id} className="rounded-xl border border-[#d5d6da] bg-white p-4">
+                          <h3 className="mb-3 text-[15px] font-bold text-[#444]">{activityTitle(activity)}</h3>
+                          <ActivitySummary completion={activity.completion as ActivityCompletion} />
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+                )}
 
-            <section className={`border-l-4 border-[#59713d] bg-[#f0f8ea] p-5 ${inTab('about')}`} aria-labelledby="published-outcomes-heading">
-              <h3 id="published-outcomes-heading" className="text-[17px] font-bold text-[#3d5c26]">{t('hub.citizen.publishedOutcomes')}</h3>
-              <p className="mt-2 text-[14px] leading-relaxed text-[#3d5c26]">{selectedPhase.completionSummary || t('hub.citizen.completedSummaryFallback')}</p>
-              <Link to={`/forum-voting?initiative=${initiative.id}&phase=${selectedPhaseNumber}`} className="mt-4 inline-flex min-h-11 items-center gap-2 font-bold text-[#35521f] underline underline-offset-4">{t('hub.citizen.viewMunicipalityDecisions')} <ArrowRight size={15} /></Link>
-            </section>
-          </div>
-        ) : (
-          <div className="space-y-7 pt-6">
-            {citizenTab === 'activities' && renderCitizenEvents(selectedPhaseNumber)}
-            <section className={`grid gap-4 md:grid-cols-3 ${inTab('about')}`} aria-label={t('hub.citizen.currentPhaseFacts')}>
-              <div className="border-l-4 border-[#f68b2c] bg-[#fff8f2] p-4"><p className="text-[11px] font-bold uppercase text-[#a85f20]">{t('hub.citizen.happeningNow')}</p><p className="mt-2 text-[13px] leading-relaxed text-[#555]">{openActivities.length ? t('hub.citizen.openActivitiesCount', { count: openActivities.length }) : t('hub.citizen.noOpenActivitiesText')}</p></div>
-              <div className="border-l-4 border-[#59713d] bg-[#f3f7ef] p-4"><p className="text-[11px] font-bold uppercase text-[#47662f]">{t('hub.citizen.availableTools')}</p><p className="mt-2 text-[13px] leading-relaxed text-[#555]">{t('hub.citizen.availableToolsCount', { count: visibleTools.length })}</p></div>
-              <div className="border-l-4 border-[#55738f] bg-[#f1f6fa] p-4"><p className="text-[11px] font-bold uppercase text-[#355b78]">{t('hub.citizen.whatHappensNext')}</p><p className="mt-2 text-[13px] leading-relaxed text-[#555]">{t('hub.citizen.currentNext')}</p></div>
-            </section>
+                {(state === 'completed' || publishedResults.length > 0) && (
+                  <section aria-labelledby="published-results-heading">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <h2 id="published-results-heading" className="text-[20px] font-bold text-[#444]">{t('hub.citizen.publishedResults')}</h2>
+                      {publishedResults.length > 0 && <Link to={phaseResultsPath} className="text-[13px] font-bold text-[#a85f20] underline underline-offset-4">{t('hub.citizen.viewAllResults')}</Link>}
+                    </div>
+                    {publishedResults.length ? <div className="mt-4 grid gap-4 md:grid-cols-2">{publishedResults.slice(0, 4).map(renderResultCard)}</div>
+                      : <div className="mt-4 spice-card-dashed p-5"><p className="font-bold text-[#555]">{t('hub.citizen.noPublishedResults')}</p><p className="mt-1 text-[13px] text-[#666]">{t('hub.citizen.noPublishedResultsText')}</p></div>}
+                  </section>
+                )}
 
-            <section className={inTab('activities')} aria-labelledby="open-activities-heading">
-              <h3 id="open-activities-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.openActivities')}</h3>
-              {selectedPhase.activities.length ? (
-                <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                  {selectedPhase.activities.map((activity) => {
-                    const isOpen = activity.workflowStatus === 'open';
-                    return (
-                      <article key={activity.id} className="border-2 border-[#dedfe2] bg-white p-5">
-                        <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div><p className="text-[11px] font-bold uppercase text-[#a85f20]">{t(ACTIVITY_TYPE_KEYS[activity.activityType] || ACTIVITY_TYPE_KEYS.participation)}</p><h4 className="mt-1 text-[17px] font-bold text-[#444]">{activityTitle(activity)}</h4></div>
-                          <span className={`px-2.5 py-1 text-[11px] font-bold uppercase ${isOpen ? 'bg-[#e7f2df] text-[#47662f]' : 'bg-[#f2f2f2] text-[#666]'}`}>{t(statusKey(activity.status))}</span>
-                        </div>
-                        <p className="mt-3 text-[13px] leading-relaxed text-[#666]">{activity.description}</p>
-                        <dl className="mt-4 grid gap-2 text-[12px] text-[#555] sm:grid-cols-2">
-                          {activity.startDate && <div className="flex gap-2"><CalendarDays size={15} className="flex-none text-[#ca7428]" /><span><strong>{t('hub.citizen.starts')}:</strong> <time dateTime={activity.startDate}>{formatDate(activity.startDate, { dateStyle: 'medium', timeStyle: 'short' })}</time></span></div>}
-                          {activity.submissionDeadline && <div className="flex gap-2"><Clock size={15} className="flex-none text-[#ca7428]" /><span><strong>{t('hub.citizen.deadline')}:</strong> <time dateTime={activity.submissionDeadline}>{formatDate(activity.submissionDeadline, { dateStyle: 'medium', timeStyle: 'short' })}</time></span></div>}
-                          {activity.location && <div className="flex gap-2"><MapPin size={15} className="flex-none text-[#ca7428]" /><span>{activity.location}</span></div>}
-                          <div className="flex gap-2"><Activity size={15} className="flex-none text-[#ca7428]" /><span>{t(`resources.${activity.participationMode === 'offline' ? 'offline' : activity.participationMode}` as TranslationKey)}{activity.estimatedDuration ? ` · ${activity.estimatedDuration}` : ''}</span></div>
-                        </dl>
-                        <div className="mt-5 border-l-4 border-[#f68b2c] bg-[#fff8f2] p-4">
-                          <h5 className="flex items-center gap-2 text-[13px] font-bold text-[#444]"><BookOpenText size={16} aria-hidden="true" />{t('hub.citizen.participationInstructions')}</h5>
-                          <p className="mt-2 text-[13px] leading-relaxed text-[#555]">{activity.instructions}</p>
-                          {activity.requiredMaterials && <p className="mt-2 text-[12px] text-[#666]"><strong>{t('activity.requiredNotes')}:</strong> {activity.requiredMaterials}</p>}
-                          {activity.accessibilityNotes && <p className="mt-2 text-[12px] text-[#666]"><strong>{t('activity.accessibilityNotes')}:</strong> {activity.accessibilityNotes}</p>}
-                        </div>
-                        {activity.completion && <div className="mt-4"><ActivitySummary completion={activity.completion} /></div>}
-                        {isOpen && canParticipate && (activity.forumEnabled || activity.votingEnabled) && (
-                          <div className="mt-5 flex flex-wrap gap-2">
-                            {activity.forumEnabled && <Link to={`/forum-voting?initiative=${initiative.id}&phase=${selectedPhaseNumber}`} className="inline-flex min-h-11 items-center gap-2 border-2 border-[#444] px-4 text-[13px] font-bold text-[#444]"><MessageSquareText size={15} />{t('hub.citizen.joinDiscussion')}</Link>}
-                            {activity.votingEnabled && <Link to={`/forum-voting?initiative=${initiative.id}&phase=${selectedPhaseNumber}`} className="inline-flex min-h-11 items-center gap-2 border-2 border-[#444] px-4 text-[13px] font-bold text-[#444]"><Vote size={15} />{t('hub.citizen.vote')}</Link>}
-                          </div>
-                        )}
-                      </article>
-                    );
-                  })}
-                </div>
-              ) : <div className="mt-4 spice-card-dashed p-5"><p className="font-bold text-[#555]">{t('hub.citizen.noOpenActivities')}</p><p className="mt-1 text-[13px] text-[#666]">{t('hub.citizen.noOpenActivitiesText')}</p></div>}
-            </section>
+                {renderContributionList()}
+              </>
+            )}
 
-            <section className={inTab('about')} aria-labelledby="available-tools-heading">
-              <h3 id="available-tools-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.toolsAvailable')}</h3>
-              {visibleTools.length ? (
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  {visibleTools.map(({ resource, tool }) => {
-                    const activity = activityForResource(resource.id);
-                    return (
-                      <article key={resource.id} className="border-2 border-[#dedfe2] p-4">
-                        <div className="flex flex-wrap items-start justify-between gap-3"><h4 className="text-[15px] font-bold text-[#444]">{resource.name}</h4><span className="bg-[#e7f2df] px-2 py-1 text-[11px] font-bold text-[#47662f]">{t('status.available')}</span></div>
-                        <p className="mt-2 text-[12px] leading-relaxed text-[#666]">{tool ? tool.purpose || tool.shortDesc : resource.description}</p>
-                        {activity && <p className="mt-3 text-[12px] text-[#555]"><strong>{t('hub.citizen.usedFor')}:</strong> {activityTitle(activity)}</p>}
-                        <p className="mt-2 text-[12px] text-[#555]"><strong>{t('hub.citizen.whatYouCanDo')}:</strong> {t('hub.citizen.toolCitizenAction')}</p>
-                        <Link to={resource.route} className="mt-4 inline-flex min-h-11 items-center gap-2 border-2 border-[#444] px-4 text-[12px] font-bold text-[#444]">{t(resource.kind === 'digital' ? 'hub.citizen.openDigitalTool' : 'hub.citizen.openToolDetails')} <ArrowRight size={14} /></Link>
-                      </article>
-                    );
-                  })}
-                </div>
-              ) : <div className="mt-4 spice-card-dashed p-5"><p className="font-bold text-[#555]">{t('hub.citizen.noPublishedTools')}</p><p className="mt-1 text-[13px] text-[#666]">{t('hub.citizen.noPublishedToolsText')}</p></div>}
-            </section>
+            {tab === 'about' && (
+              <>
+                {state === 'completed' ? (
+                  <section aria-labelledby="phase-summary-heading">
+                    <h2 id="phase-summary-heading" className="text-[20px] font-bold text-[#444]">{t('hub.citizen.phaseSummary')}</h2>
+                    <p className="mt-2 text-[14px] leading-relaxed text-[#666]">{selectedPhase.completionSummary || t('hub.citizen.completedSummaryFallback')}</p>
+                    <p className="mt-3 text-[13px] font-semibold text-[#47662f]">{t('hub.citizen.completedNoActiveControls')}</p>
+                  </section>
+                ) : (
+                  <section className="grid gap-4 md:grid-cols-3" aria-label={t('hub.citizen.currentPhaseFacts')}>
+                    <div className="border-l-4 border-[#f68b2c] bg-[#fff8f2] p-4"><p className="text-[11px] font-bold uppercase text-[#a85f20]">{t('hub.citizen.happeningNow')}</p><p className="mt-2 text-[13px] leading-relaxed text-[#555]">{openActivities.length ? t('hub.citizen.openActivitiesCount', { count: openActivities.length }) : t('hub.citizen.noOpenActivitiesText')}</p></div>
+                    <div className="border-l-4 border-[#59713d] bg-[#f3f7ef] p-4"><p className="text-[11px] font-bold uppercase text-[#47662f]">{t('hub.citizen.availableTools')}</p><p className="mt-2 text-[13px] leading-relaxed text-[#555]">{t('hub.citizen.availableToolsCount', { count: visibleTools.length })}</p></div>
+                    <div className="border-l-4 border-[#55738f] bg-[#f1f6fa] p-4"><p className="text-[11px] font-bold uppercase text-[#355b78]">{t('hub.citizen.whatHappensNext')}</p><p className="mt-2 text-[13px] leading-relaxed text-[#555]">{t('hub.citizen.currentNext')}</p></div>
+                  </section>
+                )}
 
-            {publishedResources.length > 0 && <section className={inTab('about')} aria-labelledby="phase-resources-heading"><h3 id="phase-resources-heading" className="text-[18px] font-bold text-[#444]">{t('hub.citizen.publishedResources')}</h3><div className="mt-4 grid gap-4 md:grid-cols-2">{publishedResources.map(renderResultCard)}</div></section>}
-            {citizenTab === 'activities' && renderContributionList()}
+                <section aria-labelledby="available-tools-heading">
+                  <h2 id="available-tools-heading" className="text-[20px] font-bold text-[#444]">{t(state === 'completed' ? 'hub.citizen.toolsUsed' : 'hub.citizen.toolsAvailable')}</h2>
+                  {visibleTools.length ? (
+                    <div className="mt-4 grid gap-4 md:grid-cols-2">
+                      {visibleTools.map(({ resource, tool }) => {
+                        const relatedActivity = activityForResource(resource.id);
+                        const output = publishedResults.find((result) => result.toolKey === resource.id);
+                        return (
+                          <article key={resource.id} className="rounded-xl border border-[#d5d6da] bg-white p-4">
+                            <h3 className="text-[15px] font-bold text-[#444]">{resource.name}</h3>
+                            <p className="mt-2 text-[12px] leading-relaxed text-[#666]">{tool ? tool.purpose || tool.shortDesc : resource.description}</p>
+                            {relatedActivity && <p className="mt-3 text-[12px] text-[#555]"><strong>{t('hub.citizen.usedFor')}:</strong> {activityTitle(relatedActivity)}</p>}
+                            <div className="mt-4 flex flex-wrap gap-2">
+                              <Link to={resource.route} className="inline-flex min-h-10 items-center gap-2 border-2 border-[#444] px-3 text-[12px] font-bold text-[#444]">{t(resource.kind === 'digital' ? 'hub.citizen.openDigitalTool' : 'hub.citizen.openToolDetails')} <ArrowRight size={14} /></Link>
+                              {output && <Link to={phaseItemPath(output.title)} className="inline-flex min-h-10 items-center bg-[#f68b2c] px-3 text-[12px] font-bold text-white">{t('hub.citizen.viewOutput')}</Link>}
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  ) : <p className="mt-3 spice-card-dashed p-4 text-[13px] text-[#666]">{t(state === 'completed' ? 'hub.citizen.completedNoTools' : 'hub.citizen.noPublishedToolsText')}</p>}
+                </section>
+
+                {publishedResources.length > 0 && <section aria-labelledby="phase-resources-heading"><h2 id="phase-resources-heading" className="text-[20px] font-bold text-[#444]">{t('hub.citizen.publishedResources')}</h2><div className="mt-4 grid gap-4 md:grid-cols-2">{publishedResources.map(renderResultCard)}</div></section>}
+              </>
+            )}
           </div>
         )}
       </section>
@@ -928,42 +989,15 @@ export default function RoleHubDashboard() {
     }
     return (
       <div className="space-y-8">
-        <PilotSelector
-          id="facilitator-pilot"
-          className="max-w-md"
-          options={facilitatorInitiatives.filter((item) => item.pilotSlug).map((item) => ({ value: item.pilotSlug as string, label: item.title }))}
-          value={facilitatorInitiative?.pilotSlug || ''}
-          onChange={switchFacilitatorPilot}
-        />
-        {(facilitatorInitiative ? [facilitatorInitiative] : []).map((initiative) => {
-          return (
-            <section key={initiative.id} className="spice-card p-6 md:p-8" aria-labelledby={`facilitator-initiative-${initiative.id}`}>
-              <p className="text-[11px] font-bold uppercase tracking-wide text-[#888]">{t('hub.assignedPilot')}</p>
-              <h2 id={`facilitator-initiative-${initiative.id}`} className="mt-1 text-[22px] font-bold text-[#444]">{initiative.title}</h2>
-              {initiative.location && <p className="mt-1 flex items-center gap-2 text-[13px] text-[#666]"><MapPinned size={14} className="text-[#ca7428]" />{initiative.location}</p>}
-              {initiative.currentPhaseNumber ? (
-                <div className="mt-4 border-l-4 border-[#f68b2c] bg-[#fff8f2] px-4 py-3">
-                  <p className="text-[11px] font-bold uppercase text-[#a85f20]">{t('hub.currentPhaseNumber', { phase: initiative.currentPhaseNumber })}</p>
-                  <p className="text-[15px] font-semibold text-[#444]">{t(`hub.phase${initiative.currentPhaseNumber}` as TranslationKey)}</p>
-                </div>
-              ) : (
-                <p className="mt-4 text-[14px] text-[#666]">{t('hub.phaseNotStarted')}</p>
-              )}
-              <div className="mt-6 border-t-2 border-[#eee] pt-5">
-                <h3 className="text-[14px] font-bold text-[#444]">{t('hub.relatedWorkspaceLinks')}</h3>
-                <div className="mt-3 flex flex-wrap gap-3">
-                {initiative.currentPhaseNumber && (
-                  <>
-                    <button type="button" onClick={() => selectPhase(initiative.currentPhaseNumber as number)} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><ListChecks size={16} /> {t('hub.preparePhaseActivities')}</button>
-                  </>
-                )}
-                <Link to={`/repository?pilotId=${initiative.id}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"><BookOpenText size={16} /> {t('phaseDetail.uploadMaterials')}</Link>
-                <Link to={`/forum-voting?initiative=${initiative.id}`} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] px-4 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#ca7428]"><MessageSquareText size={16} /> {t('hub.prepareDraftProposal')}</Link>
-                </div>
-              </div>
-            </section>
-          );
-        })}
+        {facilitatorInitiatives.length > 1 && (
+          <PilotSelector
+            id="facilitator-pilot"
+            className="max-w-md"
+            options={facilitatorInitiatives.filter((item) => item.pilotSlug).map((item) => ({ value: item.pilotSlug as string, label: item.title }))}
+            value={facilitatorInitiative?.pilotSlug || ''}
+            onChange={switchFacilitatorPilot}
+          />
+        )}
         {detail && facilitatorInitiative?.id === detail.id && (
           <>
             {renderRoadmap()}
@@ -1085,62 +1119,6 @@ export default function RoleHubDashboard() {
                 {detail && (detail.lifecycleStatus === 'active' || detail.lifecycleStatus === 'completed') && <>
                 {renderRoadmap()}
                 </>}
-                {detail && (
-                  <section aria-labelledby="facilitator-assignment-title" className="spice-card p-6 md:p-8">
-                    <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-                      <div className="flex items-start gap-3">
-                        <span className="grid h-11 w-11 flex-none place-items-center rounded-full bg-[#fff0e1] text-[#ca7428]"><Users size={20} aria-hidden="true" /></span>
-                        <div>
-                          <h3 id="facilitator-assignment-title" className="flex flex-wrap items-center gap-2 text-[20px] font-bold text-[#444]">
-                            {t('hub.assignedFacilitatorsTitle')}
-                            <span className="rounded-full bg-[#fff0e1] px-2.5 py-0.5 text-[12px] font-bold text-[#a85f20]">{detail.facilitators.length}</span>
-                          </h3>
-                          <p className="mt-1 max-w-xl text-[13px] leading-relaxed text-[#666]">{t('hub.facilitatorsShareBrief')}</p>
-                          {detail.lifecycleStatus !== 'active' && (
-                            <p className="mt-3 flex max-w-xl items-start gap-2 border-l-4 border-[#d5d6da] bg-[#f7f7f8] px-3 py-2 text-[13px] font-semibold text-[#555]"><Lock size={15} className="mt-0.5 flex-none" aria-hidden="true" />{t('hub.facilitatorsInactive')}</p>
-                          )}
-                        </div>
-                      </div>
-                      <form onSubmit={assignFacilitator} className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto">
-                        <label htmlFor="facilitator-email" className="sr-only">{t('hub.facilitatorEmailLabel')}</label>
-                        <input id="facilitator-email" type="email" required disabled={detail.lifecycleStatus !== 'active'} value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} placeholder="facilitator@example.org" className="min-h-11 min-w-0 flex-1 border-2 border-[#bfc0c5] px-3 text-[14px] focus:border-[#ca7428] focus:outline-none lg:w-72" />
-                        <button type="submit" disabled={detail.lifecycleStatus !== 'active' || savingFacilitator || !facilitatorEmail.trim()} className="inline-flex min-h-11 flex-none cursor-pointer items-center justify-center gap-2 bg-[#f68b2c] px-4 text-[13px] font-bold text-white hover:bg-[#e07a20] disabled:cursor-not-allowed disabled:opacity-60">
-                          <Plus size={15} aria-hidden="true" />{savingFacilitator ? t('hub.assigningFacilitator') : t('hub.assignFacilitator')}
-                        </button>
-                      </form>
-                    </div>
-                    {detail.facilitators.length === 0 ? (
-                      <p className="mt-6 spice-card-dashed p-5 text-[14px] text-[#666]">{t('hub.noFacilitatorAssigned')}</p>
-                    ) : (
-                      <ul className="mt-6 grid gap-3 border-t-2 border-[#eee] pt-6 sm:grid-cols-2 xl:grid-cols-3">
-                        {detail.facilitators.map((facilitator) => {
-                          const initials = facilitator.fullName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join('');
-                          return (
-                            <li key={facilitator.id} className="group flex items-center gap-3 border border-[#e2e2e5] bg-[#fafafa] p-3 transition-colors hover:border-[#f0c49a] hover:bg-white">
-                              <span className="grid h-11 w-11 flex-none place-items-center overflow-hidden rounded-full bg-[#fde3c9] text-[14px] font-bold text-[#a85f20]" aria-hidden="true">
-                                {facilitator.avatarData ? <img src={facilitator.avatarData} alt="" className="h-full w-full object-cover" /> : initials}
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="block truncate text-[14px] font-bold text-[#444]">{facilitator.fullName}</span>
-                                <span className="block truncate text-[12px] text-[#777]" title={facilitator.email}>{facilitator.email}</span>
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => void unassignFacilitator(facilitator.id)}
-                                disabled={savingFacilitator}
-                                title={t('hub.unassignFacilitator')}
-                                aria-label={t('hub.unassignFacilitatorNamed', { name: facilitator.fullName })}
-                                className="grid h-9 w-9 flex-none cursor-pointer place-items-center text-[#999] transition-colors hover:bg-[#fff0e1] hover:text-[#a85f20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ca7428] disabled:cursor-wait disabled:opacity-50"
-                              >
-                                <UserMinus size={17} aria-hidden="true" />
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </section>
-                )}
               </>
             )}
           </>

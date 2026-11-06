@@ -174,7 +174,7 @@ export default function EventFormDialog({ initiativeId, phaseNumber, event, reso
                         <input id={`event-activity-${resource.id}`} type="checkbox" checked={activityIds.includes(resource.id)} onChange={() => toggleActivity(resource.id)} className="mt-0.5 h-5 w-5 flex-none accent-[#ca7428]" />
                         <span>
                           <span className="block font-bold text-[#444]">{resource.name}</span>
-                          {resource.inOtherEvent && <span className="mt-0.5 block text-[12px] text-[#8a4b16]">{t('events.inOtherEvent', { event: resource.inOtherEvent })}</span>}
+                          {resource.inOtherEvent && <span className="mt-0.5 block text-[12px] text-[#8a4b16]">{t('events.alsoInEvents', { events: resource.inOtherEvent })}</span>}
                         </span>
                       </label>
                     </li>
