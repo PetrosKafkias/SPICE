@@ -3,7 +3,8 @@ import { CalendarPlus, ChevronDown, FileText, Mail, Pencil } from 'lucide-react'
 import { toast } from 'sonner';
 import ConfirmActionDialog from './ConfirmActionDialog';
 import EventDetailsHeader, { DetailRow } from './EventDetailsHeader';
-import EventFormDialog, { type EventResourceOption } from './EventFormDialog';
+import EventFormDialog from './EventFormDialog';
+import ResourcePicker, { type PickerOption } from './ResourcePicker';
 import EventReportDialog from './EventReportDialog';
 import EventReportView from './EventReportView';
 import { useI18n } from '../context/I18nContext';
@@ -13,14 +14,15 @@ import { localizedApiError } from '../lib/localizedApiError';
 import { statusKey } from '../lib/statusLabel';
 import { EVENT_MODE_KEYS, EVENT_STATUS_KEYS, type EventStatus, type HubEvent } from '../lib/events';
 import type { ToolImplementation } from './ToolImplementationCard';
+import type { ResourceOption } from '../lib/resourceRecommendation';
 
 interface Props {
   initiativeId: number;
   phaseNumber: number;
   events: HubEvent[];
   activities: ToolImplementation[];
-  /** The resources the Municipality selected for this Objective, with display names. */
-  resources: Array<{ id: string; name: string }>;
+  /** Every SPICE resource, with the ones recommended from the Municipality's setup marked. */
+  resources: ResourceOption[];
   canManage: boolean;
   /** Shows the full card of an activity in the Activities tab. */
   onOpenActivity: (toolKey: string) => void;
@@ -78,11 +80,11 @@ export default function ObjectiveEvents({ initiativeId, phaseNumber, events, act
   const eventActivityTitles = (eventId: number) => eventActivities(eventId).map((activity) => ({ id: activity.id, title: activityName(activity) }));
   const eventToolKeys = (eventId: number) => eventActivities(eventId).filter((activity) => activity.toolKey).map((activity) => activity.toolKey as string);
 
-  const resourceOptions = (event: HubEvent | null): EventResourceOption[] => resources.map((resource) => {
+  const resourceOptions = (event: HubEvent | null): PickerOption[] => resources.map((resource) => {
     const activity = activities.find((item) => item.toolKey === resource.id && item.workflowStatus !== 'cancelled');
     // An activity can run in several events; the others it belongs to are named next to it.
     const others = events.filter((item) => item.id !== event?.id && item.status !== 'cancelled' && (activity?.eventIds || []).includes(item.id));
-    return { ...resource, inOtherEvent: others.length ? others.map((item) => item.title).join(', ') : null };
+    return { ...resource, note: others.length ? t('events.alsoInEvents', { events: others.map((item) => item.title).join(', ') }) : null };
   });
 
   const changeStatus = async () => {
@@ -142,44 +144,30 @@ export default function ObjectiveEvents({ initiativeId, phaseNumber, events, act
   };
 
   const renderActivityPicker = (event: HubEvent) => {
-    const selected = eventToolKeys(event.id);
     const saving = savingActivities === event.id;
+    const selected = eventToolKeys(event.id);
     return (
-      <fieldset disabled={saving} aria-busy={saving}>
-        <legend className="text-[14px] text-[#555]">{t('events.pickActivitiesHint')}</legend>
-        {resources.length === 0 ? (
-          <p className="mt-3 text-[14px] text-[#666]">{t('phaseDetail.noSelectedToolsManager')}</p>
-        ) : (
-          <ul className="mt-3 grid gap-2 md:grid-cols-2">
-            {resourceOptions(event).map((resource) => {
-              const checked = selected.includes(resource.id);
-              const activity = activities.find((item) => item.toolKey === resource.id && item.workflowStatus !== 'cancelled');
-              const inputId = `event-${event.id}-activity-${resource.id}`;
-              return (
-                <li key={resource.id} className={`flex items-center gap-3 rounded-lg border px-3 py-2 transition-colors ${checked ? 'border-[#f0b77f] bg-[#fff8f1]' : 'border-[#e6e6e8] bg-white hover:border-[#c9cace]'}`}>
-                  <input
-                    id={inputId}
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => void toggleActivity(event, resource.id, !checked)}
-                    className="h-5 w-5 flex-none cursor-pointer accent-[#ca7428] disabled:cursor-wait"
-                  />
-                  <label htmlFor={inputId} className="min-h-10 min-w-0 flex-1 cursor-pointer py-1.5">
-                    <span className="block text-[14px] font-bold leading-snug text-[#333]">{resource.name}</span>
-                    {resource.inOtherEvent && <span className="block text-[12px] text-[#8a4b16]">{t('events.alsoInEvents', { events: resource.inOtherEvent })}</span>}
-                  </label>
-                  {checked && activity && (
-                    <span className={`flex-none rounded-full px-2.5 py-0.5 text-[12px] font-bold ${ACTIVITY_PILL[activity.workflowStatus] || 'bg-[#eef0f3] text-[#444]'}`}>{t(statusKey(activity.workflowStatus) as TranslationKey)}</span>
-                  )}
-                  {checked && activity?.toolKey && (
-                    <button type="button" onClick={() => onOpenActivity(activity.toolKey as string)} className="min-h-10 flex-none cursor-pointer text-[13px] font-bold text-[#a85f20] underline underline-offset-4">{t('events.openActivityShort')}</button>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </fieldset>
+      <div aria-busy={saving}>
+        <p className="mb-4 text-[14px] text-[#555]">{t('events.pickActivitiesHint')}</p>
+        <ResourcePicker
+          idPrefix={`event-${event.id}-activity`}
+          phaseNumber={phaseNumber}
+          options={resourceOptions(event)}
+          selected={selected}
+          disabled={saving}
+          onToggle={(toolKey) => void toggleActivity(event, toolKey, !selected.includes(toolKey))}
+          renderSelectedExtra={(toolKey) => {
+            const activity = activities.find((item) => item.toolKey === toolKey && item.workflowStatus !== 'cancelled');
+            if (!activity) return null;
+            return (
+              <>
+                <span className={`flex-none rounded-full px-2.5 py-0.5 text-[12px] font-bold ${ACTIVITY_PILL[activity.workflowStatus] || 'bg-[#eef0f3] text-[#444]'}`}>{t(statusKey(activity.workflowStatus) as TranslationKey)}</span>
+                <button type="button" onClick={() => onOpenActivity(toolKey)} className="min-h-10 flex-none cursor-pointer text-[13px] font-bold text-[#a85f20] underline underline-offset-4">{t('events.openActivityShort')}</button>
+              </>
+            );
+          }}
+        />
+      </div>
     );
   };
 

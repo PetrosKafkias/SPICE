@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
-import { BookOpenText, CheckCircle2, CircleAlert, Landmark, MessageSquareText } from 'lucide-react';
+import { BookOpenText, CheckCircle2, CircleAlert, Landmark, Layers3, MessageSquareText, Plus, Sparkles } from 'lucide-react';
 import LoadingState from './LoadingState';
 import ObjectiveTabs, { type ObjectiveTab } from './ObjectiveTabs';
 import ObjectiveEvents from './ObjectiveEvents';
@@ -8,7 +8,8 @@ import ToolImplementationCard, { type ImplementationDefaults, type ToolImplement
 import { useI18n } from '../context/I18nContext';
 import { phaseState } from '../lib/phaseState';
 import { getTools } from '../data/tools';
-import { recommendedResourceIds, resolveSpiceResource } from '../data/spiceResources';
+import { resolveSpiceResource } from '../data/spiceResources';
+import { objectiveResourceOptions } from '../lib/resourceRecommendation';
 import type { TranslationKey } from '../i18n/translations';
 import { processPhase } from '../data/processFramework';
 import { apiRequest, jsonBody } from '../lib/api';
@@ -42,6 +43,9 @@ interface Initiative {
   location: string | null;
   setupGroupSize: string | null;
   setupDuration: string | null;
+  setupMode?: string | null;
+  setupParticipationLevel?: string | null;
+  setupSelectedTools?: string[];
   phases: Phase[];
   currentPhaseNumber: number | null;
   pilotFinalizedAt: string | null;
@@ -110,11 +114,10 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
   useEffect(() => { setObjectiveNotes(savedObjectiveNotes); }, [savedObjectiveNotes]);
 
   // The Municipality configures an Objective through its events: choosing a resource for an event
-  // adds it to the Objective. The dialog offers the Objective's resources and the methodology's
-  // recommended ones for it.
-  const eventResources = phase
-    ? [...new Set([...phase.enabledTools, ...recommendedResourceIds(phase.phaseNumber, tools)])]
-      .map((toolId) => ({ id: toolId, name: resolveSpiceResource(toolId, tools, t)?.name || toolId }))
+  // adds it to the Objective. Every SPICE resource is offered; the ones the Municipality chose or that
+  // match its setup answers come first as recommended.
+  const eventResources = phase && initiative
+    ? objectiveResourceOptions(phase.phaseNumber, tools, t, initiative, phase.enabledTools)
     : [];
 
   const patchPhase = async (body: Record<string, unknown>, successKey: TranslationKey) => {
@@ -182,6 +185,61 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
       document.getElementById(`objective-activity-${toolId}`)?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
     }, 60);
   };
+  const addToObjective = (toolId: string) => patchPhase(
+    { enabledTools: [...(phase?.enabledTools || []), toolId] },
+    'objectiveTabs.resourceAdded',
+  );
+
+  // The Activities tab groups the Objective's resources like the event pickers do: the ones chosen in
+  // the setup questionnaire, then the Objective's other resources. Resources not in the Objective yet
+  // can be added with one click.
+  const recommendedIds = new Set(eventResources.filter((option) => option.recommended).map((option) => option.id));
+  const renderResourceGroup = (recommended: boolean) => {
+    if (!phase) return null;
+    const options = eventResources.filter((option) => option.recommended === recommended);
+    const cards = orderedTools.filter((toolId) => recommendedIds.has(toolId) === recommended);
+    const notAdded = options.filter((option) => !phase.enabledTools.includes(option.id));
+    if (!recommended && cards.length === 0 && (notAdded.length === 0 || !canManage)) return null;
+    const headingId = `objective-resources-${recommended ? 'setup' : 'other'}`;
+    return (
+      <section className={`mt-6 rounded-xl border p-4 md:p-5 ${recommended ? 'border-[#f0d2b4] bg-[#fffaf5]' : 'border-[#e3e3e6] bg-[#fafafb]'}`} aria-labelledby={headingId}>
+        <h3 id={headingId} className="flex flex-wrap items-center gap-2 text-[18px] font-bold text-[#333]">
+          {recommended ? <Sparkles size={18} className="text-[#a85f20]" aria-hidden="true" /> : <Layers3 size={18} className="text-[#666]" aria-hidden="true" />}
+          {recommended ? t('resourcePicker.setupTitle') : t('resourcePicker.otherTitle', { phase: phase.phaseNumber })}
+          <span className={`rounded-full px-2 py-0.5 text-[12px] ${recommended ? 'bg-[#fff0e1] text-[#8a4b16]' : 'bg-[#eef0f3] text-[#444]'}`}>{cards.length}</span>
+        </h3>
+        <p className="mt-0.5 text-[13px] text-[#666]">{recommended ? t('resourcePicker.setupHint', { phase: phase.phaseNumber }) : t('resourcePicker.otherHint')}</p>
+        {cards.length > 0 ? (
+          <div className="mt-4 grid gap-5 xl:grid-cols-2">
+            {cards.map((toolId) => <div key={toolId} id={`objective-activity-${toolId}`} className="flex scroll-mt-24">{renderToolCard(toolId, false)}</div>)}
+          </div>
+        ) : notAdded.length === 0 || !canManage ? (
+          <p className="mt-4 rounded-lg border border-dashed border-[#d9b38f] bg-white p-4 text-[13px] text-[#666]">{t(recommended ? 'resourcePicker.noneFromSetup' : 'objectiveTabs.groupEmpty')}</p>
+        ) : null}
+        {canManage && notAdded.length > 0 && (
+          <div className="mt-4">
+            <p className="text-[13px] font-bold text-[#444]">{t('objectiveTabs.notInObjectiveYet')}</p>
+            <ul className="mt-2 flex flex-wrap gap-2">
+              {notAdded.map((option) => (
+                <li key={option.id}>
+                  <button
+                    type="button"
+                    onClick={() => void addToObjective(option.id)}
+                    aria-label={t('objectiveTabs.addToObjectiveNamed', { resource: option.name, phase: phase.phaseNumber })}
+                    className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border-2 border-dashed border-[#c9cace] bg-white px-3 text-[13px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]"
+                  >
+                    <Plus size={14} aria-hidden="true" />{option.name}
+                    {option.kind === 'digital' && <span className="font-normal text-[#666]">· {t('resourcePicker.digitalChip')}</span>}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+    );
+  };
+
   const renderToolCard = (toolId: string, insideEvent: boolean) => {
     if (!phase) return null;
     const resource = resolveSpiceResource(toolId, tools, t);
@@ -254,18 +312,11 @@ export default function ObjectiveWorkspace({ initiativeId, phaseNumber, onChange
             {tab === 'activities' && (
               <div role="tabpanel" id="objective-panel-activities" aria-labelledby="objective-tab-activities">
               {canCoordinate && (
-                <section className="mt-6" aria-labelledby="selected-tools-title">
-                  <h2 id="selected-tools-title" className="text-[20px] font-bold text-[#444]">{t('phaseDetail.selectedToolsTitle', { phase: phase.phaseNumber })}</h2>
-                  <p className="mt-1 max-w-3xl text-sm leading-relaxed text-[#666]">{t('objectiveTabs.activitiesIntro')}</p>
-
-                  {phase.enabledTools.length === 0 ? (
-                    <div className="mt-5 spice-card-dashed p-6 text-sm text-[#666]">{t(canManage ? 'phaseDetail.noSelectedToolsManager' : 'phaseDetail.noSelectedToolsFacilitator')}</div>
-                  ) : (
-                    <div className="mt-5 grid gap-5 xl:grid-cols-2">
-                      {orderedTools.map((toolId) => <div key={toolId} id={`objective-activity-${toolId}`} className="flex scroll-mt-24">{renderToolCard(toolId, false)}</div>)}
-                    </div>
-                  )}
-                </section>
+                <>
+                  <p className="mt-6 max-w-3xl text-sm leading-relaxed text-[#666]">{t('objectiveTabs.activitiesIntro')}</p>
+                  {renderResourceGroup(true)}
+                  {renderResourceGroup(false)}
+                </>
               )}
 
               {canCoordinate && otherActivities.length > 0 && (
