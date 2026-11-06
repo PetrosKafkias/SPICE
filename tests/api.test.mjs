@@ -675,6 +675,47 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     assert.equal(unregistered.payload.event.registered, false);
     assert.equal(unregistered.payload.event.registrationCount, 0);
 
+    // Completing an event requires its report (Tool 17); citizens see only its public part.
+    const completeEvent = (body) => request(baseUrl, `/api/hub/events/${eventId}`, { method: 'PATCH', cookie: municipalityLogin.cookie, body: { status: 'completed', ...body } });
+    assert.equal((await completeEvent({})).payload.code, 'EVENT_REPORT_REQUIRED');
+    assert.equal((await completeEvent({ report: { participants: 25 } })).payload.fieldErrors.summaryScope !== undefined, true);
+    const openingCheckTooMany = await completeEvent({ report: { participants: 25, summaryScope: 'Mapping of the park entrance with residents.', openingCheck: { respondents: 10, statement1Agree: 12 } } });
+    assert.equal(openingCheckTooMany.payload.code, 'EVENT_REPORT_INVALID');
+    const eventActivityId = staffPhase.activities.find((item) => item.toolKey === 'hopes-and-fears').id;
+    const completedEvent = await completeEvent({
+      report: {
+        participants: 25, location: 'Town hall',
+        summaryScope: 'Mapping of the park entrance with residents and local shops.',
+        shortArticle: 'Twenty-five residents mapped the park entrance together.',
+        insights: 'Hold the next session on a weekend.',
+        openingCheck: { method: 'Show of hands', respondents: 20, statement1Agree: 15, statement2Agree: 10 },
+        survey: { trustScore: 3.8, accessibilityPct: 82, link: 'https://survey.example.test/results' },
+        activityNotes: [{ activityId: eventActivityId, minutes: 'Shade and lighting came up first.', feedback: 'Groups asked for more time.' }],
+      },
+    });
+    assert.equal(completedEvent.status, 200);
+    assert.equal(completedEvent.payload.event.status, 'completed');
+    assert.equal(completedEvent.payload.event.report.openingCheck.statement1Pct, 75);
+    assert.equal(completedEvent.payload.event.report.activityNotes[0].minutes, 'Shade and lighting came up first.');
+    const publicReport = (await citizenEvent()).report;
+    assert.equal(publicReport.participants, 25);
+    assert.equal(publicReport.shortArticle, 'Twenty-five residents mapped the park entrance together.');
+    assert.equal(publicReport.summaryScope, undefined);
+    assert.equal(publicReport.activityNotes, undefined);
+
+    // Annexes are internal: the Municipality adds them, the pilot team can open them, citizens cannot.
+    const addAnnex = (cookie, body) => request(baseUrl, `/api/hub/events/${eventId}/attachments`, { method: 'POST', cookie, body });
+    assert.equal((await addAnnex(facilitatorLogin.cookie, { kind: 'press', linkUrl: 'https://news.example.test/spice' })).status, 403);
+    assert.equal((await addAnnex(municipalityLogin.cookie, { kind: 'press', linkUrl: 'not a link' })).payload.code, 'EVENT_ATTACHMENT_INVALID');
+    assert.equal((await addAnnex(municipalityLogin.cookie, { kind: 'press', title: 'Local news', linkUrl: 'https://news.example.test/spice' })).status, 201);
+    const withFile = await addAnnex(municipalityLogin.cookie, { kind: 'agenda', fileName: 'agenda.txt', fileData: `data:text/plain;base64,${Buffer.from('Agenda').toString('base64')}` });
+    assert.equal(withFile.status, 201);
+    const agenda = withFile.payload.attachments.find((item) => item.kind === 'agenda');
+    const annexUrl = `${baseUrl}/api/hub/events/${eventId}/attachments/${agenda.id}/file`;
+    assert.equal((await fetch(annexUrl, { headers: { Cookie: facilitatorLogin.cookie } })).status, 200);
+    assert.equal(await (await fetch(annexUrl, { headers: { Cookie: municipalityLogin.cookie } })).text(), 'Agenda');
+    assert.equal((await fetch(annexUrl, { headers: { Cookie: citizenLogin.cookie } })).status, 403);
+
     const municipalityAdmin = await request(baseUrl, '/api/admin/overview', { cookie: municipalityLogin.cookie });
     assert.equal(municipalityAdmin.status, 403);
     const adminOverview = await request(baseUrl, '/api/admin/overview', { cookie: adminLogin.cookie });

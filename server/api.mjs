@@ -836,6 +836,131 @@ function eventFromRow(row, { staff = false, registered = false, registrationCoun
   };
 }
 
+// --- Event report (Tool 17) -----------------------------------------------------------------
+const EVENT_ATTACHMENT_KINDS = Object.freeze(['invitation', 'agenda', 'attendance', 'presentation', 'photo', 'press']);
+const EVENT_ATTACHMENT_DATA_PATTERN = /^data:(application\/pdf|image\/(?:png|jpeg|webp)|application\/vnd\.openxmlformats-officedocument\.(?:wordprocessingml\.document|presentationml\.presentation|spreadsheetml\.sheet)|application\/msword|application\/vnd\.ms-powerpoint|text\/plain);base64,[A-Za-z0-9+/=]+$/;
+const EVENT_ATTACHMENT_MAX_LENGTH = 750_000;
+const SURVEY_FIELDS = Object.freeze(['influenceScore', 'underrepresentedPct', 'accessibilityPct', 'trustScore', 'belongingPct', 'validationPct', 'link']);
+
+function percentage(part, total) {
+  const a = Number(part);
+  const b = Number(total);
+  return Number.isFinite(a) && Number.isFinite(b) && b > 0 ? Math.round((a / b) * 100) : null;
+}
+
+/**
+ * The report of one event. Its public part (date, location, participants, short article, insights)
+ * is shown to everyone who can see the event; the internal part only to the pilot's staff.
+ */
+function eventReportFor(db, eventRow, { staff = false } = {}) {
+  const row = db.prepare('SELECT * FROM hub_event_reports WHERE event_id = ?').get(eventRow.id);
+  if (!row) return null;
+  const report = {
+    date: row.report_date || null,
+    location: row.location || null,
+    participants: row.participants == null ? null : Number(row.participants),
+    shortArticle: row.short_article || null,
+    insights: row.insights || null,
+    updatedAt: row.updated_at,
+  };
+  if (!staff) return report;
+  const openingCheck = parseJson(row.opening_check_json, {});
+  return {
+    ...report,
+    summaryScope: row.summary_scope || null,
+    openingCheck: {
+      ...openingCheck,
+      statement1Pct: percentage(openingCheck.statement1Agree, openingCheck.respondents),
+      statement2Pct: percentage(openingCheck.statement2Agree, openingCheck.respondents),
+    },
+    survey: parseJson(row.survey_json, {}),
+    activityNotes: db.prepare('SELECT activity_id, minutes, feedback FROM hub_event_activity_notes WHERE event_id = ?').all(eventRow.id)
+      .map((note) => ({ activityId: Number(note.activity_id), minutes: note.minutes || '', feedback: note.feedback || '' })),
+    attachments: eventAttachmentsFor(db, eventRow.id),
+  };
+}
+
+function eventAttachmentsFor(db, eventId) {
+  return db.prepare('SELECT id, kind, title, file_name, link_url, file_data IS NOT NULL AS has_file, created_at FROM hub_event_attachments WHERE event_id = ? ORDER BY created_at')
+    .all(eventId)
+    .map((row) => ({
+      id: Number(row.id), kind: row.kind, title: row.title || '', fileName: row.file_name || null,
+      linkUrl: row.link_url || null, hasFile: Boolean(row.has_file), createdAt: row.created_at,
+    }));
+}
+
+function numberOrNull(value, { max = 100000 } = {}) {
+  if (value === '' || value == null) return null;
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 && number <= max ? Math.round(number * 100) / 100 : undefined;
+}
+
+/** Validates and stores an event report. Returns field errors, or null when it was saved. */
+function saveEventReport(db, eventRow, report, { requireCore, actor }) {
+  const errors = {};
+  const participants = numberOrNull(report.participants);
+  if (participants === undefined) errors.participants = 'Enter a number of participants.';
+  const summaryScope = cleanText(report.summaryScope, 8000);
+  if (requireCore) {
+    if (participants == null) errors.participants = 'Enter the number of participants.';
+    if (!summaryScope || summaryScope.length < 20) errors.summaryScope = 'Describe the summary and scope in at least 20 characters.';
+  }
+  const opening = report.openingCheck && typeof report.openingCheck === 'object' ? report.openingCheck : {};
+  const openingCheck = {
+    method: cleanText(opening.method, 200),
+    respondents: numberOrNull(opening.respondents),
+    statement1Agree: numberOrNull(opening.statement1Agree),
+    statement2Agree: numberOrNull(opening.statement2Agree),
+  };
+  ['respondents', 'statement1Agree', 'statement2Agree'].forEach((key) => { if (openingCheck[key] === undefined) errors[`openingCheck.${key}`] = 'Enter a number.'; });
+  if (openingCheck.respondents != null && [openingCheck.statement1Agree, openingCheck.statement2Agree].some((count) => count != null && count > openingCheck.respondents)) {
+    errors['openingCheck.respondents'] = 'The number agreeing cannot exceed the number of respondents.';
+  }
+  const surveyInput = report.survey && typeof report.survey === 'object' ? report.survey : {};
+  const survey = {};
+  SURVEY_FIELDS.forEach((key) => {
+    if (key === 'link') {
+      const link = cleanText(surveyInput.link, 500);
+      if (link && !/^https?:\/\//i.test(link)) errors['survey.link'] = 'Enter a web address that starts with http:// or https://.';
+      survey.link = link;
+      return;
+    }
+    const value = numberOrNull(surveyInput[key], { max: key.endsWith('Pct') ? 100 : 100000 });
+    if (value === undefined) errors[`survey.${key}`] = key.endsWith('Pct') ? 'Enter a percentage from 0 to 100.' : 'Enter a number.';
+    survey[key] = value;
+  });
+  const reportDate = report.date === undefined ? null : validEventDate(report.date);
+  if (reportDate === undefined) errors.date = 'Enter a valid date.';
+  if (Object.keys(errors).length) return errors;
+
+  const now = new Date().toISOString();
+  db.prepare(`
+    INSERT INTO hub_event_reports (event_id, report_date, location, participants, short_article, insights, summary_scope,
+      opening_check_json, survey_json, submitted_by_user_id, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(event_id) DO UPDATE SET report_date=excluded.report_date, location=excluded.location,
+      participants=excluded.participants, short_article=excluded.short_article, insights=excluded.insights,
+      summary_scope=excluded.summary_scope, opening_check_json=excluded.opening_check_json,
+      survey_json=excluded.survey_json, submitted_by_user_id=excluded.submitted_by_user_id, updated_at=excluded.updated_at
+  `).run(
+    eventRow.id, reportDate || eventRow.start_at || null, cleanText(report.location, 300) || eventRow.location || null,
+    participants, cleanText(report.shortArticle, 8000), cleanText(report.insights, 8000), summaryScope,
+    JSON.stringify(openingCheck), JSON.stringify(survey), actor.id, now, now,
+  );
+  // Minutes and feedback are kept only for activities that belong to the event.
+  const eventActivityIds = new Set(db.prepare('SELECT id FROM hub_activities WHERE event_id = ?').all(eventRow.id).map((row) => Number(row.id)));
+  (Array.isArray(report.activityNotes) ? report.activityNotes : []).forEach((note) => {
+    const activityId = Number(note?.activityId);
+    if (!eventActivityIds.has(activityId)) return;
+    db.prepare(`
+      INSERT INTO hub_event_activity_notes (event_id, activity_id, minutes, feedback, updated_at) VALUES (?, ?, ?, ?, ?)
+      ON CONFLICT(event_id, activity_id) DO UPDATE SET minutes=excluded.minutes, feedback=excluded.feedback, updated_at=excluded.updated_at
+    `).run(eventRow.id, activityId, cleanText(note.minutes, 8000), cleanText(note.feedback, 8000), now);
+  });
+  addAudit(db, { actor, action: 'hub.event.report', targetType: 'hub_event', targetId: eventRow.id, newValue: { participants } });
+  return null;
+}
+
 function eventRegistrationCounts(db, eventIds) {
   if (!eventIds.length) return new Map();
   const rows = db.prepare(`
@@ -1384,11 +1509,15 @@ export async function createApiHandler(options = {}) {
         const eventsByPhase = new Map();
         eventRows.forEach((eventRow) => {
           const items = eventsByPhase.get(Number(eventRow.phase_id)) || [];
-          items.push(eventFromRow(eventRow, {
-            staff: staffView,
-            registered: myRegistrations.has(Number(eventRow.id)),
-            registrationCount: registrationCounts.get(Number(eventRow.id)) || 0,
-          }));
+          items.push({
+            ...eventFromRow(eventRow, {
+              staff: staffView,
+              registered: myRegistrations.has(Number(eventRow.id)),
+              registrationCount: registrationCounts.get(Number(eventRow.id)) || 0,
+            }),
+            // Citizens see the public part of the report once the event is completed.
+            report: staffView || eventRow.status === 'completed' ? eventReportFor(db, eventRow, { staff: staffView }) : null,
+          });
           eventsByPhase.set(Number(eventRow.phase_id), items);
         });
         const repositoryRows = staffView
@@ -2003,10 +2132,22 @@ export async function createApiHandler(options = {}) {
         const fields = readEventFields(body, eventRow);
         const fieldErrors = eventFieldErrors(fields, status);
         if (Object.keys(fieldErrors).length) { sendError(response, 400, 'Please correct the highlighted fields.', fieldErrors, 'EVENT_INVALID'); return true; }
+        // Completing an event records its report (Tool 17); the report can also be edited afterwards.
+        const completing = status === 'completed' && eventRow.status !== 'completed';
+        const report = body.report && typeof body.report === 'object' ? body.report : null;
+        if (completing && !report) { sendError(response, 400, 'Fill in the event report to complete the event.', { summaryScope: 'Required.' }, 'EVENT_REPORT_REQUIRED'); return true; }
         const now = new Date().toISOString();
         const phase = db.prepare('SELECT * FROM hub_phases WHERE id = ?').get(eventRow.phase_id);
         db.exec('BEGIN IMMEDIATE');
         try {
+          if (report) {
+            const reportErrors = saveEventReport(db, eventRow, report, { requireCore: completing || status === 'completed', actor: session.user });
+            if (reportErrors) {
+              db.exec('ROLLBACK');
+              sendError(response, 400, 'Please correct the highlighted fields of the report.', reportErrors, 'EVENT_REPORT_INVALID');
+              return true;
+            }
+          }
           db.prepare(`
             UPDATE hub_events SET title=?, instructions=?, start_at=?, participation_mode=?, duration=?, location=?,
               expected_participants=?, meeting_links=?, team_notes=?, language_support=?, support_contact=?,
@@ -2036,8 +2177,67 @@ export async function createApiHandler(options = {}) {
             actionUrl: `/co-creation-hub?phase=${phase.phase_number}`, payload: { eventId: eventRow.id }, createdAt: now,
           }));
         }
-        sendJson(response, 200, { event: eventFromRow(db.prepare('SELECT * FROM hub_events WHERE id = ?').get(eventRow.id), { staff: true, registrationCount: registrations }) });
+        const savedEvent = db.prepare('SELECT * FROM hub_events WHERE id = ?').get(eventRow.id);
+        sendJson(response, 200, { event: { ...eventFromRow(savedEvent, { staff: true, registrationCount: registrations }), report: eventReportFor(db, savedEvent, { staff: true }) } });
         return true;
+      }
+
+      // Annexes of the event report: the Municipality adds files or links; the pilot's staff can open them.
+      const eventAttachmentsMatch = pathname.match(/^\/api\/hub\/events\/(\d+)\/attachments(?:\/(\d+)(\/file)?)?$/);
+      if (eventAttachmentsMatch) {
+        const eventRow = db.prepare('SELECT * FROM hub_events WHERE id = ?').get(Number(eventAttachmentsMatch[1]));
+        const attachmentId = eventAttachmentsMatch[2] ? Number(eventAttachmentsMatch[2]) : 0;
+        const wantsFile = Boolean(eventAttachmentsMatch[3]);
+        if (method === 'GET' && attachmentId && wantsFile) {
+          const session = requireUser(db, request, response);
+          if (!session) return true;
+          if (!eventRow) { sendError(response, 404, 'Event not found.'); return true; }
+          const initiative = db.prepare('SELECT * FROM hub_initiatives WHERE id = ?').get(eventRow.initiative_id);
+          if (!canOperateInitiative(db, session.user, initiative)) { sendError(response, 403, 'The annexes of the report are internal to the pilot team.'); return true; }
+          const attachment = db.prepare('SELECT * FROM hub_event_attachments WHERE id = ? AND event_id = ?').get(attachmentId, eventRow.id);
+          if (!attachment?.file_data) { sendError(response, 404, 'File not found.'); return true; }
+          const [, mime, data] = attachment.file_data.match(/^data:([^;]+);base64,(.*)$/) || [];
+          const fileName = String(attachment.file_name || `annex-${attachment.id}`).replace(/["\r\n]/g, '');
+          response.writeHead(200, {
+            'Content-Type': mime || 'application/octet-stream',
+            'Content-Disposition': `attachment; filename="${fileName}"`,
+            'Cache-Control': 'private, no-store',
+            'X-Content-Type-Options': 'nosniff',
+          });
+          response.end(Buffer.from(data || '', 'base64'));
+          return true;
+        }
+        if ((method === 'POST' && !attachmentId) || (method === 'DELETE' && attachmentId && !wantsFile)) {
+          const session = requirePermission(db, request, response, 'hub:configure-participation');
+          if (!session) return true;
+          if (!eventRow) { sendError(response, 404, 'Event not found.'); return true; }
+          const initiative = db.prepare('SELECT * FROM hub_initiatives WHERE id = ?').get(eventRow.initiative_id);
+          if (!initiativeIsInScope(session.user, initiative)) { sendError(response, 403, 'You cannot manage this pilot site\'s events.'); return true; }
+          if (method === 'DELETE') {
+            const removed = db.prepare('DELETE FROM hub_event_attachments WHERE id = ? AND event_id = ?').run(attachmentId, eventRow.id);
+            if (!removed.changes) { sendError(response, 404, 'Annex not found.'); return true; }
+            addAudit(db, { actor: session.user, action: 'hub.event.attachment.delete', targetType: 'hub_event', targetId: eventRow.id, previousValue: { attachmentId } });
+            sendJson(response, 200, { attachments: eventAttachmentsFor(db, eventRow.id) });
+            return true;
+          }
+          const body = await readJson(request);
+          const kind = String(body.kind || '');
+          const fileData = body.fileData ? String(body.fileData) : null;
+          const linkUrl = cleanText(body.linkUrl, 1000);
+          const errors = {};
+          if (!EVENT_ATTACHMENT_KINDS.includes(kind)) errors.kind = 'Choose the type of annex.';
+          if (!fileData && !linkUrl) errors.file = 'Choose a file or enter a link.';
+          if (fileData && !EVENT_ATTACHMENT_DATA_PATTERN.test(fileData)) errors.file = 'Choose a PDF, image, Word, PowerPoint, Excel or text file.';
+          else if (fileData && fileData.length > EVENT_ATTACHMENT_MAX_LENGTH) errors.file = 'The file is too large. Add a link instead.';
+          if (linkUrl && !/^https?:\/\//i.test(linkUrl)) errors.linkUrl = 'Enter a web address that starts with http:// or https://.';
+          if (Object.keys(errors).length) { sendError(response, 400, 'Please check the annex.', errors, 'EVENT_ATTACHMENT_INVALID'); return true; }
+          const now = new Date().toISOString();
+          db.prepare('INSERT INTO hub_event_attachments (event_id, kind, title, file_name, file_data, link_url, uploaded_by_user_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+            .run(eventRow.id, kind, cleanText(body.title, 200) || '', fileData ? cleanText(body.fileName, 200) : null, fileData, fileData ? null : linkUrl, session.user.id, now);
+          addAudit(db, { actor: session.user, action: 'hub.event.attachment.add', targetType: 'hub_event', targetId: eventRow.id, newValue: { kind } });
+          sendJson(response, 201, { attachments: eventAttachmentsFor(db, eventRow.id) });
+          return true;
+        }
       }
 
       const eventRegistrationMatch = pathname.match(/^\/api\/hub\/events\/(\d+)\/registration$/);

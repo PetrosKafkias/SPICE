@@ -4,6 +4,8 @@ import { toast } from 'sonner';
 import ConfirmActionDialog from './ConfirmActionDialog';
 import EventDetailsHeader, { DetailRow } from './EventDetailsHeader';
 import EventFormDialog, { type EventResourceOption } from './EventFormDialog';
+import EventReportDialog from './EventReportDialog';
+import EventReportView from './EventReportView';
 import { useI18n } from '../context/I18nContext';
 import type { TranslationKey } from '../i18n/translations';
 import { apiRequest, jsonBody } from '../lib/api';
@@ -50,6 +52,11 @@ export default function ObjectiveEvents({ initiativeId, phaseNumber, events, act
   const [pending, setPending] = useState<{ event: HubEvent; status: EventStatus | 'delete' } | null>(null);
   const [saving, setSaving] = useState(false);
   const [registrations, setRegistrations] = useState<Record<number, Registration[] | 'loading'>>({});
+  // Completing an event opens its report (Tool 17); a completed event's report can be edited later.
+  const [reporting, setReporting] = useState<{ event: HubEvent; completing: boolean } | null>(null);
+  const eventActivityTitles = (eventId: number) => activities
+    .filter((activity) => activity.eventId === eventId && activity.workflowStatus !== 'cancelled')
+    .map((activity) => ({ id: activity.id, title: resources.find((resource) => resource.id === activity.toolKey)?.name || activity.title }));
 
   const eventToolKeys = (eventId: number) => activities
     .filter((activity) => activity.eventId === eventId && activity.workflowStatus !== 'cancelled' && activity.toolKey)
@@ -159,6 +166,8 @@ export default function ObjectiveEvents({ initiativeId, phaseNumber, events, act
                   </div>
                 </div>
 
+                {event.report && <div className="mt-5"><EventReportView eventId={event.id} report={event.report} activities={eventActivityTitles(event.id)} /></div>}
+
                 {canManage && (
                   <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-[#e6e6e8] pt-4">
                     {editableEvent && <button type="button" onClick={() => setEditing(event)} className={secondaryButton}><Pencil size={14} aria-hidden="true" />{t('events.edit')}</button>}
@@ -166,7 +175,8 @@ export default function ObjectiveEvents({ initiativeId, phaseNumber, events, act
                     {event.status === 'published' && <button type="button" onClick={() => setPending({ event, status: 'cancelled' })} className={dangerButton}>{t('events.cancelEvent')}</button>}
                     <span className="flex-1" />
                     {event.status === 'draft' && <button type="button" onClick={() => setPending({ event, status: 'published' })} className={primaryButton}>{t('events.publish')}</button>}
-                    {event.status === 'published' && <button type="button" onClick={() => setPending({ event, status: 'completed' })} className={primaryButton}>{t('events.markCompleted')}</button>}
+                    {event.status === 'published' && <button type="button" onClick={() => setReporting({ event, completing: true })} className={primaryButton}>{t('events.markCompleted')}</button>}
+                    {event.status === 'completed' && <button type="button" onClick={() => setReporting({ event, completing: false })} className={secondaryButton}><Pencil size={14} aria-hidden="true" />{t(event.report ? 'eventReport.edit' : 'eventReport.fillIn')}</button>}
                   </div>
                 )}
 
@@ -202,6 +212,16 @@ export default function ObjectiveEvents({ initiativeId, phaseNumber, events, act
           resources={resourceOptions(editing === 'new' ? null : editing)}
           selectedResourceIds={editing === 'new' ? [] : eventToolKeys(editing.id)}
           onClose={() => setEditing(null)}
+          onSaved={onChanged}
+        />
+      )}
+
+      {reporting && (
+        <EventReportDialog
+          event={reporting.event}
+          activities={eventActivityTitles(reporting.event.id)}
+          completing={reporting.completing}
+          onClose={() => setReporting(null)}
           onSaved={onChanged}
         />
       )}

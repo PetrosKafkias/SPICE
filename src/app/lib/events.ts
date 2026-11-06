@@ -27,6 +27,8 @@ export interface HubEvent {
   registered: boolean;
   registrationCount: number;
   publishedAt: string | null;
+  /** Present once a report exists; citizens receive only its public part, after the event is completed. */
+  report?: EventReport | null;
 }
 
 /** What the Municipality recorded when an activity was completed. The summary is public. */
@@ -65,4 +67,55 @@ export function meetingLinkList(value: string | null): Array<{ text: string; hre
 
 export function isUpcoming(event: Pick<HubEvent, 'startAt'>): boolean {
   return !event.startAt || Date.parse(event.startAt) > Date.now() - 12 * 60 * 60 * 1000;
+}
+
+export type EventAttachmentKind = 'invitation' | 'agenda' | 'attendance' | 'presentation' | 'photo' | 'press';
+
+export const EVENT_ATTACHMENT_KINDS: EventAttachmentKind[] = ['invitation', 'agenda', 'attendance', 'presentation', 'photo', 'press'];
+
+export interface EventAttachment {
+  id: number;
+  kind: EventAttachmentKind;
+  title: string;
+  fileName: string | null;
+  linkUrl: string | null;
+  hasFile: boolean;
+  createdAt: string;
+}
+
+export interface EventSurvey {
+  influenceScore?: number | null;
+  underrepresentedPct?: number | null;
+  accessibilityPct?: number | null;
+  trustScore?: number | null;
+  belongingPct?: number | null;
+  validationPct?: number | null;
+  link?: string | null;
+}
+
+export interface EventOpeningCheck {
+  method?: string | null;
+  respondents?: number | null;
+  statement1Agree?: number | null;
+  statement2Agree?: number | null;
+  statement1Pct?: number | null;
+  statement2Pct?: number | null;
+}
+
+/**
+ * The event report (SPICE Toolkit, Tool 17). Date, location, participants, short article and
+ * insights are public; the other fields are sent only to the pilot's staff.
+ */
+export interface EventReport {
+  date: string | null;
+  location: string | null;
+  participants: number | null;
+  shortArticle: string | null;
+  insights: string | null;
+  updatedAt: string;
+  summaryScope?: string | null;
+  openingCheck?: EventOpeningCheck;
+  survey?: EventSurvey;
+  activityNotes?: Array<{ activityId: number; minutes: string; feedback: string }>;
+  attachments?: EventAttachment[];
 }

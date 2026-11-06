@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { Accessibility, CalendarCheck2, Mail, Package } from 'lucide-react';
 import { toast } from 'sonner';
 import EventDetailsHeader, { DetailRow } from './EventDetailsHeader';
+import EventReportView from './EventReportView';
 import { useI18n } from '../context/I18nContext';
 import type { TranslationKey } from '../i18n/translations';
 import { ApiError, apiRequest } from '../lib/api';
@@ -45,7 +46,10 @@ export default function CitizenEvents({ events, activities, canParticipate, sign
   const upcoming = events
     .filter((event) => event.status === 'published' && isUpcoming(event))
     .sort((a, b) => (a.startAt || '').localeCompare(b.startAt || ''));
-  if (upcoming.length === 0) return null;
+  const past = events
+    .filter((event) => event.status === 'completed' && event.report)
+    .sort((a, b) => (b.startAt || '').localeCompare(a.startAt || ''));
+  if (upcoming.length === 0 && past.length === 0) return null;
 
   const register = async (event: HubEvent, join: boolean) => {
     setBusy(event.id);
@@ -63,7 +67,24 @@ export default function CitizenEvents({ events, activities, canParticipate, sign
 
   const fullWidthButton = 'flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-md text-[16px] font-bold';
 
+  const pastEvents = past.length > 0 && (
+    <section className="mt-6" aria-labelledby="citizen-past-events-heading">
+      <h2 id="citizen-past-events-heading" className="text-[20px] font-bold text-[#444]">{t('eventReport.pastEvents')}</h2>
+      <div className="mt-4 grid gap-4">
+        {past.map((event) => (
+          <article key={event.id} className="rounded-xl border border-[#d5d6da] bg-white p-5">
+            <p className="text-[12px] font-medium text-[#666]">{t('hub.phaseNumber', { phase: event.phaseNumber })} · {t('events.eventLabel')}</p>
+            <h3 className="mt-0.5 text-[19px] font-bold text-[#333]">{event.title}</h3>
+            <div className="mt-3">{event.report && <EventReportView eventId={event.id} report={event.report} />}</div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+  if (upcoming.length === 0) return <div className="mt-5">{pastEvents}</div>;
+
   return (
+    <>
     <section className="mt-5" aria-labelledby="citizen-events-heading">
       <h2 id="citizen-events-heading" className="flex items-center gap-2 text-[22px] font-bold text-[#444]"><CalendarCheck2 size={22} className="text-[#ca7428]" aria-hidden="true" />{t('events.upcomingTitle')}</h2>
       <p className="mt-1 max-w-3xl text-[14px] leading-relaxed text-[#666]">{t('events.upcomingText')}</p>
@@ -143,5 +164,7 @@ export default function CitizenEvents({ events, activities, canParticipate, sign
         })}
       </div>
     </section>
+    {pastEvents}
+    </>
   );
 }
