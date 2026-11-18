@@ -166,6 +166,103 @@ function normalizeChatbotAnswer(data) {
   return { answer: chatbotText(data.answer ?? data.response ?? data.text), sources, excerpts, reasoning };
 }
 
+// --- Chatbot document manager -------------------------------------------------------------------
+// Municipalities upload PDF documents for their pilot; the document service of the AI Chatbot stores
+// them and rebuilds the chatbot knowledge of that city. The platform proxies the service so that the
+// browser never calls it directly. Without SPICE_DOCUMENT_MANAGER_URL the platform runs a demo that
+// goes through the same steps without sending any file.
+const DOCUMENT_CITIES = Object.freeze({ thessaloniki: 'Thessaloniki', cuba: 'Cuba', 'bielsko-biala': 'BielskoBiala', rovaniemi: 'Rovaniemi' });
+const DOCUMENT_MAX_UPLOAD = 60 * 1024 * 1024;
+
+function plainPilot(value) {
+  return String(value || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ł/gi, 'l').toLowerCase().replace(/[^a-z]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+function documentPilotsFor(user) {
+  const role = normalizeRole(user.role);
+  if (role === 'admin') return Object.keys(DOCUMENT_CITIES);
+  if (role !== 'municipality') return [];
+  const own = plainPilot(user.pilot_site);
+  return Object.keys(DOCUMENT_CITIES).filter((slug) => own === slug || own.startsWith(slug));
+}
+
+async function readRawBody(request, limit) {
+  const chunks = [];
+  let total = 0;
+  for await (const chunk of request) {
+    total += chunk.length;
+    if (total > limit) throw Object.assign(new Error('The files are too large.'), { status: 413 });
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks);
+}
+
+/** Maps a stage name of the document service to one of the steps shown to the user. */
+function documentStage(value) {
+  const text = String(value || '').toLowerCase();
+  if (!text) return null;
+  if (text.includes('receiv') || text.includes('queue')) return 'received';
+  if (text.includes('paus')) return 'paused';
+  if (text.includes('sav') || text.includes('stor')) return 'saving';
+  if (text.includes('rebuild') || text.includes('index') || text.includes('knowledge')) return 'rebuilding';
+  if (text.includes('restart')) return 'restarting';
+  if (text.includes('ready') || text.includes('idle') || text.includes('done') || text.includes('complet')) return 'ready';
+  return null;
+}
+
+function documentJob(job) {
+  const files = job?.files ?? job?.file_names ?? job?.filenames;
+  return {
+    id: String(job?.id ?? job?.job_id ?? ''),
+    city: String(job?.city ?? job?.pilot ?? ''),
+    files: Array.isArray(files) ? files.map(String) : files != null ? [String(files)] : [],
+    result: String(job?.result ?? job?.status ?? job?.state ?? ''),
+    stage: documentStage(job?.stage ?? job?.step ?? job?.status),
+    finishedAt: job?.finished ?? job?.finished_at ?? job?.completed_at ?? null,
+  };
+}
+
+/** Normalises the status of the document service for the front-end. */
+function documentStatus(data) {
+  const jobs = data?.recent_jobs ?? data?.recent ?? data?.jobs ?? data?.history ?? [];
+  const log = data?.log ?? data?.logs ?? [];
+  const available = data?.chatbot_available ?? data?.chatbotAvailable;
+  return {
+    chatbotAvailable: available === undefined ? true : Boolean(available),
+    stage: documentStage(data?.stage ?? data?.step ?? data?.state ?? data?.phase ?? data?.status),
+    jobs: (Array.isArray(jobs) ? jobs : []).map(documentJob).slice(0, 20),
+    log: (Array.isArray(log) ? log : String(log || '').split('\n')).map((line) => (typeof line === 'string' ? line : JSON.stringify(line))).filter(Boolean).slice(-200),
+  };
+}
+
+// The demo keeps its state in memory and walks a job through the steps in about twelve seconds.
+const documentDemo = { stage: 'ready', jobs: [], log: [], timers: [] };
+function demoStatus() {
+  return { chatbotAvailable: !['paused', 'saving', 'rebuilding', 'restarting'].includes(documentDemo.stage), stage: documentDemo.stage, jobs: documentDemo.jobs.slice(0, 20), log: documentDemo.log.slice(-200), demo: true };
+}
+function demoUpload(city, files) {
+  const job = { id: randomUUID().slice(0, 8), city, files, result: 'running', stage: 'received', finishedAt: null };
+  documentDemo.jobs.unshift(job);
+  const step = (stage, message) => {
+    documentDemo.stage = stage;
+    job.stage = stage;
+    documentDemo.log.push(`${new Date().toISOString()} [${job.id}] ${message}`);
+    if (stage === 'ready') { job.result = 'success'; job.finishedAt = new Date().toISOString(); }
+  };
+  step('received', `Upload received for ${city}: ${files.join(', ') || 'no files'}`);
+  [[1500, 'paused', 'Chatbot paused'], [3000, 'saving', 'Saving documents'], [4500, 'rebuilding', `Rebuilding the knowledge of ${city}`], [9500, 'restarting', 'Restarting chatbot'], [12000, 'ready', 'Chatbot ready']]
+    .forEach(([delay, stage, message]) => { const timer = setTimeout(() => step(stage, message), delay * Number(process.env.SPICE_DOCUMENT_DEMO_SCALE || 1)); timer.unref?.(); });
+  return job;
+}
+
+async function documentServiceStatus() {
+  const base = process.env.SPICE_DOCUMENT_MANAGER_URL;
+  if (!base) return demoStatus();
+  const upstream = await fetch(new URL('/status', base), { signal: AbortSignal.timeout(10000) });
+  if (!upstream.ok) throw new Error(`Document service responded with ${upstream.status}`);
+  return documentStatus(await upstream.json());
+}
+
 function getSessionUser(db, request) {
   const token = parseCookies(request.headers.cookie)[SESSION_COOKIE];
   if (!token) return { token: null, tokenHash: null, user: null };
@@ -3461,6 +3558,79 @@ export async function createApiHandler(options = {}) {
         return true;
       }
 
+      if (pathname === '/api/chatbot/documents/status' && method === 'GET') {
+        const session = requireUser(db, request, response);
+        if (!session) return true;
+        try {
+          sendJson(response, 200, { ...(await documentServiceStatus()), pilots: documentPilotsFor(session.user) });
+        } catch {
+          sendError(response, 502, 'The document service of the AI Chatbot is not reachable right now.', null, 'DOCUMENTS_UNAVAILABLE');
+        }
+        return true;
+      }
+
+      const documentJobMatch = pathname.match(/^\/api\/chatbot\/documents\/jobs\/([A-Za-z0-9_-]{1,80})$/);
+      if (documentJobMatch && method === 'GET') {
+        const session = requireUser(db, request, response);
+        if (!session) return true;
+        if (!documentPilotsFor(session.user).length) { sendError(response, 403, 'Only the Municipality can manage the chatbot documents.'); return true; }
+        const base = process.env.SPICE_DOCUMENT_MANAGER_URL;
+        if (!base) {
+          const job = documentDemo.jobs.find((item) => item.id === documentJobMatch[1]);
+          if (!job) { sendError(response, 404, 'Upload not found.'); return true; }
+          sendJson(response, 200, { job });
+          return true;
+        }
+        try {
+          const upstream = await fetch(new URL(`/jobs/${encodeURIComponent(documentJobMatch[1])}`, base), { signal: AbortSignal.timeout(10000) });
+          if (upstream.status === 404) { sendError(response, 404, 'Upload not found.'); return true; }
+          if (!upstream.ok) throw new Error(`Document service responded with ${upstream.status}`);
+          sendJson(response, 200, { job: documentJob(await upstream.json()) });
+        } catch {
+          sendError(response, 502, 'The document service of the AI Chatbot is not reachable right now.', null, 'DOCUMENTS_UNAVAILABLE');
+        }
+        return true;
+      }
+
+      if (pathname === '/api/chatbot/documents/upload' && method === 'POST') {
+        const session = requireUser(db, request, response);
+        if (!session) return true;
+        const pilot = url.searchParams.get('pilot') || '';
+        const allowed = documentPilotsFor(session.user);
+        if (!allowed.length) { sendError(response, 403, 'Only the Municipality can manage the chatbot documents.'); return true; }
+        if (!allowed.includes(pilot)) { sendError(response, 403, 'You can update the documents of your own pilot only.', null, 'DOCUMENTS_OTHER_PILOT'); return true; }
+        const contentType = String(request.headers['content-type'] || '');
+        if (!contentType.startsWith('multipart/form-data')) { sendError(response, 400, 'Choose PDF files to upload.'); return true; }
+        const body = await readRawBody(request, DOCUMENT_MAX_UPLOAD);
+        // Only PDF files are accepted, as by the document service.
+        const fileNames = [...body.toString('latin1').matchAll(/filename="([^"]*)"/g)].map((match) => Buffer.from(match[1], 'latin1').toString('utf8'));
+        if (!fileNames.length || fileNames.some((name) => !/\.pdf$/i.test(name))) { sendError(response, 400, 'Only PDF files can be uploaded.', null, 'DOCUMENTS_PDF_ONLY'); return true; }
+        const city = DOCUMENT_CITIES[pilot];
+        const base = process.env.SPICE_DOCUMENT_MANAGER_URL;
+        if (!base) {
+          const job = demoUpload(city, fileNames);
+          addAudit(db, { actor: session.user, action: 'chatbot.documents.upload', targetType: 'chatbot_documents', targetId: job.id, newValue: { city, files: fileNames, demo: true } });
+          sendJson(response, 202, { job, demo: true });
+          return true;
+        }
+        try {
+          const target = new URL('/upload', base);
+          target.searchParams.set('city', city);
+          const upstream = await fetch(target, { method: 'POST', headers: { 'Content-Type': contentType }, body, signal: AbortSignal.timeout(120000) });
+          const data = await upstream.json().catch(() => ({}));
+          if (!upstream.ok) {
+            sendError(response, upstream.status >= 500 ? 502 : 400, String(data?.detail || data?.error || 'The documents could not be uploaded.'), null, 'DOCUMENTS_UPLOAD_FAILED');
+            return true;
+          }
+          const job = documentJob({ city, files: fileNames, stage: 'received', ...data });
+          addAudit(db, { actor: session.user, action: 'chatbot.documents.upload', targetType: 'chatbot_documents', targetId: job.id || city, newValue: { city, files: fileNames } });
+          sendJson(response, 202, { job });
+        } catch {
+          sendError(response, 502, 'The document service of the AI Chatbot is not reachable right now.', null, 'DOCUMENTS_UNAVAILABLE');
+        }
+        return true;
+      }
+
       if (pathname === '/api/chatbot/ask' && method === 'POST') {
         const session = requireUser(db, request, response);
         if (!session) return true;
@@ -3468,6 +3638,10 @@ export async function createApiHandler(options = {}) {
         const question = chatbotText(body.question).slice(0, 2000);
         if (!question) { sendError(response, 400, 'Type a question first.', { question: 'Enter a question.' }); return true; }
         const endpoint = process.env.SPICE_CHATBOT_URL;
+        if (!process.env.SPICE_DOCUMENT_MANAGER_URL && !demoStatus().chatbotAvailable) {
+          sendError(response, 503, 'The knowledge base of the AI Chatbot is being updated. Try again in a moment.', null, 'CHATBOT_UPDATING');
+          return true;
+        }
         if (!endpoint) {
           sendError(response, 503, 'The SPICE knowledge base is not connected in this environment.', null, 'CHATBOT_NOT_CONNECTED');
           return true;
@@ -3494,6 +3668,11 @@ export async function createApiHandler(options = {}) {
           if (!answer.answer) throw new Error('Chatbot returned no answer');
           sendJson(response, 200, answer);
         } catch {
+          const status = await documentServiceStatus().catch(() => null);
+          if (status && !status.chatbotAvailable) {
+            sendError(response, 503, 'The knowledge base of the AI Chatbot is being updated. Try again in a moment.', null, 'CHATBOT_UPDATING');
+            return true;
+          }
           sendError(response, 502, 'The SPICE AI Chatbot could not answer right now.', null, 'CHATBOT_UNAVAILABLE');
         }
         return true;

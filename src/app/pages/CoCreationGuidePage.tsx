@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUp, BookOpen, Bot, BrainCircuit, ChevronDown, FileText, Info, Lightbulb, MapPinned, Quote } from 'lucide-react';
+import { ArrowUp, BookOpen, Bot, BrainCircuit, ChevronDown, FileText, FolderUp, Info, Lightbulb, MapPinned, Quote, RotateCcw } from 'lucide-react';
 import SpicePublicShell from '../components/SpicePublicShell';
+import ChatbotDocumentManager from '../components/ChatbotDocumentManager';
+import ChatbotPilotFlag from '../components/ChatbotPilotFlag';
+import { usePermissions } from '../auth/usePermissions';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../context/I18nContext';
 import { ApiError, apiRequest, jsonBody } from '../lib/api';
@@ -26,6 +29,8 @@ interface Message {
   createdAt: Date;
   /** Present on answers: what the answer is based on. */
   details?: Omit<ChatbotAnswer, 'answer'>;
+  /** A question that could not be answered while the knowledge base was being updated. */
+  retry?: string;
 }
 
 const MODES: Array<{ value: Mode; labelKey: TranslationKey; icon: typeof FileText }> = [
@@ -51,21 +56,6 @@ const KNOWLEDGE_SOURCES = [
   { icon: Lightbulb, titleKey: 'guide.source.ai', descKey: 'guide.source.aiText' },
 ] satisfies Array<{ icon: typeof FileText; titleKey: TranslationKey; descKey: TranslationKey }>;
 
-/** A small flag so the pilot's country is recognisable at a glance. */
-function PilotFlag({ slug }: { slug: ChatbotPilot['slug'] }) {
-  const common = { width: 22, height: 15, 'aria-hidden': true, className: 'flex-none border border-[#d5d6da]' } as const;
-  if (slug === 'thessaloniki') {
-    return (
-      <svg viewBox="0 0 27 18" {...common}>
-        {Array.from({ length: 9 }, (_, index) => <rect key={index} y={index * 2} width="27" height="2" fill={index % 2 ? '#fff' : '#0D5EAF'} />)}
-        <rect width="10" height="10" fill="#0D5EAF" /><rect x="4" width="2" height="10" fill="#fff" /><rect y="4" width="10" height="2" fill="#fff" />
-      </svg>
-    );
-  }
-  if (slug === 'bielsko-biala') return <svg viewBox="0 0 16 10" {...common}><rect width="16" height="5" fill="#fff" /><rect y="5" width="16" height="5" fill="#DC143C" /></svg>;
-  if (slug === 'cuba') return <svg viewBox="0 0 15 10" {...common}><rect width="6" height="10" fill="#046A38" /><rect x="6" width="9" height="10" fill="#DA291C" /></svg>;
-  return <svg viewBox="0 0 18 11" {...common}><rect width="18" height="11" fill="#fff" /><rect x="5" width="3" height="11" fill="#002F6C" /><rect y="4" width="18" height="3" fill="#002F6C" /></svg>;
-}
 
 function initialPilot(pilotSite: string | null | undefined): ChatbotPilot['slug'] {
   const plain = (value: string) => value.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ł/gi, 'l').toLowerCase().replace(/[^a-z]+/g, '-').replace(/(^-|-$)/g, '');
@@ -79,6 +69,10 @@ function initialPilot(pilotSite: string | null | undefined): ChatbotPilot['slug'
 export default function CoCreationGuidePage() {
   const { t, formatDate, language } = useI18n();
   const { user } = useAuth();
+  const { role } = usePermissions();
+  // Municipality staff and administrators update the documents the chatbot answers from.
+  const canManageDocuments = role === 'municipality' || role === 'admin';
+  const [documentsOpen, setDocumentsOpen] = useState(false);
   const [mode, setMode] = useState<Mode>('exploratory');
   const [tone, setTone] = useState<Tone>('professional');
   const [pilotSlug, setPilotSlug] = useState<ChatbotPilot['slug']>(() => initialPilot(user?.pilotSite));
@@ -117,7 +111,10 @@ export default function CoCreationGuidePage() {
     } catch (caught) {
       // Without a connected knowledge base the page says so plainly instead of inventing an answer.
       const notConnected = caught instanceof ApiError && caught.code === 'CHATBOT_NOT_CONNECTED';
-      reply = notConnected
+      const updating = caught instanceof ApiError && caught.code === 'CHATBOT_UPDATING';
+      reply = updating
+        ? { id: Date.now() + 1, from: 'bot', text: t('guide.updatingAnswer'), createdAt: new Date(), retry: question }
+        : notConnected
         ? {
             id: Date.now() + 1,
             from: 'bot',
@@ -178,14 +175,19 @@ export default function CoCreationGuidePage() {
   return (
     <SpicePublicShell variant="public">
       <div className="spice-page spice-wide-page flex flex-col gap-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <div className="grid h-14 w-14 flex-none place-items-center rounded-full bg-[rgba(246,139,44,0.15)]">
             <Bot size={26} className="text-[#ca7428]" aria-hidden="true" />
           </div>
-          <div>
+          <div className="min-w-0 flex-1">
             <h1 className="text-[26px] font-bold text-[#444]">{t('nav.aiChatbot')}</h1>
             <p className="text-[14px] text-[#666]">{t('guide.pageSubtitle')}</p>
           </div>
+          {canManageDocuments && (
+            <button type="button" onClick={() => setDocumentsOpen(true)} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[14px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]">
+              <FolderUp size={17} aria-hidden="true" />{t('documents.open')}
+            </button>
+          )}
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
@@ -237,6 +239,11 @@ export default function CoCreationGuidePage() {
                           </span>
                         ))}
                       </div>
+                      {message.retry && (
+                        <button type="button" onClick={() => void sendMessage(message.retry as string)} disabled={isTyping} className="inline-flex min-h-9 cursor-pointer items-center gap-1.5 border border-[#d5d6da] bg-white px-3 text-[12px] font-bold text-[#555] hover:border-[#f68b2c] hover:text-[#a85f20] disabled:cursor-wait disabled:opacity-60">
+                          <RotateCcw size={14} aria-hidden="true" />{t('guide.retry')}
+                        </button>
+                      )}
                       {message.details && (
                         <>
                           <div className="flex flex-wrap gap-2">
@@ -331,7 +338,7 @@ export default function CoCreationGuidePage() {
             <label className="flex flex-col gap-2 text-[14px] font-bold text-[#444]">
               {t('guide.pilot')}
               <span className="relative flex items-center">
-                <span className="pointer-events-none absolute left-4"><PilotFlag slug={pilot.slug} /></span>
+                <span className="pointer-events-none absolute left-4"><ChatbotPilotFlag slug={pilot.slug} /></span>
                 <select value={pilot.slug} onChange={(event) => choosePilot(event.target.value as ChatbotPilot['slug'])} className="min-h-12 w-full cursor-pointer appearance-none border border-[#bfc0c5] bg-white pl-12 pr-10 text-[15px] font-medium text-[#444] focus:border-[#ca7428] focus:outline-none">
                   {CHATBOT_PILOTS.map((item) => <option key={item.slug} value={item.slug}>{item.name}</option>)}
                 </select>
@@ -376,6 +383,7 @@ export default function CoCreationGuidePage() {
           </div>
         </div>
       </div>
+      {documentsOpen && <ChatbotDocumentManager onClose={() => setDocumentsOpen(false)} />}
     </SpicePublicShell>
   );
 }

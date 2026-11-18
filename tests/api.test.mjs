@@ -69,6 +69,45 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
     assert.equal(protectedForumAction.status, 401);
   });
 
+  await t.test('the Municipality uploads chatbot documents for its own pilot only, as PDF files', async () => {
+    const municipality = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'municipality' } });
+    const citizen = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'citizen' } });
+    const status = await request(baseUrl, '/api/chatbot/documents/status', { cookie: municipality.cookie });
+    assert.equal(status.status, 200);
+    assert.equal(status.payload.demo, true);
+    assert.deepEqual(status.payload.pilots, ['thessaloniki']);
+    assert.deepEqual((await request(baseUrl, '/api/chatbot/documents/status', { cookie: citizen.cookie })).payload.pilots, []);
+
+    const upload = async (cookie, pilot, fileName) => {
+      const form = new FormData();
+      form.append('city', 'Thessaloniki');
+      form.append('files', new Blob(['%PDF-1.4 test'], { type: 'application/pdf' }), fileName);
+      const response = await fetch(`${baseUrl}/api/chatbot/documents/upload?pilot=${pilot}`, { method: 'POST', headers: { Cookie: cookie }, body: form });
+      return { status: response.status, payload: await response.json() };
+    };
+    assert.equal((await upload(citizen.cookie, 'thessaloniki', 'plan.pdf')).status, 403);
+    assert.equal((await upload(municipality.cookie, 'rovaniemi', 'plan.pdf')).payload.code, 'DOCUMENTS_OTHER_PILOT');
+    assert.equal((await upload(municipality.cookie, 'thessaloniki', 'notes.docx')).payload.code, 'DOCUMENTS_PDF_ONLY');
+    process.env.SPICE_DOCUMENT_DEMO_SCALE = '0.1';
+    const accepted = await upload(municipality.cookie, 'thessaloniki', 'park-plan.pdf');
+    assert.equal(accepted.status, 202);
+    assert.deepEqual(accepted.payload.job.files, ['park-plan.pdf']);
+    const job = await request(baseUrl, `/api/chatbot/documents/jobs/${accepted.payload.job.id}`, { cookie: municipality.cookie });
+    assert.equal(job.payload.job.city, 'Thessaloniki');
+    // While the knowledge base is rebuilt, the chatbot says so instead of failing.
+    const paused = await new Promise((resolve) => setTimeout(resolve, 250))
+      .then(() => request(baseUrl, '/api/chatbot/ask', { method: 'POST', cookie: citizen.cookie, body: { question: 'What happens next?' } }));
+    assert.equal(paused.payload.code, 'CHATBOT_UPDATING');
+    // The demo update finishes and the chatbot is available again.
+    let ready = false;
+    for (let attempt = 0; attempt < 30 && !ready; attempt += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      ready = (await request(baseUrl, '/api/chatbot/documents/status', { cookie: municipality.cookie })).payload.chatbotAvailable;
+    }
+    assert.equal(ready, true);
+    delete process.env.SPICE_DOCUMENT_DEMO_SCALE;
+  });
+
   await t.test('feedback validates required fields and persists anonymous submissions', async () => {
     const invalid = await request(baseUrl, '/api/feedback', { method: 'POST', body: { category: '', rating: 0, message: '' } });
     assert.equal(invalid.status, 400);

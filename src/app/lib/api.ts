@@ -17,7 +17,8 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}): Pr
     credentials: 'same-origin',
     ...options,
     headers: {
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+      // Files are sent as multipart form data; the browser sets that content type with its boundary.
+      ...(options.body && !(options.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
       'Accept-Language': document.documentElement.lang || 'en',
       ...options.headers,
     },
