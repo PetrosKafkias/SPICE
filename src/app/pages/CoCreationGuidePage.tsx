@@ -175,16 +175,19 @@ export default function CoCreationGuidePage() {
   return (
     <SpicePublicShell variant="public">
       <div className="spice-page spice-wide-page flex flex-col gap-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="grid h-14 w-14 flex-none place-items-center rounded-full bg-[rgba(246,139,44,0.15)]">
-            <Bot size={26} className="text-[#ca7428]" aria-hidden="true" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h1 className="text-[26px] font-bold text-[#444]">{t('nav.aiChatbot')}</h1>
-            <p className="text-[14px] text-[#666]">{t('guide.pageSubtitle')}</p>
+        {/* Same columns as the page below, so the documents button lines up with the settings column. */}
+        <div className="grid grid-cols-1 items-center gap-4 lg:grid-cols-[1fr_360px] lg:gap-6">
+          <div className="flex min-w-0 items-center gap-4">
+            <div className="grid h-14 w-14 flex-none place-items-center rounded-full bg-[rgba(246,139,44,0.15)]">
+              <Bot size={26} className="text-[#ca7428]" aria-hidden="true" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-[26px] font-bold text-[#444]">{t('nav.aiChatbot')}</h1>
+              <p className="text-[14px] text-[#666]">{t('guide.pageSubtitle')}</p>
+            </div>
           </div>
           {canManageDocuments && (
-            <button type="button" onClick={() => setDocumentsOpen(true)} className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-2 border-[#444] bg-white px-4 text-[14px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]">
+            <button type="button" onClick={() => setDocumentsOpen(true)} className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 border-2 border-[#444] bg-white px-4 text-[14px] font-bold text-[#444] hover:border-[#ca7428] hover:text-[#a85f20]">
               <FolderUp size={17} aria-hidden="true" />{t('documents.open')}
             </button>
           )}
@@ -383,7 +386,7 @@ export default function CoCreationGuidePage() {
           </div>
         </div>
       </div>
-      {documentsOpen && <ChatbotDocumentManager onClose={() => setDocumentsOpen(false)} />}
+      {documentsOpen && <ChatbotDocumentManager initialPilot={pilot.slug} onClose={() => setDocumentsOpen(false)} />}
     </SpicePublicShell>
   );
 }

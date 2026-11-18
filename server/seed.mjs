@@ -480,6 +480,27 @@ export async function seedDatabase(db) {
     insertMany(db, 'INSERT INTO dashboard_data (page, data_key, payload_json, updated_at) VALUES (?, ?, ?, ?)', dashboardRows.map(([page, key, payload]) => [page, key, JSON.stringify(payload), NOW]));
   }
 
+  // Example documents of the AI Chatbot knowledge base, as listed in the document manager of each pilot.
+  if (Number(db.prepare('SELECT COUNT(*) AS count FROM chatbot_documents').get().count) === 0) {
+    const uploader = (municipalityDemoId || null);
+    insertMany(db, `
+      INSERT INTO chatbot_documents (pilot_slug, city, file_name, file_size, job_id, uploaded_by_user_id, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `, [
+      ['thessaloniki', 'Thessaloniki', 'Thessaloniki_Resilience_Strategy_2030.pdf', 4823041, 'seed-th-1', uploader, '2026-09-22T09:14:00.000Z'],
+      ['thessaloniki', 'Thessaloniki', 'Climate_Neutral_City_Action_Plan_Thessaloniki.pdf', 3150892, 'seed-th-1', uploader, '2026-09-22T09:14:00.000Z'],
+      ['thessaloniki', 'Thessaloniki', 'Parko_Kritis_Diagnostic_Report.pdf', 1902334, 'seed-th-2', uploader, '2026-10-06T11:40:00.000Z'],
+      ['thessaloniki', 'Thessaloniki', 'ELSTAT_Census_2021_Municipality_of_Thessaloniki.pdf', 862117, 'seed-th-2', uploader, '2026-10-06T11:40:00.000Z'],
+      ['thessaloniki', 'Thessaloniki', 'Green_Spaces_and_Public_Realm_Study.pdf', 2214560, 'seed-th-3', uploader, '2026-11-03T15:05:00.000Z'],
+      ['rovaniemi', 'Rovaniemi', 'Rovaniemi_City_Strategy_2030.pdf', 2650119, 'seed-ro-1', null, '2026-09-29T08:30:00.000Z'],
+      ['rovaniemi', 'Rovaniemi', 'Arctic_Winter_City_Design_Guidelines.pdf', 1730284, 'seed-ro-1', null, '2026-09-29T08:30:00.000Z'],
+      ['bielsko-biala', 'BielskoBiala', 'Bielsko-Biala_Development_Strategy_2030.pdf', 3384902, 'seed-bb-1', null, '2026-10-01T10:12:00.000Z'],
+      ['bielsko-biala', 'BielskoBiala', 'Municipal_Revitalisation_Programme.pdf', 2097004, 'seed-bb-1', null, '2026-10-01T10:12:00.000Z'],
+      ['cuba', 'Cuba', 'Cuba_Municipal_Master_Plan.pdf', 4102771, 'seed-cu-1', null, '2026-10-08T13:45:00.000Z'],
+      ['cuba', 'Cuba', 'Public_Space_Survey_2025_Cuba.pdf', 958340, 'seed-cu-1', null, '2026-10-08T13:45:00.000Z'],
+    ]);
+  }
+
   // The demonstration CitiVoice campaign belongs to the Thessaloniki pilot; other pilots have no data yet.
   if (Number(db.prepare('SELECT COUNT(*) AS count FROM citivoice_datasets').get().count) === 0) {
     const metrics = db.prepare('SELECT * FROM citivoice_metrics ORDER BY rowid').all().map((row) => ({

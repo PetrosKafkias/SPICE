@@ -167,12 +167,13 @@ function normalizeChatbotAnswer(data) {
 }
 
 // --- Chatbot document manager -------------------------------------------------------------------
-// Municipalities upload PDF documents for their pilot; the document service of the AI Chatbot stores
-// them and rebuilds the chatbot knowledge of that city. The platform proxies the service so that the
-// browser never calls it directly. Without SPICE_DOCUMENT_MANAGER_URL the platform runs a demo that
-// goes through the same steps without sending any file.
+// Municipalities upload PDF documents for their pilot; the document service of the AI Chatbot
+// (SPICE_DOCUMENT_MANAGER_URL) stores them and rebuilds the chatbot knowledge of that city. The
+// platform proxies the service so that the browser never calls it directly, and keeps a record of
+// the documents uploaded through it.
 const DOCUMENT_CITIES = Object.freeze({ thessaloniki: 'Thessaloniki', cuba: 'Cuba', 'bielsko-biala': 'BielskoBiala', rovaniemi: 'Rovaniemi' });
 const DOCUMENT_MAX_UPLOAD = 60 * 1024 * 1024;
+const documentServiceUrl = () => process.env.SPICE_DOCUMENT_MANAGER_URL || '';
 
 function plainPilot(value) {
   return String(value || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ł/gi, 'l').toLowerCase().replace(/[^a-z]+/g, '-').replace(/(^-|-$)/g, '');
@@ -197,6 +198,29 @@ async function readRawBody(request, limit) {
   return Buffer.concat(chunks);
 }
 
+/** The files of a multipart body, with their names and sizes. */
+function multipartFiles(body, contentType) {
+  const boundary = (contentType.match(/boundary=(?:"([^"]+)"|([^;]+))/) || [])[1] || (contentType.match(/boundary=([^;]+)/) || [])[1];
+  if (!boundary) return [];
+  const delimiter = Buffer.from(`--${boundary}`);
+  const files = [];
+  let start = body.indexOf(delimiter);
+  while (start !== -1) {
+    const next = body.indexOf(delimiter, start + delimiter.length);
+    if (next === -1) break;
+    const part = body.subarray(start + delimiter.length, next);
+    const headerEnd = part.indexOf('\r\n\r\n');
+    if (headerEnd !== -1) {
+      const headers = part.subarray(0, headerEnd).toString('latin1');
+      const name = (headers.match(/filename="([^"]*)"/) || [])[1];
+      // The content ends with the CRLF that precedes the next delimiter.
+      if (name !== undefined) files.push({ name: Buffer.from(name, 'latin1').toString('utf8'), size: Math.max(0, part.length - headerEnd - 4 - 2) });
+    }
+    start = next;
+  }
+  return files;
+}
+
 /** Maps a stage name of the document service to one of the steps shown to the user. */
 function documentStage(value) {
   const text = String(value || '').toLowerCase();
@@ -215,7 +239,7 @@ function documentJob(job) {
   return {
     id: String(job?.id ?? job?.job_id ?? ''),
     city: String(job?.city ?? job?.pilot ?? ''),
-    files: Array.isArray(files) ? files.map(String) : files != null ? [String(files)] : [],
+    files: Array.isArray(files) ? files.map((file) => String(typeof file === 'string' ? file : file?.name ?? file?.filename ?? '')) : files != null ? [String(files)] : [],
     result: String(job?.result ?? job?.status ?? job?.state ?? ''),
     stage: documentStage(job?.stage ?? job?.step ?? job?.status),
     finishedAt: job?.finished ?? job?.finished_at ?? job?.completed_at ?? null,
@@ -228,6 +252,7 @@ function documentStatus(data) {
   const log = data?.log ?? data?.logs ?? [];
   const available = data?.chatbot_available ?? data?.chatbotAvailable;
   return {
+    connected: true,
     chatbotAvailable: available === undefined ? true : Boolean(available),
     stage: documentStage(data?.stage ?? data?.step ?? data?.state ?? data?.phase ?? data?.status),
     jobs: (Array.isArray(jobs) ? jobs : []).map(documentJob).slice(0, 20),
@@ -235,32 +260,37 @@ function documentStatus(data) {
   };
 }
 
-// The demo keeps its state in memory and walks a job through the steps in about twelve seconds.
-const documentDemo = { stage: 'ready', jobs: [], log: [], timers: [] };
-function demoStatus() {
-  return { chatbotAvailable: !['paused', 'saving', 'rebuilding', 'restarting'].includes(documentDemo.stage), stage: documentDemo.stage, jobs: documentDemo.jobs.slice(0, 20), log: documentDemo.log.slice(-200), demo: true };
-}
-function demoUpload(city, files) {
-  const job = { id: randomUUID().slice(0, 8), city, files, result: 'running', stage: 'received', finishedAt: null };
-  documentDemo.jobs.unshift(job);
-  const step = (stage, message) => {
-    documentDemo.stage = stage;
-    job.stage = stage;
-    documentDemo.log.push(`${new Date().toISOString()} [${job.id}] ${message}`);
-    if (stage === 'ready') { job.result = 'success'; job.finishedAt = new Date().toISOString(); }
-  };
-  step('received', `Upload received for ${city}: ${files.join(', ') || 'no files'}`);
-  [[1500, 'paused', 'Chatbot paused'], [3000, 'saving', 'Saving documents'], [4500, 'rebuilding', `Rebuilding the knowledge of ${city}`], [9500, 'restarting', 'Restarting chatbot'], [12000, 'ready', 'Chatbot ready']]
-    .forEach(([delay, stage, message]) => { const timer = setTimeout(() => step(stage, message), delay * Number(process.env.SPICE_DOCUMENT_DEMO_SCALE || 1)); timer.unref?.(); });
-  return job;
-}
-
 async function documentServiceStatus() {
-  const base = process.env.SPICE_DOCUMENT_MANAGER_URL;
-  if (!base) return demoStatus();
+  const base = documentServiceUrl();
+  if (!base) return { connected: false, chatbotAvailable: true, stage: null, jobs: [], log: [] };
   const upstream = await fetch(new URL('/status', base), { signal: AbortSignal.timeout(10000) });
   if (!upstream.ok) throw new Error(`Document service responded with ${upstream.status}`);
   return documentStatus(await upstream.json());
+}
+
+/** The documents the service holds for a city, or null when it does not list them. */
+async function documentServiceFiles(city) {
+  const base = documentServiceUrl();
+  if (!base) return null;
+  try {
+    const target = new URL('/documents', base);
+    target.searchParams.set('city', city);
+    const upstream = await fetch(target, { signal: AbortSignal.timeout(10000) });
+    if (!upstream.ok) return null;
+    const data = await upstream.json();
+    const list = Array.isArray(data) ? data : data?.documents ?? data?.files ?? null;
+    if (!Array.isArray(list)) return null;
+    return list.map((item) => (typeof item === 'string'
+      ? { name: item, size: null, uploadedAt: null, uploadedBy: null }
+      : {
+          name: String(item?.name ?? item?.filename ?? item?.file ?? ''),
+          size: Number.isFinite(Number(item?.size ?? item?.bytes)) ? Number(item?.size ?? item?.bytes) : null,
+          uploadedAt: item?.uploaded_at ?? item?.uploadedAt ?? item?.modified ?? item?.created_at ?? null,
+          uploadedBy: null,
+        })).filter((item) => item.name);
+  } catch {
+    return null;
+  }
 }
 
 function getSessionUser(db, request) {
@@ -3562,10 +3592,42 @@ export async function createApiHandler(options = {}) {
         const session = requireUser(db, request, response);
         if (!session) return true;
         try {
-          sendJson(response, 200, { ...(await documentServiceStatus()), pilots: documentPilotsFor(session.user) });
+          const pilots = documentPilotsFor(session.user);
+          const status = await documentServiceStatus();
+          // Without the service, the recent updates come from the uploads recorded by the platform.
+          if (!status.connected && pilots.length) {
+            const rows = db.prepare(`
+              SELECT job_id, city, group_concat(file_name, '||') AS files, max(created_at) AS finished_at
+              FROM chatbot_documents WHERE pilot_slug IN (${pilots.map(() => '?').join(',')})
+              GROUP BY COALESCE(job_id, id), city ORDER BY finished_at DESC LIMIT 20
+            `).all(...pilots);
+            status.jobs = rows.map((row) => ({ id: String(row.job_id || ''), city: row.city, files: String(row.files || '').split('||'), result: 'completed', stage: 'ready', finishedAt: row.finished_at }));
+          }
+          sendJson(response, 200, { ...status, pilots });
         } catch {
           sendError(response, 502, 'The document service of the AI Chatbot is not reachable right now.', null, 'DOCUMENTS_UNAVAILABLE');
         }
+        return true;
+      }
+
+      // The documents of a pilot: the list of the document service when it provides one, otherwise
+      // the documents uploaded through the platform.
+      if (pathname === '/api/chatbot/documents' && method === 'GET') {
+        const session = requireUser(db, request, response);
+        if (!session) return true;
+        const pilot = url.searchParams.get('pilot') || '';
+        if (!documentPilotsFor(session.user).includes(pilot)) { sendError(response, 403, 'You can see the documents of your own pilot only.', null, 'DOCUMENTS_OTHER_PILOT'); return true; }
+        const fromService = await documentServiceFiles(DOCUMENT_CITIES[pilot]);
+        if (fromService) { sendJson(response, 200, { documents: fromService, source: 'service' }); return true; }
+        const rows = db.prepare(`
+          SELECT d.file_name, d.file_size, d.created_at, u.full_name AS uploaded_by
+          FROM chatbot_documents d LEFT JOIN users u ON u.id = d.uploaded_by_user_id
+          WHERE d.pilot_slug = ? ORDER BY d.created_at DESC, d.id DESC
+        `).all(pilot);
+        sendJson(response, 200, {
+          documents: rows.map((row) => ({ name: row.file_name, size: row.file_size == null ? null : Number(row.file_size), uploadedAt: row.created_at, uploadedBy: row.uploaded_by || null })),
+          source: 'platform',
+        });
         return true;
       }
 
@@ -3574,13 +3636,8 @@ export async function createApiHandler(options = {}) {
         const session = requireUser(db, request, response);
         if (!session) return true;
         if (!documentPilotsFor(session.user).length) { sendError(response, 403, 'Only the Municipality can manage the chatbot documents.'); return true; }
-        const base = process.env.SPICE_DOCUMENT_MANAGER_URL;
-        if (!base) {
-          const job = documentDemo.jobs.find((item) => item.id === documentJobMatch[1]);
-          if (!job) { sendError(response, 404, 'Upload not found.'); return true; }
-          sendJson(response, 200, { job });
-          return true;
-        }
+        const base = documentServiceUrl();
+        if (!base) { sendError(response, 503, 'The document service of the AI Chatbot is not connected.', null, 'DOCUMENTS_NOT_CONNECTED'); return true; }
         try {
           const upstream = await fetch(new URL(`/jobs/${encodeURIComponent(documentJobMatch[1])}`, base), { signal: AbortSignal.timeout(10000) });
           if (upstream.status === 404) { sendError(response, 404, 'Upload not found.'); return true; }
@@ -3603,16 +3660,11 @@ export async function createApiHandler(options = {}) {
         if (!contentType.startsWith('multipart/form-data')) { sendError(response, 400, 'Choose PDF files to upload.'); return true; }
         const body = await readRawBody(request, DOCUMENT_MAX_UPLOAD);
         // Only PDF files are accepted, as by the document service.
-        const fileNames = [...body.toString('latin1').matchAll(/filename="([^"]*)"/g)].map((match) => Buffer.from(match[1], 'latin1').toString('utf8'));
-        if (!fileNames.length || fileNames.some((name) => !/\.pdf$/i.test(name))) { sendError(response, 400, 'Only PDF files can be uploaded.', null, 'DOCUMENTS_PDF_ONLY'); return true; }
+        const files = multipartFiles(body, contentType);
+        if (!files.length || files.some((file) => !/\.pdf$/i.test(file.name))) { sendError(response, 400, 'Only PDF files can be uploaded.', null, 'DOCUMENTS_PDF_ONLY'); return true; }
+        const base = documentServiceUrl();
+        if (!base) { sendError(response, 503, 'The document service of the AI Chatbot is not connected.', null, 'DOCUMENTS_NOT_CONNECTED'); return true; }
         const city = DOCUMENT_CITIES[pilot];
-        const base = process.env.SPICE_DOCUMENT_MANAGER_URL;
-        if (!base) {
-          const job = demoUpload(city, fileNames);
-          addAudit(db, { actor: session.user, action: 'chatbot.documents.upload', targetType: 'chatbot_documents', targetId: job.id, newValue: { city, files: fileNames, demo: true } });
-          sendJson(response, 202, { job, demo: true });
-          return true;
-        }
         try {
           const target = new URL('/upload', base);
           target.searchParams.set('city', city);
@@ -3622,8 +3674,11 @@ export async function createApiHandler(options = {}) {
             sendError(response, upstream.status >= 500 ? 502 : 400, String(data?.detail || data?.error || 'The documents could not be uploaded.'), null, 'DOCUMENTS_UPLOAD_FAILED');
             return true;
           }
-          const job = documentJob({ city, files: fileNames, stage: 'received', ...data });
-          addAudit(db, { actor: session.user, action: 'chatbot.documents.upload', targetType: 'chatbot_documents', targetId: job.id || city, newValue: { city, files: fileNames } });
+          const job = documentJob({ city, files: files.map((file) => file.name), stage: 'received', ...data });
+          const now = new Date().toISOString();
+          const insert = db.prepare('INSERT INTO chatbot_documents (pilot_slug, city, file_name, file_size, job_id, uploaded_by_user_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)');
+          files.forEach((file) => insert.run(pilot, city, file.name, file.size, job.id || null, session.user.id, now));
+          addAudit(db, { actor: session.user, action: 'chatbot.documents.upload', targetType: 'chatbot_documents', targetId: job.id || city, newValue: { city, files: files.map((file) => file.name) } });
           sendJson(response, 202, { job });
         } catch {
           sendError(response, 502, 'The document service of the AI Chatbot is not reachable right now.', null, 'DOCUMENTS_UNAVAILABLE');
@@ -3638,10 +3693,6 @@ export async function createApiHandler(options = {}) {
         const question = chatbotText(body.question).slice(0, 2000);
         if (!question) { sendError(response, 400, 'Type a question first.', { question: 'Enter a question.' }); return true; }
         const endpoint = process.env.SPICE_CHATBOT_URL;
-        if (!process.env.SPICE_DOCUMENT_MANAGER_URL && !demoStatus().chatbotAvailable) {
-          sendError(response, 503, 'The knowledge base of the AI Chatbot is being updated. Try again in a moment.', null, 'CHATBOT_UPDATING');
-          return true;
-        }
         if (!endpoint) {
           sendError(response, 503, 'The SPICE knowledge base is not connected in this environment.', null, 'CHATBOT_NOT_CONNECTED');
           return true;

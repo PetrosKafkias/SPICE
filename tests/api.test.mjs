@@ -72,12 +72,6 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
   await t.test('the Municipality uploads chatbot documents for its own pilot only, as PDF files', async () => {
     const municipality = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'municipality' } });
     const citizen = await request(baseUrl, '/api/auth/demo-login', { method: 'POST', body: { role: 'citizen' } });
-    const status = await request(baseUrl, '/api/chatbot/documents/status', { cookie: municipality.cookie });
-    assert.equal(status.status, 200);
-    assert.equal(status.payload.demo, true);
-    assert.deepEqual(status.payload.pilots, ['thessaloniki']);
-    assert.deepEqual((await request(baseUrl, '/api/chatbot/documents/status', { cookie: citizen.cookie })).payload.pilots, []);
-
     const upload = async (cookie, pilot, fileName) => {
       const form = new FormData();
       form.append('city', 'Thessaloniki');
@@ -85,27 +79,64 @@ test('SPICE API supports authentication, persistence, permissions, and state cha
       const response = await fetch(`${baseUrl}/api/chatbot/documents/upload?pilot=${pilot}`, { method: 'POST', headers: { Cookie: cookie }, body: form });
       return { status: response.status, payload: await response.json() };
     };
-    assert.equal((await upload(citizen.cookie, 'thessaloniki', 'plan.pdf')).status, 403);
-    assert.equal((await upload(municipality.cookie, 'rovaniemi', 'plan.pdf')).payload.code, 'DOCUMENTS_OTHER_PILOT');
-    assert.equal((await upload(municipality.cookie, 'thessaloniki', 'notes.docx')).payload.code, 'DOCUMENTS_PDF_ONLY');
-    process.env.SPICE_DOCUMENT_DEMO_SCALE = '0.1';
-    const accepted = await upload(municipality.cookie, 'thessaloniki', 'park-plan.pdf');
-    assert.equal(accepted.status, 202);
-    assert.deepEqual(accepted.payload.job.files, ['park-plan.pdf']);
-    const job = await request(baseUrl, `/api/chatbot/documents/jobs/${accepted.payload.job.id}`, { cookie: municipality.cookie });
-    assert.equal(job.payload.job.city, 'Thessaloniki');
-    // While the knowledge base is rebuilt, the chatbot says so instead of failing.
-    const paused = await new Promise((resolve) => setTimeout(resolve, 250))
-      .then(() => request(baseUrl, '/api/chatbot/ask', { method: 'POST', cookie: citizen.cookie, body: { question: 'What happens next?' } }));
-    assert.equal(paused.payload.code, 'CHATBOT_UPDATING');
-    // The demo update finishes and the chatbot is available again.
-    let ready = false;
-    for (let attempt = 0; attempt < 30 && !ready; attempt += 1) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      ready = (await request(baseUrl, '/api/chatbot/documents/status', { cookie: municipality.cookie })).payload.chatbotAvailable;
+
+    // Without the document service, the platform says it is not connected.
+    const offline = await request(baseUrl, '/api/chatbot/documents/status', { cookie: municipality.cookie });
+    assert.equal(offline.payload.connected, false);
+    assert.deepEqual(offline.payload.pilots, ['thessaloniki']);
+    assert.deepEqual((await request(baseUrl, '/api/chatbot/documents/status', { cookie: citizen.cookie })).payload.pilots, []);
+    assert.equal((await upload(municipality.cookie, 'thessaloniki', 'plan.pdf')).payload.code, 'DOCUMENTS_NOT_CONNECTED');
+
+    // A stand-in for the document service and the chatbot.
+    const received = [];
+    let available = true;
+    const service = createServer((req, res) => {
+      const reply = (status, body) => { res.writeHead(status, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(body)); };
+      const path = new URL(req.url, 'http://service').pathname;
+      if (path === '/status') return reply(200, { chatbot_available: available, stage: available ? 'ready' : 'rebuilding', recent_jobs: [{ job_id: 'job-1', city: 'Thessaloniki', files: ['park-plan.pdf'], status: 'running' }] });
+      if (path === '/upload') {
+        const chunks = [];
+        req.on('data', (chunk) => chunks.push(chunk));
+        req.on('end', () => { received.push({ url: req.url, body: Buffer.concat(chunks).toString('latin1') }); available = false; reply(202, { job_id: 'job-1' }); });
+        return undefined;
+      }
+      if (path === '/jobs/job-1') return reply(200, { job_id: 'job-1', city: 'Thessaloniki', status: 'running', stage: 'saving' });
+      if (path === '/chat') return reply(503, { detail: 'rebuilding' });
+      return reply(404, { detail: 'not found' });
+    });
+    await new Promise((resolve) => service.listen(0, '127.0.0.1', resolve));
+    process.env.SPICE_DOCUMENT_MANAGER_URL = `http://127.0.0.1:${service.address().port}`;
+    process.env.SPICE_CHATBOT_URL = `http://127.0.0.1:${service.address().port}/chat`;
+    try {
+      assert.equal((await upload(citizen.cookie, 'thessaloniki', 'plan.pdf')).status, 403);
+      assert.equal((await upload(municipality.cookie, 'rovaniemi', 'plan.pdf')).payload.code, 'DOCUMENTS_OTHER_PILOT');
+      assert.equal((await upload(municipality.cookie, 'thessaloniki', 'notes.docx')).payload.code, 'DOCUMENTS_PDF_ONLY');
+      const accepted = await upload(municipality.cookie, 'thessaloniki', 'park-plan.pdf');
+      assert.equal(accepted.status, 202);
+      assert.equal(accepted.payload.job.id, 'job-1');
+      assert.match(received[0].url, /city=Thessaloniki/);
+      assert.match(received[0].body, /filename="park-plan\.pdf"/);
+
+      const status = await request(baseUrl, '/api/chatbot/documents/status', { cookie: municipality.cookie });
+      assert.equal(status.payload.connected, true);
+      assert.equal(status.payload.stage, 'rebuilding');
+      assert.equal((await request(baseUrl, '/api/chatbot/documents/jobs/job-1', { cookie: municipality.cookie })).payload.job.stage, 'saving');
+
+      // The service does not list its documents here, so the platform shows the ones uploaded through it.
+      const documents = await request(baseUrl, '/api/chatbot/documents?pilot=thessaloniki', { cookie: municipality.cookie });
+      assert.equal(documents.payload.source, 'platform');
+      assert.equal(documents.payload.documents[0].name, 'park-plan.pdf');
+      assert.equal(documents.payload.documents[0].size, '%PDF-1.4 test'.length);
+      assert.equal((await request(baseUrl, '/api/chatbot/documents?pilot=rovaniemi', { cookie: municipality.cookie })).status, 403);
+
+      // While the knowledge base is rebuilt, the chatbot says so instead of failing.
+      const paused = await request(baseUrl, '/api/chatbot/ask', { method: 'POST', cookie: citizen.cookie, body: { question: 'What happens next?' } });
+      assert.equal(paused.payload.code, 'CHATBOT_UPDATING');
+    } finally {
+      delete process.env.SPICE_DOCUMENT_MANAGER_URL;
+      delete process.env.SPICE_CHATBOT_URL;
+      await new Promise((resolve) => service.close(resolve));
     }
-    assert.equal(ready, true);
-    delete process.env.SPICE_DOCUMENT_DEMO_SCALE;
   });
 
   await t.test('feedback validates required fields and persists anonymous submissions', async () => {
